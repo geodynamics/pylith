@@ -14,13 +14,12 @@
 namespace pylith {
     namespace bc {
         class DirichletDataHex8;
-    } // pylith
-} // bc
+    } // namespace bc
+} // namespace pylith
 
 class pylith::bc::DirichletDataHex8 : public DirichletData {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     DirichletDataHex8(void);
 
@@ -28,8 +27,7 @@ public:
     ~DirichletDataHex8(void);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     static const int _numDOF; ///< Number of degrees of freedom at each point.
 
     static const int _numFixedDOF; ///< Number of fixedDOF at constrained points.

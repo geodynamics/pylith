@@ -17,8 +17,7 @@ namespace pylith {
 }
 
 class pylith::TwoFaultsShearNoSlip {
-public:
-
+  public:
     // Data factory methods
     static TestFaultKin_Data* TriP1(void);
 
@@ -36,8 +35,7 @@ public:
 
     static TestFaultKin_Data* QuadQ4(void);
 
-private:
-
+  private:
     TwoFaultsShearNoSlip(void); ///< Not implemented
 }; // TwoFaultsShearNoSlip
 

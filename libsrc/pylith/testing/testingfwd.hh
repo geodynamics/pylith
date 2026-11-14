@@ -15,23 +15,23 @@ namespace pylith {
         class MMSTest;
         class FieldTester;
         class TestDriver;
-    } // testing
+    } // namespace testing
 
     namespace faults {
         class FaultCohesiveStub;
-    } // faults
+    } // namespace faults
 
     namespace feassemble {
         class PhysicsImplementationStub;
-    } // feassemble
+    } // namespace feassemble
 
     namespace problems {
         class PhysicsStub;
         class ObserverSolnStub;
         class ObserverPhysicsStub;
         class ProgressMonitorStub;
-    } // problems
+    } // namespace problems
 
-} // pylith
+} // namespace pylith
 
 // End of file

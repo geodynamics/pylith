@@ -18,8 +18,7 @@ class pylith::utils::DependenciesVersion { // DependenciesVersion
     friend class TestDependenciesVersion; // unit testing
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     DependenciesVersion(void);
 
@@ -30,46 +29,39 @@ public:
      *
      * @returns MPI version number.
      */
-    static
-    const char* mpiVersion(void);
+    static const char* mpiVersion(void);
 
     /** Get MPI implementation info (OpenMPI, MPICH, etc).
      *
      * @returns MPI implementation info.
      */
-    static
-    const char* mpiImplementation(void);
+    static const char* mpiImplementation(void);
 
     /** Get MPI standard version info.
      *
      * @returns MPI standard version info.
      */
-    static
-    const char* mpiStandard(void);
+    static const char* mpiStandard(void);
 
     /** Get NetCDF version number.
      *
      * @returns NetCDF version number.
      */
-    static
-    const char* netcdfVersion(void);
+    static const char* netcdfVersion(void);
 
     /** Get HDF5 version number.
      *
      * @returns HDF5 version number.
      */
-    static
-    const char* hdf5Version(void);
+    static const char* hdf5Version(void);
 
     // PRIVATE METHODS //////////////////////////////////////////////////////
-private:
-
+  private:
     DependenciesVersion(const DependenciesVersion&); ///< Not implemented
     const DependenciesVersion& operator=(const DependenciesVersion&); ///< Not implemented
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     static const char* _mpiImplementation; ///< MPI implementation
     static const char* _mpiVersion; ///< MPI version number.
     static const char* _mpiStandard; ///< MPI standard version number.

@@ -21,7 +21,7 @@ namespace pylith {
         class MeshDistributor;
         class MeshInsertInterfaces;
 
-    } // initializers
-} // pylith
+    } // namespace initializers
+} // namespace pylith
 
 // End of file

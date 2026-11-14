@@ -13,18 +13,17 @@
 namespace pylith {
     namespace meshio {
         class FieldFactory;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
-#include "pylith/topology/topologyfwd.hh" // HOLDSA Field
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::Descretization
+#include "pylith/topology/topologyfwd.hh" // HOLDSA Field
 
 class pylith::meshio::FieldFactory {
     friend class TestFieldFactory; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /** Default constructor.
      *
      * @param[inout] fields Container with fields.
@@ -65,14 +64,12 @@ public:
     void setValues(PetscUserFieldFunc fieldFn);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::topology::Field& _field; ///< Field with subfields.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
-private:
-
-    FieldFactory(const FieldFactory &); ///< Not implemented.
+  private:
+    FieldFactory(const FieldFactory&); ///< Not implemented.
     const FieldFactory& operator=(const FieldFactory&); ///< Not implemented
 
 }; // class FieldFactory

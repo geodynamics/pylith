@@ -14,14 +14,13 @@
 namespace pylith {
     namespace meshio {
         class TestMeshIOAscii;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // ======================================================================
 class pylith::meshio::TestMeshIOAscii : public TestMeshIO {
     // PUBLIC METHODS ///////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestMeshIOAscii(TestMeshIO_Data* data);
 
@@ -41,8 +40,7 @@ public:
     void testReadError(void);
 
     // PROTECTED METHODS ////////////////////////////////////////////////
-protected:
-
+  protected:
     MeshIOAscii* _io; ///< Test subject.
 
 }; // class TestMeshIOAscii

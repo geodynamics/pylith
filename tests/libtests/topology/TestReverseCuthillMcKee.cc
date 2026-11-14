@@ -14,23 +14,21 @@
 
 #include "pylith/topology/ReverseCuthillMcKee.hh" // USES ReverseCuthillMcKee
 
+#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
+#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Stratum.hh" // USES Stratum
-#include "pylith/topology/Field.hh" // USES Field
-#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "tests/src/FaultCohesiveStub.hh" // USES FaultCohesiveStub
-#include "pylith/topology/Stratum.hh" // USES Stratum
-#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 
 #include "catch2/catch_test_macros.hpp"
-#include "catch2/matchers/catch_matchers_floating_point.hpp"
 #include "catch2/matchers/catch_matchers_exception.hpp"
+#include "catch2/matchers/catch_matchers_floating_point.hpp"
 
 // ------------------------------------------------------------------------------------------------
 // Setup testing data.
-pylith::topology::TestReverseCuthillMcKee::TestReverseCuthillMcKee(TestReverseCuthillMcKee_Data* data) :
-    _data(data) {
+pylith::topology::TestReverseCuthillMcKee::TestReverseCuthillMcKee(TestReverseCuthillMcKee_Data* data) : _data(data) {
     PYLITH_METHOD_BEGIN;
     REQUIRE(_data);
 
@@ -45,8 +43,10 @@ pylith::topology::TestReverseCuthillMcKee::TestReverseCuthillMcKee(TestReverseCu
 pylith::topology::TestReverseCuthillMcKee::~TestReverseCuthillMcKee(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _data;_data = NULL;
-    delete _mesh;_mesh = NULL;
+    delete _data;
+    _data = NULL;
+    delete _mesh;
+    _mesh = NULL;
 
     PYLITH_METHOD_END;
 } // tearDown
@@ -61,7 +61,8 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
     _initialize();
     REQUIRE(_mesh);
 
-    pylith::topology::Mesh* meshNew = ReverseCuthillMcKee::reorder(*_mesh);assert(meshNew);
+    pylith::topology::Mesh* meshNew = ReverseCuthillMcKee::reorder(*_mesh);
+    assert(meshNew);
 
     const PetscDM dmOrig = _mesh->getDM();
     const PetscDM dmNew = meshNew->getDM();
@@ -83,7 +84,7 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
     REQUIRE(numGroupsE == numGroups);
 
     for (PetscInt iGroup = 0; iGroup < numGroups; ++iGroup) {
-        const char *name = NULL;
+        const char* name = NULL;
         PylithCallPetscRequire(DMGetLabelName(dmNew, iGroup, &name));
 
         PetscInt numPointsE, numPoints;
@@ -111,7 +112,7 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
             for (int i = 0; i < coordsSize; ++i) {
                 value += coordsCell[i];
             } // for
-            coordsCheckOrig += value*value;
+            coordsCheckOrig += value * value;
             coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
         } // for
     } // original
@@ -134,14 +135,14 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
             for (int i = 0; i < coordsSize; ++i) {
                 value += coordsCell[i];
             } // for
-            coordsCheckReorder += value*value;
+            coordsCheckReorder += value * value;
             coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
         } // for
     } // reordered
     CHECK(numCellsOrig == numCellsReorder);
     CHECK(totalClosureSizeOrig == totalClosureSizeReorder);
     const PylithScalar tolerance = 1.0e-6;
-    CHECK_THAT(coordsCheckReorder, Catch::Matchers::WithinAbs(coordsCheckOrig, tolerance*coordsCheckOrig));
+    CHECK_THAT(coordsCheckReorder, Catch::Matchers::WithinAbs(coordsCheckOrig, tolerance * coordsCheckOrig));
 
     // Verify reduction in Jacobian bandwidth
     Field::Description description;
@@ -182,7 +183,8 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
     CHECK(bandwidth > 0);
     CHECK(bandwidth <= bandwidthOrig);
 
-    delete meshNew;meshNew = nullptr;
+    delete meshNew;
+    meshNew = nullptr;
     PYLITH_METHOD_END;
 } // testReorder
 
@@ -193,7 +195,9 @@ pylith::topology::TestReverseCuthillMcKee::_initialize(void) {
     PYLITH_METHOD_BEGIN;
     REQUIRE(_data);
 
-    delete _mesh;_mesh = new Mesh;REQUIRE(_mesh);
+    delete _mesh;
+    _mesh = new Mesh;
+    REQUIRE(_mesh);
 
     meshio::MeshIOAscii iohandler;
     iohandler.setFilename(_data->filename);
@@ -207,7 +211,8 @@ pylith::topology::TestReverseCuthillMcKee::_initialize(void) {
         fault.setCohesiveLabelValue(100);
         fault.setSurfaceLabelName(_data->faultLabel);
         pylith::topology::Mesh* meshNew = fault.transformTopology(_mesh);
-        delete _mesh;_mesh = meshNew;
+        delete _mesh;
+        _mesh = meshNew;
     } // if
 
     PYLITH_METHOD_END;
@@ -218,12 +223,14 @@ pylith::topology::TestReverseCuthillMcKee::_initialize(void) {
 // Constructor
 pylith::topology::TestReverseCuthillMcKee_Data::TestReverseCuthillMcKee_Data(void) :
     filename(NULL),
-    faultLabel(NULL) {}
+    faultLabel(NULL) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
 // Destructor
-pylith::topology::TestReverseCuthillMcKee_Data::~TestReverseCuthillMcKee_Data(void) {}
+pylith::topology::TestReverseCuthillMcKee_Data::~TestReverseCuthillMcKee_Data(void) {
+}
 
 
 // End of file

@@ -9,8 +9,8 @@
 // =================================================================================================
 #pragma once
 
-#include "pylith/topology/topologyfwd.hh" // forward declarations
 #include "pylith/petsc/petsc_types.h" // USES PetscDM
+#include "pylith/topology/topologyfwd.hh" // forward declarations
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase
 
@@ -21,8 +21,7 @@ class pylith::topology::RefineOutputInterpolator {
     friend class TestRefineUniform; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     RefineOutputInterpolator(void);
 
@@ -63,8 +62,7 @@ public:
                      const PetscVec& vectorIn);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     struct Level {
         PetscDM dm;
         PetscMat interpolateMatrix;
@@ -74,8 +72,7 @@ private:
     std::vector<Level> _levels; ///< Information at each refinement level.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     RefineOutputInterpolator(const RefineOutputInterpolator&); ///< Not implemented
     const RefineOutputInterpolator& operator=(const RefineOutputInterpolator&); ///< Not implemented
 

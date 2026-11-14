@@ -17,8 +17,7 @@ class pylith::problems::ProgressMonitorStub : public pylith::problems::ProgressM
     friend class TestProgressMonitor; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     ProgressMonitorStub(void);
 
@@ -26,8 +25,7 @@ public:
     ~ProgressMonitorStub(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Open progress monitor.
     void _open(void);
 
@@ -45,8 +43,7 @@ protected:
     State _state; ///< Current state
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     ProgressMonitorStub(const ProgressMonitorStub&); ///< Not implemented.
     const ProgressMonitorStub& operator=(const ProgressMonitorStub&); ///< Not implemented
 

@@ -11,24 +11,23 @@
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
-#include "pylith/topology/topologyfwd.hh" // forward declarations
 #include "pylith/petsc/petsc_types.h" // forward declarations
+#include "pylith/topology/topologyfwd.hh" // forward declarations
 
-#include "pylith/topology/FieldBase.hh" // USES FieldBase::Description
 #include "pylith/meshio/MeshBuilder.hh" // USES MeshBuilder
+#include "pylith/topology/FieldBase.hh" // USES FieldBase::Description
 
 namespace pylith {
     namespace topology {
         class TestFieldMesh;
         class TestFieldMesh_Data;
-    } // topology
-} // pylith
+    } // namespace topology
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::topology::TestFieldMesh : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestFieldMesh(TestFieldMesh_Data* data);
 
@@ -66,8 +65,7 @@ public:
     void testView(void);
 
     // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     /// Initialize mesh and test field.
     void _initialize(void);
 
@@ -77,7 +75,7 @@ private:
      * @param scale Scale to apply to expected values.
      */
     void _checkValues(const Field& field,
-                      const PylithReal scale=1.0);
+                      const PylithReal scale = 1.0);
 
     /** Verify values in PETSc vector match expected values.
      *
@@ -85,11 +83,10 @@ private:
      * @param scale Scale to apply to expected values.
      */
     void _checkValues(const PetscVec& vec,
-                      const PylithReal scale=1.0);
+                      const PylithReal scale = 1.0);
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////
-protected:
-
+  protected:
     TestFieldMesh_Data* _data; ///< Data for testing.
     Mesh* _mesh; ///< Finite-element mesh.
     Field* _field; ///< Test field associated with mesh.
@@ -99,8 +96,7 @@ protected:
 // ------------------------------------------------------------------------------------------------
 class pylith::topology::TestFieldMesh_Data {
     // PUBLIC METHODS //////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestFieldMesh_Data(void);
 
@@ -108,8 +104,7 @@ public:
     ~TestFieldMesh_Data(void);
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////
-public:
-
+  public:
     pylith::meshio::MeshBuilder::Topology* topology; ///< Topology for domain mesh
     pylith::meshio::MeshBuilder::Geometry* geometry; ///< Geometry for domain mesh
 

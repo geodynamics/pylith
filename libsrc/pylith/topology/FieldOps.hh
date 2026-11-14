@@ -11,29 +11,30 @@
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
-#include "pylith/topology/FieldBase.hh" // USES FieldBase::Discretization
 #include "pylith/petsc/petsc_types.h" // USES PetscFE
+#include "pylith/topology/FieldBase.hh" // USES FieldBase::Discretization
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
 #include <map>
 
 // Wrapper for PetscFE
 class pylith::topology::FE {
-public:
-
+  public:
     FE(PetscFE fe) : _fe(fe) {
-        PetscObjectReference((PetscObject) _fe);
+        PetscObjectReference((PetscObject)_fe);
     }
 
     FE(const FE& fe) : _fe(fe._fe) {
-        PetscObjectReference((PetscObject) _fe);
+        PetscObjectReference((PetscObject)_fe);
     }
 
     ~FE() {
         PetscInt refct = -1;
 
-        if (_fe) {PetscObjectGetReference((PetscObject) _fe, &refct);}
-        PetscObjectDereference((PetscObject) _fe);
+        if (_fe) {
+            PetscObjectGetReference((PetscObject)_fe, &refct);
+        }
+        PetscObjectDereference((PetscObject)_fe);
     }
 
     PetscFE _fe;
@@ -44,8 +45,7 @@ class pylith::topology::FieldOps {
     friend class TestFieldOps; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /** Create PetscFE object for discretization of field.
      *
      * @param[in] feinfo Discretization information for field.
@@ -66,19 +66,17 @@ public:
      *   + Field
      *     - number of components
      */
-    static
-    PetscFE createFE(const FieldBase::Discretization& feinfo,
-                     const PetscDM dm,
-                     const int numComponents);
+    static PetscFE createFE(const FieldBase::Discretization& feinfo,
+                            const PetscDM dm,
+                            const int numComponents);
 
     /** Check compatibility of discretization of subfields in the auxiliary field and target field.
      *
      * @param[in] target Field with subfields set from auxiliary field.
      * @param[in] auxliary Auxiliary field.
      */
-    static
-    void checkDiscretization(const pylith::topology::Field& target,
-                             const pylith::topology::Field& auxiliary);
+    static void checkDiscretization(const pylith::topology::Field& target,
+                                    const pylith::topology::Field& auxiliary);
 
     /** Check that 'field' contains required fields for 'reason'.
      *
@@ -88,10 +86,9 @@ public:
      * @param[in] reason Reason for required fields.
      * @param[in] field Field needing required fields.
      */
-    static
-    void checkSubfieldsExist(const pylith::string_vector& requiredFields,
-                             const std::string& reason,
-                             const pylith::topology::Field& field);
+    static void checkSubfieldsExist(const pylith::string_vector& requiredFields,
+                                    const std::string& reason,
+                                    const pylith::topology::Field& field);
 
     /** Get names of subfields extending over the entire domain.
      *
@@ -100,8 +97,7 @@ public:
      * @param[in] field Field with subfields.
      * @returns Array with names of subfields.
      */
-    static
-    pylith::string_vector getSubfieldNamesDomain(const pylith::topology::Field& field);
+    static pylith::string_vector getSubfieldNamesDomain(const pylith::topology::Field& field);
 
     /** Check to see if fields have the same subfields and match in size.
      *
@@ -109,16 +105,14 @@ public:
      * @param[in] fieldB Field to check.
      * @returns true if fields have the same subfields and match in size; otherwise false.
      */
-    static
-    bool layoutsMatch(const pylith::topology::Field& fieldA,
-                      const pylith::topology::Field& fieldB);
+    static bool layoutsMatch(const pylith::topology::Field& fieldA,
+                             const pylith::topology::Field& fieldB);
 
     /** Create label for output.
      *
      * @param[in] field Field to which output label is added.
      */
-    static
-    void createOutputLabel(const pylith::topology::Field* field);
+    static void createOutputLabel(const pylith::topology::Field* field);
 
     /** Transform vector using mapping from one PETSc DM to another.
      *
@@ -129,28 +123,24 @@ public:
      * @param[out] outputVector Output vector.
      * @param[in] outputDM PETSc DM associated with output vector.
      */
-    static
-    void transformVector(PetscVec* outputVector,
-                         const PetscDM& outputDM,
-                         const PetscVec& inputVector,
-                         const PetscDM& inputDM);
+    static void transformVector(PetscVec* outputVector,
+                                const PetscDM& outputDM,
+                                const PetscVec& inputVector,
+                                const PetscDM& inputDM);
 
     /** Get local offset in numbering for global section.
      *
      * @param[in] globalSection PETSc global section.
      * @returns Local offset in numbering.
      */
-    static
-    PetscInt getGlobalSectionLocalOffset(PetscSection globalSection);
+    static PetscInt getGlobalSectionLocalOffset(PetscSection globalSection);
 
     /** Free saved PetscFE objects.
      */
-    static
-    void deallocate(void);
+    static void deallocate(void);
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
-private:
-
+  private:
     FieldOps(void); ///< Not implemented.
     FieldOps(const FieldOps&); ///< Not implemented.
     const FieldOps& operator=(const FieldOps&); ///< Not implemented.

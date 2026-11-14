@@ -10,16 +10,14 @@
 #pragma once
 
 // Make copy of this object.
-inline
-pylith::meshio::DataWriter*
+inline pylith::meshio::DataWriter*
 pylith::meshio::DataWriterHDF5::clone(void) const {
     return new DataWriterHDF5(*this);
 }
 
 
 // Set filename for HDF5 file.
-inline
-void
+inline void
 pylith::meshio::DataWriterHDF5::filename(const char* filename) {
     _filename = filename;
 }

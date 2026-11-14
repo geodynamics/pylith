@@ -22,15 +22,14 @@
 
 #include "pylith/feassemble/FEKernelKey.hh" // HASA FEKernelKey
 
-#include <string> // HASA std::string
 #include <map> // HASA std::map
+#include <string> // HASA std::string
 
 class pylith::feassemble::InterfacePatches {
     friend class TestInterfacePatches; // unit testing
 
     // PUBLIC STRUCTS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     struct WeakFormKeys {
         FEKernelKey cohesive;
         FEKernelKey negative;
@@ -40,8 +39,7 @@ public:
     typedef std::map<int, WeakFormKeys> keysmap_t;
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     InterfacePatches(void);
 
@@ -66,19 +64,16 @@ public:
      * @param[in] fault Fault associated with interface.
      * @param[in] dmSoln PETSc DM associated with solution.
      */
-    static
-    InterfacePatches* createMaterialPairs(const pylith::faults::FaultCohesive* fault,
-                                          const PetscDM dmSoln);
+    static InterfacePatches* createMaterialPairs(const pylith::faults::FaultCohesive* fault,
+                                                 const PetscDM dmSoln);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     std::string _labelName; ///< Name of label identifying integration patches.
     keysmap_t _keys; ///< Weak form keys.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     InterfacePatches(const InterfacePatches&); ///< Not implemented
     const InterfacePatches& operator=(const InterfacePatches&); ///< Not implemented
 

@@ -14,13 +14,12 @@
 namespace pylith {
     namespace bc {
         class PointForceDataHex8;
-    } // pylith
-} // bc
+    } // namespace bc
+} // namespace pylith
 
 class pylith::bc::PointForceDataHex8 : public PointForceData {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     PointForceDataHex8(void);
 
@@ -28,8 +27,7 @@ public:
     ~PointForceDataHex8(void);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     static const PylithScalar _tRef; ///< Reference time for rate of change of forces.
     static const PylithScalar _forceRate; ///< Rate of change of force.
     static const PylithScalar _tResidual; ///< Time for computing residual.

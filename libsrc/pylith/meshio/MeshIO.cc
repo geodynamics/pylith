@@ -15,10 +15,10 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 
-#include "pylith/utils/array.hh" // USES scalar_array, int_array
-#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
-#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_INFO
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/array.hh" // USES scalar_array, int_array
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_INFO
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
 #include <cassert> // USES assert()
@@ -27,7 +27,8 @@
 // Constructor
 pylith::meshio::MeshIO::MeshIO(void) :
     _mesh(nullptr),
-    _cs(nullptr) {}
+    _cs(nullptr) {
+}
 
 
 // ----------------------------------------------------------------------
@@ -76,11 +77,13 @@ pylith::meshio::MeshIO::read(pylith::topology::Mesh* mesh,
     PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow, msg.str());
     const PetscReal tolerance = 1.0e-8;
     if (volume < tolerance) {
-        PYLITH_ERROR(pylith::exceptions::ValueError,
-                     "Domain bounding box volume (" << volume << ") is less than minimum tolerance ("
-                                                    << tolerance << "). This usually means you are trying to use a 2D mesh in 3D. Check that you are exporting "
-                                                    << "your mesh from the mesh generation software correctly and that your have specified the correct "
-                                                    << " coordinate system for the problem.");
+        PYLITH_ERROR(
+            pylith::exceptions::ValueError,
+            "Domain bounding box volume ("
+                << volume << ") is less than minimum tolerance (" << tolerance
+                << "). This usually means you are trying to use a 2D mesh in 3D. Check that you are exporting "
+                << "your mesh from the mesh generation software correctly and that your have specified the correct "
+                << " coordinate system for the problem.");
     } // if
 
     // Check mesh consistency

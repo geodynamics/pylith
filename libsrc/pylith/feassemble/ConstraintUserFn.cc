@@ -12,14 +12,14 @@
 
 #include "pylith/feassemble/ConstraintUserFn.hh" // implementation of object methods
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/feassemble/IntegrationData.hh" // USES IntegrationData
 #include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
 #include "pylith/problems/Physics.hh" // USES Physics
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
-#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 #include <cassert> // USES assert()
@@ -28,17 +28,14 @@
 namespace pylith {
     namespace feassemble {
         class _ConstraintUserFn {
-public:
-
-            static
-            void setSolution(const pylith::topology::Field* field,
-                             const PylithReal t,
-                             PetscUserFieldFunc fn,
-                             const pylith::feassemble::ConstraintUserFn& constraint);
-
+          public:
+            static void setSolution(const pylith::topology::Field* field,
+                                    const PylithReal t,
+                                    PetscUserFieldFunc fn,
+                                    const pylith::feassemble::ConstraintUserFn& constraint);
         };
-    }
-}
+    } // namespace feassemble
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -78,7 +75,8 @@ pylith::feassemble::ConstraintUserFn::setUserFnDot(const PetscUserFieldFunc fnDo
 void
 pylith::feassemble::ConstraintUserFn::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" initialize(solution="<<solution.getLabel()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 _labelName << "=" << _labelValue << " initialize(solution=" << solution.getLabel() << ")");
 
     Constraint::initialize(solution);
 
@@ -93,8 +91,19 @@ pylith::feassemble::ConstraintUserFn::initialize(const pylith::topology::Field& 
     PylithCallPetsc(DMGetDS(solution.getDM(), &prob));
     const PetscInt i_field = solution.getSubfieldInfo(_subfieldName.c_str()).index;
     PylithCallPetsc(DMGetLabel(solution.getDM(), _labelName.c_str(), &label));
-    PylithCallPetsc(PetscDSAddBoundary(prob, DM_BC_ESSENTIAL, _labelName.c_str(), label, 1, &_labelValue, i_field,
-                                       _constrainedDOF.size(), &_constrainedDOF[0], (void (*)(void)) _fn, (void (*)(void)) _fnDot, context, NULL));
+    PylithCallPetsc(PetscDSAddBoundary(prob,
+                                       DM_BC_ESSENTIAL,
+                                       _labelName.c_str(),
+                                       label,
+                                       1,
+                                       &_labelValue,
+                                       i_field,
+                                       _constrainedDOF.size(),
+                                       &_constrainedDOF[0],
+                                       (void (*)(void))_fn,
+                                       (void (*)(void))_fnDot,
+                                       context,
+                                       NULL));
 
     PYLITH_METHOD_END;
 } // initialize
@@ -106,7 +115,8 @@ void
 pylith::feassemble::ConstraintUserFn::setSolution(pylith::feassemble::IntegrationData* integrationData) {
     assert(integrationData);
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" setSolution(integrationData="<<integrationData->str()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 _labelName << "=" << _labelValue << " setSolution(integrationData=" << integrationData->str() << ")");
 
     const pylith::topology::Field* solution = integrationData->getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
@@ -115,7 +125,8 @@ pylith::feassemble::ConstraintUserFn::setSolution(pylith::feassemble::Integratio
     _ConstraintUserFn::setSolution(solution, t, _fn, *this);
 
     if (_fnDot && integrationData->hasField(pylith::feassemble::IntegrationData::solution_dot)) {
-        const pylith::topology::Field* solutionDot = integrationData->getField(pylith::feassemble::IntegrationData::solution_dot);
+        const pylith::topology::Field* solutionDot =
+            integrationData->getField(pylith::feassemble::IntegrationData::solution_dot);
         assert(solutionDot);
         _ConstraintUserFn::setSolution(solutionDot, t, _fnDot, *this);
     } // if
@@ -145,8 +156,17 @@ pylith::feassemble::_ConstraintUserFn::setSolution(const pylith::topology::Field
     const PylithInt numConstrained = constraint._constrainedDOF.size();
     assert(field->getLocalVector());
     PylithCallPetsc(DMPlexLabelAddCells(dmField, dmLabel));
-    PylithCallPetsc(DMPlexInsertBoundaryValuesEssential(dmField, t, fieldIndex, numConstrained, &constraint._constrainedDOF[0], dmLabel, 1,
-                                                        &constraint._labelValue, fn, context, field->getLocalVector()));
+    PylithCallPetsc(DMPlexInsertBoundaryValuesEssential(dmField,
+                                                        t,
+                                                        fieldIndex,
+                                                        numConstrained,
+                                                        &constraint._constrainedDOF[0],
+                                                        dmLabel,
+                                                        1,
+                                                        &constraint._labelValue,
+                                                        fn,
+                                                        context,
+                                                        field->getLocalVector()));
     PylithCallPetsc(DMPlexLabelClearCells(dmField, dmLabel));
 
     PYLITH_METHOD_END;

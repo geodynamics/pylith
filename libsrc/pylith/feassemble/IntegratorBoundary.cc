@@ -13,17 +13,17 @@
 #include "pylith/feassemble/IntegratorBoundary.hh" // implementation of object methods
 
 #include "pylith/feassemble/DSLabelAccess.hh" // USES DSLabelAccess
+#include "pylith/feassemble/IntegrationData.hh" // USES IntegrationData
+#include "pylith/problems/Physics.hh" // USES Physics
+#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor::optimizeClosure()
+#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES createLowerDimMesh()
-#include "pylith/topology/Field.hh" // USES Field
-#include "pylith/problems/Physics.hh" // USES Physics
-#include "pylith/feassemble/IntegrationData.hh" // USES IntegrationData
-#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor::optimizeClosure()
 
 #include "spatialdata/spatialdb/GravityField.hh" // HASA GravityField
 
-#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 #include "petscds.h" // USES PetscDS
 
@@ -34,14 +34,13 @@
 namespace pylith {
     namespace feassemble {
         class _IntegratorBoundary {
-public:
-
+          public:
             static const char* genericComponent;
         }; // _IntegratorBoundary
         const char* _IntegratorBoundary::genericComponent = "integratorboundary";
 
-    } // feassemble
-} // pylith
+    } // namespace feassemble
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -67,7 +66,8 @@ void
 pylith::feassemble::IntegratorBoundary::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _boundaryMesh;_boundaryMesh = NULL;
+    delete _boundaryMesh;
+    _boundaryMesh = NULL;
 
     Integrator::deallocate();
 
@@ -79,12 +79,12 @@ pylith::feassemble::IntegratorBoundary::deallocate(void) {
 // Set name of solution subfield associated with boundary condition.
 void
 pylith::feassemble::IntegratorBoundary::setSubfieldName(const char* value) {
-    PYLITH_DEBUG(pylith::journal::application_flow, "setSubfieldName(value="<<value<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "setSubfieldName(value=" << value << ")");
 
     if (!value || (0 == strlen(value))) {
         PYLITH_ERROR(pylith::exceptions::EmptyStringError,
-                     "Empty string given for name of solution subfield for boundary condition '" << _boundarySurfaceLabel
-                                                                                                 <<"'.");
+                     "Empty string given for name of solution subfield for boundary condition '"
+                         << _boundarySurfaceLabel << "'.");
     } // if
     _subfieldName = value;
 } // setSubfieldName
@@ -112,15 +112,21 @@ void
 pylith::feassemble::IntegratorBoundary::setKernelsResidual(const std::vector<ResidualKernels>& kernels,
                                                            const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" setKernelsResidual(# kernels="<<kernels.size()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 _labelName << "=" << _labelValue << " setKernelsResidual(# kernels=" << kernels.size() << ")");
 
     assert(_dsLabel);
     for (size_t i = 0; i < kernels.size(); ++i) {
         const PetscInt i_field = solution.getSubfieldInfo(kernels[i].subfield.c_str()).index;
         const PetscInt i_part = kernels[i].part;
         if (_dsLabel->weakForm()) {
-            PylithCallPetsc(PetscWeakFormAddBdResidual(_dsLabel->weakForm(), _dsLabel->label(), _dsLabel->value(), i_field, i_part,
-                                                       kernels[i].r0, kernels[i].r1));
+            PylithCallPetsc(PetscWeakFormAddBdResidual(_dsLabel->weakForm(),
+                                                       _dsLabel->label(),
+                                                       _dsLabel->value(),
+                                                       i_field,
+                                                       i_part,
+                                                       kernels[i].r0,
+                                                       kernels[i].r1));
         } // if
 
         switch (kernels[i].part) {
@@ -131,7 +137,7 @@ pylith::feassemble::IntegratorBoundary::setKernelsResidual(const std::vector<Res
             _hasRHSResidual = true;
             break;
         default:
-            PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unknown residual part " << kernels[i].part <<".");
+            PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unknown residual part " << kernels[i].part << ".");
         } // switch
     } // for
 
@@ -148,7 +154,8 @@ pylith::feassemble::IntegratorBoundary::setKernelsResidual(const std::vector<Res
 void
 pylith::feassemble::IntegratorBoundary::setKernelsDiagnosticField(const std::vector<ProjectKernels>& kernels) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" setKernelsDiagnosticField(# kernels="<<kernels.size()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 _labelName << "=" << _labelValue << " setKernelsDiagnosticField(# kernels=" << kernels.size() << ")");
 
     _kernelsDiagnosticField = kernels;
 
@@ -161,10 +168,15 @@ pylith::feassemble::IntegratorBoundary::setKernelsDiagnosticField(const std::vec
 void
 pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" initialize(solution="<<solution.getLabel()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 _labelName << "=" << _labelValue << " initialize(solution=" << solution.getLabel() << ")");
 
     const char* componentName = _physics->getFullIdentifier();
-    delete _boundaryMesh;_boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(), _labelName.c_str(), _labelValue, componentName);
+    delete _boundaryMesh;
+    _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(),
+                                                                  _labelName.c_str(),
+                                                                  _labelValue,
+                                                                  componentName);
     assert(_boundaryMesh);
     pylith::topology::CoordsVisitor::optimizeClosure(_boundaryMesh->getDM());
 
@@ -186,7 +198,7 @@ pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field
 void
 pylith::feassemble::IntegratorBoundary::setState(const double t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" setState(t="<<t<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName << "=" << _labelValue << " setState(t=" << t << ")");
 
     Integrator::setState(t);
 
@@ -196,9 +208,9 @@ pylith::feassemble::IntegratorBoundary::setState(const double t) {
     pythia::journal::debug_t debug(pylith::journal::auxiliary_fields);
     if (debug.state()) {
         assert(_auxiliaryField);
-        PYLITH_DEBUG(pylith::journal::auxiliary_fields, "IntegratorInterface component for '"
-                     <<_physics->getIdentifier()
-                     << "' viewing auxiliary field.");
+        PYLITH_DEBUG(pylith::journal::auxiliary_fields,
+                     "IntegratorInterface component for '" << _physics->getIdentifier()
+                                                           << "' viewing auxiliary field.");
         _auxiliaryField->view("IntegratorInterface auxiliary field", pylith::topology::Field::VIEW_ALL);
     } // if
 
@@ -212,8 +224,12 @@ void
 pylith::feassemble::IntegratorBoundary::computeRHSResidual(pylith::topology::Field* residual,
                                                            const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" computeRHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
-    if (!_hasRHSResidual) { PYLITH_METHOD_END;}
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 _labelName << "=" << _labelValue << " computeRHSResidual(residual=" << residual
+                            << ", integrationData=" << integrationData.str() << ")");
+    if (!_hasRHSResidual) {
+        PYLITH_METHOD_END;
+    }
     assert(residual);
 
     const pylith::topology::Field* solution = integrationData.getField(pylith::feassemble::IntegrationData::solution);
@@ -235,9 +251,17 @@ pylith::feassemble::IntegratorBoundary::computeRHSResidual(pylith::topology::Fie
     assert(residual->getLocalVector());
     PetscVec solutionDotVec = NULL;
     PylithCallPetsc(DMGetCoordinateField(_dsLabel->dm(), &coordField));
-    PylithCallPetsc(DMSetAuxiliaryVec(_dsLabel->dm(), key.label, key.value, key.part, _auxiliaryField->getLocalVector()));
-    PylithCallPetsc(DMPlexComputeBdResidualSingleByKey(_dsLabel->dm(), _dsLabel->weakForm(), key, _dsLabel->pointsIS(), solution->getLocalVector(),
-                                                       solutionDotVec, t, coordField, residual->getLocalVector()));
+    PylithCallPetsc(
+        DMSetAuxiliaryVec(_dsLabel->dm(), key.label, key.value, key.part, _auxiliaryField->getLocalVector()));
+    PylithCallPetsc(DMPlexComputeBdResidualSingleByKey(_dsLabel->dm(),
+                                                       _dsLabel->weakForm(),
+                                                       key,
+                                                       _dsLabel->pointsIS(),
+                                                       solution->getLocalVector(),
+                                                       solutionDotVec,
+                                                       t,
+                                                       coordField,
+                                                       residual->getLocalVector()));
 
     PYLITH_METHOD_END;
 } // computeRHSResidual
@@ -249,13 +273,18 @@ void
 pylith::feassemble::IntegratorBoundary::computeLHSResidual(pylith::topology::Field* residual,
                                                            const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" computeLHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
-    if (!_hasLHSResidual) { PYLITH_METHOD_END;}
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 _labelName << "=" << _labelValue << " computeLHSResidual(residual=" << residual
+                            << ", integrationData=" << integrationData.str() << ")");
+    if (!_hasLHSResidual) {
+        PYLITH_METHOD_END;
+    }
     assert(residual);
 
     const pylith::topology::Field* solution = integrationData.getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
-    const pylith::topology::Field* solutionDot = integrationData.getField(pylith::feassemble::IntegrationData::solution_dot);
+    const pylith::topology::Field* solutionDot =
+        integrationData.getField(pylith::feassemble::IntegrationData::solution_dot);
     assert(solutionDot);
     const PylithReal t = integrationData.getScalar(pylith::feassemble::IntegrationData::time);
     const PylithReal dt = integrationData.getScalar(pylith::feassemble::IntegrationData::time_step);
@@ -273,9 +302,17 @@ pylith::feassemble::IntegratorBoundary::computeLHSResidual(pylith::topology::Fie
     assert(solution->getLocalVector());
     assert(residual->getLocalVector());
     PylithCallPetsc(DMGetCoordinateField(_dsLabel->dm(), &coordField));
-    PylithCallPetsc(DMSetAuxiliaryVec(_dsLabel->dm(), key.label, key.value, key.part, _auxiliaryField->getLocalVector()));
-    PylithCallPetsc(DMPlexComputeBdResidualSingleByKey(_dsLabel->dm(), _dsLabel->weakForm(), key, _dsLabel->pointsIS(), solution->getLocalVector(),
-                                                       solutionDot->getLocalVector(), t, coordField, residual->getLocalVector()));
+    PylithCallPetsc(
+        DMSetAuxiliaryVec(_dsLabel->dm(), key.label, key.value, key.part, _auxiliaryField->getLocalVector()));
+    PylithCallPetsc(DMPlexComputeBdResidualSingleByKey(_dsLabel->dm(),
+                                                       _dsLabel->weakForm(),
+                                                       key,
+                                                       _dsLabel->pointsIS(),
+                                                       solution->getLocalVector(),
+                                                       solutionDot->getLocalVector(),
+                                                       t,
+                                                       coordField,
+                                                       residual->getLocalVector()));
 
     PYLITH_METHOD_END;
 } // computeLHSResidual
@@ -288,7 +325,10 @@ pylith::feassemble::IntegratorBoundary::computeLHSJacobian(PetscMat jacobianMat,
                                                            PetscMat precondMat,
                                                            const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", integrationData="<<integrationData.str()<<") empty method");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 _labelName << "=" << _labelValue << " computeLHSJacobian(jacobianMat=" << jacobianMat
+                            << ", precondMat=" << precondMat << ", integrationData=" << integrationData.str()
+                            << ") empty method");
 
     _needNewLHSJacobian = false;
     // No implementation needed for boundary.
@@ -300,10 +340,13 @@ pylith::feassemble::IntegratorBoundary::computeLHSJacobian(PetscMat jacobianMat,
 // ------------------------------------------------------------------------------------------------
 // Compute LHS Jacobian for F(t,s,\dot{s}).
 void
-pylith::feassemble::IntegratorBoundary::computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
-                                                                    const pylith::feassemble::IntegrationData& integrationData) {
+pylith::feassemble::IntegratorBoundary::computeLHSJacobianLumpedInv(
+    pylith::topology::Field* jacobianInv,
+    const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", integrationData="<<integrationData.str()<<") empty method");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 _labelName << "=" << _labelValue << " computeLHSJacobianLumpedInv(jacobianInv=" << jacobianInv
+                            << ", integrationData=" << integrationData.str() << ") empty method");
 
     _needNewLHSJacobianLumped = false;
     // No implementation needed for boundary.
@@ -335,7 +378,8 @@ pylith::feassemble::IntegratorBoundary::_computeDiagnosticField(void) {
     assert(numKernels > 0);
     PetscBdPointFn** kernelsArray = (numKernels > 0) ? new PetscBdPointFn*[numKernels] : NULL;
     for (size_t iKernel = 0; iKernel < numKernels; ++iKernel) {
-        const pylith::topology::Field::SubfieldInfo& sinfo = _diagnosticField->getSubfieldInfo(_kernelsDiagnosticField[iKernel].subfield.c_str());
+        const pylith::topology::Field::SubfieldInfo& sinfo =
+            _diagnosticField->getSubfieldInfo(_kernelsDiagnosticField[iKernel].subfield.c_str());
         kernelsArray[sinfo.index] = _kernelsDiagnosticField[iKernel].f;
     } // for
 
@@ -344,9 +388,21 @@ pylith::feassemble::IntegratorBoundary::_computeDiagnosticField(void) {
     const PetscInt labelValue = 1;
     const PetscInt part = 0;
     PylithCallPetsc(DMGetLabel(diagnosticDM, "output", &diagnosticFieldLabel));
-    PylithCallPetsc(DMSetAuxiliaryVec(diagnosticDM, diagnosticFieldLabel, labelValue, part, _auxiliaryField->getLocalVector()));
-    PylithCallPetsc(DMProjectBdFieldLabelLocal(diagnosticDM, t, diagnosticFieldLabel, 1, &labelValue, PETSC_DETERMINE, NULL, _auxiliaryField->getLocalVector(), kernelsArray, INSERT_VALUES, _diagnosticField->getLocalVector()));
-    delete[] kernelsArray;kernelsArray = NULL;
+    PylithCallPetsc(
+        DMSetAuxiliaryVec(diagnosticDM, diagnosticFieldLabel, labelValue, part, _auxiliaryField->getLocalVector()));
+    PylithCallPetsc(DMProjectBdFieldLabelLocal(diagnosticDM,
+                                               t,
+                                               diagnosticFieldLabel,
+                                               1,
+                                               &labelValue,
+                                               PETSC_DETERMINE,
+                                               NULL,
+                                               _auxiliaryField->getLocalVector(),
+                                               kernelsArray,
+                                               INSERT_VALUES,
+                                               _diagnosticField->getLocalVector()));
+    delete[] kernelsArray;
+    kernelsArray = NULL;
 
     pythia::journal::debug_t debug(pylith::journal::auxiliary_fields);
     if (debug.state()) {

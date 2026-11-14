@@ -9,18 +9,17 @@
 // =================================================================================================
 #pragma once
 
-#include "pylith/problems/Problem.hh" // ISA Problem
-#include "pylith/testing/testingfwd.hh" // USES MMSTest
 #include "pylith/faults/faultsfwd.hh" // HOLDSA FaultCohesiveImpulses
 #include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Integrator
+#include "pylith/problems/Problem.hh" // ISA Problem
+#include "pylith/testing/testingfwd.hh" // USES MMSTest
 
 class pylith::problems::GreensFns : public pylith::problems::Problem {
     friend class TestGreensFns; // unit testing
     friend class pylith::testing::MMSTest; // Testing with Method of Manufactured Solutions
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     GreensFns(void);
 
@@ -115,11 +114,10 @@ public:
      * @param[out] residualvec PetscVec for residual.
      * @param[in] context User context (GreensFns).
      */
-    static
-    PetscErrorCode computeResidual(PetscSNES snes,
-                                   PetscVec solutionVec,
-                                   PetscVec residualVec,
-                                   void* context);
+    static PetscErrorCode computeResidual(PetscSNES snes,
+                                          PetscVec solutionVec,
+                                          PetscVec residualVec,
+                                          void* context);
 
     /* Callback static method for computing Jacobian.
      *
@@ -129,12 +127,11 @@ public:
      * @param[in] solutionVec PETSc Vec with current trial solution.
      * @param[in] context User context (GreensFns).
      */
-    static
-    PetscErrorCode computeJacobian(PetscSNES snes,
-                                   PetscVec solutionVec,
-                                   PetscMat jacobianMat,
-                                   PetscMat precondMat,
-                                   void* context);
+    static PetscErrorCode computeJacobian(PetscSNES snes,
+                                          PetscVec solutionVec,
+                                          PetscMat jacobianMat,
+                                          PetscMat precondMat,
+                                          void* context);
 
     // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
 
@@ -143,8 +140,7 @@ public:
 
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     std::string _faultLabelName; ///< Name of label for fault with impulses.
     PylithInt _faultLabelValue; ///< Value of label for fault with impulses.
     pylith::faults::FaultCohesiveImpulses* _faultImpulses; ///< Fault interface with Green's functions impulses.

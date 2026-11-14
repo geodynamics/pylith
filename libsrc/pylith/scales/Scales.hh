@@ -17,8 +17,7 @@
 class pylith::scales::Scales {
     friend class TestScales; // Unit testing
 
-public:
-
+  public:
     // PUBLIC METHODS /////////////////////////////////////////////////////
 
     /// Default constructor
@@ -38,7 +37,7 @@ public:
      * @param dim Object to copy.
      * @returns Copy of this.
      */
-    const Scales& operator = (const Scales& dim);
+    const Scales& operator=(const Scales& dim);
 
     /** Set value to nondimensionalize position.
      *
@@ -158,8 +157,7 @@ public:
                         const size_t nvalues,
                         const double scale) const;
 
-private:
-
+  private:
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
 
     double _length; ///< Length scale

@@ -14,13 +14,14 @@
 
 #include "pylith/topology/Field.hh" // USES Field
 
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_
-#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::problems::InitialCondition::InitialCondition(void) {}
+pylith::problems::InitialCondition::InitialCondition(void) {
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -46,7 +47,8 @@ void
 pylith::problems::InitialCondition::setSubfields(const char* subfields[],
                                                  const int numSubfields) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setFields(subfields="<<subfields<<", numSubfields="<<numSubfields<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "setFields(subfields=" << subfields << ", numSubfields=" << numSubfields << ")");
 
     if (numSubfields > 0) {
         _subfields.resize(numSubfields);
@@ -64,15 +66,16 @@ pylith::problems::InitialCondition::setSubfields(const char* subfields[],
 void
 pylith::problems::InitialCondition::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "verifyConfiguration(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "verifyConfiguration(solution=" << solution.getLabel() << ")");
 
     const size_t numSubfields = _subfields.size();
     for (size_t i = 0; i < numSubfields; ++i) {
         if (!solution.hasSubfield(_subfields[i].c_str())) {
             PYLITH_COMPONENT_ERROR(pylith::exceptions::SubfieldNotFoundError,
-                                   "Cannot specify initial conditions for solution subfield '"<< _subfields[i]
-                                                                                              << "' in component '" << PyreComponent::getIdentifier() << "'"
-                                                                                              << "; field is not in solution.");
+                                   "Cannot specify initial conditions for solution subfield '"
+                                       << _subfields[i] << "' in component '" << PyreComponent::getIdentifier() << "'"
+                                       << "; field is not in solution.");
         } // if
     } // for
 

@@ -24,9 +24,9 @@
 
 // ------------------------------------------------------------------------------------------------
 // Constructor.
-pylith::meshio::TestMeshIOPetsc::TestMeshIOPetsc(TestMeshIO_Data* data) :
-    TestMeshIO(data) {
-    _io = new MeshIOPetsc();REQUIRE(_io);
+pylith::meshio::TestMeshIOPetsc::TestMeshIOPetsc(TestMeshIO_Data* data) : TestMeshIO(data) {
+    _io = new MeshIOPetsc();
+    REQUIRE(_io);
     _io->PyreComponent::setIdentifier("TestMeshIOPetsc");
 } // constructor
 
@@ -34,7 +34,8 @@ pylith::meshio::TestMeshIOPetsc::TestMeshIOPetsc(TestMeshIO_Data* data) :
 // ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::meshio::TestMeshIOPetsc::~TestMeshIOPetsc(void) {
-    delete _io;_io = nullptr;
+    delete _io;
+    _io = nullptr;
 } // destructor
 
 
@@ -65,7 +66,9 @@ pylith::meshio::TestMeshIOPetsc::testRead(const bool gmshMarkRecursive) {
 
     // Read mesh
     _io->setFilename(_data->filename.c_str());
-    delete _mesh;_mesh = new topology::Mesh;REQUIRE(_mesh);
+    delete _mesh;
+    _mesh = new topology::Mesh;
+    REQUIRE(_mesh);
     _io->read(_mesh);
 
     pythia::journal::debug_t debug(pylith::journal::mesh_detail5);
@@ -90,7 +93,9 @@ pylith::meshio::TestMeshIOPetsc::testReadError(void) {
 
     // Read mesh
     _io->setFilename(_data->filename.c_str());
-    delete _mesh;_mesh = new topology::Mesh;REQUIRE(_mesh);
+    delete _mesh;
+    _mesh = new topology::Mesh;
+    REQUIRE(_mesh);
 
     CHECK_THROWS_AS(_io->read(_mesh), pylith::exceptions::PetscError);
 
@@ -105,7 +110,8 @@ pylith::meshio::TestMeshIOPetsc::testWriteRead(void) {
     PYLITH_METHOD_BEGIN;
     REQUIRE(_io);
 
-    TestMeshIO::_createMesh();REQUIRE(_mesh);
+    TestMeshIO::_createMesh();
+    REQUIRE(_mesh);
 
     // Write mesh
     _io->setFilename(_data->filename.c_str());
@@ -113,7 +119,8 @@ pylith::meshio::TestMeshIOPetsc::testWriteRead(void) {
     _io->write(_mesh);
 
     // Read mesh
-    delete _mesh;_mesh = new pylith::topology::Mesh;
+    delete _mesh;
+    _mesh = new pylith::topology::Mesh;
     _io->read(_mesh);
 
     pythia::journal::debug_t debug(pylith::journal::mesh_detail5);

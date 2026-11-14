@@ -12,10 +12,10 @@
 
 #include "TestDataWriterHDF5ExtMatMeshCases.hh" // Implementation of class methods
 
-#include "data/DataWriterHDF5DataMatMeshTri3.hh"
+#include "data/DataWriterHDF5DataMatMeshHex8.hh"
 #include "data/DataWriterHDF5DataMatMeshQuad4.hh"
 #include "data/DataWriterHDF5DataMatMeshTet4.hh"
-#include "data/DataWriterHDF5DataMatMeshHex8.hh"
+#include "data/DataWriterHDF5DataMatMeshTri3.hh"
 
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 

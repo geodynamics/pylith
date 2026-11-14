@@ -15,13 +15,14 @@
 namespace pylith {
     namespace meshio {
         class TestOutputSolnSubset;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 /// C++ unit testing for OutputSolnSubset
-class pylith::meshio::TestOutputSolnSubset : public CppUnit::TestFixture { // class TestOutputSolnSubset
-                                                                           // CPPUNIT TEST SUITE
-                                                                           // /////////////////////////////////////////////////
+class pylith::meshio::TestOutputSolnSubset
+    : public CppUnit::TestFixture { // class TestOutputSolnSubset
+                                    // CPPUNIT TEST SUITE
+                                    // /////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestOutputSolnSubset);
 
     CPPUNIT_TEST(testConstructor);
@@ -31,8 +32,7 @@ class pylith::meshio::TestOutputSolnSubset : public CppUnit::TestFixture { // cl
     CPPUNIT_TEST_SUITE_END();
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test constructor
     void testConstructor(void);
 

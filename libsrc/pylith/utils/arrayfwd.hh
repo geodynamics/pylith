@@ -12,19 +12,19 @@
 #include "pylith/utils/types.hh" // USES PylithScalar, PylithReal
 
 #include <string> // USES std::string
-#include <vector> // USES std::vector
 #include <valarray> // USES std::valarray
+#include <vector> // USES std::vector
 
 /// Aliases
 namespace pylith {
     /// Alias for std::vector<int>
-    typedef std::vector<int, std::allocator<int> > int_vector;
+    typedef std::vector<int, std::allocator<int>> int_vector;
 
     /// Alias for std::vector<double>
-    typedef std::vector<double, std::allocator<double> > double_vector;
+    typedef std::vector<double, std::allocator<double>> double_vector;
 
     /// Alias for std::vector<std::string>
-    typedef std::vector<std::string, std::allocator<std::string> > string_vector;
+    typedef std::vector<std::string, std::allocator<std::string>> string_vector;
 
     /// Alias for std::valarray<float>
     typedef std::valarray<float> float_array;
@@ -44,6 +44,6 @@ namespace pylith {
     /// Alias for std::valarray<PylithScalar>
     typedef std::valarray<PylithScalar> scalar_array;
 
-} // pylith
+} // namespace pylith
 
 // End of file

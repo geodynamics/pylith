@@ -18,8 +18,7 @@ class pylith::petsc::TSMonitor : public pylith::utils::PyreComponent {
     friend class TestTSMonitor; // unit testing
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TSMonitor(void);
 
@@ -43,16 +42,14 @@ public:
      * @param[in] u Current iterate.
      * @param[inout] context User defined context.
      */
-    static
-    PetscErrorCode PylithTSMonitor(PetscTS ts,
-                                   PetscInt i_step,
-                                   PetscReal time,
-                                   PetscVec u,
-                                   PetscCtx context);
+    static PetscErrorCode PylithTSMonitor(PetscTS ts,
+                                          PetscInt i_step,
+                                          PetscReal time,
+                                          PetscVec u,
+                                          PetscCtx context);
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     TSMonitor(const TSMonitor&) = delete;
 
     const TSMonitor& operator=(const TSMonitor&) = delete;

@@ -15,13 +15,14 @@
 namespace pylith {
     namespace meshio {
         class TestOutputManager;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 /// C++ unit testing for OutputManager
-class pylith::meshio::TestOutputManager : public CppUnit::TestFixture { // class TestOutputManager
-                                                                        // CPPUNIT TEST SUITE
-                                                                        // /////////////////////////////////////////////////
+class pylith::meshio::TestOutputManager
+    : public CppUnit::TestFixture { // class TestOutputManager
+                                    // CPPUNIT TEST SUITE
+                                    // /////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestOutputManager);
 
     CPPUNIT_TEST(testConstructor);
@@ -37,8 +38,7 @@ class pylith::meshio::TestOutputManager : public CppUnit::TestFixture { // class
     CPPUNIT_TEST_SUITE_END();
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test constructor
     void testConstructor(void);
 

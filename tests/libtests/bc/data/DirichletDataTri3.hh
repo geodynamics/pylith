@@ -14,13 +14,12 @@
 namespace pylith {
     namespace bc {
         class DirichletDataTri3;
-    } // pylith
-} // bc
+    } // namespace bc
+} // namespace pylith
 
 class pylith::bc::DirichletDataTri3 : public DirichletData {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     DirichletDataTri3(void);
 
@@ -28,8 +27,7 @@ public:
     ~DirichletDataTri3(void);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     static const int _numDOF; ///< Number of degrees of freedom at each point.
 
     static const int _numFixedDOF; ///< Number of fixedDOF at constrained points.

@@ -17,20 +17,17 @@
 
 #include "meshiofwd.hh" // forward declarations
 
-#include "pylith/problems/ObserverPhysics.hh" // ISA ObserverPhysics
 #include "pylith/meshio/OutputObserver.hh" // ISA OutputObserver
+#include "pylith/problems/ObserverPhysics.hh" // ISA ObserverPhysics
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
 #include "pylith/utils/array.hh" // HASA string_vector
 
-class pylith::meshio::OutputPhysics :
-    public pylith::problems::ObserverPhysics,
-    public pylith::meshio::OutputObserver {
+class pylith::meshio::OutputPhysics : public pylith::problems::ObserverPhysics, public pylith::meshio::OutputObserver {
     friend class TestOutputPhysics; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     OutputPhysics(void);
 
@@ -38,8 +35,7 @@ public:
     virtual ~OutputPhysics(void);
 
     /// Deallocate PETSc and local data structures.
-    virtual
-    void deallocate(void) override;
+    virtual void deallocate(void) override;
 
     /** Set names of information fields requested for output.
      *
@@ -94,8 +90,7 @@ public:
                 const NotificationType notification) override;
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Write diagnostic information.
     void _writeInfo(void);
 
@@ -155,14 +150,12 @@ protected:
                                                 const pylith::topology::Field* derivedField) const;
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     pylith::string_vector _infoFieldNames; ///< Names of subfields to output in info file.
     pylith::string_vector _dataFieldNames; ///< Names of subfields to output at time steps.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     OutputPhysics(const OutputPhysics&); ///< Not implemented.
     const OutputPhysics& operator=(const OutputPhysics&); ///< Not implemented
 

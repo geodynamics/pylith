@@ -12,8 +12,8 @@
 
 #include "pylith/petsc/Application.hh" // implementation of class methods
 
-#include "pylith/petsc/ErrorHandler.hh" // USES ErrorHandler
 #include "pylith/exceptions/error.hh" // USES PylithCallPetsc
+#include "pylith/petsc/ErrorHandler.hh" // USES ErrorHandler
 
 #include <petscsys.h>
 
@@ -42,5 +42,4 @@ pylith::petsc::Application::registerCitation(const char* citation) {
     PylithCallPetsc(PetscOptionsSetValue(NULL, "-citations", ""));
     PetscBool set = PetscBool(PETSC_FALSE);
     PylithCallPetsc(PetscCitationsRegister(citation, &set));
-
 }

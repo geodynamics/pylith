@@ -16,14 +16,15 @@
 
 #include "spatialdata/units/Parser.hh" // USES Parser
 
+#include <cassert> // USES assert()
 #include <ctime> // USES C time_t
 #include <iomanip> // USES std::setw, etcm
 #include <iostream> // USES std::ofstream
-#include <cassert> // USES assert()
 
 // ------------------------------------------------------------------------------------------------
 // Constructor
-pylith::problems::ProgressMonitorStep::ProgressMonitorStep(void) {}
+pylith::problems::ProgressMonitorStep::ProgressMonitorStep(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -73,7 +74,7 @@ pylith::problems::ProgressMonitorStep::update(const size_t current,
                                               const size_t stop) {
     double percentComplete = 0.0;
     if (_iUpdate != -1) {
-        percentComplete = (100*double(current-start)) / double(stop-start);
+        percentComplete = (100 * double(current - start)) / double(stop - start);
     } else {
         _iUpdate = 0;
         percentComplete = 0.0;
@@ -101,12 +102,9 @@ pylith::problems::ProgressMonitorStep::_update(const size_t step,
     assert(_sout.is_open());
     std::tm* now_tm = localtime(&now);
     std::string now_str = asctime(now_tm);
-    now_str = now_str.erase(now_str.find_last_not_of('\n')+1);
-    _sout << now_str << "   "
-          << std::setprecision(0) << std::setw(8) << step << std::right
-          << std::setprecision(0) << std::setw(13) << percentComplete
-          << "   " << finished
-          << std::endl;
+    now_str = now_str.erase(now_str.find_last_not_of('\n') + 1);
+    _sout << now_str << "   " << std::setprecision(0) << std::setw(8) << step << std::right << std::setprecision(0)
+          << std::setw(13) << percentComplete << "   " << finished << std::endl;
 } // _update
 
 

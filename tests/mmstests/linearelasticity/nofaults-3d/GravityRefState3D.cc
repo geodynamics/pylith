@@ -14,8 +14,8 @@
 
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
-#include "pylith/utils/journals.hh" // USES PYLITH_DEBUG
 #include "pylith/utils/constants.hh" // USES pylith::g_acc
+#include "pylith/utils/journals.hh" // USES PYLITH_DEBUG
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
@@ -23,7 +23,7 @@
 
 namespace pylith {
     class _GravityRefState3D;
-} // pylith
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::_GravityRefState3D {
@@ -31,91 +31,106 @@ class pylith::_GravityRefState3D {
     static const double Z_MAX;
 
     // Density
-    static double density(const double x,
-                          const double y,
-                          const double z) {
+    static double
+    density(const double x,
+            const double y,
+            const double z) {
         return 2500.0;
     } // density
 
-    static const char* density_units(void) {
+    static const char*
+    density_units(void) {
         return "kg/m**3";
     } // density_units
 
     // Vs
-    static double vs(const double x,
-                     const double y,
-                     const double z) {
+    static double
+    vs(const double x,
+       const double y,
+       const double z) {
         return 3000.0;
     } // vs
 
-    static const char* vs_units(void) {
+    static const char*
+    vs_units(void) {
         return "m/s";
     } // vs_units
 
     // Vp
-    static double vp(const double x,
-                     const double y,
-                     const double z) {
-        return sqrt(3.0)*vs(x,y,z);
+    static double
+    vp(const double x,
+       const double y,
+       const double z) {
+        return sqrt(3.0) * vs(x, y, z);
     } // vp
 
-    static const char* vp_units(void) {
+    static const char*
+    vp_units(void) {
         return "m/s";
     } // vp_units
 
-    static double referenceMeanStress(const double x,
-                                      const double y,
-                                      const double z) {
-        return density(x,y,z) * pylith::g_acc * (z-Z_MAX);
+    static double
+    referenceMeanStress(const double x,
+                        const double y,
+                        const double z) {
+        return density(x, y, z) * pylith::g_acc * (z - Z_MAX);
     } // referenceMeanStress
 
-    static double referenceShearStress(const double x,
-                                       const double y,
-                                       const double z) {
+    static double
+    referenceShearStress(const double x,
+                         const double y,
+                         const double z) {
         return 0.0;
     } // referenceShearStress
 
-    static const char* stress_units(void) {
+    static const char*
+    stress_units(void) {
         return "Pa";
     } // stress_units
 
-    static double referenceStrain(const double x,
-                                  const double y,
-                                  const double z) {
+    static double
+    referenceStrain(const double x,
+                    const double y,
+                    const double z) {
         return 0.0;
     } // referencStrain
 
-    static const char* strain_units(void) {
+    static const char*
+    strain_units(void) {
         return "none";
     } // strain_units
 
     // Solution subfields (nondimensional).
 
     // Displacement
-    static double disp_x(const double x,
-                         const double y,
-                         const double z) {
+    static double
+    disp_x(const double x,
+           const double y,
+           const double z) {
         return 0.0;
     } // disp_x
 
-    static double disp_y(const double x,
-                         const double y,
-                         const double z) {
+    static double
+    disp_y(const double x,
+           const double y,
+           const double z) {
         return 0.0;
     } // disp_y
 
-    static double disp_z(const double x,
-                         const double y,
-                         const double z) {
+    static double
+    disp_z(const double x,
+           const double y,
+           const double z) {
         return 0.0;
     } // disp_z
 
-    static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
-                                          PetscReal t,
-                                          const PetscReal x[],
-                                          PetscInt numComponents,
-                                          PetscScalar* s,
-                                          void* context) {
+    static PetscErrorCode
+    solnkernel_disp(PetscInt spaceDim,
+                    PetscReal t,
+                    const PetscReal x[],
+                    PetscInt numComponents,
+                    PetscScalar* s,
+                    void* context) {
         REQUIRE(3 == spaceDim);
         REQUIRE(3 == numComponents);
         REQUIRE(s);
@@ -128,11 +143,11 @@ class pylith::_GravityRefState3D {
         return PETSC_SUCCESS;
     } // solnkernel_disp
 
-public:
-
-    static
-    TestLinearElasticity_Data* createData(void) {
-        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();REQUIRE(data);
+  public:
+    static TestLinearElasticity_Data*
+    createData(void) {
+        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();
+        REQUIRE(data);
 
         data->journalName = "GravityRefState3D";
 
@@ -141,7 +156,8 @@ public:
         data->meshFilename = ":UNKNOWN:"; // Set in child class.
         data->boundaryLabel = "boundary";
 
-        delete data->gravityField;data->gravityField = new spatialdata::spatialdb::GravityField();
+        delete data->gravityField;
+        data->gravityField = new spatialdata::spatialdb::GravityField();
         data->gravityField->setGravityDir(0.0, 0.0, -1.0);
         data->gravityField->setGravityAcc(pylith::g_acc);
 
@@ -149,7 +165,8 @@ public:
 
         // Material information
         data->numAuxSubfields = 6;
-        static const char* _auxSubfields[6] = { // order must match order of subfields in auxiliary field
+        static const char* _auxSubfields[6] = {
+            // order must match order of subfields in auxiliary field
             "density",
             "gravitational_acceleration",
             "reference_stress",
@@ -193,10 +210,11 @@ public:
         data->material.setName("material-id=24");
         data->material.setLabelValue(24);
 
-        static const PylithInt constrainedDOF[3] = { 0, 1, 2 };
+        static const PylithInt constrainedDOF[3] = {0, 1, 2};
         static const PylithInt numConstrained = 3;
         data->bcs.resize(1);
-        pylith::bc::DirichletUserFn*bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
+        pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
+        REQUIRE(bc);
         bc->setSubfieldName("displacement");
         bc->setLabelName("boundary");
         bc->setLabelValue(1);
@@ -219,7 +237,8 @@ const double pylith::_GravityRefState3D::Z_MAX = +4.0e+3;
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::GravityRefState3D::TetP1(void) {
-    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tet.msh";
 
@@ -246,7 +265,8 @@ pylith::GravityRefState3D::TetP1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::GravityRefState3D::TetP2(void) {
-    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tet.msh";
 
@@ -273,7 +293,8 @@ pylith::GravityRefState3D::TetP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::GravityRefState3D::TetP3(void) {
-    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tet.msh";
 
@@ -300,7 +321,8 @@ pylith::GravityRefState3D::TetP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::GravityRefState3D::HexQ1(void) {
-    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/hex.msh";
 
@@ -327,7 +349,8 @@ pylith::GravityRefState3D::HexQ1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::GravityRefState3D::HexQ2(void) {
-    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/hex.msh";
 
@@ -354,7 +377,8 @@ pylith::GravityRefState3D::HexQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::GravityRefState3D::HexQ3(void) {
-    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/hex.msh";
 

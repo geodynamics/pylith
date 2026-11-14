@@ -24,69 +24,68 @@ namespace pylith {
     namespace petsc {
         class TestEventLogger;
     }
-}
+} // namespace pylith
 
 class pylith::petsc::TestEventLogger : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test constructor.
-    static
-    void testConstructor(void);
+    static void testConstructor(void);
 
     /// Test get/setClassName().
-    static
-    void testClassName(void);
+    static void testClassName(void);
 
     /// Test initialize().
-    static
-    void testInitialize(void);
+    static void testInitialize(void);
 
     /// Test registerEvent().
-    static
-    void testRegisterEvent(void);
+    static void testRegisterEvent(void);
 
     /// Test EventLogger::Scope.
-    static
-    void testEventScope(void);
+    static void testEventScope(void);
 
     /// Test registerStage().
-    static
-    void testRegisterStage(void);
+    static void testRegisterStage(void);
 
     /// Test getStageId().
-    static
-    void testGetStageId(void);
+    static void testGetStageId(void);
 
     /// Test stagePush() and stagePop().
-    static
-    void testStageLogging(void);
+    static void testStageLogging(void);
 
 }; // class TestEventLogging
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestEventLogger::testConstructor", "[TestEventLogger]") {
+TEST_CASE("TestEventLogger::testConstructor",
+          "[TestEventLogger]") {
     pylith::petsc::TestEventLogger::testConstructor();
 }
-TEST_CASE("TestEventLogger::testClassName", "[TestEventLogger]") {
+TEST_CASE("TestEventLogger::testClassName",
+          "[TestEventLogger]") {
     pylith::petsc::TestEventLogger::testClassName();
 }
-TEST_CASE("TestEventLogger::testInitialize", "[TestEventLogger]") {
+TEST_CASE("TestEventLogger::testInitialize",
+          "[TestEventLogger]") {
     pylith::petsc::TestEventLogger::testInitialize();
 }
-TEST_CASE("TestEventLogger::testRegisterEvent", "[TestEventLogger]") {
+TEST_CASE("TestEventLogger::testRegisterEvent",
+          "[TestEventLogger]") {
     pylith::petsc::TestEventLogger::testRegisterEvent();
 }
-TEST_CASE("TestEventLogger::testEventScope", "[TestEventLogger]") {
+TEST_CASE("TestEventLogger::testEventScope",
+          "[TestEventLogger]") {
     pylith::petsc::TestEventLogger::testEventScope();
 }
-TEST_CASE("TestEventLogger::testRegisterStage", "[TestEventLogger]") {
+TEST_CASE("TestEventLogger::testRegisterStage",
+          "[TestEventLogger]") {
     pylith::petsc::TestEventLogger::testRegisterStage();
 }
-TEST_CASE("TestEventLogger::testGetStageId", "[TestEventLogger]") {
+TEST_CASE("TestEventLogger::testGetStageId",
+          "[TestEventLogger]") {
     pylith::petsc::TestEventLogger::testGetStageId();
 }
-TEST_CASE("TestEventLogger::testStageLogging", "[TestEventLogger]") {
+TEST_CASE("TestEventLogger::testStageLogging",
+          "[TestEventLogger]") {
     pylith::petsc::TestEventLogger::testStageLogging();
 }
 
@@ -146,7 +145,7 @@ pylith::petsc::TestEventLogger::testRegisterEvent(void) {
     logger.initialize();
 
     const int numEvents = 3;
-    const char* events[numEvents] = { "event A", "event B", "event C" };
+    const char* events[numEvents] = {"event A", "event B", "event C"};
     PetscLogEvent ids[numEvents];
 
     for (int i = 0; i < numEvents; ++i) {
@@ -154,7 +153,8 @@ pylith::petsc::TestEventLogger::testRegisterEvent(void) {
     }
 
     int i = 0;
-    for (EventLogger::map_event_type::iterator e_iter = logger._events.begin(); e_iter != logger._events.end(); ++e_iter, ++i) {
+    for (EventLogger::map_event_type::iterator e_iter = logger._events.begin(); e_iter != logger._events.end();
+         ++e_iter, ++i) {
         CHECK(std::string(events[i]) == e_iter->first);
         CHECK(ids[i] == e_iter->second);
     } // for
@@ -183,13 +183,14 @@ pylith::petsc::TestEventLogger::testEventScope(void) {
     try { // Scope ends event when an exception is thrown.
         EventLogger::Scope scopeA(eventA);
         throw std::runtime_error("test");
-    } catch (const std::runtime_error&) {}
+    } catch (const std::runtime_error&) {
+    }
 
     // Scope ends event on early return.
     const auto earlyReturn = [&](void) {
-                                 EventLogger::Scope scopeB(eventB);
-                                 return;
-                             };
+        EventLogger::Scope scopeB(eventB);
+        return;
+    };
     earlyReturn();
 
     PYLITH_METHOD_END;
@@ -207,7 +208,7 @@ pylith::petsc::TestEventLogger::testRegisterStage(void) {
     logger.initialize();
 
     const int numStages = 3;
-    const char* stages[numStages] = { "stage A1", "stage B1", "stage C1" };
+    const char* stages[numStages] = {"stage A1", "stage B1", "stage C1"};
     PetscLogStage ids[numStages];
 
     for (int i = 0; i < numStages; ++i) {
@@ -215,7 +216,8 @@ pylith::petsc::TestEventLogger::testRegisterStage(void) {
     }
 
     int i = 0;
-    for (EventLogger::map_stage_type::iterator s_iter = logger._stages.begin(); s_iter != logger._stages.end(); ++s_iter, ++i) {
+    for (EventLogger::map_stage_type::iterator s_iter = logger._stages.begin(); s_iter != logger._stages.end();
+         ++s_iter, ++i) {
         CHECK(std::string(stages[i]) == s_iter->first);
         CHECK(ids[i] == s_iter->second);
     } // for
@@ -235,20 +237,21 @@ pylith::petsc::TestEventLogger::testGetStageId(void) {
     logger.initialize();
 
     const int numStages = 3;
-    const char* stages[numStages] = { "stage A2", "stage B2", "stage C2" };
+    const char* stages[numStages] = {"stage A2", "stage B2", "stage C2"};
 
     for (int i = 0; i < numStages; ++i) {
         logger.registerStage(stages[i]);
     }
 
-    const int order[numStages] = { 1, 0, 2 };
+    const int order[numStages] = {1, 0, 2};
     PetscLogStage ids[numStages];
     for (int i = 0; i < numStages; ++i) {
         ids[order[i]] = logger.getStageId(stages[order[i]]);
     }
 
     int i = 0;
-    for (EventLogger::map_stage_type::iterator s_iter = logger._stages.begin(); s_iter != logger._stages.end(); ++s_iter, ++i) {
+    for (EventLogger::map_stage_type::iterator s_iter = logger._stages.begin(); s_iter != logger._stages.end();
+         ++s_iter, ++i) {
         CHECK(s_iter->second == ids[i]);
     }
 
@@ -270,7 +273,7 @@ pylith::petsc::TestEventLogger::testStageLogging(void) {
     logger.initialize();
 
     const int numStages = 3;
-    const char* stages[numStages] = { "stage A3", "stage B3", "stage C3" };
+    const char* stages[numStages] = {"stage A3", "stage B3", "stage C3"};
     PetscLogStage ids[numStages];
 
     for (int i = 0; i < numStages; ++i) {

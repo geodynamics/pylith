@@ -21,25 +21,23 @@ class pylith::feassemble::Integrator : public pylith::feassemble::PhysicsImpleme
     friend class TestIntegrator; // unit testing
 
     // PUBLIC ENUM ////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     enum EquationPart {
-        LHS=0,
-        RHS=1,
-        LHS_LUMPED_INV=2,
-        LHS_WEIGHTED=3,
+        LHS = 0,
+        RHS = 1,
+        LHS_LUMPED_INV = 2,
+        LHS_WEIGHTED = 3,
     };
 
     enum NewJacobianTriggers {
-        NEW_JACOBIAN_NEVER=0x0, // Never needs new Jacobian.
-        NEW_JACOBIAN_ALWAYS=0x1, // Always needs new Jacobian.
-        NEW_JACOBIAN_TIME_STEP_CHANGE=0x2, // Needs new Jacobian if time step changes.
-        NEW_JACOBIAN_UPDATE_STATE_VARS=0x4, // Needs new Jacobian after updating state variables.
+        NEW_JACOBIAN_NEVER = 0x0, // Never needs new Jacobian.
+        NEW_JACOBIAN_ALWAYS = 0x1, // Always needs new Jacobian.
+        NEW_JACOBIAN_TIME_STEP_CHANGE = 0x2, // Needs new Jacobian if time step changes.
+        NEW_JACOBIAN_UPDATE_STATE_VARS = 0x4, // Needs new Jacobian after updating state variables.
     };
 
     // PUBLIC STRUCTS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Project kernels (pointwise functions) for updating state variables or computing derived fields.
     struct ProjectKernels {
         std::string subfield; ///< Name of subfield for function.
@@ -47,20 +45,21 @@ public:
 
         ProjectKernels(void) :
             subfield(""),
-            f(NULL) {}
+            f(NULL) {
+        }
 
 
         ProjectKernels(const char* subfieldValue,
                        PetscPointFn* fValue) :
             subfield(subfieldValue),
-            f(fValue) {}
+            f(fValue) {
+        }
 
 
     }; // ProjectKernels
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /** Constructor
      *
      * @param[in] physics Physics implemented by integrator.
@@ -71,8 +70,7 @@ public:
     virtual ~Integrator(void);
 
     /// Deallocate storage.
-    virtual
-    void deallocate(void);
+    virtual void deallocate(void);
 
     /** Set name of label used to identify integration domain.
      *
@@ -136,8 +134,7 @@ public:
      *
      * @param[in] solution Solution field (layout).
      */
-    virtual
-    void initialize(const pylith::topology::Field& solution);
+    virtual void initialize(const pylith::topology::Field& solution);
 
     /** Update at end of time step.
      *
@@ -147,37 +144,33 @@ public:
      * @param[in] solution Solution at time t.
      * @param[in] notification Type of notification.
      */
-    virtual
-    void poststep(const PylithReal t,
-                  const PylithInt tindex,
-                  const PylithReal dt,
-                  const pylith::topology::Field& solution,
-                  const pylith::problems::Observer::NotificationType notification);
+    virtual void poststep(const PylithReal t,
+                          const PylithInt tindex,
+                          const PylithReal dt,
+                          const pylith::topology::Field& solution,
+                          const pylith::problems::Observer::NotificationType notification);
 
     /** Set auxiliary field values for current time.
      *
      * @param[in] t Current time.
      */
-    virtual
-    void setState(const PylithReal t);
+    virtual void setState(const PylithReal t);
 
     /** Compute RHS residual for G(t,s).
      *
      * @param[out] residual Field for residual.
      * @param[in] integrationData Data needed to integrate governing equations.
      */
-    virtual
-    void computeRHSResidual(pylith::topology::Field* residual,
-                            const pylith::feassemble::IntegrationData& integrationData) = 0;
+    virtual void computeRHSResidual(pylith::topology::Field* residual,
+                                    const pylith::feassemble::IntegrationData& integrationData) = 0;
 
     /** Compute LHS residual for F(t,s,\dot{s}).
      *
      * @param[out] residual Field for residual.
      * @param[in] integrationData Data needed to integrate governing equations.
      */
-    virtual
-    void computeLHSResidual(pylith::topology::Field* residual,
-                            const pylith::feassemble::IntegrationData& integrationData) = 0;
+    virtual void computeLHSResidual(pylith::topology::Field* residual,
+                                    const pylith::feassemble::IntegrationData& integrationData) = 0;
 
     /** Compute LHS Jacobian and preconditioner for F(t,s,\dot{s}) with implicit time-stepping.
      *
@@ -185,31 +178,27 @@ public:
      * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
      * @param[in] integrationData Data needed to integrate governing equations.
      */
-    virtual
-    void computeLHSJacobian(PetscMat jacobianMat,
-                            PetscMat precondMat,
-                            const pylith::feassemble::IntegrationData& integrationData) = 0;
+    virtual void computeLHSJacobian(PetscMat jacobianMat,
+                                    PetscMat precondMat,
+                                    const pylith::feassemble::IntegrationData& integrationData) = 0;
 
     /** Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
      *
      * @param[out] jacobianInv Inverse of lumped Jacobian as a field.
      * @param[in] integrationData Data needed to integrate governing equations.
      */
-    virtual
-    void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
-                                     const pylith::feassemble::IntegrationData& integrationData) = 0;
+    virtual void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
+                                             const pylith::feassemble::IntegrationData& integrationData) = 0;
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Set constants used in finite-element kernels.
      *
      * @param[in] solution Solution field.
      * @param[in] dt Current time step.
      */
-    virtual
-    void _setKernelConstants(const pylith::topology::Field& solution,
-                             const PylithReal dt) const;
+    virtual void _setKernelConstants(const pylith::topology::Field& solution,
+                                     const PylithReal dt) const;
 
     /** Update state variables as needed.
      *
@@ -217,14 +206,12 @@ protected:
      * @param[in] dt Current time step.
      * @param[in] solution Field with current trial solution.
      */
-    virtual
-    void _updateStateVars(const PylithReal t,
-                          const PylithReal dt,
-                          const pylith::topology::Field& solution);
+    virtual void _updateStateVars(const PylithReal t,
+                                  const PylithReal dt,
+                                  const pylith::topology::Field& solution);
 
     /// Compute diagnostic field from auxiliary field.
-    virtual
-    void _computeDiagnosticField(void);
+    virtual void _computeDiagnosticField(void);
 
     /** Compute fields derived from solution and auxiliary field.
      *
@@ -232,14 +219,12 @@ protected:
      * @param[in] dt Current time step.
      * @param[in] solution Field with current trial solution.
      */
-    virtual
-    void _computeDerivedField(const PylithReal t,
-                              const PylithReal dt,
-                              const pylith::topology::Field& solution);
+    virtual void _computeDerivedField(const PylithReal t,
+                                      const PylithReal dt,
+                                      const pylith::topology::Field& solution);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     std::string _labelName; ///< Name of label associated with integration domain.
     int _labelValue; ///< Value of label associated with integration domain.
     pylith::feassemble::DSLabelAccess* _dsLabel; ///< Information about integration (PETSc DS, Label, label value, etc).
@@ -259,8 +244,7 @@ protected:
     bool _needNewLHSJacobianLumped;
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     Integrator(void); /// Not implemented.
     Integrator(const Integrator&); ///< Not implemented.
     const Integrator& operator=(const Integrator&); ///< Not implemented.

@@ -12,11 +12,11 @@
 
 #include "pylith/faults/FaultOps.hh" // implementation of class methods
 
+#include "pylith/feassemble/IntegrationData.hh" // USES IntegrationData
+#include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/VisitorMesh.hh" // USES VisitorMesh
-#include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
-#include "pylith/feassemble/IntegrationData.hh" // USES IntegrationData
 
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 
@@ -63,9 +63,11 @@ pylith::faults::FaultOps::updateDAEMassWeighting(pylith::feassemble::Integration
     PYLITH_METHOD_BEGIN;
 
     const pylith::topology::Field* jacobianLumpedInv =
-        integrationData->getField(pylith::feassemble::IntegrationData::lumped_jacobian_inverse);assert(jacobianLumpedInv);
+        integrationData->getField(pylith::feassemble::IntegrationData::lumped_jacobian_inverse);
+    assert(jacobianLumpedInv);
     const pylith::topology::Field* weighting =
-        integrationData->getField(pylith::feassemble::IntegrationData::dae_mass_weighting);assert(jacobianLumpedInv);
+        integrationData->getField(pylith::feassemble::IntegrationData::dae_mass_weighting);
+    assert(jacobianLumpedInv);
 
     const char* velocity = "velocity";
     pylith::topology::VecVisitorMesh domainVisitor(*jacobianLumpedInv, velocity);
@@ -84,7 +86,7 @@ pylith::faults::FaultOps::updateDAEMassWeighting(pylith::feassemble::Integration
             const PetscInt domainOff = domainVisitor.sectionOffset(point);
             const PetscInt faultsOff = faultsVisitor.sectionOffset(point);
             for (PetscInt iDof = 0; iDof < numDof; ++iDof) {
-                faultsArray[faultsOff+iDof] = domainArray[domainOff+iDof];
+                faultsArray[faultsOff + iDof] = domainArray[domainOff + iDof];
             } // for
 
         } // if

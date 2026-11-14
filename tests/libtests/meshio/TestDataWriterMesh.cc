@@ -15,15 +15,15 @@
 #include "FieldFactory.hh" // USES FieldFactory
 #include "tests/src/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 
+#include "pylith/meshio/DataWriter.hh" // USES DataWriter
+#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
-#include "pylith/topology/Field.hh" // USES Field
-#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/meshio/DataWriter.hh" // USES DataWriter
 
-#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "pylith/scales/Scales.hh" // USES Scales
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
 #include "catch2/catch_test_macros.hpp"
 
@@ -31,24 +31,22 @@
 namespace pylith {
     namespace meshio {
         class _TestDataWriterMesh {
-public:
-
+          public:
             static PetscErrorCode analyticalFn(PetscInt spaceDim,
                                                PetscReal t,
                                                const PetscReal x[],
                                                PetscInt numComponents,
                                                PetscScalar* values,
                                                void* context);
-
         };
-    }
-}
+    } // namespace meshio
+} // namespace pylith
 
 
 // ------------------------------------------------------------------------------------------------
 // Constructor.
-pylith::meshio::TestDataWriterMesh::TestDataWriterMesh(void) :
-    _mesh(nullptr) {}
+pylith::meshio::TestDataWriterMesh::TestDataWriterMesh(void) : _mesh(nullptr) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -56,7 +54,8 @@ pylith::meshio::TestDataWriterMesh::TestDataWriterMesh(void) :
 pylith::meshio::TestDataWriterMesh::~TestDataWriterMesh(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _mesh;_mesh = NULL;
+    delete _mesh;
+    _mesh = NULL;
 
     PYLITH_METHOD_END;
 } // destructor
@@ -147,9 +146,12 @@ void
 pylith::meshio::TestDataWriterMesh::_initialize(void) {
     PYLITH_METHOD_BEGIN;
 
-    const TestDataWriter_Data* data = _getData();REQUIRE(data);
+    const TestDataWriter_Data* data = _getData();
+    REQUIRE(data);
 
-    delete _mesh;_mesh = new topology::Mesh;REQUIRE(_mesh);
+    delete _mesh;
+    _mesh = new topology::Mesh;
+    REQUIRE(_mesh);
     MeshIOAscii iohandler;
     iohandler.setFilename(data->meshFilename);
     iohandler.read(_mesh);
@@ -167,7 +169,8 @@ pylith::meshio::TestDataWriterMesh::_initialize(void) {
         fault.setCohesiveLabelValue(data->faultId);
         fault.setSurfaceLabelName(data->faultLabel);
         pylith::topology::Mesh* meshNew = fault.transformTopology(_mesh);
-        delete _mesh;_mesh = meshNew;
+        delete _mesh;
+        _mesh = meshNew;
     } // if
 
     PYLITH_METHOD_END;
@@ -182,7 +185,8 @@ pylith::meshio::TestDataWriterMesh::_createVertexField(pylith::topology::Field* 
 
     REQUIRE(field);
 
-    const TestDataWriter_Data* data = _getData();REQUIRE(data);
+    const TestDataWriter_Data* data = _getData();
+    REQUIRE(data);
 
     FieldFactory factory(*field);
     factory.addScalar(data->vertexDiscretization);
@@ -211,7 +215,8 @@ pylith::meshio::TestDataWriterMesh::_createCellField(pylith::topology::Field* fi
 
     REQUIRE(field);
 
-    const TestDataWriter_Data* data = _getData();REQUIRE(data);
+    const TestDataWriter_Data* data = _getData();
+    REQUIRE(data);
 
     FieldFactory factory(*field);
     factory.addScalar(data->cellDiscretization);
@@ -251,15 +256,19 @@ pylith::meshio::_TestDataWriterMesh::analyticalFn(PetscInt spaceDim,
     PetscDM dmMesh = PetscDM(context);
     PetscInt cell = -1;
     err = DMPlexGetActivePoint(dmMesh, &cell);
-    if (err) { PYLITH_METHOD_RETURN(err); }
+    if (err) {
+        PYLITH_METHOD_RETURN(err);
+    }
 
-    PetscReal centroid[3] = { 0.0, 0.0, 0.0 };
+    PetscReal centroid[3] = {0.0, 0.0, 0.0};
     err = DMPlexComputeCellGeometryFVM(dmMesh, cell, nullptr, centroid, nullptr);
-    if (err) { PYLITH_METHOD_RETURN(err); }
+    if (err) {
+        PYLITH_METHOD_RETURN(err);
+    }
 
-    const PetscScalar constants[3] = { 11.0, 13.0, 17.0 };
+    const PetscScalar constants[3] = {11.0, 13.0, 17.0};
     const PetscScalar faultOffset = (centroid[0] < X_FAULT) ? -1.1 : +1.1;
-    const PetscScalar fieldBase = 2.0*numComponents/7.0;
+    const PetscScalar fieldBase = 2.0 * numComponents / 7.0;
     for (PetscInt iC = 0; iC < numComponents; ++iC) {
         values[iC] = faultOffset + fieldBase + iC;
         for (PetscInt iDim = 0; iDim < spaceDim; ++iDim) {

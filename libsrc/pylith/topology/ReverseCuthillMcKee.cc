@@ -12,10 +12,10 @@
 
 #include "pylith/topology/ReverseCuthillMcKee.hh" // implementation of class methods
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
-#include "pylith/utils/journals.hh" // USES journal macros
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/utils/journals.hh" // USES journal macros
 
 // ----------------------------------------------------------------------
 // Reorder vertices and cells in mesh.
@@ -26,7 +26,8 @@ pylith::topology::ReverseCuthillMcKee::reorder(const pylith::topology::Mesh& mes
     PetscDMLabel dmLabel = NULL;
     PetscDM dmOrig = mesh.getDM();
     const char* const labelName = pylith::topology::Mesh::cells_label_name;
-    PylithCallPetsc(DMGetLabel(dmOrig, labelName, &dmLabel));assert(dmLabel);
+    PylithCallPetsc(DMGetLabel(dmOrig, labelName, &dmLabel));
+    assert(dmLabel);
 
     PetscIS permutation = NULL;
     PetscDM dmNew = NULL;
@@ -39,7 +40,8 @@ pylith::topology::ReverseCuthillMcKee::reorder(const pylith::topology::Mesh& mes
     PetscIS valuesIS = NULL;
     PetscInt numValues = 0;
     const PetscInt* values = NULL;
-    PylithCallPetsc(DMGetLabel(dmNew, labelName, &dmLabel));assert(dmLabel);
+    PylithCallPetsc(DMGetLabel(dmNew, labelName, &dmLabel));
+    assert(dmLabel);
     PylithCallPetsc(DMLabelGetValueIS(dmLabel, &valuesIS));
     PylithCallPetsc(ISGetLocalSize(valuesIS, &numValues));
     PylithCallPetsc(ISGetIndices(valuesIS, &values));
@@ -51,7 +53,7 @@ pylith::topology::ReverseCuthillMcKee::reorder(const pylith::topology::Mesh& mes
         PylithCallPetsc(ISGetLocalSize(pointsIS, &numPoints));
         PylithCallPetsc(ISGetIndices(pointsIS, &points));
         for (PetscInt iPoint = 1; iPoint < numPoints; ++iPoint) {
-            if (points[iPoint] - points[iPoint-1] != 1) {
+            if (points[iPoint] - points[iPoint - 1] != 1) {
                 // Cleanup
                 PylithCallPetsc(ISRestoreIndices(pointsIS, &points));
                 PylithCallPetsc(ISDestroy(&pointsIS));
@@ -59,7 +61,9 @@ pylith::topology::ReverseCuthillMcKee::reorder(const pylith::topology::Mesh& mes
                 PylithCallPetsc(ISDestroy(&valuesIS));
 
                 PYLITH_ERROR(pylith::exceptions::TopologyError,
-                             "Cells for label '" << labelName << "' with value " << values[iValue] << " are not consecutive (" << points[iPoint] << " and " << points[iPoint-1] << ").");
+                             "Cells for label '" << labelName << "' with value " << values[iValue]
+                                                 << " are not consecutive (" << points[iPoint] << " and "
+                                                 << points[iPoint - 1] << ").");
             } // if
         } // for
         PylithCallPetsc(ISRestoreIndices(pointsIS, &points));

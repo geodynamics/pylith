@@ -26,7 +26,7 @@ namespace pylith {
 
         class AbsorbingDampersAuxiliaryFactory;
 
-    } // bc
-} // pylith
+    } // namespace bc
+} // namespace pylith
 
 // End of file

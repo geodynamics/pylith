@@ -12,18 +12,19 @@
 
 #include "pylith/initializers/MeshInsertInterfaces.hh" // implementation of class methods
 
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
+#include "pylith/faults/FaultCohesive.hh" // USES FaultCohesive
+#include "pylith/materials/Material.hh" // USES Material
 #include "pylith/problems/Problem.hh" // USES Problem
+#include "pylith/topology/Distributor.hh" // USES Distributor
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
-#include "pylith/topology/Distributor.hh" // USES Distributor
-#include "pylith/materials/Material.hh" // USES Material
-#include "pylith/faults/FaultCohesive.hh" // USES FaultCohesive
-#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor
-pylith::initializers::MeshInsertInterfaces::MeshInsertInterfaces(void) {}
+pylith::initializers::MeshInsertInterfaces::MeshInsertInterfaces(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -53,8 +54,9 @@ pylith::initializers::MeshInsertInterfaces::run(pylith::topology::Mesh* mesh,
     assert(mesh);
 
     if (!problem.getInterfaces().size()) {
-        PetscDM dmOrig = mesh->getDM();assert(dmOrig);
-        PylithCallPetsc(PetscObjectReference((PetscObject) dmOrig));
+        PetscDM dmOrig = mesh->getDM();
+        assert(dmOrig);
+        PylithCallPetsc(PetscObjectReference((PetscObject)dmOrig));
         pylith::topology::Mesh* meshNew = new pylith::topology::Mesh(dmOrig, *mesh);
         PYLITH_METHOD_RETURN(meshNew);
     } // if
@@ -65,7 +67,8 @@ pylith::initializers::MeshInsertInterfaces::run(pylith::topology::Mesh* mesh,
         mesh->view(":mesh_domain_before_faults.txt:ascii_info_detail");
         pylith::topology::Mesh* meshExploded = pylith::topology::MeshOps::explode(*mesh);
         meshExploded->view(":mesh_domain_before_faults.tex:ascii_latex");
-        delete meshExploded;meshExploded = nullptr;
+        delete meshExploded;
+        meshExploded = nullptr;
     } // if
 
     // Determine starting label value for cohesive cells.
@@ -81,7 +84,8 @@ pylith::initializers::MeshInsertInterfaces::run(pylith::topology::Mesh* mesh,
         interface->setCohesiveLabelValue(cohesiveLabelValue);
         meshNew = interface->transformTopology(meshTmp);
         if (meshTmp != mesh) {
-            delete meshTmp;meshTmp = nullptr;
+            delete meshTmp;
+            meshTmp = nullptr;
         } // if
         meshTmp = meshNew;
         cohesiveLabelValue += 1;
@@ -92,7 +96,8 @@ pylith::initializers::MeshInsertInterfaces::run(pylith::topology::Mesh* mesh,
         meshNew->view(":mesh_domain_before_overlap.txt:ascii_info_detail");
         pylith::topology::Mesh* meshExploded = pylith::topology::MeshOps::explode(*meshNew);
         meshExploded->view(":mesh_domain_before_overlap.tex:ascii_latex");
-        delete meshExploded;meshExploded = nullptr;
+        delete meshExploded;
+        meshExploded = nullptr;
     } // if
 
     PylithCallPetsc(DMPlexCheckSkeleton(meshNew->getDM(), 0));

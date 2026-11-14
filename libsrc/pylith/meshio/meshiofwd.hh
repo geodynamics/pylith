@@ -46,7 +46,7 @@ namespace pylith {
         class HDF5;
         class Xdmf;
 
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // End of file

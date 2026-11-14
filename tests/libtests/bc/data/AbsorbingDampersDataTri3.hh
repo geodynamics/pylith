@@ -7,22 +7,20 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-  namespace bc {
-        class AbsorbingDampersDataTri3;
-    } // pylith
+namespace bc {
+    class AbsorbingDampersDataTri3;
+} // pylith
 } // bc
 
 class pylith::bc::AbsorbingDampersDataTri3 : public AbsorbingDampersData {
-public:
-
+  public:
     /// Constructor
     AbsorbingDampersDataTri3(void);
 
     /// Destructor
     ~AbsorbingDampersDataTri3(void);
 
-private:
-
+  private:
     static const char* _meshFilename;
 
     static const int _numBasis;
@@ -51,7 +49,6 @@ private:
     static const PylithScalar _dampingConsts[];
     static const PylithScalar _valsResidual[];
     static const PylithScalar _valsJacobian[];
-
 };
 
 #endif // pylith_bc_absorbingdampersdatatri3_hh

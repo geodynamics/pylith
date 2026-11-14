@@ -23,8 +23,7 @@ class pylith::problems::SolutionFactory : public pylith::utils::GenericComponent
     friend class TestSolutionFactory; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /** Default constructor.
      *
      * @param[inout] solution Solution field.
@@ -92,16 +91,14 @@ public:
     void setValues(spatialdata::spatialdb::SpatialDB* db);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::topology::Field& _solution; ///< Solution field.
     const pylith::scales::Scales& _scales; ///< Nondimensionalizer.
     const int _spaceDim; ///< Spatal dimension of problem.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
-private:
-
-    SolutionFactory(const SolutionFactory &); ///< Not implemented.
+  private:
+    SolutionFactory(const SolutionFactory&); ///< Not implemented.
     const SolutionFactory& operator=(const SolutionFactory&); ///< Not implemented
 
 }; // class SolutionFactory

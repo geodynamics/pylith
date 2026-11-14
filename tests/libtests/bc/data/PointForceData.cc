@@ -31,7 +31,7 @@ pylith::bc::PointForceData::PointForceData(void) :
     setRigidityScale(2.0e+6),
     setTimeScale(2.0) { // constructor
     const PylithScalar velScale = lengthScale / timeScale;
-    densityScale = rigidityScale / (velScale*velScale);
+    densityScale = rigidityScale / (velScale * velScale);
 } // constructor
 
 

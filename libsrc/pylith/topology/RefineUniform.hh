@@ -15,8 +15,7 @@ class pylith::topology::RefineUniform : public pylith::topology::RefineMesh {
     friend class TestRefineUniform; // unit testing
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     RefineUniform(void);
 
@@ -46,13 +45,11 @@ public:
     pylith::topology::Mesh* refine(const pylith::topology::Mesh& mesh);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     int _numLevels; ///< Number of levels of refinement
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     RefineUniform(const RefineUniform&); ///< Not implemented
     const RefineUniform& operator=(const RefineUniform&); ///< Not implemented
 

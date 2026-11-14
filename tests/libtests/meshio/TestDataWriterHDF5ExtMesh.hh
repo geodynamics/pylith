@@ -18,14 +18,13 @@ namespace pylith {
     namespace meshio {
         class TestDataWriterHDF5ExtMesh;
         class TestDataWriterHDF5ExtMesh_Data;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterHDF5ExtMesh : public TestDataWriterHDF5, public TestDataWriterMesh {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestDataWriterHDF5ExtMesh(TestDataWriterHDF5ExtMesh_Data* data);
 
@@ -33,16 +32,13 @@ public:
     ~TestDataWriterHDF5ExtMesh(void);
 
     /// Test filename()
-    static
-    void testAccessors(void);
+    static void testAccessors(void);
 
     /// Test hdf5Filename.
-    static
-    void testHdf5Filename(void);
+    static void testHdf5Filename(void);
 
     /// Test datasetFilename.
-    static
-    void testDatasetFilename(void);
+    static void testDatasetFilename(void);
 
     /// Test open() and close()
     void testOpenClose(void);
@@ -54,8 +50,7 @@ public:
     void testWriteCellField(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get test data.
      *
      * @returns Test data.
@@ -63,8 +58,7 @@ protected:
     TestDataWriter_Data* _getData(void);
 
     // PROTECTED MEMBDERS /////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     TestDataWriterHDF5ExtMesh_Data* _data; ///< Data for testing.
 
 }; // class TestDataWriterHDF5ExtMesh

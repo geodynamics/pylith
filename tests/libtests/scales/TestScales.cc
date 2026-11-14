@@ -22,42 +22,41 @@
 namespace pylith {
     namespace scales {
         class TestScales;
-    } // scales
-} // pylith
+    } // namespace scales
+} // namespace pylith
 
 class pylith::scales::TestScales {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test constructors.
-    static
-    void testConstructors(void);
+    static void testConstructors(void);
 
     /// Test accessors.
-    static
-    void testAccessors(void);
+    static void testAccessors(void);
 
     /// Test nondimensionalize() and dimensionalize().
-    static
-    void testNondimensionalize(void);
+    static void testNondimensionalize(void);
 
     /// Test Scalesie() and dimensionalize() with arrays.
-    static
-    void testNondimensionalizeArray(void);
+    static void testNondimensionalizeArray(void);
 
 }; // class TestScales
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestScales::testConstructors", "[TestScales]") {
+TEST_CASE("TestScales::testConstructors",
+          "[TestScales]") {
     pylith::scales::TestScales::testConstructors();
 }
-TEST_CASE("TestScales::testAccessors", "[TestScales]") {
+TEST_CASE("TestScales::testAccessors",
+          "[TestScales]") {
     pylith::scales::TestScales::testAccessors();
 }
-TEST_CASE("TestScales::testNondimensionalize", "[TestScales]") {
+TEST_CASE("TestScales::testNondimensionalize",
+          "[TestScales]") {
     pylith::scales::TestScales::testNondimensionalize();
 }
-TEST_CASE("TestScales::testNondimensionalizeArray", "[TestScales]") {
+TEST_CASE("TestScales::testNondimensionalizeArray",
+          "[TestScales]") {
     pylith::scales::TestScales::testNondimensionalizeArray();
 }
 
@@ -180,8 +179,8 @@ void
 pylith::scales::TestScales::testNondimensionalizeArray(void) {
     const double scale = 10.0;
     const size_t nvalues = 3;
-    const double values[nvalues] = { 2.0, 5.0, 7.0 };
-    const double valuesE[nvalues] = { 0.2, 0.5, 0.7 };
+    const double values[nvalues] = {2.0, 5.0, 7.0};
+    const double valuesE[nvalues] = {0.2, 0.5, 0.7};
 
     Scales scales;
 

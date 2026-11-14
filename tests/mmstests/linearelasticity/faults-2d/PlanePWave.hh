@@ -17,8 +17,7 @@ namespace pylith {
 }
 
 class pylith::PlanePWave {
-public:
-
+  public:
     // Data factory methods
     static TestFault_Data* TriP1(void);
 
@@ -36,8 +35,7 @@ public:
 
     static TestFault_Data* QuadQ4(void);
 
-private:
-
+  private:
     PlanePWave(void); ///< Not implemented
 }; // PlanePWave
 

@@ -17,8 +17,7 @@ class pylith::problems::InitialConditionDomain : public pylith::problems::Initia
     friend class TestInitialConditionDomain; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     InitialConditionDomain(void);
 
@@ -43,13 +42,11 @@ public:
                    const pylith::scales::Scales& scales);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     spatialdata::spatialdb::SpatialDB* _db; ///< Spatial database with values for initial condition.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     InitialConditionDomain(const InitialConditionDomain&); ///< Not implemented
     const InitialConditionDomain& operator=(const InitialConditionDomain&); ///< Not implemented
 

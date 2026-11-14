@@ -16,8 +16,7 @@ class pylith::bc::AbsorbingDampersAuxiliaryFactory : public pylith::feassemble::
     friend class TestDirichletAuxiliaryFactory; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     AbsorbingDampersAuxiliaryFactory(void);
 
@@ -34,9 +33,8 @@ public:
     void addVp(void);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
-    AbsorbingDampersAuxiliaryFactory(const AbsorbingDampersAuxiliaryFactory &); ///< Not implemented.
+  private:
+    AbsorbingDampersAuxiliaryFactory(const AbsorbingDampersAuxiliaryFactory&); ///< Not implemented.
     const AbsorbingDampersAuxiliaryFactory& operator=(const AbsorbingDampersAuxiliaryFactory&); ///< Not implemented
 
 }; // class AbsorbingDampersAuxiliaryFactory

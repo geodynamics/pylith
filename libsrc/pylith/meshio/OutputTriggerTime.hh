@@ -17,8 +17,7 @@ class pylith::meshio::OutputTriggerTime : public pylith::meshio::OutputTrigger {
     friend class TestOutputTriggerTime; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     OutputTriggerTime(void);
 
@@ -47,17 +46,14 @@ public:
     double getTimeSkip(void) const;
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     PylithReal _timeSkip; ///< Elapsed (dimensional) time between writes.
     PylithReal _timeNondimWrote; ///< Time (nondimensional) when data was previously written.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     OutputTriggerTime(const OutputTriggerTime&); ///< Not implemented.
     const OutputTriggerTime& operator=(const OutputTriggerTime&); ///< Not implemented
-
 };
 
 // OutputTriggerTime

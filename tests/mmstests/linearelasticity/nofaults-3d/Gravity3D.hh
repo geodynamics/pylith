@@ -17,8 +17,7 @@ namespace pylith {
 }
 
 class pylith::Gravity3D {
-public:
-
+  public:
     // Data factory methods
 
     static TestLinearElasticity_Data* TetP2(void);
@@ -29,8 +28,7 @@ public:
 
     static TestLinearElasticity_Data* HexQ3(void);
 
-private:
-
+  private:
     Gravity3D(void); ///< Not implemented
 }; // Gravity3D
 

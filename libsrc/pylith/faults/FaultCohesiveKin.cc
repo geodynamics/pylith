@@ -12,36 +12,36 @@
 
 #include "pylith/faults/FaultCohesiveKin.hh" // implementation of object methods
 
-#include "pylith/faults/KinSrc.hh" // USES KinSrc
 #include "pylith/faults/AuxiliaryFieldFactory.hh" // USES AuxiliaryFieldFactory
 #include "pylith/faults/DerivedFieldFactory.hh" // USES DerivedFieldFactory
+#include "pylith/faults/KinSrc.hh" // USES KinSrc
+#include "pylith/feassemble/ConstraintSimple.hh" // USES ConstraintSimple
 #include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface
 #include "pylith/feassemble/InterfacePatches.hh" // USES InterfacePatches
-#include "pylith/feassemble/ConstraintSimple.hh" // USES ConstraintSimple
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps::checkDiscretization()
-#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
 #include "pylith/fekernels/BoundaryDirections.hh" // USES BoundaryDirections
 #include "pylith/fekernels/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/petsc/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
-#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "pylith/scales/Scales.hh" // USES Nondimensionalizer
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
-#include <cmath> // USES pow(), sqrt()
-#include <strings.h> // USES strcasecmp()
-#include <cstring> // USES strlen()
-#include <cstdlib> // USES atoi()
 #include <cassert> // USES assert()
+#include <cmath> // USES pow(), sqrt()
+#include <cstdlib> // USES atoi()
+#include <cstring> // USES strlen()
 #include <sstream> // USES std::ostringstream
+#include <strings.h> // USES strcasecmp()
 #include <typeinfo> // USES typeid()
 
 // ------------------------------------------------------------------------------------------------
@@ -54,17 +54,15 @@ namespace pylith {
     namespace faults {
         class _FaultCohesiveKin {
             // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             static const char* pyreComponent;
-
         };
         const char* _FaultCohesiveKin::pyreComponent = "faultcohesivekin";
 
         // _FaultCohesiveKin
 
-    } // faults
-} // pylith
+    } // namespace faults
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -97,12 +95,14 @@ pylith::faults::FaultCohesiveKin::deallocate(void) {
 // ------------------------------------------------------------------------------------------------
 // Set kinematic earthquake ruptures.
 void
-pylith::faults::FaultCohesiveKin::setEqRuptures(const char* const * names,
+pylith::faults::FaultCohesiveKin::setEqRuptures(const char* const* names,
                                                 const int numNames,
                                                 KinSrc** ruptures,
                                                 const int numRuptures) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setEqRuptures(names="<<names<<", numNames="<<numNames<<", ruptures="<<ruptures<<", numRuptures="<<numRuptures<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "setEqRuptures(names=" << names << ", numNames=" << numNames << ", ruptures=" << ruptures
+                                                  << ", numRuptures=" << numRuptures << ")");
 
     assert(numNames == numRuptures);
 
@@ -125,7 +125,8 @@ pylith::faults::FaultCohesiveKin::setEqRuptures(const char* const * names,
 void
 pylith::faults::FaultCohesiveKin::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "verifyConfiguration(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "verifyConfiguration(solution=" << solution.getLabel() << ")");
 
     // Verify solution contains required fields.
     std::string reason = "interface 'FaultCohesiveKin'.";
@@ -144,10 +145,12 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(const pylith::topology::Fi
         requiredFields[numRequired++] = "velocity";
         break;
     case DYNAMIC:
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError, "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError,
+                               "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
         break;
     default:
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError,
+                               "Unknown formulation for equations (" << _formulation << ").");
     } // switch
     requiredFields.resize(numRequired);
 
@@ -163,20 +166,29 @@ pylith::topology::Field*
 pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::Field& solution,
                                                        const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "createAuxiliaryField(solution=" << solution.getLabel() << ", domainMesh=)"
+                                                            << typeid(domainMesh).name() << ")");
 
     assert(_scales);
 
-    pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
+    pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);
+    assert(auxiliaryField);
     auxiliaryField->setLabel("auxiliary field");
 
     // Set default discretization of auxiliary subfields to match lagrange_multiplier_fault subfield in solution.
     assert(_auxiliaryFactory);
-    const pylith::topology::FieldBase::Discretization& discretization = solution.getSubfieldInfo("lagrange_multiplier_fault").fe;
+    const pylith::topology::FieldBase::Discretization& discretization =
+        solution.getSubfieldInfo("lagrange_multiplier_fault").fe;
     const PylithInt dimension = -1;
     const bool isFaultOnly = false;
-    _auxiliaryFactory->setSubfieldDiscretization("default", discretization.basisOrder, discretization.quadOrder, dimension,
-                                                 isFaultOnly, discretization.cellBasis, discretization.feSpace,
+    _auxiliaryFactory->setSubfieldDiscretization("default",
+                                                 discretization.basisOrder,
+                                                 discretization.quadOrder,
+                                                 dimension,
+                                                 isFaultOnly,
+                                                 discretization.cellBasis,
+                                                 discretization.feSpace,
                                                  discretization.isBasisContinuous);
 
     assert(_auxiliaryFactory);
@@ -194,10 +206,13 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
         _auxiliaryFactory->addSlipAcceleration(); // 1
         break;
     case DYNAMIC:
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError, "Fault implementation is incompatible with 'dynamic' time-stepping formulation. Use 'dynamic_imex'.");
+        PYLITH_COMPONENT_ERROR(
+            pylith::exceptions::NotImplementedError,
+            "Fault implementation is incompatible with 'dynamic' time-stepping formulation. Use 'dynamic_imex'.");
         break;
     default:
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError,
+                               "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     auxiliaryField->subfieldsSetup();
@@ -232,7 +247,8 @@ void
 pylith::faults::FaultCohesiveKin::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
                                                        const double t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "updateAuxiliaryField(auxiliaryField=" << auxiliaryField << ", t=" << t << ")");
 
     assert(auxiliaryField);
     assert(_scales);
@@ -246,10 +262,12 @@ pylith::faults::FaultCohesiveKin::updateAuxiliaryField(pylith::topology::Field* 
         bitSlipSubfields = pylith::faults::KinSrc::GET_SLIP | pylith::faults::KinSrc::GET_SLIP_ACC;
         break;
     case DYNAMIC:
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError, "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError,
+                               "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
         break;
     default:
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError,
+                               "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     this->_updateSlip(auxiliaryField, t, bitSlipSubfields);
@@ -265,7 +283,9 @@ pylith::faults::FaultCohesiveKin::_updateSlip(pylith::topology::Field* auxiliary
                                               const double t,
                                               const int bitSlipSubfields) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "updateSlip(auxiliaryField="<<auxiliaryField<<", t="<<t<<", bitSlipSubfields="<<bitSlipSubfields<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "updateSlip(auxiliaryField=" << auxiliaryField << ", t=" << t
+                                                        << ", bitSlipSubfields=" << bitSlipSubfields << ")");
 
     assert(auxiliaryField);
     assert(_scales);
@@ -276,7 +296,8 @@ pylith::faults::FaultCohesiveKin::_updateSlip(pylith::topology::Field* auxiliary
     for (srcs_type::iterator r_iter = _ruptures.begin(); r_iter != rupturesEnd; ++r_iter) {
         PylithCallPetsc(VecSet(_slipVecRupture, 0.0));
 
-        KinSrc* src = r_iter->second;assert(src);
+        KinSrc* src = r_iter->second;
+        assert(src);
         src->getSlipSubfields(_slipVecRupture, auxiliaryField, t, _scales->getTimeScale(), bitSlipSubfields);
         PylithCallPetsc(VecAYPX(_slipVecTotal, 1.0, _slipVecRupture));
     } // for
@@ -308,7 +329,7 @@ pylith::faults::FaultCohesiveKin::_updateSlip(pylith::topology::Field* auxiliary
             const PetscInt subfieldDof = auxiliaryVisitor.sectionSubfieldDof(subfieldIndex, point);
             const PetscInt subfieldOff = auxiliaryVisitor.sectionSubfieldOffset(subfieldIndex, point);
             for (PetscInt iDof = 0; iDof < subfieldDof; ++iDof, ++iSlip) {
-                auxiliaryArray[subfieldOff+iDof] = slipArray[iSlip];
+                auxiliaryArray[subfieldOff + iDof] = slipArray[iSlip];
             } // for
         } // for
     } // for
@@ -327,11 +348,14 @@ pylith::faults::FaultCohesiveKin::_updateSlip(pylith::topology::Field* auxiliary
 // ------------------------------------------------------------------------------------------------
 // Set kernels for residual.
 void
-pylith::faults::FaultCohesiveKin::_setKernelsResidual(pylith::feassemble::IntegratorInterface* integrator,
-                                                      const pylith::topology::Field& solution,
-                                                      const std::vector<pylith::materials::Material*>& materials) const {
+pylith::faults::FaultCohesiveKin::_setKernelsResidual(
+    pylith::feassemble::IntegratorInterface* integrator,
+    const pylith::topology::Field& solution,
+    const std::vector<pylith::materials::Material*>& materials) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_setKernelsResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "_setKernelsResidual(integrator=" << integrator << ", solution=" << solution.getLabel()
+                                                             << ")");
     typedef pylith::feassemble::IntegratorInterface integrator_t;
 
     std::vector<ResidualKernels> kernels;
@@ -350,12 +374,10 @@ pylith::faults::FaultCohesiveKin::_setKernelsResidual(pylith::feassemble::Integr
         PetscBdPointFn* f1l = NULL;
 
         kernels.resize(3);
-        kernels[0] = ResidualKernels("displacement", integrator_t::LHS, integrator_t::NEGATIVE_FACE,
-                                     f0u_neg, f1u_neg);
-        kernels[1] = ResidualKernels("displacement", integrator_t::LHS, integrator_t::POSITIVE_FACE,
-                                     f0u_pos, f1u_pos);
-        kernels[2] = ResidualKernels("lagrange_multiplier_fault", integrator_t::LHS, integrator_t::FAULT_FACE,
-                                     f0l, f1l);
+        kernels[0] = ResidualKernels("displacement", integrator_t::LHS, integrator_t::NEGATIVE_FACE, f0u_neg, f1u_neg);
+        kernels[1] = ResidualKernels("displacement", integrator_t::LHS, integrator_t::POSITIVE_FACE, f0u_pos, f1u_pos);
+        kernels[2] =
+            ResidualKernels("lagrange_multiplier_fault", integrator_t::LHS, integrator_t::FAULT_FACE, f0l, f1l);
 
         break;
     } // QUASISTATIC
@@ -379,14 +401,23 @@ pylith::faults::FaultCohesiveKin::_setKernelsResidual(pylith::feassemble::Integr
         kernels.resize(4);
         kernels[0] = ResidualKernels("velocity", integrator_t::LHS, integrator_t::NEGATIVE_FACE, g0v_neg, g1v_neg);
         kernels[1] = ResidualKernels("velocity", integrator_t::LHS, integrator_t::POSITIVE_FACE, g0v_pos, g1v_pos);
-        kernels[2] = ResidualKernels("lagrange_multiplier_fault", integrator_t::LHS, integrator_t::FAULT_FACE, f0l_slip, f1l_slip);
-        kernels[3] = ResidualKernels("lagrange_multiplier_fault", integrator_t::LHS_WEIGHTED, integrator_t::FAULT_FACE, f0l_dae, f1l_dae);
+        kernels[2] = ResidualKernels("lagrange_multiplier_fault",
+                                     integrator_t::LHS,
+                                     integrator_t::FAULT_FACE,
+                                     f0l_slip,
+                                     f1l_slip);
+        kernels[3] = ResidualKernels("lagrange_multiplier_fault",
+                                     integrator_t::LHS_WEIGHTED,
+                                     integrator_t::FAULT_FACE,
+                                     f0l_dae,
+                                     f1l_dae);
         break;
     } // DYNAMIC_IMEX
     case pylith::problems::Physics::DYNAMIC:
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError, "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError,
+                               "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
     default:
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation '"<<_formulation<<"'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation '" << _formulation << "'.");
     } // switch
 
     assert(integrator);
@@ -399,11 +430,14 @@ pylith::faults::FaultCohesiveKin::_setKernelsResidual(pylith::feassemble::Integr
 // ------------------------------------------------------------------------------------------------
 // Set kernels for Jacobian.
 void
-pylith::faults::FaultCohesiveKin::_setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
-                                                      const pylith::topology::Field& solution,
-                                                      const std::vector<pylith::materials::Material*>& materials) const {
+pylith::faults::FaultCohesiveKin::_setKernelsJacobian(
+    pylith::feassemble::IntegratorInterface* integrator,
+    const pylith::topology::Field& solution,
+    const std::vector<pylith::materials::Material*>& materials) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_setKernelsJacobian(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "_setKernelsJacobian(integrator=" << integrator << ", solution=" << solution.getLabel()
+                                                             << ")");
     typedef pylith::feassemble::IntegratorInterface integrator_t;
 
     std::vector<JacobianKernels> kernels;
@@ -427,12 +461,30 @@ pylith::faults::FaultCohesiveKin::_setKernelsJacobian(pylith::feassemble::Integr
         kernels.resize(3);
         const char* nameDisplacement = "displacement";
         const char* nameLagrangeMultiplier = "lagrange_multiplier_fault";
-        kernels[0] = JacobianKernels(nameDisplacement, nameLagrangeMultiplier, integrator_t::LHS,
-                                     integrator_t::NEGATIVE_FACE, Jf0ul_neg, Jf1ul_neg, Jf2ul_neg, Jf3ul_neg);
-        kernels[1] = JacobianKernels(nameDisplacement, nameLagrangeMultiplier, integrator_t::LHS,
-                                     integrator_t::POSITIVE_FACE, Jf0ul_pos, Jf1ul_pos, Jf2ul_pos, Jf3ul_pos);
-        kernels[2] = JacobianKernels(nameLagrangeMultiplier, nameDisplacement, integrator_t::LHS,
-                                     integrator_t::FAULT_FACE, Jf0lu, Jf1lu, Jf2lu, Jf3lu);
+        kernels[0] = JacobianKernels(nameDisplacement,
+                                     nameLagrangeMultiplier,
+                                     integrator_t::LHS,
+                                     integrator_t::NEGATIVE_FACE,
+                                     Jf0ul_neg,
+                                     Jf1ul_neg,
+                                     Jf2ul_neg,
+                                     Jf3ul_neg);
+        kernels[1] = JacobianKernels(nameDisplacement,
+                                     nameLagrangeMultiplier,
+                                     integrator_t::LHS,
+                                     integrator_t::POSITIVE_FACE,
+                                     Jf0ul_pos,
+                                     Jf1ul_pos,
+                                     Jf2ul_pos,
+                                     Jf3ul_pos);
+        kernels[2] = JacobianKernels(nameLagrangeMultiplier,
+                                     nameDisplacement,
+                                     integrator_t::LHS,
+                                     integrator_t::FAULT_FACE,
+                                     Jf0lu,
+                                     Jf1lu,
+                                     Jf2lu,
+                                     Jf3lu);
         break;
     } // QUASISTATIC
     case pylith::problems::Physics::DYNAMIC_IMEX: {
@@ -444,14 +496,21 @@ pylith::faults::FaultCohesiveKin::_setKernelsJacobian(pylith::feassemble::Integr
         kernels.resize(1);
         const char* nameDisplacement = "displacement";
         const char* nameLagrangeMultiplier = "lagrange_multiplier_fault";
-        kernels[0] = JacobianKernels(nameLagrangeMultiplier, nameDisplacement, integrator_t::LHS,
-                                     integrator_t::FAULT_FACE, Jf0lu, Jf1lu, Jf2lu, Jf3lu);
+        kernels[0] = JacobianKernels(nameLagrangeMultiplier,
+                                     nameDisplacement,
+                                     integrator_t::LHS,
+                                     integrator_t::FAULT_FACE,
+                                     Jf0lu,
+                                     Jf1lu,
+                                     Jf2lu,
+                                     Jf3lu);
         break;
     } // DYNAMIC_IMEX
     case pylith::problems::Physics::DYNAMIC:
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError, "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError,
+                               "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
     default:
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation '"<<_formulation<<"'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation '" << _formulation << "'.");
     } // switch
 
     assert(integrator);
@@ -467,7 +526,9 @@ void
 pylith::faults::FaultCohesiveKin::_setKernelsDerivedField(pylith::feassemble::IntegratorInterface* integrator,
                                                           const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_setKernelsDerivedField(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "_setKernelsDerivedField(integrator=" << integrator << ", solution=" << solution.getLabel()
+                                                                 << ")");
 
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
     assert(coordsys);

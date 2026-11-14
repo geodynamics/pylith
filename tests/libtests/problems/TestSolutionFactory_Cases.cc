@@ -13,117 +13,124 @@
 #include "TestSolutionFactory.hh" // Implementation of cases
 
 #include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
+#include "pylith/scales/Scales.hh" // USES Scales
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "catch2/catch_test_macros.hpp"
 
 namespace pylith {
     namespace problems {
         class TestSolutionFactory_Cases;
-    } // problems
-} // pylith
+    } // namespace problems
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::problems::TestSolutionFactory_Cases {
-public:
-
+  public:
     // Data factory methods
     static TestSolutionFactory_Data* Tri(void);
 
     static TestSolutionFactory_Data* Hex(void);
 
-private:
-
-    static
-    double displacement_2d_x(const double x,
-                             const double y) {
-        return 3.0*x + 2.0*y;
+  private:
+    static double
+    displacement_2d_x(const double x,
+                      const double y) {
+        return 3.0 * x + 2.0 * y;
     } // displacement_x
 
-    static
-    double displacement_2d_y(const double x,
-                             const double y) {
-        return 2.0*x - 0.1*y;
+    static double
+    displacement_2d_y(const double x,
+                      const double y) {
+        return 2.0 * x - 0.1 * y;
     } // displacement_y
 
-    static
-    double displacement_3d_x(const double x,
-                             const double y,
-                             const double z) {
-        return 3.0*x + 2.0*y - 0.4*z;
+    static double
+    displacement_3d_x(const double x,
+                      const double y,
+                      const double z) {
+        return 3.0 * x + 2.0 * y - 0.4 * z;
     } // displacement_x
 
-    static
-    double displacement_3d_y(const double x,
-                             const double y,
-                             const double z) {
-        return 2.0*x - 0.1*y + 0.2*z;
+    static double
+    displacement_3d_y(const double x,
+                      const double y,
+                      const double z) {
+        return 2.0 * x - 0.1 * y + 0.2 * z;
     } // displacement_y
 
-    static
-    double displacement_3d_z(const double x,
-                             const double y,
-                             const double z) {
-        return 0.3*x + 0.8*y + 0.1*z;
+    static double
+    displacement_3d_z(const double x,
+                      const double y,
+                      const double z) {
+        return 0.3 * x + 0.8 * y + 0.1 * z;
     } // displacement_z
 
-    static
-    const char* displacement_units(void) {
+    static const char*
+    displacement_units(void) {
         return "m";
     } // displacement_units
 
-    static
-    double pressure_2d(const double x,
-                       const double y) {
-        return -0.3*x*y + 0.2*y*y;
+    static double
+    pressure_2d(const double x,
+                const double y) {
+        return -0.3 * x * y + 0.2 * y * y;
     } // pressure
 
-    static
-    double pressure_3d(const double x,
-                       const double y,
-                       const double z) {
-        return -0.3*x*y + 0.2*y*y + 0.7*y*z;
+    static double
+    pressure_3d(const double x,
+                const double y,
+                const double z) {
+        return -0.3 * x * y + 0.2 * y * y + 0.7 * y * z;
     } // pressure
 
-    static
-    const char* pressure_units(void) {
+    static const char*
+    pressure_units(void) {
         return "Pa";
     } // pressure_units
-
 };
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestSolutionFactory::Tri::testDispVel", "[TestSolutionFactory][testDispVel]") {
+TEST_CASE("TestSolutionFactory::Tri::testDispVel",
+          "[TestSolutionFactory][testDispVel]") {
     pylith::problems::TestSolutionFactory(pylith::problems::TestSolutionFactory_Cases::Tri()).testDispVel();
 }
-TEST_CASE("TestSolutionFactory::Tri::testDispLagrangeFault", "[TestSolutionFactory][testDispLagrangeFault]") {
+TEST_CASE("TestSolutionFactory::Tri::testDispLagrangeFault",
+          "[TestSolutionFactory][testDispLagrangeFault]") {
     pylith::problems::TestSolutionFactory(pylith::problems::TestSolutionFactory_Cases::Tri()).testDispLagrangeFault();
 }
-TEST_CASE("TestSolutionFactory::Tri::testPressure", "[TestSolutionFactory][testPressure]") {
+TEST_CASE("TestSolutionFactory::Tri::testPressure",
+          "[TestSolutionFactory][testPressure]") {
     pylith::problems::TestSolutionFactory(pylith::problems::TestSolutionFactory_Cases::Tri()).testPressure();
 }
-TEST_CASE("TestSolutionFactory::Tri::testDispTemp", "[TestSolutionFactory][testDispTemp]") {
+TEST_CASE("TestSolutionFactory::Tri::testDispTemp",
+          "[TestSolutionFactory][testDispTemp]") {
     pylith::problems::TestSolutionFactory(pylith::problems::TestSolutionFactory_Cases::Tri()).testDispTemp();
 }
-TEST_CASE("TestSolutionFactory::Tri::testSetValues", "[TestSolutionFactory][testSetValues]") {
+TEST_CASE("TestSolutionFactory::Tri::testSetValues",
+          "[TestSolutionFactory][testSetValues]") {
     pylith::problems::TestSolutionFactory(pylith::problems::TestSolutionFactory_Cases::Tri()).testSetValues();
 }
 
-TEST_CASE("TestSolutionFactory::Hex::testDispVel", "[TestSolutionFactory][testDispVel]") {
+TEST_CASE("TestSolutionFactory::Hex::testDispVel",
+          "[TestSolutionFactory][testDispVel]") {
     pylith::problems::TestSolutionFactory(pylith::problems::TestSolutionFactory_Cases::Hex()).testDispVel();
 }
-TEST_CASE("TestSolutionFactory::Hex::testDispLagrangeFault", "[TestSolutionFactory][testDispLagrangeFault]") {
+TEST_CASE("TestSolutionFactory::Hex::testDispLagrangeFault",
+          "[TestSolutionFactory][testDispLagrangeFault]") {
     pylith::problems::TestSolutionFactory(pylith::problems::TestSolutionFactory_Cases::Hex()).testDispLagrangeFault();
 }
-TEST_CASE("TestSolutionFactory::Hex::testPressure", "[TestSolutionFactory][testPressure]") {
+TEST_CASE("TestSolutionFactory::Hex::testPressure",
+          "[TestSolutionFactory][testPressure]") {
     pylith::problems::TestSolutionFactory(pylith::problems::TestSolutionFactory_Cases::Hex()).testPressure();
 }
-TEST_CASE("TestSolutionFactory::Hex::testDispTemp", "[TestSolutionFactory][testDispTemp]") {
+TEST_CASE("TestSolutionFactory::Hex::testDispTemp",
+          "[TestSolutionFactory][testDispTemp]") {
     pylith::problems::TestSolutionFactory(pylith::problems::TestSolutionFactory_Cases::Hex()).testDispTemp();
 }
-TEST_CASE("TestSolutionFactory::Hex::testSetValues", "[TestSolutionFactory][testSetValues]") {
+TEST_CASE("TestSolutionFactory::Hex::testSetValues",
+          "[TestSolutionFactory][testSetValues]") {
     pylith::problems::TestSolutionFactory(pylith::problems::TestSolutionFactory_Cases::Hex()).testSetValues();
 }
 
@@ -135,7 +142,8 @@ pylith::problems::TestSolutionFactory_Cases::Tri(void) {
 
     data->dimension = 2;
     data->meshFilename = "data/tri.mesh";
-    data->cs = new spatialdata::geocoords::CSCart();REQUIRE(data->cs);
+    data->cs = new spatialdata::geocoords::CSCart();
+    REQUIRE(data->cs);
     data->cs->setSpaceDim(data->dimension);
 
     REQUIRE(data->solutionDB);
@@ -161,7 +169,8 @@ pylith::problems::TestSolutionFactory_Cases::Hex(void) {
 
     data->dimension = 3;
     data->meshFilename = "data/hex.mesh";
-    data->cs = new spatialdata::geocoords::CSCart();REQUIRE(data->cs);
+    data->cs = new spatialdata::geocoords::CSCart();
+    REQUIRE(data->cs);
     data->cs->setSpaceDim(data->dimension);
 
     REQUIRE(data->solutionDB);

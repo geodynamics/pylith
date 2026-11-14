@@ -9,15 +9,14 @@
 // =================================================================================================
 #pragma once
 
-#include "pylith/materials/materialsfwd.hh" // forward declarations
 #include "pylith/materials/AuxiliaryFactoryPoroelasticity.hh" // ISA AuxiliaryFactoryPoroelasticity
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 
 class pylith::materials::AuxiliaryFactoryPoroelastic : public pylith::materials::AuxiliaryFactoryPoroelasticity {
     friend class TestAuxiliaryFactoryPoroelastic; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     AuxiliaryFactoryPoroelastic(void);
 
@@ -49,9 +48,8 @@ public:
     void addShearModulus(void);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
-    AuxiliaryFactoryPoroelastic(const AuxiliaryFactoryPoroelastic &); ///< Not implemented.
+  private:
+    AuxiliaryFactoryPoroelastic(const AuxiliaryFactoryPoroelastic&); ///< Not implemented.
     const AuxiliaryFactoryPoroelastic& operator=(const AuxiliaryFactoryPoroelastic&); ///< Not implemented
 
 }; // class AuxiliaryFactoryPoroelastic

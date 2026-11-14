@@ -15,20 +15,20 @@
 
 #include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
 
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
+#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
-#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
-#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
-#include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
-#include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
-#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // pythia::journal
 
-#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Setup testing data.
@@ -37,7 +37,8 @@ pylith::feassemble::TestIntegratorDomain::setUp(void) {
     _integrator = NULL;
     _data = NULL;
 
-    _mesh = new pylith::topology::Mesh();CPPUNIT_ASSERT(_mesh);
+    _mesh = new pylith::topology::Mesh();
+    CPPUNIT_ASSERT(_mesh);
     _solutionFields = NULL;
 } // setUp
 
@@ -46,11 +47,15 @@ pylith::feassemble::TestIntegratorDomain::setUp(void) {
 // Deallocate testing data.
 void
 pylith::feassemble::TestIntegratorDomain::tearDown(void) {
-    delete _integrator;_integrator = NULL;
-    delete _data;_data = NULL;
+    delete _integrator;
+    _integrator = NULL;
+    delete _data;
+    _data = NULL;
 
-    delete _solutionFields;_solutionFields = NULL;
-    delete _mesh;_mesh = NULL;
+    delete _solutionFields;
+    _solutionFields = NULL;
+    delete _mesh;
+    _mesh = NULL;
 } // tearDown
 
 
@@ -80,11 +85,13 @@ pylith::feassemble::TestIntegratorDomain::testAccessors(void) {
 
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of default label name failed.",
-                                 std::string(pylith::topology::Mesh::cells_label_name), std::string(_integrator->getLabelName()));
+                                 std::string(pylith::topology::Mesh::cells_label_name),
+                                 std::string(_integrator->getLabelName()));
     const std::string& labelName = "material-label";
     _integrator->setLabelName(labelName.c_str());
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of custom label name failed.",
-                                 labelName, std::string(_integrator->getLabelName()));
+                                 labelName,
+                                 std::string(_integrator->getLabelName()));
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of default label value.", 1, _integrator->getLabelValue());
     _integrator->setLabelValue(_data->materialId);
@@ -126,7 +133,10 @@ pylith::feassemble::TestIntegratorDomain::testInitialize(void) {
     CPPUNIT_ASSERT(_data->scales);
     const PylithReal lengthScale = _data->scales->getLengthScale();
     PylithReal norm = pylith::testing::FieldTester::checkFieldWithDB(*auxiliaryField, _data->auxiliaryDB, lengthScale);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Values in auxiliary field do not match spatial database.", 0.0, norm, tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Values in auxiliary field do not match spatial database.",
+                                         0.0,
+                                         norm,
+                                         tolerance);
 
     // Verify solution and perturbation fields can be exactly represented by discretization.
     CPPUNIT_ASSERT(_solutionFields);
@@ -165,8 +175,12 @@ pylith::feassemble::TestIntegratorDomain::testPoststep(void) {
     CPPUNIT_ASSERT(_data->scales);
     const PylithReal lengthScale = _data->scales->getLengthScale();
     PylithReal norm = pylith::testing::FieldTester::checkFieldWithDB(*_integrator->getAuxiliaryField(),
-                                                                     _data->auxiliaryUpdateDB, lengthScale);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Updated auxiliary field values do not match spatial database.", 0.0, norm, tolerance);
+                                                                     _data->auxiliaryUpdateDB,
+                                                                     lengthScale);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Updated auxiliary field values do not match spatial database.",
+                                         0.0,
+                                         norm,
+                                         tolerance);
 
     PYLITH_METHOD_END;
 } // testPoststep
@@ -247,7 +261,8 @@ pylith::feassemble::TestIntegratorDomain::testComputeResidual(void) {
     PylithCallPetscRequire(VecDestroy(&residualVec));
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of F(s) - G(s) == 0 failed.", 0.0, norm, tolerance);
-    CPPUNIT_ASSERT_MESSAGE("RHS and LHS residuals are both exactly zero, which is suspicious.", normRHS > 0.0 || normLHS > 0.0);
+    CPPUNIT_ASSERT_MESSAGE("RHS and LHS residuals are both exactly zero, which is suspicious.",
+                           normRHS > 0.0 || normLHS > 0.0);
 
     PYLITH_METHOD_END;
 } // testComputeResidual
@@ -345,7 +360,8 @@ pylith::feassemble::TestIntegratorDomain::testComputeJacobian(void) {
 
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Check of Jf(s)*(p-s) - (F(p) - F(s)) == 0 failed.", 0.0, norm, tolerance);
-    CPPUNIT_ASSERT_MESSAGE("Norm of resulting vector is exactly zero, which is suspicious.", (0 < normResidual && 0 < norm) || (0 == normResidual && 0 == norm));
+    CPPUNIT_ASSERT_MESSAGE("Norm of resulting vector is exactly zero, which is suspicious.",
+                           (0 < normResidual && 0 < norm) || (0 == normResidual && 0 == norm));
 
     PYLITH_METHOD_END;
 } // testComputeJacobian
@@ -362,7 +378,8 @@ pylith::feassemble::TestIntegratorDomain::_initializeMin(void) {
     pylith::meshio::MeshIOAscii iohandler;
     CPPUNIT_ASSERT(_data->meshFilename);
     iohandler.filename(_data->meshFilename);
-    iohandler.read(_mesh);CPPUNIT_ASSERT(_mesh);
+    iohandler.read(_mesh);
+    CPPUNIT_ASSERT(_mesh);
 
     CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any cells.", _mesh->numCells() > 0);
     CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any vertices.", _mesh->numVertices() > 0);
@@ -373,11 +390,13 @@ pylith::feassemble::TestIntegratorDomain::_initializeMin(void) {
     pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->scales);
 
     // Setup solution fields.
-    delete _solutionFields;_solutionFields = new pylith::topology::Fields(*_mesh);CPPUNIT_ASSERT(_solutionFields);
-    _solutionFields->add("solution","solution");
-    _solutionFields->add("solution_dot","solution_dot");
-    _solutionFields->add("perturbation","perturbation");
-    _solutionFields->add("perturbation_dot","perturbation_dot");
+    delete _solutionFields;
+    _solutionFields = new pylith::topology::Fields(*_mesh);
+    CPPUNIT_ASSERT(_solutionFields);
+    _solutionFields->add("solution", "solution");
+    _solutionFields->add("solution_dot", "solution_dot");
+    _solutionFields->add("perturbation", "perturbation");
+    _solutionFields->add("perturbation_dot", "perturbation_dot");
     _setupSolutionFields();
 
     PYLITH_METHOD_END;
@@ -474,20 +493,24 @@ pylith::feassemble::TestIntegratorDomain::_zeroBoundary(pylith::topology::Field*
     CPPUNIT_ASSERT(field);
     CPPUNIT_ASSERT(_data->boundaryLabel);
 
-    PetscDM dmMesh = field->mesh().dmMesh();CPPUNIT_ASSERT(dmMesh);
+    PetscDM dmMesh = field->mesh().dmMesh();
+    CPPUNIT_ASSERT(dmMesh);
     PetscDMLabel label = NULL;
     PetscIS pointIS = NULL;
-    const PetscInt *points;
+    const PetscInt* points;
     PetscInt numPoints = 0;
     PetscBool hasLabel = PETSC_FALSE;
-    PylithCallPetscRequire(DMHasLabel(dmMesh, _data->boundaryLabel, &hasLabel));CPPUNIT_ASSERT(hasLabel);
+    PylithCallPetscRequire(DMHasLabel(dmMesh, _data->boundaryLabel, &hasLabel));
+    CPPUNIT_ASSERT(hasLabel);
     PylithCallPetscRequire(DMGetLabel(dmMesh, _data->boundaryLabel, &label));
-    PylithCallPetscRequire(DMLabelGetStratumIS(label, 1, &pointIS));CPPUNIT_ASSERT(pointIS);
+    PylithCallPetscRequire(DMLabelGetStratumIS(label, 1, &pointIS));
+    CPPUNIT_ASSERT(pointIS);
     PylithCallPetscRequire(ISGetLocalSize(pointIS, &numPoints));
     PylithCallPetscRequire(ISGetIndices(pointIS, &points));
 
     pylith::topology::VecVisitorMesh fieldVisitor(*field);
-    PylithScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);
+    PylithScalar* fieldArray = fieldVisitor.localArray();
+    CPPUNIT_ASSERT(fieldArray);
 
     for (PylithInt p = 0; p < numPoints; ++p) {
         const PylithInt p_bc = points[p];
@@ -495,7 +518,7 @@ pylith::feassemble::TestIntegratorDomain::_zeroBoundary(pylith::topology::Field*
         const PylithInt off = fieldVisitor.sectionOffset(p_bc);
         const PylithInt dof = fieldVisitor.sectionDof(p_bc);
         for (PylithInt i = 0; i < dof; ++i) {
-            fieldArray[off+i] = 0.0;
+            fieldArray[off + i] = 0.0;
         } // for
     } // for
 
@@ -550,11 +573,16 @@ pylith::feassemble::TestIntegratorDomain_Data::TestIntegratorDomain_Data(void) :
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor
 pylith::feassemble::TestIntegratorDomain_Data::~TestIntegratorDomain_Data(void) {
-    delete cs;cs = NULL;
-    delete scales;scales = NULL;
-    delete solutionDB;solutionDB = NULL;
-    delete auxiliaryDB;auxiliaryDB = NULL;
-    delete auxiliaryUpdateDB;auxiliaryUpdateDB = NULL;
+    delete cs;
+    cs = NULL;
+    delete scales;
+    scales = NULL;
+    delete solutionDB;
+    solutionDB = NULL;
+    delete auxiliaryDB;
+    auxiliaryDB = NULL;
+    delete auxiliaryUpdateDB;
+    auxiliaryUpdateDB = NULL;
 } // destructor
 
 

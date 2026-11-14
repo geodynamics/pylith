@@ -17,8 +17,7 @@ class pylith::problems::PhysicsStub : public pylith::problems::Physics {
     friend class TestPhysicsStub; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     PhysicsStub(void);
 
@@ -59,8 +58,7 @@ public:
                                                   const pylith::topology::Mesh& physicsMesh);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get auxiliary factory associated with physics.
      *
      * @return Auxiliary factory for physics object.
@@ -68,13 +66,11 @@ protected:
     pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::feassemble::AuxiliaryFactory* _auxiliaryFactory; ///< Factory for creating auxiliary subfields.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     PhysicsStub(const PhysicsStub&); ///< Not implemented.
     const PhysicsStub& operator=(const PhysicsStub&); ///< Not implemented
 

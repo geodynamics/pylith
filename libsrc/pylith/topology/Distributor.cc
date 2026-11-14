@@ -12,59 +12,60 @@
 
 #include "pylith/topology/Distributor.hh" // implementation of class methods
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/MeshOps.hh" // USES MeshOps
-#include "pylith/topology/Field.hh" // USES Field
-#include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
-#include "pylith/topology/Stratum.hh" // USES Stratum
-#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/faults/FaultCohesive.hh" // USES FaultCohesive
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
+#include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/utils/journals.hh" // USES pythia::journal
-#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "petsc/private/dmpleximpl.h"
 
+#include <cassert> // USES assert()
 #include <cstring> // USES strlen()
 #include <strings.h> // USES strcasecmp()
-#include <cassert> // USES assert()
 
 // ------------------------------------------------------------------------------------------------
 namespace pylith {
     namespace topology {
         class _Distributor {
-public:
-
-            static
-            void write(pylith::meshio::DataWriter* writer,
-                       const pylith::topology::Mesh& mesh);
+          public:
+            static void write(pylith::meshio::DataWriter* writer,
+                              const pylith::topology::Mesh& mesh);
 
             // :KLUDGE: Local copy of DMPlexCopy_Internal()
-            static
-            PetscErrorCode DMPlexCopy(DM dmin,
-                                      PetscBool copyPeriodicity,
-                                      PetscBool copyOverlap,
-                                      DM dmout);
+            static PetscErrorCode DMPlexCopy(DM dmin,
+                                             PetscBool copyPeriodicity,
+                                             PetscBool copyOverlap,
+                                             DM dmout);
 
 
         }; // _Distributor
-    } // topology
-} // pylith
+    } // namespace topology
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 static PetscErrorCode
 DMPlexGetAdjacency_SupportOnly_Internal(DM dm,
                                         PetscInt p,
-                                        PetscInt *adjSize,
+                                        PetscInt* adjSize,
                                         PetscInt adj[],
-                                        void *ctx) {
-    const PetscInt *support = NULL;
+                                        void* ctx) {
+    const PetscInt* support = NULL;
     PetscInt maxAdjSize = *adjSize;
 
     PetscFunctionBeginHot;
     PylithCallPetsc(DMPlexGetSupportSize(dm, p, adjSize));
     PylithCallPetsc(DMPlexGetSupport(dm, p, &support));
-    PetscCheck(*adjSize <= maxAdjSize, PETSC_COMM_SELF, PETSC_ERR_PLIB, "Invalid mesh exceeded adjacency allocation (%" PetscInt_FMT ")", maxAdjSize);
+    PetscCheck(*adjSize <= maxAdjSize,
+               PETSC_COMM_SELF,
+               PETSC_ERR_PLIB,
+               "Invalid mesh exceeded adjacency allocation (%" PetscInt_FMT ")",
+               maxAdjSize);
     for (PetscInt s = 0; s < *adjSize; ++s) {
         adj[s] = support[s];
     }
@@ -77,7 +78,8 @@ DMPlexGetAdjacency_SupportOnly_Internal(DM dm,
 pylith::topology::Distributor::Distributor(void) :
     _writer(nullptr),
     _partitioner("parmetis"),
-    _useEdgeWeighting(true) {}
+    _useEdgeWeighting(true) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -107,11 +109,13 @@ pylith::topology::Distributor::setUseEdgeWeighting(const bool flag) {
 // Set partitioner.
 void
 pylith::topology::Distributor::setPartitioner(const char* partitioner) {
-    if ((0 == strcasecmp(partitioner, "parmetis")) || (0 == strcasecmp(partitioner, "chaco")) || (0 == strcasecmp(partitioner, "simple"))) {
+    if ((0 == strcasecmp(partitioner, "parmetis")) || (0 == strcasecmp(partitioner, "chaco")) ||
+        (0 == strcasecmp(partitioner, "simple"))) {
         _partitioner = partitioner;
     } else {
         PYLITH_ERROR(pylith::exceptions::InvalidParameterError,
-                     "Unknown partitioner '" << partitioner << "'. Partitioner must be 'parmetis', 'chaco', or 'simple'.");
+                     "Unknown partitioner '" << partitioner
+                                             << "'. Partitioner must be 'parmetis', 'chaco', or 'simple'.");
     } // if/else
 } // setPartitioner
 
@@ -122,10 +126,12 @@ pylith::topology::Mesh*
 pylith::topology::Distributor::distribute(const pylith::topology::Mesh& mesh,
                                           const std::vector<pylith::faults::FaultCohesive*>& faults) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_INFO_ROOT(pylith::journal::application_flow_detail3, "Partitioning mesh using PETSc '" << _partitioner << "' partitioner.");
+    PYLITH_INFO_ROOT(pylith::journal::application_flow_detail3,
+                     "Partitioning mesh using PETSc '" << _partitioner << "' partitioner.");
 
     PetscPartitioner partitioner = nullptr;
-    PetscDM dmOrig = mesh.getDM();assert(dmOrig);
+    PetscDM dmOrig = mesh.getDM();
+    assert(dmOrig);
     PylithCallPetsc(DMPlexGetPartitioner(dmOrig, &partitioner));
     PylithCallPetsc(PetscPartitionerSetType(partitioner, _partitioner.c_str()));
     if ((_partitioner == std::string("parmetis")) && _useEdgeWeighting) {
@@ -145,10 +151,12 @@ pylith::topology::Distributor::distribute(const pylith::topology::Mesh& mesh,
         PylithCallPetsc(DMPlexDistributeSetDefault(dmNew, PETSC_FALSE));
         PylithCallPetsc(DMPlexReorderCohesiveSupports(dmNew));
         PylithCallPetsc(DMViewFromOptions(dmNew, NULL, "-pylith_dist_dm_view"));
-        meshNew = new pylith::topology::Mesh(dmNew, mesh);assert(meshNew);
+        meshNew = new pylith::topology::Mesh(dmNew, mesh);
+        assert(meshNew);
     } else {
         PetscObjectReference(PetscObject(dmOrig));
-        meshNew = new pylith::topology::Mesh(dmOrig, mesh);assert(meshNew);
+        meshNew = new pylith::topology::Mesh(dmOrig, mesh);
+        assert(meshNew);
     } // if/else
 
     pythia::journal::debug_t debug(pylith::journal::mesh_detail5);
@@ -156,7 +164,8 @@ pylith::topology::Distributor::distribute(const pylith::topology::Mesh& mesh,
         meshNew->view(":mesh_distributed.txt:ascii_info_detail");
         pylith::topology::Mesh* meshExploded = pylith::topology::MeshOps::explode(*meshNew);
         meshExploded->view(":mesh_domain_after_initialize.tex:ascii_latex");
-        delete meshExploded;meshExploded = nullptr;
+        delete meshExploded;
+        meshExploded = nullptr;
     } // if
     if (_writer) {
         _Distributor::write(_writer, *meshNew);
@@ -165,8 +174,9 @@ pylith::topology::Distributor::distribute(const pylith::topology::Mesh& mesh,
     if (pylith::topology::MeshOps::getNumCells(*meshNew) == 0) {
         const int commRank = meshNew->getCommRank();
         PYLITH_ERROR(pylith::exceptions::TopologyError,
-                     "No cells are assigned to process " << commRank << " after distribution. "
-                                                         << "Either there are too many processes for the mesh or there is a topology related error.");
+                     "No cells are assigned to process "
+                         << commRank << " after distribution. "
+                         << "Either there are too many processes for the mesh or there is a topology related error.");
     } // if
 
     PYLITH_METHOD_RETURN(meshNew);
@@ -193,7 +203,7 @@ pylith::topology::Distributor::distributeOverlap(PetscDM* dmOverlap,
     const char* meshName;
 
     const size_t numFaults = faults.size();
-    PylithCallPetsc(PetscObjectGetComm((PetscObject)dmMesh,&comm));
+    PylithCallPetsc(PetscObjectGetComm((PetscObject)dmMesh, &comm));
     PetscCallMPI(MPI_Comm_size(comm, &size));
     PetscCallMPI(MPI_Comm_rank(comm, &rank));
     if ((0 == numFaults) || (1 == size)) {
@@ -223,21 +233,35 @@ pylith::topology::Distributor::distributeOverlap(PetscDM* dmOverlap,
     PylithCallPetsc(PetscSectionCreate(comm, &leafSection));
     PylithCallPetsc(DMPlexSetAdjacencyUser(dmMesh, DMPlexGetAdjacency_SupportOnly_Internal, NULL));
     PylithCallPetsc(DMPlexDistributeOwnership(dmMesh, rootSection, &rootrank, leafSection, &leafrank));
-    PylithCallPetsc(DMPlexCreateOverlapLabelFromLabels(dmMesh, numFaults, ovIncludeLabels, ovIncludeLabelValues,
-                                                       numFaults, ovExcludeLabels, ovExcludeLabelValues, rootSection, rootrank, leafSection, leafrank, &lblOverlap));
+    PylithCallPetsc(DMPlexCreateOverlapLabelFromLabels(dmMesh,
+                                                       numFaults,
+                                                       ovIncludeLabels,
+                                                       ovIncludeLabelValues,
+                                                       numFaults,
+                                                       ovExcludeLabels,
+                                                       ovExcludeLabelValues,
+                                                       rootSection,
+                                                       rootrank,
+                                                       leafSection,
+                                                       leafrank,
+                                                       &lblOverlap));
     PylithCallPetsc(DMPlexSetAdjacencyUser(dmMesh, NULL, NULL));
 
-    delete[] ovIncludeLabels;ovIncludeLabels = NULL;
-    delete[] ovIncludeLabelValues;ovIncludeLabelValues = NULL;
-    delete[] ovExcludeLabels;ovExcludeLabels = NULL;
-    delete[] ovExcludeLabelValues;ovExcludeLabelValues = NULL;
+    delete[] ovIncludeLabels;
+    ovIncludeLabels = NULL;
+    delete[] ovIncludeLabelValues;
+    ovIncludeLabelValues = NULL;
+    delete[] ovExcludeLabels;
+    ovExcludeLabels = NULL;
+    delete[] ovExcludeLabelValues;
+    ovExcludeLabelValues = NULL;
 
     /* Convert overlap label to stratified migration SF */
     PylithCallPetsc(DMPlexPartitionLabelCreateSF(dmMesh, lblOverlap, PETSC_TRUE, &sfOverlap));
     PylithCallPetsc(DMPlexStratifyMigrationSF(dmMesh, sfOverlap, &sfStratified));
     PylithCallPetsc(PetscSFDestroy(&sfOverlap));
     sfOverlap = sfStratified;
-    PylithCallPetsc(PetscObjectSetName((PetscObject) sfOverlap, "Overlap SF "));
+    PylithCallPetsc(PetscObjectSetName((PetscObject)sfOverlap, "Overlap SF "));
     PylithCallPetsc(PetscSFSetFromOptions(sfOverlap));
 
     PylithCallPetsc(PetscSectionDestroy(&rootSection));
@@ -247,8 +271,8 @@ pylith::topology::Distributor::distributeOverlap(PetscDM* dmOverlap,
 
     /* Build the overlapping DM */
     PylithCallPetsc(DMPlexCreate(comm, dmOverlap));
-    PylithCallPetsc(PetscObjectGetName((PetscObject) dmMesh, &meshName));
-    PylithCallPetsc(PetscObjectSetName((PetscObject) *dmOverlap, meshName));
+    PylithCallPetsc(PetscObjectGetName((PetscObject)dmMesh, &meshName));
+    PylithCallPetsc(PetscObjectSetName((PetscObject)*dmOverlap, meshName));
     PylithCallPetsc(DMPlexMigrate(dmMesh, sfOverlap, *dmOverlap));
     PylithCallPetsc(_Distributor::DMPlexCopy(dmMesh, PETSC_TRUE, PETSC_FALSE, *dmOverlap));
 
@@ -262,7 +286,9 @@ pylith::topology::Distributor::distributeOverlap(PetscDM* dmOverlap,
     PylithCallPetsc(DMPlexCreatePointSF(*dmOverlap, sfOverlap, PETSC_FALSE, &sfPoint));
     PylithCallPetsc(DMSetPointSF(*dmOverlap, sfPoint));
     PylithCallPetsc(DMGetCoordinateDM(*dmOverlap, &dmCoord));
-    if (dmCoord) { PylithCallPetsc(DMSetPointSF(dmCoord, sfPoint));}
+    if (dmCoord) {
+        PylithCallPetsc(DMSetPointSF(dmCoord, sfPoint));
+    }
     PylithCallPetsc(PetscSFDestroy(&sfPoint));
     /* Cleanup overlap partition */
     PylithCallPetsc(DMLabelDestroy(&lblOverlap));
@@ -306,7 +332,8 @@ pylith::topology::_Distributor::write(meshio::DataWriter* const writer,
     partitionField.zeroLocal();
     partitionField.createOutputVector();
 
-    PetscDM dmMesh = mesh.getDM();assert(dmMesh);
+    PetscDM dmMesh = mesh.getDM();
+    assert(dmMesh);
     topology::Stratum cellsStratum(dmMesh, pylith::topology::Stratum::HEIGHT, 0);
     const PetscInt cStart = cellsStratum.begin();
     const PetscInt cEnd = cellsStratum.end();
@@ -336,7 +363,8 @@ pylith::topology::_Distributor::write(meshio::DataWriter* const writer,
     writer->closeTimeStep();
     writer->close();
 
-    delete outputField;outputField = NULL;
+    delete outputField;
+    outputField = NULL;
 
     PYLITH_METHOD_END;
 } // write
@@ -348,7 +376,7 @@ pylith::topology::_Distributor::DMPlexCopy(DM dmin,
                                            PetscBool copyPeriodicity,
                                            PetscBool copyOverlap,
                                            DM dmout) {
-    const PetscReal     *maxCell, *Lstart, *L;
+    const PetscReal *maxCell, *Lstart, *L;
     VecType vecType;
     MatType matType;
     PetscBool dist, useCeed, balance_partition;
@@ -357,7 +385,9 @@ pylith::topology::_Distributor::DMPlexCopy(DM dmin,
 
 
     PetscFunctionBegin;
-    if (dmin == dmout) { PetscFunctionReturn(PETSC_SUCCESS);}
+    if (dmin == dmout) {
+        PetscFunctionReturn(PETSC_SUCCESS);
+    }
     PylithCallPetsc(DMGetVecType(dmin, &vecType));
     PylithCallPetsc(DMSetVecType(dmout, vecType));
     PylithCallPetsc(DMGetMatType(dmin, &matType));

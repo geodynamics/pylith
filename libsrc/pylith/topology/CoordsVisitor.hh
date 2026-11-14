@@ -21,8 +21,7 @@ class pylith::topology::CoordsVisitor { // CoordsVisitor
     friend class TestCoordsVisitor; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /** Default constructor (includes initialization).
      *
      * @param dmMesh PETSc DM for finite-element mesh.
@@ -94,20 +93,17 @@ public:
      *
      * @param dmMesh PETSc DM to optimize closure on coordinates field.
      */
-    static
-    void optimizeClosure(PetscDM dmMesh);
+    static void optimizeClosure(PetscDM dmMesh);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     const PetscDM _dm; ///< Cached PETSc dm for mesh.
     PetscSection _section; ///< Cached PETSc section.
     PetscVec _localVec; ///< Cached local PETSc Vec.
     PetscScalar* _localArray; ///< Cached local array.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
-private:
-
+  private:
     CoordsVisitor(const CoordsVisitor&); ///< Not implemented
     const CoordsVisitor& operator=(const CoordsVisitor&); ///< Not implemented
 

@@ -16,11 +16,11 @@
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
-#include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 
-#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
 #include "pylith/exceptions/Exceptions.hh" // USES Exceptions
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
 
 #include <cassert>
 
@@ -28,8 +28,7 @@
 namespace pylith {
     namespace bc {
         class _TimeDependentAuxiliaryFactory {
-public:
-
+          public:
             ///< Names of field components in XYZ coordinate system.
             static const char* componentsXYZ[3];
 
@@ -42,13 +41,13 @@ public:
             static const char* genericComponent;
         }; // _TimeDependentAuxiliaryFactory
 
-        const char* _TimeDependentAuxiliaryFactory::componentsXYZ[3] = { "_x", "_y", "_z" };
-        const char* _TimeDependentAuxiliaryFactory::componentsTN[2] = { "_tangential", "_normal" };
-        const char* _TimeDependentAuxiliaryFactory::componentsTTN[3] = { "_tangential_1", "_tangential_2", "_normal" };
+        const char* _TimeDependentAuxiliaryFactory::componentsXYZ[3] = {"_x", "_y", "_z"};
+        const char* _TimeDependentAuxiliaryFactory::componentsTN[2] = {"_tangential", "_normal"};
+        const char* _TimeDependentAuxiliaryFactory::componentsTTN[3] = {"_tangential_1", "_tangential_2", "_normal"};
 
         const char* _TimeDependentAuxiliaryFactory::genericComponent = "timedependentauxiliaryfactory";
-    } // bc
-} // pylith
+    } // namespace bc
+} // namespace pylith
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -60,13 +59,15 @@ pylith::bc::TimeDependentAuxiliaryFactory::TimeDependentAuxiliaryFactory(const R
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::bc::TimeDependentAuxiliaryFactory::~TimeDependentAuxiliaryFactory(void) {}
+pylith::bc::TimeDependentAuxiliaryFactory::~TimeDependentAuxiliaryFactory(void) {
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Set names of vector components in auxiliary subfield.
 void
-pylith::bc::TimeDependentAuxiliaryFactory::_setVectorFieldComponentNames(pylith::topology::FieldBase::Description* description) {
+pylith::bc::TimeDependentAuxiliaryFactory::_setVectorFieldComponentNames(
+    pylith::topology::FieldBase::Description* description) {
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow, "_setVectorFieldComponentNames(description)");
 
@@ -84,7 +85,8 @@ pylith::bc::TimeDependentAuxiliaryFactory::_setVectorFieldComponentNames(pylith:
     } // if/else
     if (!componentNames) {
         PYLITH_ERROR(pylith::exceptions::InternalLogicError,
-                     "Unknown case for auxiliary component reference ("<<_auxComponents<<") and spatial dimension ("<<_spaceDim<<").");
+                     "Unknown case for auxiliary component reference (" << _auxComponents << ") and spatial dimension ("
+                                                                        << _spaceDim << ").");
     } // if
 
     assert(size_t(_spaceDim) == description->numComponents);
@@ -295,16 +297,18 @@ pylith::bc::TimeDependentAuxiliaryFactory::addTimeHistoryValue(void) {
 
 // ---------------------------------------------------------------------------------------------------------------------
 void
-pylith::bc::TimeDependentAuxiliaryFactory::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
-                                                                const PylithReal t,
-                                                                const PylithReal timeScale,
-                                                                spatialdata::spatialdb::TimeHistory* const dbTimeHistory) {
+pylith::bc::TimeDependentAuxiliaryFactory::updateAuxiliaryField(
+    pylith::topology::Field* auxiliaryField,
+    const PylithReal t,
+    const PylithReal timeScale,
+    spatialdata::spatialdb::TimeHistory* const dbTimeHistory) {
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow_detail5, "Updating auxiliary field");
     assert(auxiliaryField);
     assert(dbTimeHistory);
 
-    PetscSection auxiliaryFieldSection = auxiliaryField->getLocalSection();assert(auxiliaryFieldSection);
+    PetscSection auxiliaryFieldSection = auxiliaryField->getLocalSection();
+    assert(auxiliaryFieldSection);
     PetscInt pStart = 0, pEnd = 0;
     PylithCallPetsc(PetscSectionGetChart(auxiliaryFieldSection, &pStart, &pEnd));
     if (pStart == pEnd) {
@@ -312,7 +316,8 @@ pylith::bc::TimeDependentAuxiliaryFactory::updateAuxiliaryField(pylith::topology
     } // if
 
     pylith::topology::VecVisitorMesh auxiliaryFieldVisitor(*auxiliaryField);
-    PetscScalar* auxiliaryFieldArray = auxiliaryFieldVisitor.localArray();assert(auxiliaryFieldArray);
+    PetscScalar* auxiliaryFieldArray = auxiliaryFieldVisitor.localArray();
+    assert(auxiliaryFieldArray);
 
     // Compute offset of time history subfields in auxiliary field.
     const PetscInt i_startTime = auxiliaryField->getSubfieldInfo("time_history_start_time").index;
@@ -321,7 +326,9 @@ pylith::bc::TimeDependentAuxiliaryFactory::updateAuxiliaryField(pylith::topology
     // Loop over all points in section.
     for (PetscInt p = pStart; p < pEnd; ++p) {
         // Skip points without values in section.
-        if (!auxiliaryFieldVisitor.sectionDof(p)) {continue;}
+        if (!auxiliaryFieldVisitor.sectionDof(p)) {
+            continue;
+        }
 
         // Get starting time and compute relative time for point.
         const PetscInt offStartTime = auxiliaryFieldVisitor.sectionSubfieldOffset(i_startTime, p);
@@ -335,7 +342,8 @@ pylith::bc::TimeDependentAuxiliaryFactory::updateAuxiliaryField(pylith::topology
             const int err = dbTimeHistory->query(&value, tDim);
             if (err) {
                 PYLITH_ERROR(pylith::exceptions::OutOfRangeError,
-                             "Error querying for time '" << tDim << "' in time history database '" << dbTimeHistory->getDescription() << "'.");
+                             "Error querying for time '" << tDim << "' in time history database '"
+                                                         << dbTimeHistory->getDescription() << "'.");
             } // if
         } // if
 

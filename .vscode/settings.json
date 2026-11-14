@@ -2,20 +2,9 @@
     "editor.formatOnSave": true,
     "telemetry.enableTelemetry": false,
     "telemetry.enableCrashReporter": false,
-    "uncrustify.configPath.linux": "developer/uncrustify.cfg",
-    "uncrustify.configPath.osx": "developer/uncrustify.cfg",
-    "[markdown]": {
-        "editor.wordWrap": "wordWrapColumn",
-        "editor.wordWrapColumn": 100,
-    },
     "files.associations": {
         "*.icc": "cpp",
-        "iosfwd": "cpp"
     },
-    "python.formatting.autopep8Args": [
-        "-max-line-length",
-        "120"
-    ],
     "testMate.cpp.test.advancedExecutables": [
         {
             "name": "${filename}",
@@ -62,5 +51,27 @@
         "xdmf"
     ],
     "C_Cpp.default.cppStandard": "c++14",
-    "C_Cpp.default.cStandard": "c11"
+    "C_Cpp.default.cStandard": "c11",
+    "[markdown]": {
+        "editor.wordWrap": "wordWrapColumn",
+        "editor.wordWrapColumn": 100,
+    },
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true
+    },
+    "black-formatter.args": [
+        "--line-length",
+        "120"
+    ],
+    "[cpp]": {
+        "editor.defaultFormatter": "ms-vscode.cpptools",
+        "editor.formatOnSave": true
+    },
+    "[c]": {
+        "editor.defaultFormatter": "ms-vscode.cpptools",
+        "editor.formatOnSave": true
+    },
+    "C_Cpp.formatting": "clangFormat",
+    "C_Cpp.clang_format_style": "file"
 }

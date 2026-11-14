@@ -16,8 +16,7 @@ class pylith::initializers::MeshInsertInterfaces : public pylith::initializers::
     friend class TestMeshInsertInterfaces;
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     MeshInsertInterfaces(void);
 
@@ -37,8 +36,7 @@ public:
                                 const pylith::problems::Problem& problem);
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     MeshInsertInterfaces(const MeshInsertInterfaces&); ///< Not implemented
     const MeshInsertInterfaces& operator=(const MeshInsertInterfaces&); ///< Not implemented
 

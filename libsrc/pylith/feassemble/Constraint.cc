@@ -12,16 +12,16 @@
 
 #include "pylith/feassemble/Constraint.hh" // implementation of object methods
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/MeshOps.hh" // USES MeshOps
-#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
 #include "pylith/problems/Physics.hh" // USES Physics
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
 
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/petsc/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
-#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "pylith/scales/Scales.hh" // USES Scales
 
@@ -34,7 +34,8 @@ pylith::feassemble::Constraint::Constraint(pylith::problems::Physics* const phys
     _subfieldName(""),
     _labelName(""),
     _labelValue(1),
-    _boundaryMesh(NULL) {}
+    _boundaryMesh(NULL) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -50,7 +51,8 @@ void
 pylith::feassemble::Constraint::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _boundaryMesh;_boundaryMesh = NULL;
+    delete _boundaryMesh;
+    _boundaryMesh = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -60,13 +62,12 @@ pylith::feassemble::Constraint::deallocate(void) {
 // Set name of constrained solution subfield.
 void
 pylith::feassemble::Constraint::setSubfieldName(const char* value) {
-    PYLITH_DEBUG(pylith::journal::application_flow, "setSubfieldName(value="<<value<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "setSubfieldName(value=" << value << ")");
 
     if (!value || (0 == strlen(value))) {
         std::ostringstream msg;
         assert(_physics);
-        PYLITH_ERROR(pylith::exceptions::EmptyStringError,
-                     "Empty string given for name of solution subfield.");
+        PYLITH_ERROR(pylith::exceptions::EmptyStringError, "Empty string given for name of solution subfield.");
     } // if
     _subfieldName = value;
 } // setSubfieldName
@@ -84,11 +85,10 @@ pylith::feassemble::Constraint::getSubfieldName(void) const {
 // Set name of label marking boundary associated with constraint.
 void
 pylith::feassemble::Constraint::setLabelName(const char* value) {
-    PYLITH_DEBUG(pylith::journal::application_flow, "setLabelName(value="<<value<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "setLabelName(value=" << value << ")");
 
     if (strlen(value) == 0) {
-        PYLITH_ERROR(pylith::exceptions::EmptyStringError,
-                     "Empty string given for constraint label.");
+        PYLITH_ERROR(pylith::exceptions::EmptyStringError, "Empty string given for constraint label.");
     } // if
 
     _labelName = value;
@@ -125,7 +125,7 @@ void
 pylith::feassemble::Constraint::setConstrainedDOF(const int* flags,
                                                   const int size) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "setConstrainedDOF(flags="<<flags<<", size="<<size<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "setConstrainedDOF(flags=" << flags << ", size=" << size << ")");
 
     assert((size > 0 && flags) || (!size && !flags));
 
@@ -163,7 +163,8 @@ pylith::feassemble::Constraint::getPhysicsDomainMesh(void) const {
 void
 pylith::feassemble::Constraint::setKernelsDiagnosticField(const std::vector<ProjectKernels>& kernels) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" setKernelsDiagnosticField(# kernels="<<kernels.size()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 _labelName << "=" << _labelValue << " setKernelsDiagnosticField(# kernels=" << kernels.size() << ")");
 
     _kernelsDiagnosticField = kernels;
 
@@ -176,12 +177,17 @@ pylith::feassemble::Constraint::setKernelsDiagnosticField(const std::vector<Proj
 void
 pylith::feassemble::Constraint::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "initialize(solution="<<solution.getLabel()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "initialize(solution=" << solution.getLabel() << ")");
 
     const char* componentName = _physics->getFullIdentifier();
-    delete _boundaryMesh;_boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(), _labelName.c_str(), _labelValue, componentName);
+    delete _boundaryMesh;
+    _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(),
+                                                                  _labelName.c_str(),
+                                                                  _labelValue,
+                                                                  componentName);
     assert(_boundaryMesh);
-    PetscDM dmBoundary = _boundaryMesh->getDM();assert(dmBoundary);
+    PetscDM dmBoundary = _boundaryMesh->getDM();
+    assert(dmBoundary);
     pylith::topology::CoordsVisitor::optimizeClosure(dmBoundary);
 
     assert(_physics);
@@ -204,7 +210,7 @@ pylith::feassemble::Constraint::poststep(const PylithReal t,
                                          const pylith::topology::Field& solution,
                                          const pylith::problems::Observer::NotificationType notification) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "poststep(t="<<t<<", dt="<<dt<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "poststep(t=" << t << ", dt=" << dt << ")");
 
     notifyObservers(t, tindex, solution, notification);
 
@@ -217,7 +223,7 @@ pylith::feassemble::Constraint::poststep(const PylithReal t,
 void
 pylith::feassemble::Constraint::setState(const PylithReal t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "setState(t="<<t<<") empty method");
+    PYLITH_DEBUG(pylith::journal::application_flow, "setState(t=" << t << ") empty method");
 
     // Default is to do nothing.
 
@@ -246,7 +252,8 @@ pylith::feassemble::Constraint::_computeDiagnosticField(void) {
     assert(numKernels > 0);
     PetscBdPointFn** kernelsArray = (numKernels > 0) ? new PetscBdPointFn*[numKernels] : NULL;
     for (size_t iKernel = 0; iKernel < numKernels; ++iKernel) {
-        const pylith::topology::Field::SubfieldInfo& sinfo = _diagnosticField->getSubfieldInfo(_kernelsDiagnosticField[iKernel].subfield.c_str());
+        const pylith::topology::Field::SubfieldInfo& sinfo =
+            _diagnosticField->getSubfieldInfo(_kernelsDiagnosticField[iKernel].subfield.c_str());
         kernelsArray[sinfo.index] = _kernelsDiagnosticField[iKernel].f;
     } // for
 
@@ -254,8 +261,19 @@ pylith::feassemble::Constraint::_computeDiagnosticField(void) {
     PetscDMLabel diagnosticFieldLabel = NULL;
     const PetscInt labelValue = 1;
     PylithCallPetsc(DMGetLabel(diagnosticDM, "output", &diagnosticFieldLabel));
-    PylithCallPetsc(DMProjectBdFieldLabelLocal(diagnosticDM, t, diagnosticFieldLabel, 1, &labelValue, PETSC_DETERMINE, NULL, _auxiliaryField->getLocalVector(), kernelsArray, INSERT_VALUES, _diagnosticField->getLocalVector()));
-    delete[] kernelsArray;kernelsArray = NULL;
+    PylithCallPetsc(DMProjectBdFieldLabelLocal(diagnosticDM,
+                                               t,
+                                               diagnosticFieldLabel,
+                                               1,
+                                               &labelValue,
+                                               PETSC_DETERMINE,
+                                               NULL,
+                                               _auxiliaryField->getLocalVector(),
+                                               kernelsArray,
+                                               INSERT_VALUES,
+                                               _diagnosticField->getLocalVector()));
+    delete[] kernelsArray;
+    kernelsArray = NULL;
 
     pythia::journal::debug_t debug(pylith::journal::auxiliary_fields);
     if (debug.state()) {
@@ -273,17 +291,20 @@ void
 pylith::feassemble::Constraint::_setKernelConstants(const pylith::topology::Field& solution,
                                                     const PylithReal dt) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "_setKernelConstants(solution="<<solution.getLabel()<<", dt="<<dt<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 "_setKernelConstants(solution=" << solution.getLabel() << ", dt=" << dt << ")");
 
     assert(_physics);
     const pylith::real_array& constants = _physics->getKernelConstants(dt);
 
     PetscDS prob = NULL;
-    PetscDM dmSoln = solution.getDM();assert(dmSoln);
+    PetscDM dmSoln = solution.getDM();
+    assert(dmSoln);
 
     // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
     // the correct one.
-    PylithCallPetsc(DMGetDS(dmSoln, &prob));assert(prob);
+    PylithCallPetsc(DMGetDS(dmSoln, &prob));
+    assert(prob);
     if (constants.size() > 0) {
         PylithCallPetsc(PetscDSSetConstants(prob, constants.size(), const_cast<double*>(&constants[0])));
     } else {

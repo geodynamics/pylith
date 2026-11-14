@@ -24,12 +24,14 @@ const char* pylith::utils::PylithVersion::_gitHash = PYLITH_GIT_HASH;
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::utils::PylithVersion::PylithVersion(void) {}
+pylith::utils::PylithVersion::PylithVersion(void) {
+}
 
 
 // ----------------------------------------------------------------------
 // Default destructor.
-pylith::utils::PylithVersion::~PylithVersion(void) {}
+pylith::utils::PylithVersion::~PylithVersion(void) {
+}
 
 
 // ----------------------------------------------------------------------

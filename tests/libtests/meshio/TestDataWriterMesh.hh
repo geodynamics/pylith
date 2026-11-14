@@ -17,14 +17,13 @@
 namespace pylith {
     namespace meshio {
         class TestDataWriterMesh;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterMesh {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestDataWriterMesh(void);
 
@@ -32,24 +31,19 @@ public:
     ~TestDataWriterMesh(void);
 
     /// Set data for tri test case.
-    static
-    void setDataTri(TestDataWriter_Data* data);
+    static void setDataTri(TestDataWriter_Data* data);
 
     /// Set data for quad test case.
-    static
-    void setDataQuad(TestDataWriter_Data* data);
+    static void setDataQuad(TestDataWriter_Data* data);
 
     /// Set data for tet test case.
-    static
-    void setDataTet(TestDataWriter_Data* data);
+    static void setDataTet(TestDataWriter_Data* data);
 
     /// Set data for hex test case.
-    static
-    void setDataHex(TestDataWriter_Data* data);
+    static void setDataHex(TestDataWriter_Data* data);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Initialize mesh.
     void _initialize(void);
 
@@ -69,12 +63,10 @@ protected:
      *
      * @returns Test data.
      */
-    virtual
-    TestDataWriter_Data* _getData(void) = 0;
+    virtual TestDataWriter_Data* _getData(void) = 0;
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected:
-
+  protected:
     pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
 
 }; // class TestDataWriterMesh

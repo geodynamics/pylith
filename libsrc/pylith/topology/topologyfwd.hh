@@ -41,7 +41,7 @@ namespace pylith {
         class RefineMesh;
         class RefineUniform;
 
-    } // topology
-} // pylith
+    } // namespace topology
+} // namespace pylith
 
 // End of file

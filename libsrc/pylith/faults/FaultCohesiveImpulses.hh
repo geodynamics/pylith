@@ -15,8 +15,7 @@ class pylith::faults::FaultCohesiveImpulses : public pylith::faults::FaultCohesi
     friend class TestFaultCohesiveImpulses; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     FaultCohesiveImpulses(void);
 
@@ -72,8 +71,7 @@ public:
                               const double t);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get auxiliary factory associated with physics.
      *
      * @return Auxiliary factory for physics object.
@@ -109,15 +107,13 @@ protected:
                              const std::vector<pylith::materials::Material*>& materials) const;
 
     // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     PylithReal _threshold; ///< Threshold for nonzero impulse amplitude.
     int_array _impulseDOF; ///< Degrees of freedom with impulses.
     int_array _impulsePoints; ///< Points with nonzero threshold.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     FaultCohesiveImpulses(const FaultCohesiveImpulses&); ///< Not implemented
     const FaultCohesiveImpulses& operator=(const FaultCohesiveImpulses&); ///< Not implemented.
 

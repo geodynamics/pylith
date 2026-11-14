@@ -23,7 +23,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 namespace pylith {
     class _PlanePWave2D;
-} // pylith
+} // namespace pylith
 
 class pylith::_PlanePWave2D {
     static pylith::scales::Scales scales;
@@ -32,106 +32,122 @@ class pylith::_PlanePWave2D {
     static const double AMPLITUDE;
 
     // Density
-    static double density(const double x,
-                          const double y) {
+    static double
+    density(const double x,
+            const double y) {
         return 2500.0;
     } // density
 
-    static const char* density_units(void) {
+    static const char*
+    density_units(void) {
         return "kg/m**3";
     } // density_units
 
     // Vs
-    static double vs(const double x,
-                     const double y) {
+    static double
+    vs(const double x,
+       const double y) {
         return 3000.0;
     } // vs
 
-    static const char* vs_units(void) {
+    static const char*
+    vs_units(void) {
         return "m/s";
     } // vs_units
 
     // Vp
-    static double vp(const double x,
-                     const double y) {
-        return sqrt(3.0)*vs(x,y);
+    static double
+    vp(const double x,
+       const double y) {
+        return sqrt(3.0) * vs(x, y);
     } // vp
 
-    static const char* vp_units(void) {
+    static const char*
+    vp_units(void) {
         return "m/s";
     } // vp_units
 
     // Solution subfields.
 
     // Displacement
-    static double disp_x(const double x,
-                         const double y,
-                         const double t) {
+    static double
+    disp_x(const double x,
+           const double y,
+           const double t) {
         const double pi = M_PI;
         const double l = WAVELENGTH;
         const double velocityScale = scales.getLengthScale() / scales.getTimeScale();
-        const double c = vp(x,y) / velocityScale;
-        return AMPLITUDE*sin(2.0*pi*(x-c*t)/l);
+        const double c = vp(x, y) / velocityScale;
+        return AMPLITUDE * sin(2.0 * pi * (x - c * t) / l);
     } // disp_x
 
-    static double disp_y(const double x,
-                         const double y,
-                         const double t) {
+    static double
+    disp_y(const double x,
+           const double y,
+           const double t) {
         return 0.0;
     } // disp_y
 
-    static const char* disp_units(void) {
+    static const char*
+    disp_units(void) {
         return "m";
     } // disp_units
 
     // Velocity
-    static double vel_x(const double x,
-                        const double y,
-                        const double t) {
+    static double
+    vel_x(const double x,
+          const double y,
+          const double t) {
         const double pi = M_PI;
         const double l = WAVELENGTH;
         const double velocityScale = scales.getLengthScale() / scales.getTimeScale();
-        const double c = vp(x,y) / velocityScale;
-        return -AMPLITUDE*2.0*pi*c/l * cos(2.0*pi*(x-c*t)/l);
+        const double c = vp(x, y) / velocityScale;
+        return -AMPLITUDE * 2.0 * pi * c / l * cos(2.0 * pi * (x - c * t) / l);
     } // vel_x
 
-    static double vel_y(const double x,
-                        const double y,
-                        const double t) {
+    static double
+    vel_y(const double x,
+          const double y,
+          const double t) {
         return 0.0;
     } // vel_y
 
-    static const char* vel_units(void) {
+    static const char*
+    vel_units(void) {
         return "m/s";
     } // vel_units
 
     // Acceleration
-    static double acc_x(const double x,
-                        const double y,
-                        const double t) {
+    static double
+    acc_x(const double x,
+          const double y,
+          const double t) {
         const double pi = M_PI;
         const double l = WAVELENGTH;
         const double velocityScale = scales.getLengthScale() / scales.getTimeScale();
-        const double c = vp(x,y) / velocityScale;
-        return -AMPLITUDE*pow(2.0*pi*c/l, 2) * sin(2.0*pi*(x-c*t)/l);
+        const double c = vp(x, y) / velocityScale;
+        return -AMPLITUDE * pow(2.0 * pi * c / l, 2) * sin(2.0 * pi * (x - c * t) / l);
     } // vel_x
 
-    static double acc_y(const double x,
-                        const double y,
-                        const double t) {
+    static double
+    acc_y(const double x,
+          const double y,
+          const double t) {
         return 0.0;
     } // vel_y
 
-    static const char* acc_units(void) {
+    static const char*
+    acc_units(void) {
         return "m/s*2";
     } // vel_units
 
-    static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
-                                          PetscReal t,
-                                          const PetscReal x[],
-                                          PetscInt numComponents,
-                                          PetscScalar* s,
-                                          void* context) {
+    static PetscErrorCode
+    solnkernel_disp(PetscInt spaceDim,
+                    PetscReal t,
+                    const PetscReal x[],
+                    PetscInt numComponents,
+                    PetscScalar* s,
+                    void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(x);
         REQUIRE(2 == numComponents);
@@ -143,12 +159,13 @@ class pylith::_PlanePWave2D {
         return PETSC_SUCCESS;
     } // solnkernel_disp
 
-    static PetscErrorCode solnkernel_vel(PetscInt spaceDim,
-                                         PetscReal t,
-                                         const PetscReal x[],
-                                         PetscInt numComponents,
-                                         PetscScalar* s,
-                                         void* context) {
+    static PetscErrorCode
+    solnkernel_vel(PetscInt spaceDim,
+                   PetscReal t,
+                   const PetscReal x[],
+                   PetscInt numComponents,
+                   PetscScalar* s,
+                   void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(x);
         REQUIRE(2 == numComponents);
@@ -160,12 +177,13 @@ class pylith::_PlanePWave2D {
         return PETSC_SUCCESS;
     } // solnkernel_vel
 
-    static PetscErrorCode solnkernel_acc(PetscInt spaceDim,
-                                         PetscReal t,
-                                         const PetscReal x[],
-                                         PetscInt numComponents,
-                                         PetscScalar* s,
-                                         void* context) {
+    static PetscErrorCode
+    solnkernel_acc(PetscInt spaceDim,
+                   PetscReal t,
+                   const PetscReal x[],
+                   PetscInt numComponents,
+                   PetscScalar* s,
+                   void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(x);
         REQUIRE(2 == numComponents);
@@ -177,11 +195,11 @@ class pylith::_PlanePWave2D {
         return PETSC_SUCCESS;
     } // solnkernel_acc
 
-public:
-
-    static
-    TestLinearElasticity_Data* createData(void) {
-        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();REQUIRE(data);
+  public:
+    static TestLinearElasticity_Data*
+    createData(void) {
+        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();
+        REQUIRE(data);
 
         data->journalName = "PlanePWave2D";
         data->isJacobianLinear = true;
@@ -230,7 +248,8 @@ public:
         static const PylithInt numConstrained = 2;
         pylith::bc::DirichletUserFn* bc = NULL;
         data->bcs.resize(2);
-        bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
+        bc = new pylith::bc::DirichletUserFn();
+        REQUIRE(bc);
         bc->setSubfieldName("displacement");
         bc->setLabelName("boundary");
         bc->setLabelValue(1);
@@ -239,7 +258,8 @@ public:
         bc->setUserFnDot(solnkernel_vel);
         data->bcs[0] = bc;
 
-        bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
+        bc = new pylith::bc::DirichletUserFn();
+        REQUIRE(bc);
         bc->setSubfieldName("velocity");
         bc->setLabelName("boundary");
         bc->setLabelValue(1);
@@ -272,7 +292,8 @@ const double pylith::_PlanePWave2D::AMPLITUDE = 0.1;
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::PlanePWave2D::TriP1(void) {
-    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.msh";
     data->useAsciiMesh = false;
@@ -291,7 +312,8 @@ pylith::PlanePWave2D::TriP1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::PlanePWave2D::TriP2(void) {
-    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.msh";
     data->useAsciiMesh = false;
@@ -317,7 +339,8 @@ pylith::PlanePWave2D::TriP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::PlanePWave2D::TriP3(void) {
-    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.msh";
     data->useAsciiMesh = false;
@@ -343,7 +366,8 @@ pylith::PlanePWave2D::TriP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::PlanePWave2D::TriP4(void) {
-    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -368,7 +392,8 @@ pylith::PlanePWave2D::TriP4(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::PlanePWave2D::QuadQ1(void) {
-    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -386,7 +411,8 @@ pylith::PlanePWave2D::QuadQ1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::PlanePWave2D::QuadQ1Distorted(void) {
-    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad_distorted.mesh";
 
@@ -404,7 +430,8 @@ pylith::PlanePWave2D::QuadQ1Distorted(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::PlanePWave2D::QuadQ2(void) {
-    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.msh";
     data->useAsciiMesh = false;
@@ -430,7 +457,8 @@ pylith::PlanePWave2D::QuadQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::PlanePWave2D::QuadQ3(void) {
-    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -455,7 +483,8 @@ pylith::PlanePWave2D::QuadQ3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::PlanePWave2D::QuadQ4(void) {
-    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 

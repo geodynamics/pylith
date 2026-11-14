@@ -12,20 +12,20 @@
 
 #include "TestOutputManager.hh" // Implementation of class methods
 
+#include "pylith/meshio/OutputManager.hh"
+#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
-#include "pylith/topology/Field.hh" // USES Field
-#include "pylith/meshio/OutputManager.hh"
 
 #include "TestDataWriterVTK.hh" // USES TestDataWriterVTK::checkFile()
 
 #include "pylith/meshio/CellFilterAvg.hh" // USES CellFilterAvg
-#include "pylith/meshio/VertexFilterVecNorm.hh" // USES VertexFilterVecNorm
 #include "pylith/meshio/DataWriterVTK.hh" // USES DataWriterVTK
+#include "pylith/meshio/VertexFilterVecNorm.hh" // USES VertexFilterVecNorm
 
-#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
+#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
@@ -195,14 +195,8 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void) { // testAppendVe
     const int fiberDim = 2;
     const int nvertices = 4;
     const char* label = "field data";
-    const topology::FieldBase::VectorFieldEnum fieldType =
-        topology::FieldBase::VECTOR;
-    const PylithScalar fieldValues[] = {
-        1.1, 1.2,
-        2.1, 2.2,
-        3.1, 3.2,
-        4.1, 4.2
-    };
+    const topology::FieldBase::VectorFieldEnum fieldType = topology::FieldBase::VECTOR;
+    const PylithScalar fieldValues[] = {1.1, 1.2, 2.1, 2.2, 3.1, 3.2, 4.1, 4.2};
     const PylithScalar scale = 2.0;
 
     topology::Mesh mesh;
@@ -211,7 +205,8 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void) { // testAppendVe
     iohandler.read(&mesh);
 
     // Set vertex field
-    PetscDM dmMesh = mesh.getDM();CPPUNIT_ASSERT(dmMesh);
+    PetscDM dmMesh = mesh.getDM();
+    CPPUNIT_ASSERT(dmMesh);
     topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
     const PetscInt vStart = verticesStratum.begin();
     const PetscInt vEnd = verticesStratum.end();
@@ -224,16 +219,17 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void) { // testAppendVe
     field.scale(scale);
 
     topology::VecVisitorMesh fieldVisitor(field);
-    PetscScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);
+    PetscScalar* fieldArray = fieldVisitor.localArray();
+    CPPUNIT_ASSERT(fieldArray);
 
     for (PetscInt v = vStart, index = 0; v < vEnd; ++v) {
         const PetscInt off = fieldVisitor.sectionOffset(v);
         CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
         for (PetscInt d = 0; d < fiberDim; ++d, ++index) {
-            fieldArray[off+d] = fieldValues[index]/scale;
+            fieldArray[off + d] = fieldValues[index] / scale;
         } // for
     } // for
-    CPPUNIT_ASSERT_EQUAL(nvertices, vEnd-vStart);
+    CPPUNIT_ASSERT_EQUAL(nvertices, vEnd - vStart);
 
     spatialdata::geocoords::CSCart cs;
     const bool isInfo = false;
@@ -283,11 +279,12 @@ pylith::meshio::TestOutputManager::testAppendCellField(void) { // testAppendCell
     const int fiberDim = 2;
     const int ncells = 2;
     const char* label = "field data";
-    const topology::FieldBase::VectorFieldEnum fieldType =
-        topology::FieldBase::MULTI_SCALAR;
+    const topology::FieldBase::VectorFieldEnum fieldType = topology::FieldBase::MULTI_SCALAR;
     const PylithScalar fieldValues[] = {
-        1.1, 1.2,
-        2.1, 2.2,
+        1.1,
+        1.2,
+        2.1,
+        2.2,
     };
     const PylithScalar scale = 4.0;
 
@@ -297,7 +294,8 @@ pylith::meshio::TestOutputManager::testAppendCellField(void) { // testAppendCell
     iohandler.read(&mesh);
 
     // Set cell field
-    PetscDM dmMesh = mesh.getDM();CPPUNIT_ASSERT(dmMesh);
+    PetscDM dmMesh = mesh.getDM();
+    CPPUNIT_ASSERT(dmMesh);
     topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
     const PetscInt cStart = cellsStratum.begin();
     const PetscInt cEnd = cellsStratum.end();
@@ -311,18 +309,19 @@ pylith::meshio::TestOutputManager::testAppendCellField(void) { // testAppendCell
     field.scale(scale);
 
     topology::VecVisitorMesh fieldVisitor(field);
-    PetscScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);
+    PetscScalar* fieldArray = fieldVisitor.localArray();
+    CPPUNIT_ASSERT(fieldArray);
 
     for (PetscInt c = 0, index = 0; c < numCells; ++c) {
-        const PetscInt cell = c+cStart;
+        const PetscInt cell = c + cStart;
 
         const PetscInt off = fieldVisitor.sectionOffset(cell);
         CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(cell));
         for (PetscInt d = 0; d < fiberDim; ++d, ++index) {
-            fieldArray[off+d] = fieldValues[index]/scale;
+            fieldArray[off + d] = fieldValues[index] / scale;
         } // for
     } // for
-    CPPUNIT_ASSERT_EQUAL(ncells, cEnd-cStart);
+    CPPUNIT_ASSERT_EQUAL(ncells, cEnd - cStart);
 
     spatialdata::geocoords::CSCart cs;
     const bool isInfo = false;
@@ -350,28 +349,54 @@ pylith::meshio::TestOutputManager::testAppendCellField(void) { // testAppendCell
     const int numQuadPts = 2;
     const int spaceDim = 2;
     const PylithScalar basis[] = {
-        1.0, 1.0,
-        1.0, 1.0,
-        1.0, 1.0,
-        1.0, 1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
     };
     const PylithScalar basisDerivRef[] = {
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
     };
     const PylithScalar quadPtsRef[] = {
-        1.0, 0.0,
-        -1.0, 0.0,
+        1.0,
+        0.0,
+        -1.0,
+        0.0,
     };
-    const PylithScalar quadWts[] = { 1.5, 0.5 };
+    const PylithScalar quadWts[] = {1.5, 0.5};
 
     feassemble::Quadrature quadrature;
-    quadrature.initialize(basis, numQuadPts, numBasis,
-                          basisDerivRef, numQuadPts, numBasis, cellDim,
-                          quadPtsRef, numQuadPts, cellDim,
-                          quadWts, numQuadPts,
+    quadrature.initialize(basis,
+                          numQuadPts,
+                          numBasis,
+                          basisDerivRef,
+                          numQuadPts,
+                          numBasis,
+                          cellDim,
+                          quadPtsRef,
+                          numQuadPts,
+                          cellDim,
+                          quadWts,
+                          numQuadPts,
                           spaceDim);
 
     CellFilterAvg filter;

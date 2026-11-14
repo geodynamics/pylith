@@ -19,8 +19,7 @@ class pylith::bc::DirichletUserFn : public pylith::bc::BoundaryCondition {
     friend class TestDirichletUserFn; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     DirichletUserFn(void);
 
@@ -102,8 +101,7 @@ public:
                                                   const pylith::topology::Mesh& domainMesh);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get auxiliary factory associated with physics.
      *
      * @return Auxiliary factory for physics object.
@@ -111,15 +109,13 @@ protected:
     pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     int_array _constrainedDOF; ///< List of constrained degrees of freedom at each location.
     PetscUserFieldFunc _fn; ///< Function specifying field on boundary.
     PetscUserFieldFunc _fnDot; ///< Function specifying time derivative of field on boundary.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     DirichletUserFn(const DirichletUserFn&); ///< Not implemented.
     const DirichletUserFn& operator=(const DirichletUserFn&); ///< Not implemented.
 

@@ -9,8 +9,8 @@
 // =================================================================================================
 #pragma once
 
-#include "pylith/materials/materialsfwd.hh" // forward declarations
 #include "pylith/feassemble/AuxiliaryFactory.hh" // ISA AuxiliaryFactory
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES GravityField
 
@@ -18,8 +18,7 @@ class pylith::materials::AuxiliaryFactoryElasticity : public pylith::feassemble:
     friend class TestAuxiliaryFactoryElasticity; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     AuxiliaryFactoryElasticity(void);
 
@@ -39,9 +38,8 @@ public:
     void addGravityField(spatialdata::spatialdb::GravityField* gf);
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
-    AuxiliaryFactoryElasticity(const AuxiliaryFactoryElasticity &); ///< Not implemented.
+  private:
+    AuxiliaryFactoryElasticity(const AuxiliaryFactoryElasticity&); ///< Not implemented.
     const AuxiliaryFactoryElasticity& operator=(const AuxiliaryFactoryElasticity&); ///< Not implemented
 
 }; // class AuxiliaryFactoryElasticity

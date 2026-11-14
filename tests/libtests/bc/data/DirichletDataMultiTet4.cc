@@ -62,78 +62,49 @@ const int pylith::bc::DirichletDataMultiTet4::_numDOF = 3;
 const int pylith::bc::DirichletDataMultiTet4::_idA = 0;
 const char* pylith::bc::DirichletDataMultiTet4::_labelA = "bc4";
 const int pylith::bc::DirichletDataMultiTet4::_numFixedDOFA = 1;
-const int pylith::bc::DirichletDataMultiTet4::_fixedDOFA[] = { 0 };
+const int pylith::bc::DirichletDataMultiTet4::_fixedDOFA[] = {0};
 const int pylith::bc::DirichletDataMultiTet4::_numConstrainedPtsA = 4;
-const int pylith::bc::DirichletDataMultiTet4::_constrainedPointsA[] = { 0, 2, 3, 4 };
+const int pylith::bc::DirichletDataMultiTet4::_constrainedPointsA[] = {0, 2, 3, 4};
 
-const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameA =
-    "data/tet4_disp2.spatialdb";
-const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameARate =
-    "data/tet4_vel2.spatialdb";
+const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameA = "data/tet4_disp2.spatialdb";
+const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameARate = "data/tet4_vel2.spatialdb";
 const PylithScalar pylith::bc::DirichletDataMultiTet4::_tRefA = 0.0;
 
 const int pylith::bc::DirichletDataMultiTet4::_idB = 1;
 const char* pylith::bc::DirichletDataMultiTet4::_labelB = "bc2";
 const int pylith::bc::DirichletDataMultiTet4::_numFixedDOFB = 1;
-const int pylith::bc::DirichletDataMultiTet4::_fixedDOFB[] = { 2 };
+const int pylith::bc::DirichletDataMultiTet4::_fixedDOFB[] = {2};
 const int pylith::bc::DirichletDataMultiTet4::_numConstrainedPtsB = 3;
-const int pylith::bc::DirichletDataMultiTet4::_constrainedPointsB[] = { 0, 2, 3 };
+const int pylith::bc::DirichletDataMultiTet4::_constrainedPointsB[] = {0, 2, 3};
 
-const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameB =
-    "data/tet4_disp2.spatialdb";
-const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameBRate =
-    "data/tet4_vel2.spatialdb";
+const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameB = "data/tet4_disp2.spatialdb";
+const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameBRate = "data/tet4_vel2.spatialdb";
 const PylithScalar pylith::bc::DirichletDataMultiTet4::_tRefB = 0.0;
 
 const int pylith::bc::DirichletDataMultiTet4::_idC = 1;
 const char* pylith::bc::DirichletDataMultiTet4::_labelC = "bc3";
 const int pylith::bc::DirichletDataMultiTet4::_numFixedDOFC = 1;
-const int pylith::bc::DirichletDataMultiTet4::_fixedDOFC[] = { 1 };
+const int pylith::bc::DirichletDataMultiTet4::_fixedDOFC[] = {1};
 const int pylith::bc::DirichletDataMultiTet4::_numConstrainedPtsC = 3;
-const int pylith::bc::DirichletDataMultiTet4::_constrainedPointsC[] = { 1, 2, 3 };
+const int pylith::bc::DirichletDataMultiTet4::_constrainedPointsC[] = {1, 2, 3};
 
-const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameC =
-    "data/tet4_disp2.spatialdb";
-const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameCRate =
-    "data/tet4_vel2.spatialdb";
+const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameC = "data/tet4_disp2.spatialdb";
+const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameCRate = "data/tet4_vel2.spatialdb";
 const PylithScalar pylith::bc::DirichletDataMultiTet4::_tRefC = 0.0;
 
-const int pylith::bc::DirichletDataMultiTet4::_constraintSizes[] = {
-    2,
-    1,
-    3,
-    3,
-    1
-};
+const int pylith::bc::DirichletDataMultiTet4::_constraintSizes[] = {2, 1, 3, 3, 1};
 
-const int pylith::bc::DirichletDataMultiTet4::_constrainedDOF[] = {
-    0, 2,
-    1,
-    0, 1, 2,
-    0, 1, 2,
-    0
-};
+const int pylith::bc::DirichletDataMultiTet4::_constrainedDOF[] = {0, 2, 1, 0, 1, 2, 0, 1, 2, 0};
 
 // Values at t=10.0
-const PylithScalar pylith::bc::DirichletDataMultiTet4::_field[] = {
-    10.1, 0.0, -9.99,
-    0.0, 111.0, 0.0,
-    20.2, 222.0, -19.98,
-    30.3, 333.0, -29.97,
-    40.4, 0.0, 0.0
-};
+const PylithScalar pylith::bc::DirichletDataMultiTet4::_field[] =
+    {10.1, 0.0, -9.99, 0.0, 111.0, 0.0, 20.2, 222.0, -19.98, 30.3, 333.0, -29.97, 40.4, 0.0, 0.0};
 
 // Increment values from t=10.0 to t=14.0
-const PylithScalar pylith::bc::DirichletDataMultiTet4::_fieldIncr[] = {
-    4.0,   0.0,  -4.0,
-    0.0,  40.0,   0.0,
-    8.0,  80.0,  -8.0,
-    12.0, 120.0, -12.0,
-    16.0,   0.0,   0.0
-};
+const PylithScalar pylith::bc::DirichletDataMultiTet4::_fieldIncr[] =
+    {4.0, 0.0, -4.0, 0.0, 40.0, 0.0, 8.0, 80.0, -8.0, 12.0, 120.0, -12.0, 16.0, 0.0, 0.0};
 
-const char* pylith::bc::DirichletDataMultiTet4::_meshFilename =
-    "data/tet4.mesh";
+const char* pylith::bc::DirichletDataMultiTet4::_meshFilename = "data/tet4.mesh";
 
 pylith::bc::DirichletDataMultiTet4::DirichletDataMultiTet4(void) { // constructor
     numDOF = _numDOF;
@@ -180,7 +151,8 @@ pylith::bc::DirichletDataMultiTet4::DirichletDataMultiTet4(void) { // constructo
 } // constructor
 
 
-pylith::bc::DirichletDataMultiTet4::~DirichletDataMultiTet4(void) {}
+pylith::bc::DirichletDataMultiTet4::~DirichletDataMultiTet4(void) {
+}
 
 
 // End of file

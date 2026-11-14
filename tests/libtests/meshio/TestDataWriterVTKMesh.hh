@@ -9,8 +9,8 @@
 // =================================================================================================
 #pragma once
 
-#include "TestDataWriterVTK.hh" // ISA TestDataWriterVTK
 #include "TestDataWriterMesh.hh" // ISA TestDataWriterMesh
+#include "TestDataWriterVTK.hh" // ISA TestDataWriterVTK
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 
@@ -19,14 +19,13 @@ namespace pylith {
     namespace meshio {
         class TestDataWriterVTKMesh;
         class TestDataWriterVTKMesh_Data;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterVTKMesh : public TestDataWriterVTK, public TestDataWriterMesh {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestDataWriterVTKMesh(TestDataWriterVTKMesh_Data* data);
 
@@ -34,12 +33,10 @@ public:
     ~TestDataWriterVTKMesh(void);
 
     /// Test filename(), timeFormat(), timeConstant(), precision()
-    static
-    void testAccessors(void);
+    static void testAccessors(void);
 
     /// Test vtkFilename.
-    static
-    void testVtkFilename(void);
+    static void testVtkFilename(void);
 
     /// Test openTimeStep() and closeTimeStep()
     void testTimeStep(void);
@@ -51,8 +48,7 @@ public:
     void testWriteCellField(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get test data.
      *
      * @returns Test data.
@@ -60,8 +56,7 @@ protected:
     TestDataWriter_Data* _getData(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     TestDataWriterVTKMesh_Data* _data; ///< Data for testing.
 
 }; // class TestDataWriterVTKMesh

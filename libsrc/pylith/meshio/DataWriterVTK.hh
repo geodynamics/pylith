@@ -19,8 +19,8 @@
 
 #include "pylith/meshio/DataWriter.hh" // ISA DataWriter
 
-#include "pylith/topology/topologyfwd.hh" // HOLDSA Field
 #include "pylith/petsc/petsc_types.h" // HASA PetscDM
+#include "pylith/topology/topologyfwd.hh" // HOLDSA Field
 
 // DataWriterVTK --------------------------------------------------------
 /// Object for writing finite-element data to VTK file.
@@ -33,8 +33,7 @@ class pylith::meshio::DataWriterVTK : public DataWriter {
     friend class TestDataWriterVTKPoints; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     DataWriterVTK(void);
 
@@ -116,8 +115,7 @@ public:
                         const pylith::meshio::OutputSubfield& subfield);
 
     // PRIVATE METHODS //////////////////////////////////////////////////////
-private:
-
+  private:
     /** Copy constructor.
      *
      * @param[in] w Object to copy.
@@ -131,13 +129,11 @@ private:
     std::string _vtkFilename(const PylithScalar t) const;
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
-private:
-
+  private:
     const DataWriterVTK& operator=(const DataWriterVTK&); ///< Not implemented
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     /// Time value (in seconds) used to normalize time stamp.
     PylithScalar _timeConstant;
     int _precision; ///< Precision of floating point values in output.

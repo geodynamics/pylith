@@ -14,10 +14,8 @@
 
 #include "pylith/fekernels/Tensor.hh"
 
-const pylith::fekernels::TensorOps pylith::fekernels::Tensor::ops2D =
-    pylith::fekernels::TensorOps::_create2D();
+const pylith::fekernels::TensorOps pylith::fekernels::Tensor::ops2D = pylith::fekernels::TensorOps::_create2D();
 
-const pylith::fekernels::TensorOps pylith::fekernels::Tensor::ops3D =
-    pylith::fekernels::TensorOps::_create3D();
+const pylith::fekernels::TensorOps pylith::fekernels::Tensor::ops3D = pylith::fekernels::TensorOps::_create3D();
 
 // End of file

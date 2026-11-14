@@ -30,20 +30,17 @@ const char* pylith::bc::DirichletDataQuad4::_label = "bc3";
 
 const int pylith::bc::DirichletDataQuad4::_numDOF = 2;
 const int pylith::bc::DirichletDataQuad4::_numFixedDOF = 2;
-const int pylith::bc::DirichletDataQuad4::_fixedDOF[] = { 0, 1 };
+const int pylith::bc::DirichletDataQuad4::_fixedDOF[] = {0, 1};
 
 const int pylith::bc::DirichletDataQuad4::_numConstrainedPts = 3;
-const int pylith::bc::DirichletDataQuad4::_constrainedPoints[] = { 0, 2, 4 };
+const int pylith::bc::DirichletDataQuad4::_constrainedPoints[] = {0, 2, 4};
 
 const PylithScalar pylith::bc::DirichletDataQuad4::_tRef = 3.0;
 const PylithScalar pylith::bc::DirichletDataQuad4::_valueRate = -0.5;
-const PylithScalar pylith::bc::DirichletDataQuad4::_valuesInitial[] =
-{ 0.1, 0.6, 0.5, 0.3, 0.4, 0.2 };
+const PylithScalar pylith::bc::DirichletDataQuad4::_valuesInitial[] = {0.1, 0.6, 0.5, 0.3, 0.4, 0.2};
 
-const char* pylith::bc::DirichletDataQuad4::_meshFilename =
-    "data/quad4.mesh";
-const char* pylith::bc::DirichletDataQuad4::_dbFilename =
-    "data/quad4_disp.spatialdb";
+const char* pylith::bc::DirichletDataQuad4::_meshFilename = "data/quad4.mesh";
+const char* pylith::bc::DirichletDataQuad4::_dbFilename = "data/quad4_disp.spatialdb";
 
 pylith::bc::DirichletDataQuad4::DirichletDataQuad4(void) { // constructor
     id = _id;
@@ -65,7 +62,8 @@ pylith::bc::DirichletDataQuad4::DirichletDataQuad4(void) { // constructor
 } // constructor
 
 
-pylith::bc::DirichletDataQuad4::~DirichletDataQuad4(void) {}
+pylith::bc::DirichletDataQuad4::~DirichletDataQuad4(void) {
+}
 
 
 // End of file

@@ -9,31 +9,30 @@
 // =================================================================================================
 #pragma once
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 
 // ----------------------------------------------------------------------
 // Constructor with field over a mesh.
-inline
-pylith::topology::VecVisitorMesh::VecVisitorMesh(const Field& field,
-                                                 const char* subfield) :
+inline pylith::topology::VecVisitorMesh::VecVisitorMesh(const Field& field,
+                                                        const char* subfield) :
     _dm(NULL),
     _localVec(NULL),
     _localSection(NULL),
     _globalSection(NULL),
     _localArray(NULL),
     _selectedSection(LOCAL_SECTION) {
-    _dm = field.getDM();assert(_dm);
+    _dm = field.getDM();
+    assert(_dm);
     initialize(field, subfield);
 } // constructor
 
 
 // ----------------------------------------------------------------------
 // Default destructor
-inline
-pylith::topology::VecVisitorMesh::~VecVisitorMesh(void) {
+inline pylith::topology::VecVisitorMesh::~VecVisitorMesh(void) {
     clear();
     _dm = NULL;
 } // destructor
@@ -41,14 +40,15 @@ pylith::topology::VecVisitorMesh::~VecVisitorMesh(void) {
 
 // ----------------------------------------------------------------------
 // Initialized cached data members.
-inline
-void
+inline void
 pylith::topology::VecVisitorMesh::initialize(const Field& field,
                                              const char* subfield) {
     clear();
 
-    PetscSection fieldLocalSection = field.getLocalSection();assert(fieldLocalSection);
-    PetscSection fieldGlobalSection = field.getGlobalSection();assert(fieldGlobalSection);
+    PetscSection fieldLocalSection = field.getLocalSection();
+    assert(fieldLocalSection);
+    PetscSection fieldGlobalSection = field.getGlobalSection();
+    assert(fieldGlobalSection);
     PetscInt numFields = 0;
     PylithCallPetsc(PetscSectionGetNumFields(fieldLocalSection, &numFields));
 
@@ -63,7 +63,8 @@ pylith::topology::VecVisitorMesh::initialize(const Field& field,
     } // if/else
     PylithCallPetsc(PetscObjectReference((PetscObject)_localSection));
     PylithCallPetsc(PetscObjectReference((PetscObject)_globalSection));
-    _localVec = field.getLocalVector();assert(_localVec);
+    _localVec = field.getLocalVector();
+    assert(_localVec);
 
     PylithCallPetsc(VecGetArray(_localVec, &_localArray));
 } // initialize
@@ -71,11 +72,11 @@ pylith::topology::VecVisitorMesh::initialize(const Field& field,
 
 // ----------------------------------------------------------------------
 // Default destructor
-inline
-void
+inline void
 pylith::topology::VecVisitorMesh::clear(void) {
     if (_localVec) {
-        PylithCallPetsc(VecRestoreArray(_localVec, &_localArray));assert(!_localArray);
+        PylithCallPetsc(VecRestoreArray(_localVec, &_localArray));
+        assert(!_localArray);
     } // if
 
     PylithCallPetsc(PetscSectionDestroy(&_localSection));
@@ -90,8 +91,7 @@ pylith::topology::VecVisitorMesh::clear(void) {
  *
  * @param[in] value
  */
-inline
-void
+inline void
 pylith::topology::VecVisitorMesh::selectSection(pylith::topology::VecVisitorMesh::SectionEnum value) {
     _selectedSection = value;
 }
@@ -99,8 +99,7 @@ pylith::topology::VecVisitorMesh::selectSection(pylith::topology::VecVisitorMesh
 
 // ----------------------------------------------------------------------
 // Get the PETSc section.
-inline
-PetscSection
+inline PetscSection
 pylith::topology::VecVisitorMesh::selectedSection(void) const {
     return LOCAL_SECTION == _selectedSection ? _localSection : _globalSection;
 } // selectedSection
@@ -108,8 +107,7 @@ pylith::topology::VecVisitorMesh::selectedSection(void) const {
 
 // ----------------------------------------------------------------------
 // Get the local PETSc Vec.
-inline
-PetscVec
+inline PetscVec
 pylith::topology::VecVisitorMesh::localVec(void) const {
     return _localVec;
 } // localVec
@@ -117,8 +115,7 @@ pylith::topology::VecVisitorMesh::localVec(void) const {
 
 // ----------------------------------------------------------------------
 // Get the local coordinates array associated with the local PETSc Vec.
-inline
-PetscScalar*
+inline PetscScalar*
 pylith::topology::VecVisitorMesh::localArray(void) const {
     return _localArray;
 } // localArray
@@ -126,10 +123,10 @@ pylith::topology::VecVisitorMesh::localArray(void) const {
 
 // ----------------------------------------------------------------------
 // Get fiber dimension of values at point.
-inline
-PetscInt
+inline PetscInt
 pylith::topology::VecVisitorMesh::sectionDof(const PetscInt point) const {
-    const PetscSection section = selectedSection();assert(section);
+    const PetscSection section = selectedSection();
+    assert(section);
     PetscInt dof;
     PylithCallPetsc(PetscSectionGetDof(section, point, &dof));
     return dof;
@@ -138,11 +135,11 @@ pylith::topology::VecVisitorMesh::sectionDof(const PetscInt point) const {
 
 // ----------------------------------------------------------------------
 // Get fiber dimension of values at point.
-inline
-PetscInt
+inline PetscInt
 pylith::topology::VecVisitorMesh::sectionSubfieldDof(const PetscInt subfield,
                                                      const PetscInt point) const {
-    const PetscSection section = selectedSection();assert(section);
+    const PetscSection section = selectedSection();
+    assert(section);
     PetscInt dof;
     PylithCallPetsc(PetscSectionGetFieldDof(section, point, subfield, &dof));
     return dof;
@@ -151,10 +148,10 @@ pylith::topology::VecVisitorMesh::sectionSubfieldDof(const PetscInt subfield,
 
 // ----------------------------------------------------------------------
 // Get offset into values array for point.
-inline
-PetscInt
+inline PetscInt
 pylith::topology::VecVisitorMesh::sectionOffset(const PetscInt point) const {
-    const PetscSection section = selectedSection();assert(section);
+    const PetscSection section = selectedSection();
+    assert(section);
     PetscInt offset;
     PylithCallPetsc(PetscSectionGetOffset(section, point, &offset));
     return offset;
@@ -163,11 +160,11 @@ pylith::topology::VecVisitorMesh::sectionOffset(const PetscInt point) const {
 
 // ----------------------------------------------------------------------
 // Get offset into values array for point.
-inline
-PetscInt
+inline PetscInt
 pylith::topology::VecVisitorMesh::sectionSubfieldOffset(const PetscInt subfield,
                                                         const PetscInt point) const {
-    const PetscSection section = selectedSection();assert(section);
+    const PetscSection section = selectedSection();
+    assert(section);
     PetscInt offset;
     PylithCallPetsc(PetscSectionGetFieldOffset(section, point, subfield, &offset));
     return offset;
@@ -176,8 +173,7 @@ pylith::topology::VecVisitorMesh::sectionSubfieldOffset(const PetscInt subfield,
 
 // ----------------------------------------------------------------------
 // Get coordinates array associated with closure.
-inline
-void
+inline void
 pylith::topology::VecVisitorMesh::getClosure(PetscScalar** valuesCell,
                                              PetscInt* valuesSize,
                                              const PetscInt cell) const {
@@ -190,8 +186,7 @@ pylith::topology::VecVisitorMesh::getClosure(PetscScalar** valuesCell,
 
 // ----------------------------------------------------------------------
 // Get coordinates array associated with closure.
-inline
-void
+inline void
 pylith::topology::VecVisitorMesh::getClosure(scalar_array* values,
                                              const PetscInt cell) const {
     assert(_dm);
@@ -206,8 +201,7 @@ pylith::topology::VecVisitorMesh::getClosure(scalar_array* values,
 
 // ----------------------------------------------------------------------
 // Restore coordinates array associated with closure.
-inline
-void
+inline void
 pylith::topology::VecVisitorMesh::restoreClosure(PetscScalar** valuesCell,
                                                  PetscInt* valuesSize,
                                                  const PetscInt cell) const {
@@ -220,8 +214,7 @@ pylith::topology::VecVisitorMesh::restoreClosure(PetscScalar** valuesCell,
 
 // ----------------------------------------------------------------------
 // Set values associated with closure.
-inline
-void
+inline void
 pylith::topology::VecVisitorMesh::setClosure(const PetscScalar* valuesCell,
                                              const PetscInt valuesSize,
                                              const PetscInt cell,
@@ -235,13 +228,14 @@ pylith::topology::VecVisitorMesh::setClosure(const PetscScalar* valuesCell,
 
 // ----------------------------------------------------------------------
 // Optimize the closure operation.
-inline
-void
+inline void
 pylith::topology::VecVisitorMesh::optimizeClosure(const Field& field) {
-    PetscSection fieldSection = field.getLocalSection();assert(fieldSection);
-    PetscDM dmField = field.getDM();assert(dmField);
+    PetscSection fieldSection = field.getLocalSection();
+    assert(fieldSection);
+    PetscDM dmField = field.getDM();
+    assert(dmField);
     PetscSection indexSection = NULL;
-    PylithCallPetsc(PetscSectionGetClosureIndex(fieldSection, (PetscObject) dmField, &indexSection, NULL));
+    PylithCallPetsc(PetscSectionGetClosureIndex(fieldSection, (PetscObject)dmField, &indexSection, NULL));
     if (!indexSection) {
         PylithCallPetsc(DMPlexCreateClosureIndex(dmField, fieldSection));
     } // if
@@ -250,19 +244,23 @@ pylith::topology::VecVisitorMesh::optimizeClosure(const Field& field) {
 
 // ----------------------------------------------------------------------
 // Default constructor.
-inline
-pylith::topology::MatVisitorMesh::MatVisitorMesh(const PetscMat mat,
-                                                 const Field& field) :
+inline pylith::topology::MatVisitorMesh::MatVisitorMesh(const PetscMat mat,
+                                                        const Field& field) :
     _mat(mat),
     _dm(NULL),
     _localSection(NULL),
     _globalSection(NULL) {
     PetscSF sf = NULL;
 
-    _dm = field.getDM();assert(_dm);
-    _localSection = field.getLocalSection();assert(_localSection);
-    PylithCallPetsc(DMGetPointSF(_dm, &sf));assert(sf);
-    PylithCallPetsc(PetscSectionCreateGlobalSection(_localSection, sf, PETSC_TRUE, PETSC_FALSE, PETSC_FALSE, &_globalSection));assert(_globalSection);
+    _dm = field.getDM();
+    assert(_dm);
+    _localSection = field.getLocalSection();
+    assert(_localSection);
+    PylithCallPetsc(DMGetPointSF(_dm, &sf));
+    assert(sf);
+    PylithCallPetsc(
+        PetscSectionCreateGlobalSection(_localSection, sf, PETSC_TRUE, PETSC_FALSE, PETSC_FALSE, &_globalSection));
+    assert(_globalSection);
 
     initialize();
 } // constructor
@@ -270,8 +268,7 @@ pylith::topology::MatVisitorMesh::MatVisitorMesh(const PetscMat mat,
 
 // ----------------------------------------------------------------------
 // Default destructor
-inline
-pylith::topology::MatVisitorMesh::~MatVisitorMesh(void) {
+inline pylith::topology::MatVisitorMesh::~MatVisitorMesh(void) {
     clear();
 
     _dm = NULL;
@@ -282,8 +279,7 @@ pylith::topology::MatVisitorMesh::~MatVisitorMesh(void) {
 
 // ----------------------------------------------------------------------
 // Initialized cached data members.
-inline
-void
+inline void
 pylith::topology::MatVisitorMesh::initialize(void) {
     clear();
 } // initialize
@@ -291,16 +287,14 @@ pylith::topology::MatVisitorMesh::initialize(void) {
 
 // ----------------------------------------------------------------------
 // Default destructor
-inline
-void
+inline void
 pylith::topology::MatVisitorMesh::clear(void) {
 }
 
 
 // ----------------------------------------------------------------------
 // Set values associated with closure.
-inline
-void
+inline void
 pylith::topology::MatVisitorMesh::setClosure(const PetscScalar* valuesCell,
                                              const PetscInt valuesSize,
                                              const PetscInt cell,

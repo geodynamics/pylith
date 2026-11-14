@@ -14,13 +14,12 @@
 namespace pylith {
     namespace bc {
         class DirichletDataMulti;
-    } // pylith
-} // bc
+    } // namespace bc
+} // namespace pylith
 
 class pylith::bc::DirichletDataMulti {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     DirichletDataMulti(void);
 
@@ -28,8 +27,7 @@ public:
     ~DirichletDataMulti(void);
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     int numDOF; ///< Number of degrees of freedom at each point.
 
     //@{ Boundary condition A

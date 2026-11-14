@@ -26,7 +26,8 @@ pylith::feassemble::UpdateStateVars::UpdateStateVars(void) :
     _stateVarsDM(NULL),
     _stateVarsVecLocal(NULL),
     _stateVarsVecGlobal(NULL),
-    _auxiliaryFieldVecGlobal(NULL) {}
+    _auxiliaryFieldVecGlobal(NULL) {
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -82,7 +83,8 @@ pylith::feassemble::UpdateStateVars::initialize(const pylith::topology::Field& a
 
     size_t numStateSubfields = 0;
     for (size_t iSubfield = 0; iSubfield < numAuxiliarySubfields; ++iSubfield) {
-        const pylith::topology::Field::SubfieldInfo& info = auxiliaryField.getSubfieldInfo(subfieldNames[iSubfield].c_str());
+        const pylith::topology::Field::SubfieldInfo& info =
+            auxiliaryField.getSubfieldInfo(subfieldNames[iSubfield].c_str());
         if (info.description.hasHistory) {
             stateSubfieldIndices[numStateSubfields++] = info.index;
         } // if
@@ -90,8 +92,8 @@ pylith::feassemble::UpdateStateVars::initialize(const pylith::topology::Field& a
     std::sort(&stateSubfieldIndices[0], &stateSubfieldIndices[numStateSubfields]);
 
     // Create subDM holding only the state vars, which we want to update.
-    PylithCallPetsc(DMCreateSubDM(auxiliaryDM, numStateSubfields, &stateSubfieldIndices[0], &_stateVarsIS,
-                                  &_stateVarsDM));
+    PylithCallPetsc(
+        DMCreateSubDM(auxiliaryDM, numStateSubfields, &stateSubfieldIndices[0], &_stateVarsIS, &_stateVarsDM));
     PylithCallPetsc(DMCreateGlobalVector(_stateVarsDM, &_stateVarsVecGlobal));
     PylithCallPetsc(DMCreateLocalVector(_stateVarsDM, &_stateVarsVecLocal));
 
@@ -114,8 +116,10 @@ pylith::feassemble::UpdateStateVars::prepare(pylith::topology::Field* auxiliaryF
     // Move auxiliaryDM data to global vector.
     assert(auxiliaryField);
     PetscDM auxiliaryDM = auxiliaryField->getDM();
-    PylithCallPetsc(DMLocalToGlobalBegin(auxiliaryDM, auxiliaryField->getLocalVector(), INSERT_VALUES, _auxiliaryFieldVecGlobal));
-    PylithCallPetsc(DMLocalToGlobalEnd(auxiliaryDM, auxiliaryField->getLocalVector(), INSERT_VALUES, _auxiliaryFieldVecGlobal));
+    PylithCallPetsc(
+        DMLocalToGlobalBegin(auxiliaryDM, auxiliaryField->getLocalVector(), INSERT_VALUES, _auxiliaryFieldVecGlobal));
+    PylithCallPetsc(
+        DMLocalToGlobalEnd(auxiliaryDM, auxiliaryField->getLocalVector(), INSERT_VALUES, _auxiliaryFieldVecGlobal));
 
     PYLITH_METHOD_END;
 } // prepare
@@ -138,8 +142,10 @@ pylith::feassemble::UpdateStateVars::restore(pylith::topology::Field* auxiliaryF
     PylithCallPetsc(VecISCopy(_auxiliaryFieldVecGlobal, _stateVarsIS, SCATTER_FORWARD, _stateVarsVecGlobal));
 
     // Move auxiliaryDM data to local vector
-    PylithCallPetsc(DMGlobalToLocalBegin(auxiliaryDM, _auxiliaryFieldVecGlobal, INSERT_VALUES, auxiliaryField->getLocalVector()));
-    PylithCallPetsc(DMGlobalToLocalEnd(auxiliaryDM, _auxiliaryFieldVecGlobal, INSERT_VALUES, auxiliaryField->getLocalVector()));
+    PylithCallPetsc(
+        DMGlobalToLocalBegin(auxiliaryDM, _auxiliaryFieldVecGlobal, INSERT_VALUES, auxiliaryField->getLocalVector()));
+    PylithCallPetsc(
+        DMGlobalToLocalEnd(auxiliaryDM, _auxiliaryFieldVecGlobal, INSERT_VALUES, auxiliaryField->getLocalVector()));
 
     PYLITH_METHOD_END;
 } // restore

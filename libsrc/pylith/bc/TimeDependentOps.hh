@@ -20,8 +20,7 @@ class pylith::bc::TimeDependentOps {
     friend class TestTimeDependentOps; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /** Update auxiliary field using time history database.
      *
      * @param[inout] auxiliaryField Auxiliary field to update.
@@ -29,15 +28,13 @@ public:
      * @param[in] timeScale Scale for dimensionalizing time.
      * @param[in] dbTimeHistory Time history database.
      */
-    static
-    void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
-                              const pylith::real t,
-                              const pylith::real timeScale,
-                              const std::shared_ptr<spatialdata::spatialdb::TimeHistory>& dbTimeHistory);
+    static void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
+                                     const pylith::real t,
+                                     const pylith::real timeScale,
+                                     const std::shared_ptr<spatialdata::spatialdb::TimeHistory>& dbTimeHistory);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     TimeDependentOps(void) = delete;
     TimeDependentOps(const TimeDependentOps&) = delete;
     const TimeDependentOps& operator=(const TimeDependentOps&) = delete;

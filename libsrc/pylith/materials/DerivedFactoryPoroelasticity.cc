@@ -16,8 +16,8 @@
 
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
 
-#include "pylith/scales/Scales.hh" // USES Scales
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
@@ -33,7 +33,8 @@ pylith::materials::DerivedFactoryPoroelasticity::DerivedFactoryPoroelasticity(vo
 
 // ------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::materials::DerivedFactoryPoroelasticity::~DerivedFactoryPoroelasticity(void) {}
+pylith::materials::DerivedFactoryPoroelasticity::~DerivedFactoryPoroelasticity(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------

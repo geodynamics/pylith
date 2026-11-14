@@ -12,26 +12,25 @@
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
+#include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "tests/src/ObserverPhysicsStub.hh" // USES ObserverPhysicsStub
 #include "tests/src/PhysicsImplementationStub.hh" // USES PhysicsImplementationStub
 #include "tests/src/StubMethodTracker.hh" // USES StubMethodTracker
-#include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/Field.hh" // USES Field
 
 #include "catch2/catch_test_macros.hpp"
 
 namespace pylith {
     namespace problems {
         class TestObserversPhysics;
-    } // problems
-} // pylith
+    } // namespace problems
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::problems::TestObserversPhysics : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestObserversPhysics(void);
 
@@ -57,8 +56,7 @@ public:
     void testNotifyObservers(void);
 
     // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::problems::ObserversPhysics* _observers; ///< Test subject.
 
     static ObserverPhysicsStub observerA;
@@ -70,29 +68,34 @@ pylith::problems::ObserverPhysicsStub pylith::problems::TestObserversPhysics::ob
 pylith::problems::ObserverPhysicsStub pylith::problems::TestObserversPhysics::observerB;
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestObservesPhysics::testRegisterObserver", "[TestObserversPhysics]") {
+TEST_CASE("TestObservesPhysics::testRegisterObserver",
+          "[TestObserversPhysics]") {
     pylith::problems::TestObserversPhysics().testRegisterObserver();
 }
-TEST_CASE("TestObservesPhysics::testRemoveObserver", "[TestObserversPhysics]") {
+TEST_CASE("TestObservesPhysics::testRemoveObserver",
+          "[TestObserversPhysics]") {
     pylith::problems::TestObserversPhysics().testRemoveObserver();
 }
-TEST_CASE("TestObservesPhysics::testSetPhysicsImplementation", "[TestObserversPhysics]") {
+TEST_CASE("TestObservesPhysics::testSetPhysicsImplementation",
+          "[TestObserversPhysics]") {
     pylith::problems::TestObserversPhysics().testSetPhysicsImplementation();
 }
-TEST_CASE("TestObservesPhysics::testTimeScale", "[TestObserversPhysics]") {
+TEST_CASE("TestObservesPhysics::testTimeScale",
+          "[TestObserversPhysics]") {
     pylith::problems::TestObserversPhysics().testTimeScale();
 }
-TEST_CASE("TestObservesPhysics::testVerifyObservers", "[TestObserversPhysics]") {
+TEST_CASE("TestObservesPhysics::testVerifyObservers",
+          "[TestObserversPhysics]") {
     pylith::problems::TestObserversPhysics().testVerifyObservers();
 }
-TEST_CASE("TestObservesPhysics::testNotifyObservers", "[TestObserversPhysics]") {
+TEST_CASE("TestObservesPhysics::testNotifyObservers",
+          "[TestObserversPhysics]") {
     pylith::problems::TestObserversPhysics().testNotifyObservers();
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor
-pylith::problems::TestObserversPhysics::TestObserversPhysics(void) :
-    _observers(new ObserversPhysics()) {
+pylith::problems::TestObserversPhysics::TestObserversPhysics(void) : _observers(new ObserversPhysics()) {
     REQUIRE(_observers);
     _observers->registerObserver(&observerA);
     _observers->registerObserver(&observerB);
@@ -102,7 +105,8 @@ pylith::problems::TestObserversPhysics::TestObserversPhysics(void) :
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::problems::TestObserversPhysics::~TestObserversPhysics(void) {
-    delete _observers;_observers = NULL;
+    delete _observers;
+    _observers = NULL;
 } // destructor
 
 

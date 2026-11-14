@@ -12,25 +12,24 @@
 
 #include "pylith/meshio/HDF5.hh" // implementation of class methods
 
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES journal macros
-#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
-#include <cstring> // USES strlen(), strnlen(), strncpy()
 #include <cassert> // USES assert()
+#include <cstring> // USES strlen(), strnlen(), strncpy()
 
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::meshio::HDF5::HDF5(void) :
-    _file(-1) {}
+pylith::meshio::HDF5::HDF5(void) : _file(-1) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
 // Constructor with filename and mode.
 pylith::meshio::HDF5::HDF5(const char* filename,
-                           hid_t mode) :
-    _file(-1) {
+                           hid_t mode) : _file(-1) {
     PYLITH_METHOD_BEGIN;
 
     open(filename, mode);
@@ -44,7 +43,8 @@ pylith::meshio::HDF5::HDF5(const char* filename,
 pylith::meshio::HDF5::~HDF5(void) noexcept {
     try {
         close();
-    } catch (...) {}
+    } catch (...) {
+    }
 }
 
 
@@ -64,14 +64,12 @@ pylith::meshio::HDF5::open(const char* filename,
     if (hid_t(H5F_ACC_TRUNC) == mode) {
         _file = H5Fcreate(filename, mode, H5P_DEFAULT, H5P_DEFAULT);
         if (_file < 0) {
-            PYLITH_ERROR(pylith::exceptions::IOError,
-                         "Could not create HDF5 file '" << filename << "'.");
+            PYLITH_ERROR(pylith::exceptions::IOError, "Could not create HDF5 file '" << filename << "'.");
         }
     } else {
         _file = H5Fopen(filename, mode, H5P_DEFAULT);
         if (_file < 0) {
-            PYLITH_ERROR(pylith::exceptions::IOError,
-                         "Could not open existing HDF5 file '" << filename << "'.");
+            PYLITH_ERROR(pylith::exceptions::IOError, "Could not open existing HDF5 file '" << filename << "'.");
         }
     }
 
@@ -211,17 +209,16 @@ pylith::meshio::HDF5::getDatasetDims(const char* parent,
         }
 
     } catch (pylith::exceptions::Error& err) {
-        err.addContext(pylith::exceptions::ErrorMessage() << "Error occurred while reading dataset '"
-                                                          << parent << "/" << name << "'.\n");
+        err.addContext(pylith::exceptions::ErrorMessage()
+                       << "Error occurred while reading dataset '" << parent << "/" << name << "'.\n");
         throw;
     } catch (const std::exception& err) {
         PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Error occurred while reading dataset '"
-                     << parent << "/" << name << "':\n" << err.what());
+                     "Error occurred while reading dataset '" << parent << "/" << name << "':\n"
+                                                              << err.what());
     } catch (...) {
         PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Unknown error occurred while reading dataset '"
-                     << parent << "/" << name << "'.");
+                     "Unknown error occurred while reading dataset '" << parent << "/" << name << "'.");
     }
 
     PYLITH_METHOD_RETURN(result);
@@ -259,25 +256,29 @@ pylith::meshio::HDF5::getGroupDatasets(const char* parent) {
         names.resize(gsize);
         for (int i = 0; i < gsize; ++i) {
             char buffer[256];
-            ssize_t namelen = H5Lget_name_by_idx(group.id, ".", H5_INDEX_NAME,
-                                                 H5_ITER_NATIVE, i, buffer,
-                                                 sizeof(buffer), H5P_DEFAULT);
+            ssize_t namelen = H5Lget_name_by_idx(group.id,
+                                                 ".",
+                                                 H5_INDEX_NAME,
+                                                 H5_ITER_NATIVE,
+                                                 i,
+                                                 buffer,
+                                                 sizeof(buffer),
+                                                 H5P_DEFAULT);
             assert(namelen > 0);
             names[i] = buffer;
         }
 
     } catch (pylith::exceptions::Error& err) {
-        err.addContext(pylith::exceptions::ErrorMessage() << "Error occurred while getting names of datasets for group '"
-                                                          << parent << "'.\n");
+        err.addContext(pylith::exceptions::ErrorMessage()
+                       << "Error occurred while getting names of datasets for group '" << parent << "'.\n");
         throw;
     } catch (const std::exception& err) {
         PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Error occurred while getting names of datasets for group '"
-                     << parent << "':\n" << err.what());
+                     "Error occurred while getting names of datasets for group '" << parent << "':\n"
+                                                                                  << err.what());
     } catch (...) {
         PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Unknown error occurred while getting names of datasets for group '"
-                     << parent << "'.");
+                     "Unknown error occurred while getting names of datasets for group '" << parent << "'.");
     }
 
     PYLITH_METHOD_RETURN(names);
@@ -300,8 +301,7 @@ pylith::meshio::HDF5::createGroup(const char* name) {
     group.id = H5Gcreate(_file, name, 0);
 #endif
     if (group.id < 0) {
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Could not create group '" << name << "'.");
+        PYLITH_ERROR(pylith::exceptions::IOError, "Could not create group '" << name << "'.");
     }
 
     PYLITH_METHOD_END;
@@ -366,8 +366,7 @@ pylith::meshio::HDF5::writeAttributeString(hid_t h5,
         }
 
 #if defined(PYLITH_HDF5_USE_API_18)
-        attribute.id = H5Acreate2(dataset.id, name, datatype.id, dataspace.id,
-                                  H5P_DEFAULT, H5P_DEFAULT);
+        attribute.id = H5Acreate2(dataset.id, name, datatype.id, dataspace.id, H5P_DEFAULT, H5P_DEFAULT);
 #else
         attribute.id = H5Acreate(dataset.id, name, datatype.id, dataspace.id, H5P_DEFAULT);
 #endif
@@ -383,8 +382,7 @@ pylith::meshio::HDF5::writeAttributeString(hid_t h5,
         err.addContext(pylith::exceptions::ErrorMessage() << " attribute '" << name << "' of '" << parent << "'.");
         throw;
     } catch (const std::exception& err) {
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     err.what() << " attribute '" << name << "' of '" << parent << "'.");
+        PYLITH_ERROR(pylith::exceptions::IOError, err.what() << " attribute '" << name << "' of '" << parent << "'.");
     }
 
     PYLITH_METHOD_END;
@@ -441,8 +439,7 @@ pylith::meshio::HDF5::readAttributeString(const char* parent,
         err.addContext(pylith::exceptions::ErrorMessage() << " attribute '" << name << "' of '" << parent << "'.");
         throw;
     } catch (const std::exception& err) {
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     err.what() << " attribute '" << name << "' of '" << parent << "'.");
+        PYLITH_ERROR(pylith::exceptions::IOError, err.what() << " attribute '" << name << "' of '" << parent << "'.");
     }
 
     PYLITH_METHOD_RETURN(value);
@@ -481,7 +478,9 @@ pylith::meshio::HDF5::createDatasetRawExternal(const char* parent,
         }
 
         std::vector<hsize_t> curDims(maxDims.dims);
-        if (curDims[0] == H5S_UNLIMITED) { curDims[0] = 1; }
+        if (curDims[0] == H5S_UNLIMITED) {
+            curDims[0] = 1;
+        }
 
         dataspace.id = H5Screate_simple(ndims, curDims.data(), maxDims.dims.data());
         if (dataspace.id < 0) {
@@ -498,8 +497,7 @@ pylith::meshio::HDF5::createDatasetRawExternal(const char* parent,
         }
 
 #if defined(PYLITH_HDF5_USE_API_18)
-        dataset.id = H5Dcreate2(group.id, name, datatype, dataspace.id,
-                                H5P_DEFAULT, property.id, H5P_DEFAULT);
+        dataset.id = H5Dcreate2(group.id, name, datatype, dataspace.id, H5P_DEFAULT, property.id, H5P_DEFAULT);
 #else
         dataset.id = H5Dcreate(group.id, name, datatype, dataspace.id, property.id);
 #endif
@@ -508,16 +506,15 @@ pylith::meshio::HDF5::createDatasetRawExternal(const char* parent,
         }
 
     } catch (pylith::exceptions::Error& err) {
-        err.addContext(pylith::exceptions::ErrorMessage() << "Error occurred while creating dataset '"
-                                                          << parent << "/" << name << "'.\n");
+        err.addContext(pylith::exceptions::ErrorMessage()
+                       << "Error occurred while creating dataset '" << parent << "/" << name << "'.\n");
         throw;
     } catch (const std::exception& err) {
         PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Error occurred while creating dataset '"
-                     << parent << "/" << name << "':\n" << err.what());
+                     "Error occurred while creating dataset '" << parent << "/" << name << "':\n"
+                                                               << err.what());
     } catch (...) {
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Unknown error occurred while creating dataset '" << name << "'.");
+        PYLITH_ERROR(pylith::exceptions::IOError, "Unknown error occurred while creating dataset '" << name << "'.");
     }
 
     PYLITH_METHOD_END;
@@ -567,16 +564,15 @@ pylith::meshio::HDF5::extendDatasetRawExternal(const char* parent,
         }
 
     } catch (pylith::exceptions::Error& err) {
-        err.addContext(pylith::exceptions::ErrorMessage() << "Error occurred while updating dataset '"
-                                                          << parent << "/" << name << "'.\n");
+        err.addContext(pylith::exceptions::ErrorMessage()
+                       << "Error occurred while updating dataset '" << parent << "/" << name << "'.\n");
         throw;
     } catch (const std::exception& err) {
         PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Error occurred while updating dataset '"
-                     << parent << "/" << name << "':\n" << err.what());
+                     "Error occurred while updating dataset '" << parent << "/" << name << "':\n"
+                                                               << err.what());
     } catch (...) {
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Unknown error occurred while updating dataset '" << name << "'.");
+        PYLITH_ERROR(pylith::exceptions::IOError, "Unknown error occurred while updating dataset '" << name << "'.");
     }
 
     PYLITH_METHOD_END;
@@ -612,16 +608,15 @@ pylith::meshio::HDF5::writeDataset(const char* parent,
         HDF5::writeDataset(_file, parent, name, strfixedlen.data(), nstrings, slen);
 
     } catch (pylith::exceptions::Error& err) {
-        err.addContext(pylith::exceptions::ErrorMessage() << "Error occurred while writing dataset '"
-                                                          << parent << "/" << name << "'.\n");
+        err.addContext(pylith::exceptions::ErrorMessage()
+                       << "Error occurred while writing dataset '" << parent << "/" << name << "'.\n");
         throw;
     } catch (const std::exception& err) {
         PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Error occurred while writing dataset '"
-                     << parent << "/" << name << "':\n" << err.what());
+                     "Error occurred while writing dataset '" << parent << "/" << name << "':\n"
+                                                              << err.what());
     } catch (...) {
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Unknown error occurred while writing dataset '" << name << "'.");
+        PYLITH_ERROR(pylith::exceptions::IOError, "Unknown error occurred while writing dataset '" << name << "'.");
     }
 
     PYLITH_METHOD_END;
@@ -688,8 +683,7 @@ pylith::meshio::HDF5::writeDataset(hid_t h5,
         }
 
 #if defined(PYLITH_HDF5_USE_API_18)
-        dataset.id = H5Dcreate2(group.id, name, datatype.id, dataspace.id,
-                                H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+        dataset.id = H5Dcreate2(group.id, name, datatype.id, dataspace.id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 #else
         dataset.id = H5Dcreate(group.id, name, datatype.id, dataspace.id, H5P_DEFAULT);
 #endif
@@ -702,16 +696,15 @@ pylith::meshio::HDF5::writeDataset(hid_t h5,
         }
 
     } catch (pylith::exceptions::Error& err) {
-        err.addContext(pylith::exceptions::ErrorMessage() << "Error occurred while creating dataset '"
-                                                          << parent << "/" << name << "'.\n");
+        err.addContext(pylith::exceptions::ErrorMessage()
+                       << "Error occurred while creating dataset '" << parent << "/" << name << "'.\n");
         throw;
     } catch (const std::exception& err) {
         PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Error occurred while creating dataset '"
-                     << parent << "/" << name << "':\n" << err.what());
+                     "Error occurred while creating dataset '" << parent << "/" << name << "':\n"
+                                                               << err.what());
     } catch (...) {
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Unknown error occurred while writing dataset '" << name << "'.");
+        PYLITH_ERROR(pylith::exceptions::IOError, "Unknown error occurred while writing dataset '" << name << "'.");
     }
 
     PYLITH_METHOD_END;
@@ -778,8 +771,7 @@ pylith::meshio::HDF5::readDataset(const char* parent,
         }
 
         std::vector<char> strfixedlen(nstrings * slen);
-        if (H5Dread(dataset.id, datatype.id, H5S_ALL, H5S_ALL,
-                    H5P_DEFAULT, strfixedlen.data()) < 0) {
+        if (H5Dread(dataset.id, datatype.id, H5S_ALL, H5S_ALL, H5P_DEFAULT, strfixedlen.data()) < 0) {
             PYLITH_ERROR(pylith::exceptions::IOError, "Could not read dataset.");
         }
 
@@ -790,16 +782,15 @@ pylith::meshio::HDF5::readDataset(const char* parent,
         }
 
     } catch (pylith::exceptions::Error& err) {
-        err.addContext(pylith::exceptions::ErrorMessage() << "Error occurred while reading dataset '"
-                                                          << parent << "/" << name << "'.\n");
+        err.addContext(pylith::exceptions::ErrorMessage()
+                       << "Error occurred while reading dataset '" << parent << "/" << name << "'.\n");
         throw;
     } catch (const std::exception& err) {
         PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Error occurred while reading dataset '"
-                     << parent << "/" << name << "':\n" << err.what());
+                     "Error occurred while reading dataset '" << parent << "/" << name << "':\n"
+                                                              << err.what());
     } catch (...) {
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Unknown error occurred while reading dataset '" << name << "'.");
+        PYLITH_ERROR(pylith::exceptions::IOError, "Unknown error occurred while reading dataset '" << name << "'.");
     }
 
     PYLITH_METHOD_RETURN(data);

@@ -16,16 +16,14 @@
 class pylith::meshio::BinaryIO {
     // PUBLIC METHODS
     // //////////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /** Read fixed length string from binary file.
      *
      * @param fin Input file stream
      * @param numChars Number of characters in string.
      */
-    static
-    std::string readString(std::ifstream& fin,
-                           const int numChars);
+    static std::string readString(std::ifstream& fin,
+                                  const int numChars);
 
     /** Change endian type by swapping byte order.
      *
@@ -33,10 +31,9 @@ public:
      * @param numVals Number of values
      * @param typesize Size of each value in bytes
      */
-    static
-    void swapByteOrder(char* vals,
-                       const int numVals,
-                       const int typesize);
+    static void swapByteOrder(char* vals,
+                              const int numVals,
+                              const int typesize);
 
 }; // BinaryIO
 

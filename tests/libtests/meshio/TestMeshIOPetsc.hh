@@ -14,13 +14,12 @@
 namespace pylith {
     namespace meshio {
         class TestMeshIOPetsc;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 class pylith::meshio::TestMeshIOPetsc : public TestMeshIO {
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestMeshIOPetsc(TestMeshIO_Data* data);
 
@@ -34,7 +33,7 @@ public:
      *
      * @param[in] gmshMarkVertices If true, mark Gmsh vertices.
      */
-    void testRead(const bool gmshMarkVertices=false);
+    void testRead(const bool gmshMarkVertices = false);
 
     /// Test read() with common user mesh generation errors.
     void testReadError(void);
@@ -43,8 +42,7 @@ public:
     void testWriteRead(void);
 
     // PROTECTED METHODS ////////////////////////////////////////////////
-protected:
-
+  protected:
     MeshIOPetsc* _io; ///< Test subject.
 
 }; // class TestMeshIOPetsc

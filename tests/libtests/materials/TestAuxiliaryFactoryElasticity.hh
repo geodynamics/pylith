@@ -12,10 +12,10 @@
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/materials/materialsfwd.hh" // HOLDSA AuxiliaryFactoryElasticity
-#include "pylith/topology/Field.hh" // HOLDSA Field::SubfieldInfo
-#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
-#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA Coordsys
 #include "pylith/scales/scalesfwd.hh" // HOLDSA Scales
+#include "pylith/topology/Field.hh" // HOLDSA Field::SubfieldInfo
+#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA Coordsys
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
 
 #include <map> // USES std::map
 
@@ -23,14 +23,13 @@ namespace pylith {
     namespace materials {
         class TestAuxiliaryFactoryElasticity;
         class TestAuxiliaryFactoryElasticity_Data;
-    } // materials
-} // pylith
+    } // namespace materials
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::materials::TestAuxiliaryFactoryElasticity : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestAuxiliaryFactoryElasticity(TestAuxiliaryFactoryElasticity_Data* data);
 
@@ -44,14 +43,12 @@ public:
     void testSetValuesFromDB(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Initialze mesh, coordinate system, auxiliary field, and factory.
     void _initialize(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     AuxiliaryFactoryElasticity* _factory; ///< Test subject.
     TestAuxiliaryFactoryElasticity_Data* _data; ///< Test data.
 
@@ -63,8 +60,7 @@ protected:
 // ------------------------------------------------------------------------------------------------
 class pylith::materials::TestAuxiliaryFactoryElasticity_Data {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestAuxiliaryFactoryElasticity_Data(void);
 
@@ -72,8 +68,7 @@ public:
     ~TestAuxiliaryFactoryElasticity_Data(void);
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     size_t dimension; ///< Spatial dimension.
     size_t auxDim; ///< Topological dimension of auxiliary field.
     const char* meshFilename; ///< Name of file with ASCII mesh.

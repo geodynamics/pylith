@@ -32,12 +32,14 @@ const char* pylith::petsc::PetscVersion::_petscArch = PETSC_ARCH;
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::petsc::PetscVersion::PetscVersion(void) {}
+pylith::petsc::PetscVersion::PetscVersion(void) {
+}
 
 
 // ----------------------------------------------------------------------
 // Default destructor.
-pylith::petsc::PetscVersion::~PetscVersion(void) {}
+pylith::petsc::PetscVersion::~PetscVersion(void) {
+}
 
 
 // ----------------------------------------------------------------------

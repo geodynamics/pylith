@@ -9,8 +9,8 @@
 // =================================================================================================
 #pragma once
 
-#include "TestDataWriterVTK.hh"
 #include "TestDataWriterSubmesh.hh"
+#include "TestDataWriterVTK.hh"
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 
@@ -19,14 +19,13 @@ namespace pylith {
     namespace meshio {
         class TestDataWriterVTKSubmesh;
         class TestDataWriterVTKSubmesh_Data;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterVTKSubmesh : public TestDataWriterVTK, public TestDataWriterSubmesh {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestDataWriterVTKSubmesh(TestDataWriterVTKSubmesh_Data* data);
 
@@ -43,8 +42,7 @@ public:
     void testWriteCellField(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get test data.
      *
      * @returns Test data.
@@ -52,13 +50,13 @@ protected:
     TestDataWriterSubmesh_Data* _getData(void);
 
     // PROTECTED MEMBDERS /////////////////////////////////////////////////
-protected:
-
+  protected:
     TestDataWriterVTKSubmesh_Data* _data; ///< Data for testing.
 
 }; // class TestDataWriterVTKSubmesh
 
 // ======================================================================
-class pylith::meshio::TestDataWriterVTKSubmesh_Data : public TestDataWriterVTK_Data, public TestDataWriterSubmesh_Data {};
+class pylith::meshio::TestDataWriterVTKSubmesh_Data : public TestDataWriterVTK_Data,
+                                                      public TestDataWriterSubmesh_Data {};
 
 // End of file

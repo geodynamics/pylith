@@ -19,8 +19,7 @@ class pylith::feassemble::IntegratorBoundary : public pylith::feassemble::Integr
     friend class TestIntegratorBoundary; // unit testing
 
     // PUBLIC STRUCTS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Kernels (point-wise functions) for residual.
     struct ResidualKernels {
         std::string subfield; ///< Name of subfield
@@ -32,7 +31,8 @@ public:
             subfield(""),
             part(pylith::feassemble::Integrator::LHS),
             r0(NULL),
-            r1(NULL) {}
+            r1(NULL) {
+        }
 
 
         ResidualKernels(const char* subfieldValue,
@@ -42,7 +42,8 @@ public:
             subfield(subfieldValue),
             part(partValue),
             r0(r0Value),
-            r1(r1Value) {}
+            r1(r1Value) {
+        }
 
 
     }; // ResidualKernels
@@ -54,20 +55,21 @@ public:
 
         ProjectKernels(void) :
             subfield(""),
-            f(NULL) {}
+            f(NULL) {
+        }
 
 
         ProjectKernels(const char* subfieldValue,
                        PetscBdPointFn* fValue) :
             subfield(subfieldValue),
-            f(fValue) {}
+            f(fValue) {
+        }
 
 
     }; // ProjectKernels
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     IntegratorBoundary(pylith::problems::Physics* const physics);
 
@@ -75,8 +77,7 @@ public:
     virtual ~IntegratorBoundary(void);
 
     /// Deallocate PETSc and local data structures.
-    virtual
-    void deallocate(void);
+    virtual void deallocate(void);
 
     /** Set name of solution subfield associated with boundary condition.
      *
@@ -157,15 +158,12 @@ public:
                                      const pylith::feassemble::IntegrationData& integrationData);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Compute diagnostic field from auxiliary field.
-    virtual
-    void _computeDiagnosticField(void);
+    virtual void _computeDiagnosticField(void);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::topology::Mesh* _boundaryMesh; ///< Boundary mesh.
     std::string _boundarySurfaceLabel; ///< Name of label identifying boundary surface.
     std::string _subfieldName; ///< Name of solution subfield for boundary condition.
@@ -173,8 +171,7 @@ private:
     std::vector<ProjectKernels> _kernelsDiagnosticField; ///< kernels for computing diagnostic field.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     IntegratorBoundary(void); ///< Not implemented.
     IntegratorBoundary(const IntegratorBoundary&); ///< Not implemented.
     const IntegratorBoundary& operator=(const IntegratorBoundary&); ///< Not implemented.

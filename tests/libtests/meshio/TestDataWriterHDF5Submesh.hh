@@ -18,15 +18,13 @@ namespace pylith {
     namespace meshio {
         class TestDataWriterHDF5Submesh;
         class TestDataWriterHDF5Submesh_Data;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
-class pylith::meshio::TestDataWriterHDF5Submesh :
-    public TestDataWriterHDF5, public TestDataWriterSubmesh {
+class pylith::meshio::TestDataWriterHDF5Submesh : public TestDataWriterHDF5, public TestDataWriterSubmesh {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestDataWriterHDF5Submesh(TestDataWriterHDF5Submesh_Data* data);
 
@@ -43,8 +41,7 @@ public:
     void testWriteCellField(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get test data.
      *
      * @returns Test data.
@@ -52,15 +49,13 @@ protected:
     TestDataWriterSubmesh_Data* _getData(void);
 
     // PROTECTED MEMBDERS /////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     TestDataWriterHDF5Submesh_Data* _data; ///< Data for testing.
 
 }; // class TestDataWriterVTKSubmesh
 
 // ======================================================================
-class pylith::meshio::TestDataWriterHDF5Submesh_Data :
-    public TestDataWriterHDF5_Data,
-    public TestDataWriterSubmesh_Data {};
+class pylith::meshio::TestDataWriterHDF5Submesh_Data : public TestDataWriterHDF5_Data,
+                                                       public TestDataWriterSubmesh_Data {};
 
 // End of file

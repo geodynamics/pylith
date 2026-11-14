@@ -17,8 +17,7 @@ class pylith::bc::AbsorbingDampers : public pylith::bc::BoundaryCondition {
     friend class TestAbsorbingDampers; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     AbsorbingDampers(void);
 
@@ -59,8 +58,7 @@ public:
                                                   const pylith::topology::Mesh& domainMesh);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get auxiliary factory associated with physics.
      *
      * @return Auxiliary factory for physics object.
@@ -68,16 +66,13 @@ protected:
     pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::bc::AbsorbingDampersAuxiliaryFactory* _auxiliaryFactory; ///< Factory for auxiliary subfields.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     AbsorbingDampers(const AbsorbingDampers&); ///< Not implemented.
     const AbsorbingDampers& operator=(const AbsorbingDampers&); ///< Not implemented.
-
 };
 
 // class AbsorbingDampers

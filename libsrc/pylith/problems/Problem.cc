@@ -13,29 +13,29 @@
 #include "pylith/problems/Problem.hh" // implementation of class methods
 
 #include "pylith/feassemble/IntegrationData.hh" // HOLDSA IntegrationData
-#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // HASA Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
-#include "pylith/materials/Material.hh" // USES Material
-#include "pylith/faults/FaultCohesive.hh" // USES FaultCohesive
 #include "pylith/bc/BoundaryCondition.hh" // USES BoundaryCondition
+#include "pylith/faults/FaultCohesive.hh" // USES FaultCohesive
+#include "pylith/feassemble/Constraint.hh" // USES Constraint
 #include "pylith/feassemble/Integrator.hh" // USES Integrator
 #include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
 #include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface
-#include "pylith/feassemble/Constraint.hh" // USES Constraint
+#include "pylith/materials/Material.hh" // USES Material
 #include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
-#include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor::optimizeClosure()
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
 
-#include "pylith/petsc/Options.hh" // USES Options
 #include "pylith/petsc/EventLogger.hh" // HASA EventLogger
+#include "pylith/petsc/Options.hh" // USES Options
 
 #include "pylith/scales/Scales.hh" // USES Scales
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
-#include "pylith/exceptions/error.hh" // USES PylithCallPetsc
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <cassert> // USES assert()
@@ -45,39 +45,35 @@
 namespace pylith {
     namespace problems {
         class _Problem {
-public:
-
+          public:
             /** Create null space for solution subfield.
              *
              * @param[inout] solution Solution field.
              * @param[in] subfieldName Name of solution subfield with null space.
              */
-            static
-            void createNullSpace(const pylith::topology::Field* solution,
-                                 const char* subfieldName);
+            static void createNullSpace(const pylith::topology::Field* solution,
+                                        const char* subfieldName);
 
             /** Set data needed to integrate domain faces on interior interface.
              *
              * @param[inout] solution Solution field.
              * @param[in] integrators Array of integrators for problem.
              */
-            static
-            void setInterfaceData(const pylith::topology::Field* solution,
-                                  std::vector<pylith::feassemble::Integrator*>& integrators);
+            static void setInterfaceData(const pylith::topology::Field* solution,
+                                         std::vector<pylith::feassemble::Integrator*>& integrators);
 
             /** Get subset of integrators matching template type T.
              *
              * @param[in] Array of integrators for problem
              * @returns Array of integrators of type T.
              */
-            template<class T> static std::vector<T*> subset(const std::vector<pylith::feassemble::Integrator*>& integrators);
+            template <class T>
+            static std::vector<T*> subset(const std::vector<pylith::feassemble::Integrator*>& integrators);
 
             // Logging events
             class Events {
-public:
-
-                static
-                void init(void);
+              public:
+                static void init(void);
 
                 static pylith::petsc::EventLogger logger;
                 static PetscLogEvent setSolution;
@@ -89,10 +85,9 @@ public:
                 static PetscLogEvent createConstraints;
                 static PetscLogEvent setupSolution;
             };
-
         };
-    }
-}
+    } // namespace problems
+} // namespace pylith
 pylith::petsc::EventLogger pylith::problems::_Problem::Events::logger;
 PetscLogEvent pylith::problems::_Problem::Events::setSolution;
 PetscLogEvent pylith::problems::_Problem::Events::preinitialize;
@@ -148,18 +143,23 @@ pylith::problems::Problem::deallocate(void) {
 
     const size_t numIntegrators = _integrators.size();
     for (size_t i = 0; i < numIntegrators; ++i) {
-        delete _integrators[i];_integrators[i] = NULL;
+        delete _integrators[i];
+        _integrators[i] = NULL;
     } // for
 
     const size_t numConstraints = _constraints.size();
     for (size_t i = 0; i < numConstraints; ++i) {
-        delete _constraints[i];_constraints[i] = NULL;
+        delete _constraints[i];
+        _constraints[i] = NULL;
     } // for
 
-    delete _integrationData;_integrationData = NULL;
-    delete _scales;_scales = NULL;
+    delete _integrationData;
+    _integrationData = NULL;
+    delete _scales;
+    _scales = NULL;
     _gravityField = NULL; // Held by Python. :KLUDGE: :TODO: Use shared pointer.
-    delete _observers;_observers = NULL;
+    delete _observers;
+    _observers = NULL;
 
     pylith::topology::FieldOps::deallocate();
 
@@ -172,7 +172,7 @@ pylith::problems::Problem::deallocate(void) {
 void
 pylith::problems::Problem::setFormulation(const pylith::problems::Physics::FormulationEnum value) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "formulation="<<value);
+    PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "formulation=" << value);
 
     _formulation = value;
 
@@ -192,7 +192,7 @@ pylith::problems::Problem::getFormulation(void) const {
 // Set problem type.
 void
 pylith::problems::Problem::setSolverType(const SolverTypeEnum value) {
-    PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "solver="<<value);
+    PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "solver=" << value);
 
     _solverType = value;
 } // setSolverType
@@ -328,9 +328,9 @@ void
 pylith::problems::Problem::setMaterials(pylith::materials::Material* materials[],
                                         const int numMaterials) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "Setting "<<numMaterials<<" materials.");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "Setting " << numMaterials << " materials.");
 
-    assert( (!materials && 0 == numMaterials) || (materials && 0 < numMaterials) );
+    assert((!materials && 0 == numMaterials) || (materials && 0 < numMaterials));
 
     _materials.resize(numMaterials);
     for (int i = 0; i < numMaterials; ++i) {
@@ -355,9 +355,9 @@ void
 pylith::problems::Problem::setBoundaryConditions(pylith::bc::BoundaryCondition* bc[],
                                                  const int numBC) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "Setting "<<numBC<<" boundary conditions.");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "Setting " << numBC << " boundary conditions.");
 
-    assert( (!bc && 0 == numBC) || (bc && 0 < numBC) );
+    assert((!bc && 0 == numBC) || (bc && 0 < numBC));
 
     _bc.resize(numBC);
     for (int i = 0; i < numBC; ++i) {
@@ -382,9 +382,9 @@ void
 pylith::problems::Problem::setInterfaces(pylith::faults::FaultCohesive* interfaces[],
                                          const int numInterfaces) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "Setting "<<numInterfaces<<" interior interfaces.");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "Setting " << numInterfaces << " interior interfaces.");
 
-    assert( (!interfaces && 0 == numInterfaces) || (interfaces && 0 < numInterfaces) );
+    assert((!interfaces && 0 == numInterfaces) || (interfaces && 0 < numInterfaces));
 
     _interfaces.resize(numInterfaces);
     for (int i = 0; i < numInterfaces; ++i) {
@@ -525,7 +525,7 @@ pylith::problems::Problem::initialize(void) {
         _Problem::createNullSpace(solution, "displacement");
         break;
     default:
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation '"<<_formulation<<".");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation '" << _formulation << ".");
     } // switch
     _Problem::setInterfaceData(solution, _integrators);
 
@@ -594,14 +594,18 @@ pylith::problems::Problem::_createIntegrators(void) {
         assert(_materials[i]);
         pylith::feassemble::Integrator* integrator = _materials[i]->createIntegrator(*solution);
         assert(count < maxSize);
-        if (integrator) { _integrators[count++] = integrator;}
+        if (integrator) {
+            _integrators[count++] = integrator;
+        } // if
     } // for
 
     for (size_t i = 0; i < numInterfaces; ++i) {
         assert(_interfaces[i]);
         pylith::feassemble::Integrator* integrator = _interfaces[i]->createIntegrator(*solution, _materials);
         assert(count < maxSize);
-        if (integrator) { _integrators[count++] = integrator;}
+        if (integrator) {
+            _integrators[count++] = integrator;
+        } // if
     } // for
 
     // Check to make sure boundary conditions are compatible with the solution.
@@ -609,7 +613,9 @@ pylith::problems::Problem::_createIntegrators(void) {
         assert(_bc[i]);
         pylith::feassemble::Integrator* integrator = _bc[i]->createIntegrator(*solution);
         assert(count < maxSize);
-        if (integrator) { _integrators[count++] = integrator;}
+        if (integrator) {
+            _integrators[count++] = integrator;
+        } // if
     } // for
 
     _integrators.resize(count);
@@ -682,7 +688,8 @@ pylith::problems::Problem::_setupSolution(void) {
         if (subfieldInfo.fe.isFaultOnly) {
             PetscDS ds = NULL;
             PetscInt cStart = 0, cEnd = 0;
-            PetscDM dmSoln = solution->getDM();assert(dmSoln);
+            PetscDM dmSoln = solution->getDM();
+            assert(dmSoln);
             PylithCallPetsc(DMPlexGetHeightStratum(dmSoln, 0, &cStart, &cEnd));
             PetscInt cell = cStart;
             bool found = false;
@@ -714,7 +721,8 @@ pylith::problems::_Problem::createNullSpace(const pylith::topology::Field* solut
     assert(solution);
 
     const int spaceDim = solution->getSpaceDim();
-    const PetscInt m = (spaceDim * (spaceDim + 1)) / 2;assert(m > 0 && m <= 6);
+    const PetscInt m = (spaceDim * (spaceDim + 1)) / 2;
+    assert(m > 0 && m <= 6);
 
     PetscInt numDofUnconstrained = 0;
     PylithCallPetsc(PetscSectionGetConstrainedStorageSize(solution->getLocalSection(), &numDofUnconstrained));
@@ -729,7 +737,7 @@ pylith::problems::_Problem::createNullSpace(const pylith::topology::Field* solut
 
     PetscObject field = NULL;
     PylithCallPetsc(DMGetField(dmSoln, info.index, NULL, &field));
-    PylithCallPetsc(PetscObjectCompose(field, "nearnullspace", (PetscObject) nullSpace));
+    PylithCallPetsc(PetscObjectCompose(field, "nearnullspace", (PetscObject)nullSpace));
     PylithCallPetsc(MatNullSpaceDestroy(&nullSpace));
 
     PYLITH_METHOD_END;
@@ -758,7 +766,7 @@ pylith::problems::_Problem::setInterfaceData(const pylith::topology::Field* solu
 
 // ------------------------------------------------------------------------------------------------
 // Get subset of integrators matching template type T.
-template<class T>
+template <class T>
 std::vector<T*>
 pylith::problems::_Problem::subset(const std::vector<pylith::feassemble::Integrator*>& integrators) {
     // Count number of matches

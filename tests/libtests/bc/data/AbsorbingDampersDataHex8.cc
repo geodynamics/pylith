@@ -7,22 +7,20 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-  namespace bc {
-        class AbsorbingDampersDataHex8;
-    } // pylith
+namespace bc {
+    class AbsorbingDampersDataHex8;
+} // pylith
 } // bc
 
 class pylith::bc::AbsorbingDampersDataHex8 : public AbsorbingDampersData {
-public:
-
+  public:
     /// Constructor
     AbsorbingDampersDataHex8(void);
 
     /// Destructor
     ~AbsorbingDampersDataHex8(void);
 
-private:
-
+  private:
     static const char* _meshFilename;
 
     static const int _numBasis;
@@ -51,7 +49,6 @@ private:
     static const PylithScalar _dampingConsts[];
     static const PylithScalar _valsResidual[];
     static const PylithScalar _valsJacobian[];
-
 };
 
 #endif // pylith_bc_absorbingdampersdatahex8_hh

@@ -31,7 +31,7 @@ namespace pylith {
         class ConstraintUserFn; ///< Finite-element constraints via user-specified function (testing).
         class ConstraintSimple; ///< Finite-element simple constraints via user-specified function (testing).
 
-    } // feassemble
-} // pylith
+    } // namespace feassemble
+} // namespace pylith
 
 // End of file

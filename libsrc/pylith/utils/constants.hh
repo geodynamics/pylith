@@ -22,6 +22,6 @@ namespace pylith {
     static const PylithInt min_int = PETSC_MIN_INT;
     static const PylithReal max_real = (sizeof(PylithReal) == sizeof(double)) ? max_double : max_float;
 
-}
+} // namespace pylith
 
 // End of file

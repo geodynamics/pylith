@@ -9,18 +9,17 @@
 // =================================================================================================
 #pragma once
 
-#include <string>
 #include <sstream>
+#include <string>
 
 namespace pylith {
     namespace exceptions {
         class ErrorMessage;
     }
-}
+} // namespace pylith
 
 class pylith::exceptions::ErrorMessage {
-public:
-
+  public:
     inline ErrorMessage(const char* text);
 
     inline ErrorMessage(const std::string& text);
@@ -28,9 +27,7 @@ public:
     ErrorMessage() = default;
 
     /// Append any streamable value.
-    template <typename T>
-    inline
-    ErrorMessage& operator<<(const T& value);
+    template <typename T> inline ErrorMessage& operator<<(const T& value);
 
     /// Extract the assembled string.
     inline std::string str() const;
@@ -39,10 +36,8 @@ public:
     /// is expected.
     inline operator std::string() const;
 
-private:
-
+  private:
     std::ostringstream _buffer;
-
 };
 
 #include "ErrorMessage.icc"

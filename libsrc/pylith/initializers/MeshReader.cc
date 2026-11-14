@@ -12,15 +12,16 @@
 
 #include "pylith/initializers/MeshReader.hh" // implementation of class methods
 
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/meshio/MeshIO.hh" // HOLDSA MeshIO
 #include "pylith/problems/Problem.hh" // USES Problem
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
-#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor
-pylith::initializers::MeshReader::MeshReader(void) : _reader(nullptr) {}
+pylith::initializers::MeshReader::MeshReader(void) : _reader(nullptr) {
+}
 
 
 // ------------------------------------------------------------------------------------------------

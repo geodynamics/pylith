@@ -14,7 +14,7 @@
 typedef int PetscErrorCode;
 
 /// forward delcaration of PETSc context.
-typedef void *PetscCtx;
+typedef void* PetscCtx;
 
 /// forward declaration for PETSc Mat
 typedef struct _p_Mat* PetscMat;

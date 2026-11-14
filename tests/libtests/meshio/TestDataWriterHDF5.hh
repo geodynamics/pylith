@@ -14,28 +14,25 @@ namespace pylith {
     namespace meshio {
         class TestDataWriterHDF5;
         class TestDataWriterHDF5_Data;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterHDF5 {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /** Check HDF5 file against archived file.
      *
      * @param filename Name of file to check.
      */
-    static
-    void checkFile(const char* filename);
+    static void checkFile(const char* filename);
 
 }; // class TestDataWriterHDF5
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterHDF5_Data {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestDataWriterHDF5_Data(void);
 
@@ -43,12 +40,10 @@ public:
     ~TestDataWriterHDF5_Data(void);
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     const char* opencloseFilename; ///< Name of file with no data fields.
     const char* vertexFilename; ///< Name of file with vertex fields.
     const char* cellFilename; ///< Name of file with cell fields.
-
 };
 
 // End of file

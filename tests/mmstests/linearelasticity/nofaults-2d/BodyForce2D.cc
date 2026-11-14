@@ -23,7 +23,7 @@
 
 namespace pylith {
     class _BodyForce2D;
-} // pylith
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::_BodyForce2D {
@@ -32,75 +32,87 @@ class pylith::_BodyForce2D {
     static const double X_MAX;
 
     // Density
-    static double density(const double x,
-                          const double y) {
+    static double
+    density(const double x,
+            const double y) {
         return 2500.0;
     } // density
 
-    static const char* density_units(void) {
+    static const char*
+    density_units(void) {
         return "kg/m**3";
     } // density_units
 
     // Vs
-    static double vs(const double x,
-                     const double y) {
+    static double
+    vs(const double x,
+       const double y) {
         return 3000.0;
     } // vs
 
-    static const char* vs_units(void) {
+    static const char*
+    vs_units(void) {
         return "m/s";
     } // vs_units
 
     // Vp
-    static double vp(const double x,
-                     const double y) {
-        return sqrt(3.0)*vs(x,y);
+    static double
+    vp(const double x,
+       const double y) {
+        return sqrt(3.0) * vs(x, y);
     } // vp
 
-    static const char* vp_units(void) {
+    static const char*
+    vp_units(void) {
         return "m/s";
     } // vp_units
 
-    static double bodyforce_x(const double x,
-                              const double y) {
+    static double
+    bodyforce_x(const double x,
+                const double y) {
         return BODY_FORCE;
     } // bodyforce_x
 
-    static double bodyforce_y(const double x,
-                              const double y) {
+    static double
+    bodyforce_y(const double x,
+                const double y) {
         return 0.0;
     } // bodyforce_y
 
-    static const char* bodyforce_units(void) {
+    static const char*
+    bodyforce_units(void) {
         return "kg/(m**2*s**2)";
     } // bodyforce_units
 
     // Solution subfields (nondimensional)
 
     // Displacement
-    static double disp_x(const double x,
-                         const double y) {
+    static double
+    disp_x(const double x,
+           const double y) {
         const double lengthScale = scales.getLengthScale();
         const double rigidityScale = scales.getRigidityScale();
         const double bodyForceScale = pylith::scales::ElasticityScales::getBodyForceScale(scales);
         const double bodyforceN = BODY_FORCE / bodyForceScale;
-        const double muN = density(x,y) * vs(x,y) * vs(x,y) / rigidityScale;
-        const double lambdaN = density(x,y) * vp(x,y) * vp(x,y) / rigidityScale - 2.0*muN;
+        const double muN = density(x, y) * vs(x, y) * vs(x, y) / rigidityScale;
+        const double lambdaN = density(x, y) * vp(x, y) * vp(x, y) / rigidityScale - 2.0 * muN;
         const double xp = x - X_MAX / lengthScale;
-        return -0.5 * bodyforceN / (lambdaN + 2.0*muN) * (xp*xp);
+        return -0.5 * bodyforceN / (lambdaN + 2.0 * muN) * (xp * xp);
     } // disp_x
 
-    static double disp_y(const double x,
-                         const double y) {
+    static double
+    disp_y(const double x,
+           const double y) {
         return 0.0;
     } // disp_y
 
-    static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
-                                          PetscReal t,
-                                          const PetscReal x[],
-                                          PetscInt numComponents,
-                                          PetscScalar* s,
-                                          void* context) {
+    static PetscErrorCode
+    solnkernel_disp(PetscInt spaceDim,
+                    PetscReal t,
+                    const PetscReal x[],
+                    PetscInt numComponents,
+                    PetscScalar* s,
+                    void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(2 == numComponents);
         REQUIRE(s);
@@ -111,11 +123,11 @@ class pylith::_BodyForce2D {
         return PETSC_SUCCESS;
     } // solnkernel_disp
 
-public:
-
-    static
-    TestLinearElasticity_Data* createData(void) {
-        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();REQUIRE(data);
+  public:
+    static TestLinearElasticity_Data*
+    createData(void) {
+        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();
+        REQUIRE(data);
 
         data->journalName = "BodyForce2D";
         data->isJacobianLinear = true;
@@ -130,7 +142,8 @@ public:
 
         // Material information
         data->numAuxSubfields = 4;
-        static const char* _auxSubfields[4] = { // order must match order of subfields in auxiliary field
+        static const char* _auxSubfields[4] = {
+            // order must match order of subfields in auxiliary field
             "density",
             "body_force",
             "shear_modulus",
@@ -163,7 +176,8 @@ public:
         static const PylithInt constrainedDOF[2] = {0, 1};
         static const PylithInt numConstrained = 2;
         data->bcs.resize(1);
-        pylith::bc::DirichletUserFn*bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
+        pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
+        REQUIRE(bc);
         bc->setSubfieldName("displacement");
         bc->setLabelName("boundary");
         bc->setLabelValue(1);
@@ -188,7 +202,8 @@ const double pylith::_BodyForce2D::X_MAX = 4.0e+3;
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::BodyForce2D::TriP2(void) {
-    TestLinearElasticity_Data* data = pylith::_BodyForce2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_BodyForce2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -213,7 +228,8 @@ pylith::BodyForce2D::TriP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::BodyForce2D::TriP3(void) {
-    TestLinearElasticity_Data* data = pylith::_BodyForce2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_BodyForce2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -238,7 +254,8 @@ pylith::BodyForce2D::TriP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::BodyForce2D::QuadQ2(void) {
-    TestLinearElasticity_Data* data = pylith::_BodyForce2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_BodyForce2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -263,7 +280,8 @@ pylith::BodyForce2D::QuadQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::BodyForce2D::QuadQ3(void) {
-    TestLinearElasticity_Data* data = pylith::_BodyForce2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_BodyForce2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 

@@ -21,7 +21,7 @@
 
 namespace pylith {
     class _PressureGradient;
-} // pylith
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::_PressureGradient {
@@ -30,105 +30,123 @@ class pylith::_PressureGradient {
     static const double X_MAX; // dimensional
 
     // Density
-    static double solid_density(const double x,
-                                const double y) {
+    static double
+    solid_density(const double x,
+                  const double y) {
         return 2500.0;
     } // solid_density
 
-    static double fluid_density(const double x,
-                                const double y) {
+    static double
+    fluid_density(const double x,
+                  const double y) {
         return 1000.0;
     } // fluid_density
 
-    static const char* density_units(void) {
+    static const char*
+    density_units(void) {
         return "kg/m**3";
     } // density_units
 
     // Fluid viscosity
-    static double fluid_viscosity(const double x,
-                                  const double y) {
+    static double
+    fluid_viscosity(const double x,
+                    const double y) {
         return 1.0e-3;
     } // vs
 
-    static const char* viscosity_units(void) {
+    static const char*
+    viscosity_units(void) {
         return "Pa*s";
     } // fluid_viscosity_units
 
     // Porosity
-    static double porosity(const double x,
-                           const double y) {
+    static double
+    porosity(const double x,
+             const double y) {
         return 0.02;
     } // porosity
 
-    static const char* porosity_units(void) {
+    static const char*
+    porosity_units(void) {
         return "none";
     } // porosity_units
 
     // Shear modulus
-    static double shear_modulus(const double x,
-                                const double y) {
+    static double
+    shear_modulus(const double x,
+                  const double y) {
         return 3.0e+10;
     } // shear_modulus
 
-    static const char* modulus_units(void) {
+    static const char*
+    modulus_units(void) {
         return "Pa";
     } // modulus_units
 
     // Drained bulk modulus
-    static double drained_bulk_modulus(const double x,
-                                       const double y) {
+    static double
+    drained_bulk_modulus(const double x,
+                         const double y) {
         return 8.0e+10;
     } // drained_bulk_modulus
 
     // Biot coefficient
-    static double biot_coefficient(const double x,
-                                   const double y) {
+    static double
+    biot_coefficient(const double x,
+                     const double y) {
         return 0.8;
     } // biot_coefficient
 
-    static const char* biot_coefficient_units(void) {
+    static const char*
+    biot_coefficient_units(void) {
         return "none";
     } // biot_coefficient_units
 
     // Fluid modulus
-    static double fluid_bulk_modulus(const double x,
-                                     const double y) {
+    static double
+    fluid_bulk_modulus(const double x,
+                       const double y) {
         return 2.0e+9;
     } // fluid_bulk_modulus
 
     // Permeability
-    static double isotropic_permeability(const double x,
-                                         const double y) {
+    static double
+    isotropic_permeability(const double x,
+                           const double y) {
         return 1.0e-14;
     } // isotropic_permeability
 
-    static const char* permeability_units(void) {
+    static const char*
+    permeability_units(void) {
         return "m*m";
     } // permeability_units
 
     // Solution subfields (nondimensional)
 
     // Displacement
-    static double disp_x(const double x,
-                         const double y) {
+    static double
+    disp_x(const double x,
+           const double y) {
         const PylithReal lengthScale = scales.getLengthScale();
         const PylithReal rigidityScale = scales.getRigidityScale();
         const PylithReal fluidPressureScale = pylith::scales::ElasticityScales::getFluidPressureScale(scales);
 
         const double muN = shear_modulus(x, y) / rigidityScale;
-        const double lambdaN = drained_bulk_modulus(x, y) / rigidityScale - 2.0/3.0 * muN;
+        const double lambdaN = drained_bulk_modulus(x, y) / rigidityScale - 2.0 / 3.0 * muN;
         const double alpha = biot_coefficient(x, y);
-        return -0.5 * alpha  * (PRESSURE / fluidPressureScale) / (lambdaN + 2.0*muN) * (x*x / (X_MAX / lengthScale));
+        return -0.5 * alpha * (PRESSURE / fluidPressureScale) / (lambdaN + 2.0 * muN) * (x * x / (X_MAX / lengthScale));
     } // disp_x
 
-    static double disp_y(const double x,
-                         const double y) {
+    static double
+    disp_y(const double x,
+           const double y) {
         return 0.0;
     } // disp_y
 
     // Pressure
-    static double fluid_pressure(const double x,
-                                 const double y) {
+    static double
+    fluid_pressure(const double x,
+                   const double y) {
         const PylithReal lengthScale = scales.getLengthScale();
         const PylithReal fluidPressureScale = pylith::scales::ElasticityScales::getFluidPressureScale(scales);
 
@@ -136,24 +154,26 @@ class pylith::_PressureGradient {
     } // fluid_pressure
 
     // Trace strain
-    static double trace_strain(const double x,
-                               const double y) {
+    static double
+    trace_strain(const double x,
+                 const double y) {
         const PylithReal lengthScale = scales.getLengthScale();
         const PylithReal rigidityScale = scales.getRigidityScale();
         const PylithReal fluidPressureScale = pylith::scales::ElasticityScales::getFluidPressureScale(scales);
 
         const double muN = shear_modulus(x, y) / rigidityScale;
-        const double lambdaN = drained_bulk_modulus(x, y) / rigidityScale - 2.0/3.0 * muN;
+        const double lambdaN = drained_bulk_modulus(x, y) / rigidityScale - 2.0 / 3.0 * muN;
         const double alpha = biot_coefficient(x, y);
-        return -alpha  * (PRESSURE / fluidPressureScale)  / (lambdaN + 2.0*muN) * (x / (X_MAX / lengthScale));
+        return -alpha * (PRESSURE / fluidPressureScale) / (lambdaN + 2.0 * muN) * (x / (X_MAX / lengthScale));
     } // trace_strain
 
-    static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
-                                          PetscReal t,
-                                          const PetscReal x[],
-                                          PetscInt numComponents,
-                                          PetscScalar* s,
-                                          void* context) {
+    static PetscErrorCode
+    solnkernel_disp(PetscInt spaceDim,
+                    PetscReal t,
+                    const PetscReal x[],
+                    PetscInt numComponents,
+                    PetscScalar* s,
+                    void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(2 == numComponents);
         REQUIRE(s);
@@ -164,12 +184,13 @@ class pylith::_PressureGradient {
         return PETSC_SUCCESS;
     } // solnkernel_disp
 
-    static PetscErrorCode solnkernel_fluid_pressure(PetscInt spaceDim,
-                                                    PetscReal t,
-                                                    const PetscReal x[],
-                                                    PetscInt numComponents,
-                                                    PetscScalar* s,
-                                                    void* context) {
+    static PetscErrorCode
+    solnkernel_fluid_pressure(PetscInt spaceDim,
+                              PetscReal t,
+                              const PetscReal x[],
+                              PetscInt numComponents,
+                              PetscScalar* s,
+                              void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(1 == numComponents);
         REQUIRE(s);
@@ -179,12 +200,13 @@ class pylith::_PressureGradient {
         return PETSC_SUCCESS;
     } // solnkernel_fluid_pressure
 
-    static PetscErrorCode solnkernel_trace_strain(PetscInt spaceDim,
-                                                  PetscReal t,
-                                                  const PetscReal x[],
-                                                  PetscInt numComponents,
-                                                  PetscScalar* s,
-                                                  void* context) {
+    static PetscErrorCode
+    solnkernel_trace_strain(PetscInt spaceDim,
+                            PetscReal t,
+                            const PetscReal x[],
+                            PetscInt numComponents,
+                            PetscScalar* s,
+                            void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(1 == numComponents);
         REQUIRE(s);
@@ -194,12 +216,13 @@ class pylith::_PressureGradient {
         return PETSC_SUCCESS;
     } // solnkernel_trace_strain
 
-    static PetscErrorCode solnkernel_velocity(PetscInt spaceDim,
-                                              PetscReal t,
-                                              const PetscReal x[],
-                                              PetscInt numComponents,
-                                              PetscScalar* s,
-                                              void* context) {
+    static PetscErrorCode
+    solnkernel_velocity(PetscInt spaceDim,
+                        PetscReal t,
+                        const PetscReal x[],
+                        PetscInt numComponents,
+                        PetscScalar* s,
+                        void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(2 == numComponents);
         REQUIRE(s);
@@ -210,12 +233,13 @@ class pylith::_PressureGradient {
         return PETSC_SUCCESS;
     } // solnkernel_velocity
 
-    static PetscErrorCode solnkernel_fluid_pressure_dot(PetscInt spaceDim,
-                                                        PetscReal t,
-                                                        const PetscReal x[],
-                                                        PetscInt numComponents,
-                                                        PetscScalar* s,
-                                                        void* context) {
+    static PetscErrorCode
+    solnkernel_fluid_pressure_dot(PetscInt spaceDim,
+                                  PetscReal t,
+                                  const PetscReal x[],
+                                  PetscInt numComponents,
+                                  PetscScalar* s,
+                                  void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(1 == numComponents);
         REQUIRE(s);
@@ -225,12 +249,13 @@ class pylith::_PressureGradient {
         return PETSC_SUCCESS;
     } // solnkernel_fluid_pressure_dot
 
-    static PetscErrorCode solnkernel_trace_strain_dot(PetscInt spaceDim,
-                                                      PetscReal t,
-                                                      const PetscReal x[],
-                                                      PetscInt numComponents,
-                                                      PetscScalar* s,
-                                                      void* context) {
+    static PetscErrorCode
+    solnkernel_trace_strain_dot(PetscInt spaceDim,
+                                PetscReal t,
+                                const PetscReal x[],
+                                PetscInt numComponents,
+                                PetscScalar* s,
+                                void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(1 == numComponents);
         REQUIRE(s);
@@ -240,11 +265,11 @@ class pylith::_PressureGradient {
         return PETSC_SUCCESS;
     } // solnkernel_trace_strain_dot
 
-public:
-
-    static
-    TestLinearPoroelasticity_Data* createData(void) {
-        TestLinearPoroelasticity_Data* data = new TestLinearPoroelasticity_Data();REQUIRE(data);
+  public:
+    static TestLinearPoroelasticity_Data*
+    createData(void) {
+        TestLinearPoroelasticity_Data* data = new TestLinearPoroelasticity_Data();
+        REQUIRE(data);
 
         data->journalName = "PressureGradient";
         data->isJacobianLinear = true;
@@ -258,7 +283,8 @@ public:
 
         // Material information
         data->numAuxSubfields = 9;
-        static const char* _auxSubfields[9] = { // order must match order of subfields in auxiliary field
+        static const char* _auxSubfields[9] = {
+            // order must match order of subfields in auxiliary field
             "solid_density",
             "fluid_density",
             "fluid_viscosity",
@@ -301,12 +327,13 @@ public:
         data->material.setName("material-id=24");
         data->material.setLabelValue(24);
 
-        static const PylithInt constrainedX[1] = { 0 };
-        static const PylithInt constrainedY[1] = { 1 };
+        static const PylithInt constrainedX[1] = {0};
+        static const PylithInt constrainedY[1] = {1};
         static const PylithInt numConstrained = 1;
         data->bcs.resize(6);
         { // Displacement -x
-            pylith::bc::DirichletUserFn*bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
+            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
+            REQUIRE(bc);
             bc->setSubfieldName("displacement");
             bc->setLabelName("boundary_xneg");
             bc->setLabelValue(1);
@@ -315,7 +342,8 @@ public:
             data->bcs[0] = bc;
         }
         { // Displacement +x
-            pylith::bc::DirichletUserFn*bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
+            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
+            REQUIRE(bc);
             bc->setSubfieldName("displacement");
             bc->setLabelName("boundary_xpos");
             bc->setLabelValue(1);
@@ -324,7 +352,8 @@ public:
             data->bcs[1] = bc;
         }
         { // Displacement -y
-            pylith::bc::DirichletUserFn*bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
+            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
+            REQUIRE(bc);
             bc->setSubfieldName("displacement");
             bc->setLabelName("boundary_yneg");
             bc->setLabelValue(1);
@@ -333,7 +362,8 @@ public:
             data->bcs[2] = bc;
         }
         { // Displacement +y
-            pylith::bc::DirichletUserFn*bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
+            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
+            REQUIRE(bc);
             bc->setSubfieldName("displacement");
             bc->setLabelName("boundary_ypos");
             bc->setLabelValue(1);
@@ -342,7 +372,8 @@ public:
             data->bcs[3] = bc;
         }
         { // Pressure -x
-            pylith::bc::DirichletUserFn*bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
+            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
+            REQUIRE(bc);
             bc->setSubfieldName("pressure");
             bc->setLabelName("boundary_xneg");
             bc->setLabelValue(1);
@@ -351,7 +382,8 @@ public:
             data->bcs[4] = bc;
         }
         { // Pressure +x
-            pylith::bc::DirichletUserFn*bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
+            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
+            REQUIRE(bc);
             bc->setSubfieldName("pressure");
             bc->setLabelName("boundary_xpos");
             bc->setLabelValue(1);
@@ -371,8 +403,8 @@ public:
         return data;
     } // createData
 
-    static
-    TestLinearPoroelasticity_Data* createDataStateVars(void) {
+    static TestLinearPoroelasticity_Data*
+    createDataStateVars(void) {
         TestLinearPoroelasticity_Data* data = createData();
 
         data->material.useStateVars(true);
@@ -398,7 +430,8 @@ const double pylith::_PressureGradient::X_MAX = 8.0e+3;
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearPoroelasticity_Data*
 pylith::PressureGradient::TriP2P1P1(void) {
-    TestLinearPoroelasticity_Data* data = pylith::_PressureGradient::createData();REQUIRE(data);
+    TestLinearPoroelasticity_Data* data = pylith::_PressureGradient::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -430,7 +463,8 @@ pylith::PressureGradient::TriP2P1P1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearPoroelasticity_Data*
 pylith::PressureGradient::TriP3P2P2(void) {
-    TestLinearPoroelasticity_Data* data = pylith::_PressureGradient::createData();REQUIRE(data);
+    TestLinearPoroelasticity_Data* data = pylith::_PressureGradient::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -462,7 +496,8 @@ pylith::PressureGradient::TriP3P2P2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearPoroelasticity_Data*
 pylith::PressureGradient::QuadQ2Q1Q1(void) {
-    TestLinearPoroelasticity_Data* data = pylith::_PressureGradient::createData();REQUIRE(data);
+    TestLinearPoroelasticity_Data* data = pylith::_PressureGradient::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -494,7 +529,8 @@ pylith::PressureGradient::QuadQ2Q1Q1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearPoroelasticity_Data*
 pylith::PressureGradient::QuadQ3Q2Q2(void) {
-    TestLinearPoroelasticity_Data* data = pylith::_PressureGradient::createData();REQUIRE(data);
+    TestLinearPoroelasticity_Data* data = pylith::_PressureGradient::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -526,7 +562,8 @@ pylith::PressureGradient::QuadQ3Q2Q2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearPoroelasticity_Data*
 pylith::PressureGradient::TriP2P1P1_StateVars(void) {
-    TestLinearPoroelasticity_Data* data = pylith::_PressureGradient::createDataStateVars();REQUIRE(data);
+    TestLinearPoroelasticity_Data* data = pylith::_PressureGradient::createDataStateVars();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -561,7 +598,8 @@ pylith::PressureGradient::TriP2P1P1_StateVars(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearPoroelasticity_Data*
 pylith::PressureGradient::TriP3P2P2_StateVars(void) {
-    TestLinearPoroelasticity_Data* data = pylith::_PressureGradient::createDataStateVars();REQUIRE(data);
+    TestLinearPoroelasticity_Data* data = pylith::_PressureGradient::createDataStateVars();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -596,7 +634,8 @@ pylith::PressureGradient::TriP3P2P2_StateVars(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearPoroelasticity_Data*
 pylith::PressureGradient::QuadQ2Q1Q1_StateVars(void) {
-    TestLinearPoroelasticity_Data* data = pylith::_PressureGradient::createDataStateVars();REQUIRE(data);
+    TestLinearPoroelasticity_Data* data = pylith::_PressureGradient::createDataStateVars();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -631,7 +670,8 @@ pylith::PressureGradient::QuadQ2Q1Q1_StateVars(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearPoroelasticity_Data*
 pylith::PressureGradient::QuadQ3Q2Q2_StateVars(void) {
-    TestLinearPoroelasticity_Data* data = pylith::_PressureGradient::createDataStateVars();REQUIRE(data);
+    TestLinearPoroelasticity_Data* data = pylith::_PressureGradient::createDataStateVars();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 

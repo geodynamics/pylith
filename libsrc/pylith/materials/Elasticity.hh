@@ -17,8 +17,7 @@ class pylith::materials::Elasticity : public pylith::materials::Material {
     friend class TestElasticity; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     Elasticity(void);
 
@@ -101,8 +100,9 @@ public:
      * @param[in] face Side of interior interface for kernels.
      * @returns Array of residual kernels for interior interface.
      */
-    std::vector<InterfaceResidualKernels> getInterfaceKernelsResidual(const pylith::topology::Field& solution,
-                                                                      pylith::feassemble::IntegratorInterface::FaceEnum face) const;
+    std::vector<InterfaceResidualKernels>
+    getInterfaceKernelsResidual(const pylith::topology::Field& solution,
+                                pylith::feassemble::IntegratorInterface::FaceEnum face) const;
 
     /** Get Jacobian kernels for an interior interface bounding material.
      *
@@ -110,12 +110,12 @@ public:
      * @param[in] face Side of interior interface for kernels.
      * @returns Array of Jacobian kernels for interior interface.
      */
-    std::vector<InterfaceJacobianKernels> getInterfaceKernelsJacobian(const pylith::topology::Field& solution,
-                                                                      pylith::feassemble::IntegratorInterface::FaceEnum face) const;
+    std::vector<InterfaceJacobianKernels>
+    getInterfaceKernelsJacobian(const pylith::topology::Field& solution,
+                                pylith::feassemble::IntegratorInterface::FaceEnum face) const;
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get auxiliary factory associated with physics.
      *
      * @return Auxiliary factory for physics object.
@@ -135,8 +135,7 @@ protected:
     pylith::topology::FieldFactory* _getDerivedFactory(void);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     /** Set kernels for residual.
      *
      * @param[out] integrator Integrator for material.
@@ -170,18 +169,15 @@ private:
                                  const pylith::topology::Field& solution) const;
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     bool _useBodyForce; ///< Flag to include body force term.
     pylith::materials::RheologyElasticity* _rheology; ///< Bulk rheology for elasticity.
     pylith::materials::DerivedFactoryElasticity* _derivedFactory; ///< Factory for creating derived fields.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     Elasticity(const Elasticity&); ///< Not implemented.
     const Elasticity& operator=(const Elasticity&); /// Not implemented.
-
 };
 
 // class Elasticity

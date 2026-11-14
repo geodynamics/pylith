@@ -58,7 +58,7 @@ namespace pylith {
         class FaultCohesiveKin;
 
         class BoundaryDirections;
-    } // fekernels
-} // pylith
+    } // namespace fekernels
+} // namespace pylith
 
 // End of file

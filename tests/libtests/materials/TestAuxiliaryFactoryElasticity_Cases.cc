@@ -13,11 +13,11 @@
 #include "TestAuxiliaryFactoryElasticity.hh" // Implementation of cases
 
 #include "pylith/materials/AuxiliaryFactoryElasticity.hh" // USES AuxiliaryFactoryElasticity
+#include "pylith/scales/Scales.hh" // USES Scales
 #include "pylith/utils/constants.hh" // USES pylith::g_acc
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
-#include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 
 #include "catch2/catch_test_macros.hpp"
 
@@ -27,137 +27,141 @@
 namespace pylith {
     namespace materials {
         class TestAuxiliaryFactoryElasticity_Cases;
-    } // materials
-} // pylith
+    } // namespace materials
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::materials::TestAuxiliaryFactoryElasticity_Cases {
-public:
-
+  public:
     // Data factory methods
     static TestAuxiliaryFactoryElasticity_Data* Tri(void);
 
     static TestAuxiliaryFactoryElasticity_Data* Hex(void);
 
-private:
-
+  private:
     static const PylithReal LENGTH_SCALE;
     static const PylithReal TIME_SCALE;
     static const PylithReal RIGIDITY_SCALE;
     static const PylithReal DENSITY_SCALE;
     static const PylithReal KM;
 
-private:
-
-    static
-    double density_2d(const double x,
-                      const double y) {
-        return 2500.0 + 3.0*fabs(x)/KM + 2.0*fabs(y)/KM;
+  private:
+    static double
+    density_2d(const double x,
+               const double y) {
+        return 2500.0 + 3.0 * fabs(x) / KM + 2.0 * fabs(y) / KM;
     } // density
 
-    static
-    double density_3d(const double x,
-                      const double y,
-                      const double z) {
-        return 2500.0 + 3.0*fabs(x) + 2.0*fabs(y)/KM + 1.1*fabs(z)/KM;
+    static double
+    density_3d(const double x,
+               const double y,
+               const double z) {
+        return 2500.0 + 3.0 * fabs(x) + 2.0 * fabs(y) / KM + 1.1 * fabs(z) / KM;
     } // density
 
-    static
-    const char* density_units(void) {
+    static const char*
+    density_units(void) {
         return "kg/m**3";
     } // density_units
 
-    static
-    double body_force_2d_x(const double x,
-                           const double y) {
-        return -0.3*x*y/(KM*KM) + 0.2*y*y/(KM*KM);
+    static double
+    body_force_2d_x(const double x,
+                    const double y) {
+        return -0.3 * x * y / (KM * KM) + 0.2 * y * y / (KM * KM);
     } // body_force_x
 
-    static
-    double body_force_2d_y(const double x,
-                           const double y) {
-        return +0.3*x*x/(KM*KM) + 0.2*x*y/(KM*KM);
+    static double
+    body_force_2d_y(const double x,
+                    const double y) {
+        return +0.3 * x * x / (KM * KM) + 0.2 * x * y / (KM * KM);
     } // body_force_y
 
-    static
-    double body_force_3d_x(const double x,
-                           const double y,
-                           const double z) {
-        return -0.3*x*y/(KM*KM) + 0.2*y*y/(KM*KM);
+    static double
+    body_force_3d_x(const double x,
+                    const double y,
+                    const double z) {
+        return -0.3 * x * y / (KM * KM) + 0.2 * y * y / (KM * KM);
     } // body_force_x
 
-    static
-    double body_force_3d_y(const double x,
-                           const double y,
-                           const double z) {
-        return +0.3*x*x/(KM*KM) + 0.2*x*y/(KM*KM);
+    static double
+    body_force_3d_y(const double x,
+                    const double y,
+                    const double z) {
+        return +0.3 * x * x / (KM * KM) + 0.2 * x * y / (KM * KM);
     } // body_force_y
 
-    static
-    double body_force_3d_z(const double x,
-                           const double y,
-                           const double z) {
-        return +0.3*x*y/(KM*KM) + 0.2*x*z/(KM*KM);
+    static double
+    body_force_3d_z(const double x,
+                    const double y,
+                    const double z) {
+        return +0.3 * x * y / (KM * KM) + 0.2 * x * z / (KM * KM);
     } // body_force_z
 
-    static
-    const char* body_force_units(void) {
+    static const char*
+    body_force_units(void) {
         return "kg/(m**2*s**2)";
     } // body_force_units
 
-    static
-    double gravity_field_2d_x(const double x,
-                              const double y) {
+    static double
+    gravity_field_2d_x(const double x,
+                       const double y) {
         return 0.0;
     } // gravity_field_x
 
-    static
-    double gravity_field_2d_y(const double x,
-                              const double y) {
+    static double
+    gravity_field_2d_y(const double x,
+                       const double y) {
         return -pylith::g_acc;
     } // gravity_field_y
 
-    static
-    double gravity_field_3d_x(const double x,
-                              const double y,
-                              const double z) {
+    static double
+    gravity_field_3d_x(const double x,
+                       const double y,
+                       const double z) {
         return 0.0;
     } // gravity_field_x
 
-    static
-    double gravity_field_3d_y(const double x,
-                              const double y,
-                              const double z) {
+    static double
+    gravity_field_3d_y(const double x,
+                       const double y,
+                       const double z) {
         return 0.0;
     } // gravity_field_y
 
-    static
-    double gravity_field_3d_z(const double x,
-                              const double y,
-                              const double z) {
+    static double
+    gravity_field_3d_z(const double x,
+                       const double y,
+                       const double z) {
         return -pylith::g_acc;
     } // gravity_field_z
 
-    static
-    const char* gravity_field_units(void) {
+    static const char*
+    gravity_field_units(void) {
         return "m/s**2";
     } // gravity_field_units
-
 };
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestAuxiliaryFactoryElasticity::Tri::testAdd", "[TestAuxiliaryFactoryElasticity][add]") {
-    pylith::materials::TestAuxiliaryFactoryElasticity(pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Tri()).testAdd();
+TEST_CASE("TestAuxiliaryFactoryElasticity::Tri::testAdd",
+          "[TestAuxiliaryFactoryElasticity][add]") {
+    pylith::materials::TestAuxiliaryFactoryElasticity(pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Tri())
+        .testAdd();
 }
-TEST_CASE("TestAuxiliaryFactoryElasticity::Tri::testSetValuesFromDB", "[TestAuxiliaryFactoryElasticity][testSetValuesFromDB]") {
-    pylith::materials::TestAuxiliaryFactoryElasticity(pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Tri()).testSetValuesFromDB();
+TEST_CASE("TestAuxiliaryFactoryElasticity::Tri::testSetValuesFromDB",
+          "[TestAuxiliaryFactoryElasticity][testSetValuesFromDB]") {
+    pylith::materials::TestAuxiliaryFactoryElasticity(pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Tri())
+        .testSetValuesFromDB();
 }
 
-TEST_CASE("TestAuxiliaryFactoryElasticity::Hex::testAdd", "[TestAuxiliaryFactoryElasticity][add]") {
-    pylith::materials::TestAuxiliaryFactoryElasticity(pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Hex()).testAdd();
+TEST_CASE("TestAuxiliaryFactoryElasticity::Hex::testAdd",
+          "[TestAuxiliaryFactoryElasticity][add]") {
+    pylith::materials::TestAuxiliaryFactoryElasticity(pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Hex())
+        .testAdd();
 }
-TEST_CASE("TestAuxiliaryFactoryElasticity::Hex::testSetValuesFromDB", "[TestAuxiliaryFactoryElasticity][testSetValuesFromDB]") {
-    pylith::materials::TestAuxiliaryFactoryElasticity(pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Hex()).testSetValuesFromDB();
+TEST_CASE("TestAuxiliaryFactoryElasticity::Hex::testSetValuesFromDB",
+          "[TestAuxiliaryFactoryElasticity][testSetValuesFromDB]") {
+    pylith::materials::TestAuxiliaryFactoryElasticity(pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Hex())
+        .testSetValuesFromDB();
 }
 
 const PylithReal pylith::materials::TestAuxiliaryFactoryElasticity_Cases::LENGTH_SCALE = 1.0;
@@ -168,13 +172,15 @@ const PylithReal pylith::materials::TestAuxiliaryFactoryElasticity_Cases::KM = 1
 // ------------------------------------------------------------------------------------------------
 pylith::materials::TestAuxiliaryFactoryElasticity_Data*
 pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Tri(void) {
-    pylith::materials::TestAuxiliaryFactoryElasticity_Data* data = new pylith::materials::TestAuxiliaryFactoryElasticity_Data();
+    pylith::materials::TestAuxiliaryFactoryElasticity_Data* data =
+        new pylith::materials::TestAuxiliaryFactoryElasticity_Data();
     REQUIRE(data);
 
     data->auxDim = 2;
     data->dimension = 2;
     data->meshFilename = "data/tri.mesh";
-    data->cs = new spatialdata::geocoords::CSCart();REQUIRE(data->cs);
+    data->cs = new spatialdata::geocoords::CSCart();
+    REQUIRE(data->cs);
     data->cs->setSpaceDim(data->dimension);
 
     REQUIRE(data->scales);
@@ -201,13 +207,15 @@ pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Tri(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::materials::TestAuxiliaryFactoryElasticity_Data*
 pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Hex(void) {
-    pylith::materials::TestAuxiliaryFactoryElasticity_Data* data = new pylith::materials::TestAuxiliaryFactoryElasticity_Data();
+    pylith::materials::TestAuxiliaryFactoryElasticity_Data* data =
+        new pylith::materials::TestAuxiliaryFactoryElasticity_Data();
     REQUIRE(data);
 
     data->auxDim = 3;
     data->dimension = 3;
     data->meshFilename = "data/hex.mesh";
-    data->cs = new spatialdata::geocoords::CSCart();REQUIRE(data->cs);
+    data->cs = new spatialdata::geocoords::CSCart();
+    REQUIRE(data->cs);
     data->cs->setSpaceDim(data->dimension);
 
     REQUIRE(data->scales);

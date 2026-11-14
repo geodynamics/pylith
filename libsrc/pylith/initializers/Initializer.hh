@@ -22,8 +22,7 @@ class pylith::initializers::Initializer : public pylith::utils::PyreComponent {
     friend class TestInitializer;
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     Initializer(void);
 
@@ -49,13 +48,11 @@ public:
 
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     std::vector<pylith::initializers::InitializePhase*> _phases; ///< Array of phases.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     Initializer(const Initializer&); ///< Not implemented
     const Initializer& operator=(const Initializer&); ///< Not implemented
 

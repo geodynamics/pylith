@@ -40,7 +40,7 @@ pylith::bc::AbsorbingDampersData::AbsorbingDampersData(void) :
     valsResidual(0),
     valsJacobian(0) { // constructor
     const PylithScalar velScale = lengthScale / timeScale;
-    densityScale = rigidityScale / (velScale*velScale);
+    densityScale = rigidityScale / (velScale * velScale);
 } // constructor
 
 

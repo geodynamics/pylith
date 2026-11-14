@@ -17,8 +17,7 @@ class pylith::problems::TimeDependent : public pylith::problems::Problem {
     friend class pylith::testing::MMSTest; // Testing with Method of Manufactured Solutions
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TimeDependent(void);
 
@@ -206,12 +205,11 @@ public:
      * @param[out] residualvec PETSc Vec for residual.
      * @param[in] context User context (TimeDependent).
      */
-    static
-    PetscErrorCode computeRHSResidual(PetscTS ts,
-                                      PetscReal t,
-                                      PetscVec solutionVec,
-                                      PetscVec residualVec,
-                                      void* context);
+    static PetscErrorCode computeRHSResidual(PetscTS ts,
+                                             PetscReal t,
+                                             PetscVec solutionVec,
+                                             PetscVec residualVec,
+                                             void* context);
 
     /** Callback static method for computing residual for LHS, F(t,s,\dot{s}).
      *
@@ -222,13 +220,12 @@ public:
      * @param[out] residualvec PetscVec for residual.
      * @param[in] context User context (TimeDependent).
      */
-    static
-    PetscErrorCode computeLHSResidual(PetscTS ts,
-                                      PetscReal t,
-                                      PetscVec solutionVec,
-                                      PetscVec solutionDotVec,
-                                      PetscVec residualVec,
-                                      void* context);
+    static PetscErrorCode computeLHSResidual(PetscTS ts,
+                                             PetscReal t,
+                                             PetscVec solutionVec,
+                                             PetscVec solutionDotVec,
+                                             PetscVec residualVec,
+                                             void* context);
 
     /* Callback static method for computing Jacobian for LHS, Jacobian of F(t,s,\dot{s}).
      *
@@ -239,24 +236,21 @@ public:
      * @param[out] precondMat Preconditioner matrix.
      * @param[in] context User context (TimeDependent).
      */
-    static
-    PetscErrorCode computeLHSJacobian(PetscTS ts,
-                                      PetscReal t,
-                                      PetscVec solutionVec,
-                                      PetscVec solutionDotVec,
-                                      PetscReal s_tshift,
-                                      PetscMat jacobianMat,
-                                      PetscMat precondMat,
-                                      void* context);
+    static PetscErrorCode computeLHSJacobian(PetscTS ts,
+                                             PetscReal t,
+                                             PetscVec solutionVec,
+                                             PetscVec solutionDotVec,
+                                             PetscReal s_tshift,
+                                             PetscMat jacobianMat,
+                                             PetscMat precondMat,
+                                             void* context);
 
     /** Callback static method for operations after advancing solution one time step.
      */
-    static
-    PetscErrorCode poststep(PetscTS ts);
+    static PetscErrorCode poststep(PetscTS ts);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     /// Register monitors.
     void _registerMonitors(void);
 
@@ -277,8 +271,7 @@ private:
     void _notifyObserversInitialSoln(void);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     double _startTime; ///< Starting time of problem (seconds).
     double _endTime; ///< Ending time of problem (seconds).
     double _dtInitial; ///< Initial time step (seconds).
@@ -292,8 +285,7 @@ private:
     bool _shouldNotifyIC;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     TimeDependent(const TimeDependent&); ///< Not implemented
     const TimeDependent& operator=(const TimeDependent&); ///< Not implemented
 

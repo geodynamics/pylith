@@ -14,13 +14,12 @@
 namespace pylith {
     namespace bc {
         class NeumannDataHex8;
-    } // pylith
-} // bc
+    } // namespace bc
+} // namespace pylith
 
 class pylith::bc::NeumannDataHex8 : public NeumannData {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     NeumannDataHex8(void);
 
@@ -28,8 +27,7 @@ public:
     ~NeumannDataHex8(void);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     static const char* _meshFilename;
 
     // Quadrature information
@@ -56,7 +54,6 @@ private:
     // Calculated values.
     static const PylithScalar _tractionsCell[];
     static const PylithScalar _valsResidual[];
-
 };
 
 // End of file

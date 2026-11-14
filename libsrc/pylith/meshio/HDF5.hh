@@ -21,14 +21,12 @@ class pylith::meshio::HDF5 {
     friend class TestHDF5; // Unit testing
 
     // PUBLIC STRUCTS ---------------------------------------------------------------------
-public:
-
+  public:
     // Structs for packaging method arguments and return values.
 
     /// Dataset.
-    template <typename T>
-    struct Dataset {
-        std::vector<T>      data;
+    template <typename T> struct Dataset {
+        std::vector<T> data;
         std::vector<hsize_t> dims;
     };
 
@@ -52,8 +50,7 @@ public:
 
 
     // PUBLIC METHODS ---------------------------------------------------------------------
-public:
-
+  public:
     /// Default constructor.
     HDF5(void);
 
@@ -322,14 +319,12 @@ public:
                                       const char* name);
 
     // PRIVATE METHODS --------------------------------------------------------------------
-private:
-
+  private:
     // Map a C++ scalar type to the corresponding native HDF5 type.
     template <typename T> static hid_t _h5NativeType();
 
     // PRIVATE MEMBERS --------------------------------------------------------------------
-private:
-
+  private:
     hid_t _file;
 }; // HDF5
 

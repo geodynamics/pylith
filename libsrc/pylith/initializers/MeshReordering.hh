@@ -16,8 +16,7 @@ class pylith::initializers::MeshReordering : public pylith::initializers::Initia
     friend class TestMeshReordering;
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     MeshReordering(void);
 
@@ -37,8 +36,7 @@ public:
                                 const pylith::problems::Problem& problem);
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     MeshReordering(const MeshReordering&); ///< Not implemented
     const MeshReordering& operator=(const MeshReordering&); ///< Not implemented
 

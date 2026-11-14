@@ -14,13 +14,12 @@
 namespace pylith {
     namespace bc {
         class DirichletData;
-    } // pylith
-} // bc
+    } // namespace bc
+} // namespace pylith
 
 class pylith::bc::DirichletData {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     DirichletData(void);
 
@@ -28,8 +27,7 @@ public:
     ~DirichletData(void);
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     PylithScalar tRef; ///< Reference time for rate of change of values
     PylithScalar valueRate; ///< Rate of change of value at constrained points.
 
@@ -54,7 +52,6 @@ public:
     PylithScalar timeScale; ///< Time scale.
     PylithScalar densityScale; ///< Density scale.
     //@}
-
 };
 
 // End of file

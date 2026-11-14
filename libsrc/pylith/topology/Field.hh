@@ -41,18 +41,16 @@ class pylith::topology::Field : public pylith::topology::FieldBase, public pylit
     friend class TestFieldSubmesh; // unit testing
 
     // PUBLIC ENUMS ///////////////////////////////////////////////////////
-public:
-
+  public:
     enum ViewOptions {
-        VIEW_METADATA=0, ///< View metadata only.
-        VIEW_LAYOUT=1, ///< View metadata and section.
-        VIEW_VALUES=2, ///< View metadata and vector.
-        VIEW_ALL=3, ///< View metadata, section, and vector.
+        VIEW_METADATA = 0, ///< View metadata only.
+        VIEW_LAYOUT = 1, ///< View metadata and section.
+        VIEW_VALUES = 2, ///< View metadata and vector.
+        VIEW_ALL = 3, ///< View metadata, section, and vector.
     };
 
     // PUBLIC STRUCTS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Subfield auxiliary information.
     struct SubfieldInfo {
         Description description; ///< Description for subfield.
@@ -61,8 +59,7 @@ public:
     }; // SubfieldInfo
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /** Default constructor.
      *
      * @param mesh Finite-element mesh for field (will be cloned).
@@ -187,7 +184,7 @@ public:
      * @param[in] feSpace Finite-element space (POLYNOMIAL_SPACE or POINT_SPACE).
      * @param[in] isBasisContinuous True if basis is continuous.
      */
-    void subfieldAdd(const char *name,
+    void subfieldAdd(const char* name,
                      const char* alias,
                      const VectorFieldEnum fieldType,
                      const char* components[],
@@ -246,7 +243,7 @@ public:
      * @param[in] options Viewing options.
      */
     void view(const char* label,
-              const ViewOptions options=VIEW_ALL) const;
+              const ViewOptions options = VIEW_ALL) const;
 
     /** Scatter section information across processors to update the
      * global view of the field.
@@ -255,7 +252,7 @@ public:
      * @param[in] mode Mode for scatter (INSERT_VALUES, ADD_VALUES).
      */
     void scatterLocalToVector(const PetscVec vector,
-                              InsertMode mode=INSERT_VALUES) const;
+                              InsertMode mode = INSERT_VALUES) const;
 
     /** Scatter global information across processors to update the local
      * view of the field.
@@ -264,14 +261,14 @@ public:
      * @param[in] mode Mode for scatter (INSERT_VALUES, ADD_VALUES).
      */
     void scatterVectorToLocal(const PetscVec vector,
-                              InsertMode mode=INSERT_VALUES) const;
+                              InsertMode mode = INSERT_VALUES) const;
 
     /** Scatter section information across processors to update the
      * output view of the field.
      *
      * @param[in] mode Mode for scatter (INSERT_VALUES, ADD_VALUES).
      */
-    void scatterLocalToOutput(InsertMode mode=INSERT_VALUES) const;
+    void scatterLocalToOutput(InsertMode mode = INSERT_VALUES) const;
 
     /// Create global vector.
     void createGlobalVector(void);
@@ -280,13 +277,11 @@ public:
     void createOutputVector(void);
 
     // PRIVATE TYPEDEFS ///////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     typedef std::map<std::string, SubfieldInfo> subfields_type;
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     subfields_type _subfields; ///< Map of subfields in field.
     std::string _label; ///< Label for field.
 
@@ -296,8 +291,7 @@ private:
     PetscVec _outputVec; ///< Global PETSc vector without constrained DOF for output.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     const Field& operator=(const Field&); ///< Not implemented
 
 }; // Field

@@ -12,13 +12,14 @@
 
 #include "pylith/initializers/MeshReordering.hh" // implementation of class methods
 
-#include "pylith/topology/ReverseCuthillMcKee.hh" // USES ReverseCuthillMcKee
 #include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
+#include "pylith/topology/ReverseCuthillMcKee.hh" // USES ReverseCuthillMcKee
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor
-pylith::initializers::MeshReordering::MeshReordering(void) {}
+pylith::initializers::MeshReordering::MeshReordering(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------

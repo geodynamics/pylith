@@ -11,8 +11,8 @@
 
 #include "petscfwd.hh" // forward declarations
 
-#include <string> // USES std::string
 #include <map> // USES std::map
+#include <string> // USES std::string
 
 #include "petsc.h"
 #include "petsclog.h" // USES PetscLogEventBegin/End() in inline methods
@@ -26,8 +26,7 @@ class pylith::petsc::EventLogger {
     friend class TestEventLogger; // unit testing
 
     // Scope --------------------------------------------------------------------------------------
-public:
-
+  public:
     /** @brief Scope guard that logs an event for the lifetime of the object.
      *
      * The event begins in the constructor and ends in the destructor, so begin/end calls
@@ -36,7 +35,7 @@ public:
      * Usage: `pylith::petsc::EventLogger::Scope logScope(eventId);`
      */
     class Scope {
-public:
+      public:
         /** Constructor logs event begin.
          *
          * @param[in] event PETSc event identifier from registerEvent().
@@ -46,7 +45,7 @@ public:
         /// Destructor logs event end.
         ~Scope(void);
 
-private:
+      private:
         Scope(const Scope&) = delete;
         Scope& operator=(const Scope&) = delete;
 
@@ -54,8 +53,7 @@ private:
     }; // Scope
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     EventLogger(void);
 
@@ -112,20 +110,17 @@ public:
     void stagePop(void);
 
     // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     EventLogger(const EventLogger&); ///< Not implemented
     const EventLogger& operator=(const EventLogger&); ///< Not implemented
 
     // PRIVATE TYPEDEFS ///////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     typedef std::map<std::string, PetscLogEvent> map_event_type;
     typedef std::map<std::string, PetscLogStage> map_stage_type;
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     std::string _className; ///< Name of logging class
     PetscClassId _classId; ///< PETSc logging identifier for class
     map_event_type _events; ///< PETSc logging identifiers for events

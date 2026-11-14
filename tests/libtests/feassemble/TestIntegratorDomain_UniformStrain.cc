@@ -13,9 +13,9 @@
 #include "TestIntegratorDomain.hh" // Implementation of cases
 
 #include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
+#include "pylith/scales/Scales.hh" // USES Scales
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "pylith/scales/Scales.hh" // USES Scales
 
 // forward declarations
 namespace pylith {
@@ -28,133 +28,155 @@ namespace pylith {
         class TestIntegratorDomain_UniformStrain_QuadQ1;
         class TestIntegratorDomain_UniformStrain_QuadQ2;
 
-    } // materials
-} // pylith
+    } // namespace materials
+} // namespace pylith
 
 // ----------------------------------------------------------------------
-class pylith::feassemble::TestIntegratorDomain_UniformStrain2D :
-    public pylith::feassemble::TestIntegratorDomain {
+class pylith::feassemble::TestIntegratorDomain_UniformStrain2D : public pylith::feassemble::TestIntegratorDomain {
     /// Spatial database user functions for auxiiliary subfields (includes derived fields).
     static const double SMALL;
 
     // Density
-    static double density(const double x,
-                          const double y) {
+    static double
+    density(const double x,
+            const double y) {
         return 2500.0;
     } // density
 
-    static const char* density_units(void) {
+    static const char*
+    density_units(void) {
         return "kg/m**3";
     } // density_units
 
     // Vs
-    static double vs(const double x,
-                     const double y) {
+    static double
+    vs(const double x,
+       const double y) {
         return 3000.0;
     } // vs
 
-    static const char* vs_units(void) {
+    static const char*
+    vs_units(void) {
         return "m/s";
     } // vs_units
 
     // Vp
-    static double vp(const double x,
-                     const double y) {
-        return sqrt(3.0)*vs(x,y);
+    static double
+    vp(const double x,
+       const double y) {
+        return sqrt(3.0) * vs(x, y);
     } // vp
 
-    static const char* vp_units(void) {
+    static const char*
+    vp_units(void) {
         return "m/s";
     } // vp_units
 
     // shear modulus
-    static double shearModulus(const double x,
-                               const double y) {
-        return density(x,y) * vs(x,y) * vs(x,y);
+    static double
+    shearModulus(const double x,
+                 const double y) {
+        return density(x, y) * vs(x, y) * vs(x, y);
     } // shearModulus
 
-    static const char* shearModulus_units(void) {
+    static const char*
+    shearModulus_units(void) {
         return "Pa";
     } // shearModulus_units
 
     // bulk modulus
-    static double bulkModulus(const double x,
-                              const double y) {
-        return density(x,y)*(vp(x,y)*vp(x,y) - 4.0/3.0*vs(x,y)*vs(x,y));
+    static double
+    bulkModulus(const double x,
+                const double y) {
+        return density(x, y) * (vp(x, y) * vp(x, y) - 4.0 / 3.0 * vs(x, y) * vs(x, y));
     } // bulkModulus
 
-    static const char* bulkModulus_units(void) {
+    static const char*
+    bulkModulus_units(void) {
         return "Pa";
     } // bulkModulus_units
 
     // Spatial database user functions for solution subfields.
 
-    static double strain_xx(void) {
+    static double
+    strain_xx(void) {
         return 0.1;
     } // strain_xx
 
-    static double strain_yy(void) {
+    static double
+    strain_yy(void) {
         return -0.25;
     } // strain_yy
 
-    static double strain_xy(void) {
+    static double
+    strain_xy(void) {
         return 0.3;
     } // strain_xy
 
     // Displacement
-    static double disp_x(const double x,
-                         const double y) {
-        return strain_xx()*x + strain_xy()*y;
+    static double
+    disp_x(const double x,
+           const double y) {
+        return strain_xx() * x + strain_xy() * y;
     } // disp_x
 
-    static double disp_y(const double x,
-                         const double y) {
-        return strain_xy()*x + strain_yy()*y;
+    static double
+    disp_y(const double x,
+           const double y) {
+        return strain_xy() * x + strain_yy() * y;
     } // disp_y
 
-    static const char* disp_units(void) {
+    static const char*
+    disp_units(void) {
         return "m";
     } // disp_units
 
-    static double disp_dot_x(const double x,
-                             const double y) {
+    static double
+    disp_dot_x(const double x,
+               const double y) {
         return 0.0;
     } // disp_dot_x
 
-    static double disp_dot_y(const double x,
-                             const double y) {
+    static double
+    disp_dot_y(const double x,
+               const double y) {
         return 0.0;
     } // disp_dot_y
 
-    static const char* disp_dot_units(void) {
+    static const char*
+    disp_dot_units(void) {
         return "m/s";
     } // disp_dot_units
 
     // Displacement + perturbation
-    static double disp_perturb_x(const double x,
-                                 const double y) {
+    static double
+    disp_perturb_x(const double x,
+                   const double y) {
         const double perturbation = SMALL * disp_x(y, x);
         return disp_x(x, y) + perturbation;
     } // disp_perturb_x
 
-    static double disp_perturb_y(const double x,
-                                 const double y) {
+    static double
+    disp_perturb_y(const double x,
+                   const double y) {
         const double perturbation = SMALL * disp_y(y, x);
         return disp_y(x, y) + perturbation;
     } // disp_perturb_y
 
-protected:
-
-    void setUp(void) {
+  protected:
+    void
+    setUp(void) {
         TestIntegratorDomain::setUp();
-        _data = new TestIntegratorDomain_Data();CPPUNIT_ASSERT(_data);
+        _data = new TestIntegratorDomain_Data();
+        CPPUNIT_ASSERT(_data);
 
         _data->dimension = 2;
         // meshFilename set in derived class.
         _data->boundaryLabel = "boundary";
         _data->materialId = 24;
 
-        _data->cs = new spatialdata::spatialdb::CSCart();CPPUNIT_ASSERT(_data->cs);
+        _data->cs = new spatialdata::spatialdb::CSCart();
+        CPPUNIT_ASSERT(_data->cs);
         _data->cs->setSpaceDim(_data->dimension);
 
         CPPUNIT_ASSERT(_data->scales);
@@ -190,7 +212,8 @@ protected:
             pylith::topology::Field::Discretization(0, 1), // shear_modulus
             pylith::topology::Field::Discretization(0, 1), // bulk_modulus
         };
-        _data->auxiliaryDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxiliaryDiscretizations);
+        _data->auxiliaryDiscretizations =
+            const_cast<pylith::topology::Field::Discretization*>(_auxiliaryDiscretizations);
 
         CPPUNIT_ASSERT(_data->auxiliaryDB);
         _data->auxiliaryDB->addValue("density", density, density_units());
@@ -213,13 +236,14 @@ const double pylith::feassemble::TestIntegratorDomain_UniformStrain::SMALL = 0.1
 
 // ----------------------------------------------------------------------
 
-class pylith::feassemble::TestIntegratorDomain_UniformStrain_TriP1 :
-    public pylith::feassemble::TestIntegratorDomain_UniformStrain {
+class pylith::feassemble::TestIntegratorDomain_UniformStrain_TriP1
+    : public pylith::feassemble::TestIntegratorDomain_UniformStrain {
     CPPUNIT_TEST_SUB_SUITE(TestIntegratorDomain_UniformStrain_TriP1,
                            TestIntegratorDomain);
     CPPUNIT_TEST_SUITE_END();
 
-    void setUp(void) {
+    void
+    setUp(void) {
         TestIntegratorDomain_UniformStrain::setUp();
         CPPUNIT_ASSERT(_data);
 

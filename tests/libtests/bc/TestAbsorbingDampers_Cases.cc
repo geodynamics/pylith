@@ -12,87 +12,102 @@
 
 #include "TestAbsorbingDampers.hh" // Implementation of cases
 
-#include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
-#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 
 // ----------------------------------------------------------------------
 namespace pylith {
     namespace bc {
         // --------------------------------------------------------------
         class TestAbsorbingDampers_TriP1 : public TestAbsorbingDampers {
-            static const char* density_units(void) {
+            static const char*
+            density_units(void) {
                 return "kg/m**3";
             } // density_units
 
-            static const char* disp_units(void) {
+            static const char*
+            disp_units(void) {
                 return "m";
             } // disp_units
 
-            static const char* vel_units(void) {
+            static const char*
+            vel_units(void) {
                 return "m/s";
             } // vel_units
 
-            static const char* pressure_units(void) {
+            static const char*
+            pressure_units(void) {
                 return "Pa";
             } // pressure_units
 
             /// Spatial database user functions for auxiliary subfields.
 
-            static double density(const double x,
-                                  const double y) {
+            static double
+            density(const double x,
+                    const double y) {
                 return 2500.0;
             } // density
 
-            static double vs(const double x,
-                             const double y) {
+            static double
+            vs(const double x,
+               const double y) {
                 return 3000.0;
             } // vs
 
-            static double vp(const double x,
-                             const double y) {
-                return vs(x,y)*sqrt(3.0);
+            static double
+            vp(const double x,
+               const double y) {
+                return vs(x, y) * sqrt(3.0);
             } // vp
 
             // Solution field at time t.
 
-            static double disp_x(const double x,
-                                 const double y) {
+            static double
+            disp_x(const double x,
+                   const double y) {
                 return FILL_VALUE;
             } // disp_x
 
-            static double disp_y(const double x,
-                                 const double y) {
+            static double
+            disp_y(const double x,
+                   const double y) {
                 return FILL_VALUE;
             } // disp_y
 
-            static double vel_x(const double x,
-                                const double y) {
+            static double
+            vel_x(const double x,
+                  const double y) {
                 return FILL_VALUE; // :TODO:
             } // vel_x
 
-            static double vel_y(const double x,
-                                const double y) {
+            static double
+            vel_y(const double x,
+                  const double y) {
                 return FILL_VALUE; // :TODO:
             } // vel_y
 
-            static double fluid_press(const double x,
-                                      const double y) {
+            static double
+            fluid_press(const double x,
+                        const double y) {
                 return FILL_VALUE;
             } // fluid_press
 
-            CPPUNIT_TEST_SUB_SUITE(TestAbsorbingDampers_TriP1, TestAbsorbingDampers);
+            CPPUNIT_TEST_SUB_SUITE(TestAbsorbingDampers_TriP1,
+                                   TestAbsorbingDampers);
             CPPUNIT_TEST_SUITE_END();
 
-protected:
-
-            void setUp(void) {
+          protected:
+            void
+            setUp(void) {
                 TestAbsorbingDampers::setUp();
-                _data = new TestAbsorbingDampers_Data();CPPUNIT_ASSERT(_data);
+                _data = new TestAbsorbingDampers_Data();
+                CPPUNIT_ASSERT(_data);
                 _data->meshFilename = "data/tri_small.mesh";
                 _data->bcLabel = "boundary_bottom";
-                _data->cs = new spatialdata::geocoords::CSCart();CPPUNIT_ASSERT(_data->cs);
+                _data->cs = new spatialdata::geocoords::CSCart();
+                CPPUNIT_ASSERT(_data->cs);
                 _data->cs->setSpaceDim(2);
 
                 CPPUNIT_ASSERT(_data->scales);

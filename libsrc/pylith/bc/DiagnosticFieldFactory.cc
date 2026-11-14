@@ -30,7 +30,8 @@ pylith::bc::DiagnosticFieldFactory::DiagnosticFieldFactory(void) {
 
 // ------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::bc::DiagnosticFieldFactory::~DiagnosticFieldFactory(void) {}
+pylith::bc::DiagnosticFieldFactory::~DiagnosticFieldFactory(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -41,7 +42,7 @@ pylith::bc::DiagnosticFieldFactory::addNormalDir(void) {
     PYLITH_DEBUG(pylith::journal::application_flow, "addNormalDir(void)");
 
     const char* fieldName = "normal_dir";
-    const char* componentNames[3] = { "normal_dir_x", "normal_dir_y", "normal_dir_z" };
+    const char* componentNames[3] = {"normal_dir_x", "normal_dir_y", "normal_dir_z"};
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -107,11 +108,9 @@ pylith::bc::DiagnosticFieldFactory::addTangentialDirVert(void) {
     PYLITH_DEBUG(pylith::journal::application_flow, "addTangentialDirVert(void)");
 
     const char* fieldName = "vertical_tangential_dir";
-    const char* componentNames[3] = {
-        "vertical_tangential_dir_x",
-        "vertical_tangential_dir_y",
-        "vertical_tangential_dir_z"
-    };
+    const char* componentNames[3] = {"vertical_tangential_dir_x",
+                                     "vertical_tangential_dir_y",
+                                     "vertical_tangential_dir_z"};
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -146,12 +145,12 @@ pylith::bc::DiagnosticFieldFactory::addSubfields(void) {
         (_subfieldDiscretizations.find("horizontal_tangential_dir") != _subfieldDiscretizations.end())) {
         addTangentialDirHoriz();
     } // if
-    if ((_spaceDim > 2) && (_subfieldDiscretizations.find("vertical_tangential_dir") != _subfieldDiscretizations.end())) {
+    if ((_spaceDim > 2) &&
+        (_subfieldDiscretizations.find("vertical_tangential_dir") != _subfieldDiscretizations.end())) {
         addTangentialDirVert();
     } // if
 
     PYLITH_METHOD_END;
-
 }
 
 

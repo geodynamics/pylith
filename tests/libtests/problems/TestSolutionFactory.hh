@@ -12,10 +12,10 @@
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/problems/problemsfwd.hh" // HOLDSA SolutionFactory
-#include "pylith/topology/Field.hh" // HOLDSA Field::SubfieldInfo
-#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
-#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA Coordsys
 #include "pylith/scales/scalesfwd.hh" // HOLDSA Scales
+#include "pylith/topology/Field.hh" // HOLDSA Field::SubfieldInfo
+#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA Coordsys
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
 
 #include <map> // USES std::map
 
@@ -24,14 +24,13 @@ namespace pylith {
     namespace problems {
         class TestSolutionFactory;
         class TestSolutionFactory_Data;
-    } // problems
-} // pylith
+    } // namespace problems
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::problems::TestSolutionFactory : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestSolutionFactory(TestSolutionFactory_Data* data);
 
@@ -54,14 +53,12 @@ public:
     void testSetValues(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Initialze mesh, coordinate system, solution, and factory.
     void _initialize(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     SolutionFactory* _factory; ///< Test subject.
     TestSolutionFactory_Data* _data; ///< Test data.
 
@@ -73,8 +70,7 @@ protected:
 // ------------------------------------------------------------------------------------------------
 class pylith::problems::TestSolutionFactory_Data {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestSolutionFactory_Data(void);
 
@@ -82,8 +78,7 @@ public:
     ~TestSolutionFactory_Data(void);
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     size_t dimension; ///< Spatial dimension.
     const char* meshFilename; ///< Name of file with ASCII mesh.
     spatialdata::geocoords::CoordSys* cs; ///< Coordinate system.

@@ -17,8 +17,7 @@ class pylith::faults::FaultCohesiveStub : public pylith::faults::FaultCohesive {
     friend class TestFaultCohesiveStub; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     FaultCohesiveStub(void);
 
@@ -51,8 +50,7 @@ public:
                                                      const std::vector<pylith::materials::Material*>& materials);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get auxiliary factory associated with physics.
      *
      * @return Auxiliary factory for physics object.
@@ -80,8 +78,7 @@ protected:
                              const std::vector<pylith::materials::Material*>& materials) const;
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     FaultCohesiveStub(const FaultCohesiveStub&); ///< Not implemented.
     const FaultCohesiveStub& operator=(const FaultCohesiveStub&); ///< Not implemented.
 

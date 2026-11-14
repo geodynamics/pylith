@@ -14,13 +14,12 @@
 namespace pylith {
     namespace faults {
         class CohesiveKinDataHex8;
-    } // pylith
-} // faults
+    } // namespace faults
+} // namespace pylith
 
 class pylith::faults::CohesiveKinDataHex8 : public CohesiveKinData {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     CohesiveKinDataHex8(void);
 
@@ -28,8 +27,7 @@ public:
     ~CohesiveKinDataHex8(void);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     static const char* _meshFilename; ///< Filename of input mesh
 
     static const int _spaceDim; ///< Number of dimensions in vertex coordinates
@@ -70,7 +68,6 @@ private:
     static const int _numCohesiveCells; ///< Number of cohesive cells
     static const int _cellMappingFault[]; ///< Fault cell
     static const int _cellMappingCohesive[]; ///< Cohesive cell
-
 };
 
 // End of file

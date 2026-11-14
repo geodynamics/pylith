@@ -18,8 +18,8 @@
 namespace pylith {
     namespace problems {
         class TestPhysics;
-    } // problems
-} // pylith
+    } // namespace problems
+} // namespace pylith
 
 class pylith::problems::TestPhysics : public CppUnit::TestFixture {
     // CPPUNIT TEST SUITE //////////////////////////////////////////////////////////////////////////////////////////////
@@ -39,8 +39,7 @@ class pylith::problems::TestPhysics : public CppUnit::TestFixture {
     CPPUNIT_TEST_SUITE_END();
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Setup testing data.
     void setUp(void);
 
@@ -78,8 +77,7 @@ public:
     void testCreateDerivedField(void);
 
     // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::problems::Physics* _physics; ///< Test subject.
     pylith::topology::Mesh* _mesh; // Mesh for test subject.
     pylith::topology::Field* _solution; ///< Solution field for test subject.

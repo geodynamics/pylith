@@ -17,8 +17,7 @@ class pylith::meshio::OutputTriggerStep : public pylith::meshio::OutputTrigger {
     friend class TestOutputTriggerStep; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Construlibctor
     OutputTriggerStep(void);
 
@@ -47,17 +46,14 @@ public:
     int getNumStepsSkip(void) const;
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     PylithInt _numStepsSkip; ///< Number of steps to skip between writes.
     PylithInt _stepWrote; ///< Step when data was previously written.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     OutputTriggerStep(const OutputTriggerStep&); ///< Not implemented.
     const OutputTriggerStep& operator=(const OutputTriggerStep&); ///< Not implemented
-
 };
 
 // OutputTriggerStep

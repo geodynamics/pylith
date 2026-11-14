@@ -13,25 +13,24 @@
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
-#include "pylith/topology/FieldBase.hh" // USES FieldBase::VectorFieldType
 #include "pylith/meshio/MeshBuilder.hh" // USES MeshBuilder
+#include "pylith/topology/FieldBase.hh" // USES FieldBase::VectorFieldType
 
-#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA UserFunctionDB
-#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
 #include "pylith/scales/scalesfwd.hh" // HOLDSA Scales
+#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA UserFunctionDB
 
 namespace pylith {
     namespace topology {
         class TestFieldQuery;
         class TestFieldQuery_Data;
-    } // topology
-} // pylith
+    } // namespace topology
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::topology::TestFieldQuery : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestFieldQuery(TestFieldQuery_Data* data);
 
@@ -60,14 +59,12 @@ public:
     void testValidatorNonnegative(void);
 
     // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     /// Initialize mesh and test field.
     void _initialize(void);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     TestFieldQuery_Data* _data; ///< Data for testing.
     pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
     pylith::topology::Field* _field; ///< Field associated with mesh.
@@ -80,8 +77,7 @@ private:
 // ------------------------------------------------------------------------------------------------
 class pylith::topology::TestFieldQuery_Data {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestFieldQuery_Data(void);
 
@@ -89,8 +85,7 @@ public:
     ~TestFieldQuery_Data(void);
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     pylith::meshio::MeshBuilder::Topology* topology; ///< Topology for domain mesh
     pylith::meshio::MeshBuilder::Geometry* geometry; ///< Geometry for domain mesh
     spatialdata::geocoords::CoordSys* cs; ///< Coordinate system.

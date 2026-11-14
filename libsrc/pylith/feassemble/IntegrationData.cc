@@ -12,11 +12,11 @@
 
 #include "pylith/feassemble/IntegrationData.hh" // implementation of class methods
 
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
-#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
-#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
@@ -59,13 +59,15 @@ pylith::feassemble::IntegrationData::deallocate(void) {
 
     for (fields_map_t::iterator iter = _fields.begin(); iter != _fields.end(); ++iter) {
         if (iter->first != solution) { // Solution memory management handled by Python.
-            delete iter->second;iter->second = NULL;
+            delete iter->second;
+            iter->second = NULL;
         } // if
     } // for
     _fields.clear();
 
     for (meshes_map_t::iterator iter = _meshes.begin(); iter != _meshes.end(); ++iter) {
-        delete iter->second;iter->second = NULL;
+        delete iter->second;
+        iter->second = NULL;
     } // for
     _meshes.clear();
 } // deallocate
@@ -77,7 +79,7 @@ void
 pylith::feassemble::IntegrationData::setScalar(const std::string& name,
                                                const PylithReal value) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "setScalar(name="<<name<<", value="<<value<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "setScalar(name=" << name << ", value=" << value << ")");
 
     _scalars[name] = value;
 
@@ -90,7 +92,7 @@ pylith::feassemble::IntegrationData::setScalar(const std::string& name,
 PylithReal
 pylith::feassemble::IntegrationData::getScalar(const std::string& name) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "getScalar(name="<<name<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "getScalar(name=" << name << ")");
 
     scalars_map_t::const_iterator iter = _scalars.find(name);
     if (iter == _scalars.end()) {
@@ -106,7 +108,7 @@ pylith::feassemble::IntegrationData::getScalar(const std::string& name) const {
 void
 pylith::feassemble::IntegrationData::removeScalar(const std::string& name) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "removeScalar(name="<<name<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "removeScalar(name=" << name << ")");
 
     if (_scalars.count(name)) {
         _scalars.erase(name);
@@ -130,11 +132,13 @@ void
 pylith::feassemble::IntegrationData::setField(const std::string& name,
                                               pylith::topology::Field* const field) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "setField(name="<<name<<", field="<<typeid(field).name()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 "setField(name=" << name << ", field=" << typeid(field).name() << ")");
 
     fields_map_t::iterator iter = _fields.find(name);
     if (iter != _fields.end()) {
-        delete iter->second;iter->second = field;
+        delete iter->second;
+        iter->second = field;
     } else {
         _fields[name] = field;
     } // if/else
@@ -148,7 +152,7 @@ pylith::feassemble::IntegrationData::setField(const std::string& name,
 pylith::topology::Field*
 pylith::feassemble::IntegrationData::getField(const std::string& name) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "getField(name="<<name<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "getField(name=" << name << ")");
 
     fields_map_t::const_iterator iter = _fields.find(name);
     if (iter == _fields.end()) {
@@ -164,11 +168,12 @@ pylith::feassemble::IntegrationData::getField(const std::string& name) const {
 void
 pylith::feassemble::IntegrationData::removeField(const std::string& name) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "removeField(name="<<name<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "removeField(name=" << name << ")");
 
     if (_fields.count(name)) {
         fields_map_t::iterator iter = _fields.find(name);
-        delete iter->second;iter->second = NULL;
+        delete iter->second;
+        iter->second = NULL;
         _fields.erase(name);
     } // if
 
@@ -182,11 +187,12 @@ void
 pylith::feassemble::IntegrationData::setMesh(const std::string& name,
                                              pylith::topology::Mesh* const mesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "setMesh(name="<<name<<", mesh="<<typeid(mesh).name()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "setMesh(name=" << name << ", mesh=" << typeid(mesh).name() << ")");
 
     meshes_map_t::iterator iter = _meshes.find(name);
     if (iter != _meshes.end()) {
-        delete iter->second;iter->second = mesh;
+        delete iter->second;
+        iter->second = mesh;
     } else {
         _meshes[name] = mesh;
     } // if/else
@@ -200,7 +206,7 @@ pylith::feassemble::IntegrationData::setMesh(const std::string& name,
 pylith::topology::Mesh*
 pylith::feassemble::IntegrationData::getMesh(const std::string& name) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "getMesh(name="<<name<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "getMesh(name=" << name << ")");
 
     meshes_map_t::const_iterator iter = _meshes.find(name);
     if (iter == _meshes.end()) {

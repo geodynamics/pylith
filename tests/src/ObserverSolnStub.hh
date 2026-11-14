@@ -17,8 +17,7 @@ class pylith::problems::ObserverSolnStub : public pylith::problems::ObserverSoln
     friend class TestObserverSolnStub; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     ObserverSolnStub(void);
 
@@ -56,13 +55,11 @@ public:
                 const NotificationType notification);
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     PylithReal _timeScale; ///< Time scale.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     ObserverSolnStub(const ObserverSolnStub&); ///< Not implemented.
     const ObserverSolnStub& operator=(const ObserverSolnStub&); ///< Not implemented
 

@@ -23,8 +23,7 @@
 class pylith::problems::ObserversSoln : public pylith::utils::GenericComponent {
     friend class TestObserversSoln; // unit testing
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     ObserversSoln(void);
 
@@ -32,8 +31,7 @@ public:
     virtual ~ObserversSoln(void);
 
     /// Deallocate PETSc and local data structures.
-    virtual
-    void deallocate(void);
+    virtual void deallocate(void);
 
     /** Register observer to receive notifications.
      *
@@ -74,8 +72,7 @@ public:
                          const pylith::problems::Observer::NotificationType notification);
 
     // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     /** Comparison function for keeping set of observers in order.
      *
      * @param[in] a Solution observer a.
@@ -85,21 +82,17 @@ private:
     struct _compare {
         bool operator()(const ObserverSoln* a,
                         const ObserverSoln* b) const;
-
     };
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     typedef std::set<pylith::problems::ObserverSoln*>::iterator iterator; ///< Iterator.
     std::set<pylith::problems::ObserverSoln*, _compare> _observers; ///< Subscribers of updates.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     ObserversSoln(const ObserversSoln&); ///< Not implemented.
     const ObserversSoln& operator=(const ObserversSoln&); ///< Not implemented
-
 };
 
 // End of file

@@ -12,11 +12,11 @@
 
 #include "pylith/initializers/MeshInsertInterfaces.hh" // USES MeshInsertInterfaces
 
-#include "tests/src/FaultCohesiveStub.hh" // USES FaultsCohesiveStub
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/problems/Problem.hh" // USES Problem
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
-#include "pylith/problems/Problem.hh" // USES Problem
+#include "tests/src/FaultCohesiveStub.hh" // USES FaultsCohesiveStub
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
@@ -28,28 +28,27 @@
 namespace pylith {
     namespace initializers {
         class TestMeshInsertInterfaces;
-    } // initializers
-} // pylith
+    } // namespace initializers
+} // namespace pylith
 
 class pylith::initializers::TestMeshInsertInterfaces {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test constructors.
-    static
-    void testConstructors(void);
+    static void testConstructors(void);
 
     /// Test run().
-    static
-    void testRun(void);
+    static void testRun(void);
 
 }; // class TestMeshInsertInterfaces
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestMeshInsertInterfaces::testConstructors", "[TestMeshInsertInterfaces]") {
+TEST_CASE("TestMeshInsertInterfaces::testConstructors",
+          "[TestMeshInsertInterfaces]") {
     pylith::initializers::TestMeshInsertInterfaces::testConstructors();
 }
-TEST_CASE("TestMeshInsertInterfaces::testRun", "[TestMeshInsertInterfaces]") {
+TEST_CASE("TestMeshInsertInterfaces::testRun",
+          "[TestMeshInsertInterfaces]") {
     pylith::initializers::TestMeshInsertInterfaces::testRun();
 }
 
@@ -69,8 +68,8 @@ pylith::initializers::TestMeshInsertInterfaces::testRun(void) {
     const std::string faultGroup = "fault";
 
     const size_t dim = 2;
-    const size_t numCells = 12+4;
-    const size_t numVertices = 17+5;
+    const size_t numCells = 12 + 4;
+    const size_t numVertices = 17 + 5;
 
     pylith::topology::Mesh meshOrig;
     pylith::meshio::MeshIOAscii reader;
@@ -78,7 +77,7 @@ pylith::initializers::TestMeshInsertInterfaces::testRun(void) {
     reader.read(&meshOrig);
 
     pylith::faults::FaultCohesiveStub fault;
-    pylith::faults::FaultCohesive* faults[1] = { &fault };
+    pylith::faults::FaultCohesive* faults[1] = {&fault};
     fault.setCohesiveLabelName(pylith::topology::Mesh::cells_label_name);
     fault.setSurfaceLabelName(faultGroup.c_str());
 
@@ -93,7 +92,8 @@ pylith::initializers::TestMeshInsertInterfaces::testRun(void) {
     CHECK(numCells == pylith::topology::MeshOps::getNumCells(*meshNew));
     CHECK(numVertices == pylith::topology::MeshOps::getNumVertices(*meshNew));
 
-    delete meshNew;meshNew = nullptr;
+    delete meshNew;
+    meshNew = nullptr;
 } // testRun
 
 

@@ -46,23 +46,14 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void) { // testFilter
     const int fiberDim = 2;
     const int nvertices = 4;
     const std::string label = "field data";
-    const topology::FieldBase::VectorFieldEnum fieldType =
-        topology::FieldBase::VECTOR;
-    const PylithScalar fieldValues[nvertices*fiberDim] = {
-        1.1, 1.2,
-        2.1, 2.2,
-        3.1, 3.2,
-        4.1, 4.2
-    };
-    const topology::FieldBase::VectorFieldEnum fieldTypeE =
-        topology::FieldBase::SCALAR;
+    const topology::FieldBase::VectorFieldEnum fieldType = topology::FieldBase::VECTOR;
+    const PylithScalar fieldValues[nvertices * fiberDim] = {1.1, 1.2, 2.1, 2.2, 3.1, 3.2, 4.1, 4.2};
+    const topology::FieldBase::VectorFieldEnum fieldTypeE = topology::FieldBase::SCALAR;
     const int fiberDimE = 1;
-    const PylithScalar fieldValuesE[] = {
-        sqrt(pow(1.1, 2) + pow(1.2, 2)),
-        sqrt(pow(2.1, 2) + pow(2.2, 2)),
-        sqrt(pow(3.1, 2) + pow(3.2, 2)),
-        sqrt(pow(4.1, 2) + pow(4.2, 2))
-    };
+    const PylithScalar fieldValuesE[] = {sqrt(pow(1.1, 2) + pow(1.2, 2)),
+                                         sqrt(pow(2.1, 2) + pow(2.2, 2)),
+                                         sqrt(pow(3.1, 2) + pow(3.2, 2)),
+                                         sqrt(pow(4.1, 2) + pow(4.2, 2))};
     const PylithScalar fieldScale = 4.0;
 
     MeshIOAscii iohandler;
@@ -70,7 +61,8 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void) { // testFilter
     iohandler.filename(filename);
     iohandler.read(&mesh);
 
-    PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+    PetscDM dmMesh = mesh.dmMesh();
+    CPPUNIT_ASSERT(dmMesh);
     topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
     const PetscInt vStart = verticesStratum.begin();
     const PetscInt vEnd = verticesStratum.end();
@@ -93,7 +85,7 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void) { // testFilter
             CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
 
             for (PetscInt d = 0; d < fiberDim; ++d, ++index) {
-                fieldArray[off+d] = fieldValues[index];
+                fieldArray[off + d] = fieldValues[index];
             } // for
         } // for
     } // Setup vertex field
@@ -112,7 +104,7 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void) { // testFilter
     for (PetscInt v = vStart, index = 0; v < vEnd; ++v) {
         const PetscInt off = fieldNormVisitor.sectionOffset(v);
         CPPUNIT_ASSERT_EQUAL(1, fieldNormVisitor.sectionDof(v));
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, fieldNormArray[off]/fieldValuesE[index++], tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, fieldNormArray[off] / fieldValuesE[index++], tolerance);
     } // for
 
     PYLITH_METHOD_END;

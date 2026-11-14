@@ -17,8 +17,7 @@ namespace pylith {
 }
 
 class pylith::PressureGradient {
-public:
-
+  public:
     // Data factory methods
 
     static TestLinearPoroelasticity_Data* TriP2P1P1(void);
@@ -37,8 +36,7 @@ public:
 
     static TestLinearPoroelasticity_Data* QuadQ3Q2Q2_StateVars(void);
 
-private:
-
+  private:
     PressureGradient(void); ///< Not implemented
 }; // PressureGradient
 

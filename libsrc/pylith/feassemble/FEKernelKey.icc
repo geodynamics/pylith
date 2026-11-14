@@ -9,27 +9,26 @@
 // =================================================================================================
 #pragma once
 
-#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
+#include "pylith/topology/Field.hh" // USES Field
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
-inline
-pylith::feassemble::FEKernelKey::FEKernelKey(void) :
+inline pylith::feassemble::FEKernelKey::FEKernelKey(void) :
     _name(""),
-    _value(-1) {}
+    _value(-1) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
 // Default destructor.
-inline
-pylith::feassemble::FEKernelKey::~FEKernelKey(void) {}
+inline pylith::feassemble::FEKernelKey::~FEKernelKey(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
 // Get PETSc weak form.
-inline
-PetscWeakForm
+inline PetscWeakForm
 pylith::feassemble::FEKernelKey::getWeakForm(void) const {
     return _weakForm;
 } // getWeakForm
@@ -37,12 +36,12 @@ pylith::feassemble::FEKernelKey::getWeakForm(void) const {
 
 // ------------------------------------------------------------------------------------------------
 // Factory for creating FEKernelKeyGet starting point.
-inline
-pylith::feassemble::FEKernelKey*
+inline pylith::feassemble::FEKernelKey*
 pylith::feassemble::FEKernelKey::create(PetscWeakForm weakForm,
                                         const char* name,
                                         const int value) {
-    FEKernelKey* key = new FEKernelKey();assert(key);
+    FEKernelKey* key = new FEKernelKey();
+    assert(key);
     if (key) {
         key->_weakForm = weakForm;
         key->_name = name ? name : "";
@@ -54,8 +53,7 @@ pylith::feassemble::FEKernelKey::create(PetscWeakForm weakForm,
 
 // ------------------------------------------------------------------------------------------------
 // Get name of label.
-inline
-const char*
+inline const char*
 pylith::feassemble::FEKernelKey::getName(void) const {
     return _name.c_str();
 }
@@ -63,8 +61,7 @@ pylith::feassemble::FEKernelKey::getName(void) const {
 
 // ------------------------------------------------------------------------------------------------
 // Get value of label.
-inline
-int
+inline int
 pylith::feassemble::FEKernelKey::getValue(void) const {
     return _value;
 }
@@ -72,8 +69,7 @@ pylith::feassemble::FEKernelKey::getValue(void) const {
 
 // ------------------------------------------------------------------------------------------------
 // Get PETSc weak form key for Jacobian.
-inline
-PetscFormKey
+inline PetscFormKey
 pylith::feassemble::FEKernelKey::getPetscKey(const pylith::topology::Field& solution,
                                              const PetscInt equationPart,
                                              const char* fieldTrial,
@@ -83,14 +79,17 @@ pylith::feassemble::FEKernelKey::getPetscKey(const pylith::topology::Field& solu
     PylithCallPetsc(DMGetLabel(dmSoln, _name.c_str(), &label));
     PetscInt fieldIndex = -1;
     if (fieldTrial && !fieldBasis) {
-        fieldIndex = solution.getSubfieldInfo(fieldTrial).index;assert(fieldIndex >= 0);
+        fieldIndex = solution.getSubfieldInfo(fieldTrial).index;
+        assert(fieldIndex >= 0);
     } else if (fieldTrial && fieldBasis) {
         PetscInt i_field = -1;
         PetscInt j_field = -1;
         PetscInt numFields = 0;
         PylithCallPetsc(DMGetNumFields(dmSoln, &numFields));
-        i_field = solution.getSubfieldInfo(fieldTrial).index;assert(i_field >= 0);
-        j_field = solution.getSubfieldInfo(fieldBasis).index;assert(j_field >= 0);
+        i_field = solution.getSubfieldInfo(fieldTrial).index;
+        assert(i_field >= 0);
+        j_field = solution.getSubfieldInfo(fieldBasis).index;
+        assert(j_field >= 0);
         fieldIndex = i_field * numFields + j_field;
     } // if
 

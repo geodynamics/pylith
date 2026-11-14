@@ -14,16 +14,14 @@
 class pylith::meshio::Xdmf {
     friend class TestXdmf; // Unit testing
 
-public:
-
+  public:
     // PUBLIC METHODS /////////////////////////////////////////////////////
 
     /** Use Python Xdmf object to write Xdmf file corresponding to HDF5 file.
      *
      * @param[in] filenameH5 Name of HDF5 file.
      */
-    static
-    void write(const char* filenameH5);
+    static void write(const char* filenameH5);
 
 }; // class Xdmf
 

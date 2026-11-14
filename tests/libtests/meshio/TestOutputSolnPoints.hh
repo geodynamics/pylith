@@ -19,13 +19,14 @@ namespace pylith {
         class TestOutputSolnPoints;
 
         class OutputSolnPointsData;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 /// C++ unit testing for OutputSolnPoints
-class pylith::meshio::TestOutputSolnPoints : public CppUnit::TestFixture { // class TestOutputSolnPoints
-                                                                           // CPPUNIT TEST SUITE
-                                                                           // /////////////////////////////////////////////////
+class pylith::meshio::TestOutputSolnPoints
+    : public CppUnit::TestFixture { // class TestOutputSolnPoints
+                                    // CPPUNIT TEST SUITE
+                                    // /////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestOutputSolnPoints);
 
     CPPUNIT_TEST(testConstructor);
@@ -45,8 +46,7 @@ class pylith::meshio::TestOutputSolnPoints : public CppUnit::TestFixture { // cl
     CPPUNIT_TEST_SUITE_END();
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test constructor
     void testConstructor(void);
 
@@ -75,8 +75,7 @@ public:
     void testInterpolateHex8(void);
 
     // PRIVATE METHODS ////////////////////////////////////////////////////
-private:
-
+  private:
     /** Test setupInterpolator.
      *
      * @param data Test data.

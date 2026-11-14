@@ -9,16 +9,16 @@
 // =================================================================================================
 #pragma once
 
-#include <cppunit/extensions/HelperMacros.h>
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
+#include <cppunit/extensions/HelperMacros.h>
 
 #include "pylith/materials/materialsfwd.hh" // forward declarations
-#include "pylith/topology/topologyfwd.hh" // forward declarations
 #include "pylith/topology/Field.hh" // HASA FieldBase::Discretization
+#include "pylith/topology/topologyfwd.hh" // forward declarations
 
-#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA UserFunctionDB
-#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
 #include "pylith/scales/scalesfwd.hh" // HOLDSA Scales
+#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA UserFunctionDB
 
 /// Namespace for pylith package
 namespace pylith {
@@ -26,8 +26,8 @@ namespace pylith {
         class TestMaterial;
 
         class TestMaterial_Data; // test data
-    } // materials
-} // pylith
+    } // namespace materials
+} // namespace pylith
 
 /// C++ abstract base class for testing material objects.
 class pylith::materials::TestMaterial : public CppUnit::TestFixture, public pylith::utils::GenericComponent {
@@ -53,11 +53,9 @@ class pylith::materials::TestMaterial : public CppUnit::TestFixture, public pyli
     CPPUNIT_TEST_SUITE_END_ABSTRACT();
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Setup testing data.
-    virtual
-    void setUp(void);
+    virtual void setUp(void);
 
     /// Deallocate testing data.
     void tearDown(void);
@@ -102,21 +100,18 @@ public:
     void testUpdateStateVars(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get material.
      *
      * @returns Pointer to material.
      */
-    virtual
-    Material* _material(void) = 0;
+    virtual Material* _material(void) = 0;
 
     /** Get test data.
      *
      * @returns Pointer to test data.
      */
-    virtual
-    TestMaterial_Data* _data(void) = 0;
+    virtual TestMaterial_Data* _data(void) = 0;
 
     /// Do minimal initilaization of test data.
     void _initializeMin(void);
@@ -131,12 +126,10 @@ protected:
     void _zeroBoundary(pylith::topology::Field* field);
 
     /// Setup and populate solution fields.
-    virtual
-    void _setupSolutionFields(void) = 0;
+    virtual void _setupSolutionFields(void) = 0;
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected:
-
+  protected:
     // TestMaterial
     pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
     pylith::topology::Fields* _solutionFields; ///< Contrainer for solution fields.
@@ -146,8 +139,7 @@ protected:
 // =============================================================================
 class pylith::materials::TestMaterial_Data {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestMaterial_Data(void);
 
@@ -155,8 +147,7 @@ public:
     ~TestMaterial_Data(void);
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     int dimension; ///< Dimension of material.
     const char* meshFilename; ///< Name of file with ASCII mesh.
     const char* boundaryLabel; ///< Group defining domain boundary.

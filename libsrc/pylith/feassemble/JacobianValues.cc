@@ -12,31 +12,28 @@
 
 #include "pylith/feassemble/JacobianValues.hh" // implementation of object methods
 
-#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/feassemble/DSLabelAccess.hh" // USES DSLabelAccess
+#include "pylith/topology/Field.hh" // USES Field
 
-#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 #include <cassert> // USES assert()
 
 namespace pylith {
     namespace feassemble {
         class _JacobianValues {
-public:
-
-            static
-            void evaluateKernel(scalar_array* cellMat,
-                                const JacobianValues::JacobianKernel& kernel,
-                                const PylithReal t,
-                                const PylithReal dt,
-                                const PylithReal s_tshift,
-                                const pylith::topology::Field& solution,
-                                const pylith::feassemble::DSLabelAccess& dsLabel);
-
+          public:
+            static void evaluateKernel(scalar_array* cellMat,
+                                       const JacobianValues::JacobianKernel& kernel,
+                                       const PylithReal t,
+                                       const PylithReal dt,
+                                       const PylithReal s_tshift,
+                                       const pylith::topology::Field& solution,
+                                       const pylith::feassemble::DSLabelAccess& dsLabel);
         };
-    }
-}
+    } // namespace feassemble
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -47,7 +44,8 @@ pylith::feassemble::JacobianValues::JacobianValues(void) {
 
 // ------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::feassemble::JacobianValues::~JacobianValues(void) {}
+pylith::feassemble::JacobianValues::~JacobianValues(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -55,7 +53,9 @@ void
 pylith::feassemble::JacobianValues::setKernels(const std::vector<JacobianKernel>& kernelsJacobian,
                                                const std::vector<JacobianKernel>& kernelsPrecond) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "setKernels(# Jacobian kernels="<<kernelsJacobian.size()<<", # preconditioner kernels="<<kernelsPrecond.size()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 "setKernels(# Jacobian kernels=" << kernelsJacobian.size()
+                                                  << ", # preconditioner kernels=" << kernelsPrecond.size() << ")");
 
     _kernelsJacobian = kernelsJacobian;
     _kernelsPrecond = kernelsPrecond;
@@ -75,9 +75,13 @@ pylith::feassemble::JacobianValues::computeLHSJacobian(PetscMat jacobianMat,
                                                        const pylith::topology::Field& solution,
                                                        const pylith::feassemble::DSLabelAccess& dsLabel) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "computeLHSJacobian (jacobianMat = "<<jacobianMat<<", precondMat = "<<precondMat<<", t = "<<t<<", dt = "<<dt<<", solution = "<<solution.getLabel()<<") ");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 "computeLHSJacobian (jacobianMat = " << jacobianMat << ", precondMat = " << precondMat << ", t = " << t
+                                                      << ", dt = " << dt << ", solution = " << solution.getLabel()
+                                                      << ") ");
 
-    PetscDM dm = dsLabel.dm();assert(dm);
+    PetscDM dm = dsLabel.dm();
+    assert(dm);
 
     const PetscInt numCells = dsLabel.numPoints();
     const PetscInt* cellIndices = NULL;
@@ -85,7 +89,7 @@ pylith::feassemble::JacobianValues::computeLHSJacobian(PetscMat jacobianMat,
 
     PetscInt totalDof = 0;
     PylithCallPetsc(PetscDSGetTotalDimension(dsLabel.ds(), &totalDof));
-    scalar_array cellMat(totalDof*totalDof);
+    scalar_array cellMat(totalDof * totalDof);
 
     if (jacobianMat) {
         for (PetscInt iCell = 0; iCell < numCells; ++iCell) {
@@ -95,8 +99,8 @@ pylith::feassemble::JacobianValues::computeLHSJacobian(PetscMat jacobianMat,
             for (size_t i = 0; i < _kernelsJacobian.size(); ++i) {
                 _JacobianValues::evaluateKernel(&cellMat, _kernelsJacobian[i], t, dt, s_tshift, solution, dsLabel);
             } // for
-            PylithCallPetsc(DMPlexMatSetClosure(dsLabel.dm(), NULL, NULL, jacobianMat, cell, &cellMat[0],
-                                                INSERT_VALUES));
+            PylithCallPetsc(
+                DMPlexMatSetClosure(dsLabel.dm(), NULL, NULL, jacobianMat, cell, &cellMat[0], INSERT_VALUES));
         } // for
     } // if
 
@@ -108,8 +112,8 @@ pylith::feassemble::JacobianValues::computeLHSJacobian(PetscMat jacobianMat,
             for (size_t i = 0; i < _kernelsPrecond.size(); ++i) {
                 _JacobianValues::evaluateKernel(&cellMat, _kernelsPrecond[i], t, dt, s_tshift, solution, dsLabel);
             } // for
-            PylithCallPetsc(DMPlexMatSetClosure(dsLabel.dm(), NULL, NULL, precondMat, cell, &cellMat[0],
-                                                INSERT_VALUES));
+            PylithCallPetsc(
+                DMPlexMatSetClosure(dsLabel.dm(), NULL, NULL, precondMat, cell, &cellMat[0], INSERT_VALUES));
         } // for
     } // if
     PylithCallPetsc(ISRestoreIndices(dsLabel.pointsIS(), &cellIndices));
@@ -134,7 +138,7 @@ pylith::feassemble::JacobianValues::blockDiag_tshift(pylith::scalar_array* cellM
 
     const PylithScalar value = s_tshift;
     for (PetscInt iDof = 0; iDof < trialDof; ++iDof) {
-        const PylithInt index = (trialOff+iDof) * totalDim + basisOff + iDof;
+        const PylithInt index = (trialOff + iDof) * totalDim + basisOff + iDof;
         (*cellMat)[index] = value;
     } // for
 } // blockDiag_tshift
@@ -157,11 +161,11 @@ pylith::feassemble::_JacobianValues::evaluateKernel(scalar_array* cellMat,
     PetscInt trialOff, trialDof, basisOff, basisDof;
     PetscFE fe = NULL;
     PylithCallPetsc(PetscDSGetFieldOffset(dsLabel.ds(), i_trial, &trialOff));
-    PylithCallPetsc(PetscDSGetDiscretization(dsLabel.ds(), i_trial, (PetscObject*) &fe));
+    PylithCallPetsc(PetscDSGetDiscretization(dsLabel.ds(), i_trial, (PetscObject*)&fe));
     PylithCallPetsc(PetscFEGetDimension(fe, &trialDof));
 
     PylithCallPetsc(PetscDSGetFieldOffset(dsLabel.ds(), i_basis, &basisOff));
-    PylithCallPetsc(PetscDSGetDiscretization(dsLabel.ds(), i_basis, (PetscObject*) &fe));
+    PylithCallPetsc(PetscDSGetDiscretization(dsLabel.ds(), i_basis, (PetscObject*)&fe));
     PylithCallPetsc(PetscFEGetDimension(fe, &basisDof));
 
     PetscInt totalDof = 0;

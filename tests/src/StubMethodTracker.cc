@@ -16,7 +16,8 @@ pylith::testing::StubMethodTracker::map_type pylith::testing::StubMethodTracker:
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
-pylith::testing::StubMethodTracker::StubMethodTracker(void) {}
+pylith::testing::StubMethodTracker::StubMethodTracker(void) {
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -28,7 +29,8 @@ pylith::testing::StubMethodTracker::StubMethodTracker(const char* methodName) {
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor
-pylith::testing::StubMethodTracker::~StubMethodTracker(void) {}
+pylith::testing::StubMethodTracker::~StubMethodTracker(void) {
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------

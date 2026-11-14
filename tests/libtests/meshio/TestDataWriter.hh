@@ -15,13 +15,12 @@
 namespace pylith {
     namespace meshio {
         class TestDataWriter_Data;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 class pylith::meshio::TestDataWriter_Data {
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestDataWriter_Data(void);
 
@@ -29,8 +28,7 @@ public:
     ~TestDataWriter_Data(void);
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     const char* meshFilename; ///< Name of mesh input file.
     const char* faultLabel; ///< Name of group of vertices for fault.
     int faultId; ///< Material identifier for fault.

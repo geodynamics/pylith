@@ -14,13 +14,12 @@
 namespace pylith {
     namespace bc {
         class AbsorbingDampersData;
-    } // pylith
-} // bc
+    } // namespace bc
+} // namespace pylith
 
 class pylith::bc::AbsorbingDampersData {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     AbsorbingDampersData(void);
 
@@ -28,8 +27,7 @@ public:
     ~AbsorbingDampersData(void);
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     char* meshFilename; ///< Name of file with input mesh
 
     /// @name Scales information for nondimensionalization.

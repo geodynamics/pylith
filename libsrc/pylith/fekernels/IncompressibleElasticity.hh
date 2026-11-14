@@ -48,30 +48,28 @@
 
 // ------------------------------------------------------------------------------------------------
 class pylith::fekernels::IncompressibleElasticity {
-public:
-
+  public:
     // Function interface for computing incompressible term.
-    typedef void (*incompressiblefn_type) (void*,
-                                           const pylith::fekernels::Tensor&,
-                                           const pylith::fekernels::TensorOps&,
-                                           PylithScalar*);
+    typedef void (*incompressiblefn_type)(void*,
+                                          const pylith::fekernels::Tensor&,
+                                          const pylith::fekernels::TensorOps&,
+                                          PylithScalar*);
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     // ============================================================================================
     // Kernels for elasticity equation
     // ============================================================================================
 
     // --------------------------------------------------------------------------------------------
     // f0p helper function.
-    static inline
-    void f0p(pylith::fekernels::Elasticity::StrainContext& strainContext,
-             void* rheologyContext,
-             pylith::fekernels::Elasticity::strainfn_type strainFn,
-             pylith::fekernels::IncompressibleElasticity::incompressiblefn_type incompressibleFn,
-             const pylith::fekernels::TensorOps& tensorOps,
-             PylithScalar f0[]) {
+    static inline void
+    f0p(pylith::fekernels::Elasticity::StrainContext& strainContext,
+        void* rheologyContext,
+        pylith::fekernels::Elasticity::strainfn_type strainFn,
+        pylith::fekernels::IncompressibleElasticity::incompressiblefn_type incompressibleFn,
+        const pylith::fekernels::TensorOps& tensorOps,
+        PylithScalar f0[]) {
         assert(f0);
 
         pylith::fekernels::Tensor strain;
@@ -88,26 +86,26 @@ public:
      *
      * Solution fields: [disp(dim), pressure(1)]
      */
-    static inline
-    void Jf1pu(const PylithInt dim,
-               const PylithInt numS,
-               const PylithInt numA,
-               const PylithInt sOff[],
-               const PylithInt sOff_x[],
-               const PylithScalar s[],
-               const PylithScalar s_t[],
-               const PylithScalar s_x[],
-               const PylithInt aOff[],
-               const PylithInt aOff_x[],
-               const PylithScalar a[],
-               const PylithScalar a_t[],
-               const PylithScalar a_x[],
-               const PylithReal t,
-               const PylithReal s_tshift,
-               const PylithScalar x[],
-               const PylithInt numConstants,
-               const PylithScalar constants[],
-               PylithScalar Jf1[]) {
+    static inline void
+    Jf1pu(const PylithInt dim,
+          const PylithInt numS,
+          const PylithInt numA,
+          const PylithInt sOff[],
+          const PylithInt sOff_x[],
+          const PylithScalar s[],
+          const PylithScalar s_t[],
+          const PylithScalar s_x[],
+          const PylithInt aOff[],
+          const PylithInt aOff_x[],
+          const PylithScalar a[],
+          const PylithScalar a_t[],
+          const PylithScalar a_x[],
+          const PylithReal t,
+          const PylithReal s_tshift,
+          const PylithScalar x[],
+          const PylithInt numConstants,
+          const PylithScalar constants[],
+          PylithScalar Jf1[]) {
         assert(Jf1);
 
         /* j(f,g,dg), f=0, g=0..dim, dg=0..dim
@@ -127,7 +125,7 @@ public:
          */
 
         for (PylithInt i = 0; i < dim; ++i) {
-            Jf1[i*dim+i] += 1.0;
+            Jf1[i * dim + i] += 1.0;
         } // for
     } // Jf1pu
 
@@ -136,26 +134,26 @@ public:
      *
      * Solution fields: [disp(dim), pressure(1)]
      */
-    static inline
-    void Jf2up(const PylithInt dim,
-               const PylithInt numS,
-               const PylithInt numA,
-               const PylithInt sOff[],
-               const PylithInt sOff_x[],
-               const PylithScalar s[],
-               const PylithScalar s_t[],
-               const PylithScalar s_x[],
-               const PylithInt aOff[],
-               const PylithInt aOff_x[],
-               const PylithScalar a[],
-               const PylithScalar a_t[],
-               const PylithScalar a_x[],
-               const PylithReal t,
-               const PylithReal s_tshift,
-               const PylithScalar x[],
-               const PylithInt numConstants,
-               const PylithScalar constants[],
-               PylithScalar Jf2[]) {
+    static inline void
+    Jf2up(const PylithInt dim,
+          const PylithInt numS,
+          const PylithInt numA,
+          const PylithInt sOff[],
+          const PylithInt sOff_x[],
+          const PylithScalar s[],
+          const PylithScalar s_t[],
+          const PylithScalar s_x[],
+          const PylithInt aOff[],
+          const PylithInt aOff_x[],
+          const PylithScalar a[],
+          const PylithScalar a_t[],
+          const PylithScalar a_x[],
+          const PylithReal t,
+          const PylithReal s_tshift,
+          const PylithScalar x[],
+          const PylithInt numConstants,
+          const PylithScalar constants[],
+          PylithScalar Jf2[]) {
         assert(Jf2);
 
         /* j(f,g,df), f=0..dim, df=0..dim, g=0
@@ -175,7 +173,7 @@ public:
          */
 
         for (PylithInt i = 0; i < dim; ++i) {
-            Jf2[i*dim+i] += 1.0;
+            Jf2[i * dim + i] += 1.0;
         } // for
     } // Jf2up
 
@@ -187,9 +185,9 @@ public:
     /** Calculate mean stress for isotropic linear incompressible elasticity WITHOUT reference stress
      * and strain.
      */
-    static inline
-    void meanStress(const PylithReal pressure,
-                    pylith::fekernels::Tensor* stress) {
+    static inline void
+    meanStress(const PylithReal pressure,
+               pylith::fekernels::Tensor* stress) {
         assert(stress);
 
         stress->xx -= pressure;
@@ -201,10 +199,10 @@ public:
     /** Calculate mean stress for isotropic linear incompressible elasticity WITH reference stress
      * and strain.
      */
-    static inline
-    void meanStress_refState(const PylithReal pressure,
-                             const pylith::fekernels::Tensor& refStress,
-                             pylith::fekernels::Tensor* stress) {
+    static inline void
+    meanStress_refState(const PylithReal pressure,
+                        const pylith::fekernels::Tensor& refStress,
+                        pylith::fekernels::Tensor* stress) {
         assert(stress);
 
         const PylithReal meanRefStress = (refStress.xx + refStress.yy + refStress.zz) / 3.0;

@@ -11,14 +11,14 @@
 
 #include "tests/src/MMSTest.hh" // ISA MMSTEST
 
+#include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
 #include "pylith/faults/faultsfwd.hh" // HOLDSA FaultCohesiveKin
 #include "pylith/materials/Elasticity.hh" // USES Elasticity
 #include "pylith/materials/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity
-#include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
 
-#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 
 #include "pylith/problems/Physics.hh" // USES FormulationEnum
 #include "pylith/topology/Field.hh" // HASA FieldBase::Discretization
@@ -26,12 +26,11 @@
 namespace pylith {
     class TestFaultKin;
     class TestFaultKin_Data;
-} // pylith
+} // namespace pylith
 
 class pylith::TestFaultKin : public pylith::testing::MMSTest {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /** Constructor
      *
      * @param[in] data Data for MMS test.
@@ -42,8 +41,7 @@ public:
     ~TestFaultKin(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Initialize objects for test.
     void _initialize(void);
 
@@ -51,8 +49,7 @@ protected:
     void _setExactSolution(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     TestFaultKin_Data* _data; ///< Test parameters.
 
 }; // class TestFaultKin
@@ -60,8 +57,7 @@ protected:
 // ================================================================================================
 class pylith::TestFaultKin_Data {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestFaultKin_Data(void);
 
@@ -69,8 +65,7 @@ public:
     ~TestFaultKin_Data(void);
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     const char* journalName; ///< Name for MMSTest journals.
     int spaceDim; ///< Spatial dimension of domain.
     const char* meshFilename; ///< Name of file with ASCII mesh.

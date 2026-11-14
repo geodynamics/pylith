@@ -16,8 +16,7 @@ class pylith::faults::DerivedFieldFactory : public pylith::topology::FieldFactor
     friend class TestDerivedFieldFactory; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     DerivedFieldFactory(void);
 
@@ -31,9 +30,8 @@ public:
     virtual void addSubfields(void);
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
-    DerivedFieldFactory(const DerivedFieldFactory &); ///< Not implemented.
+  private:
+    DerivedFieldFactory(const DerivedFieldFactory&); ///< Not implemented.
     const DerivedFieldFactory& operator=(const DerivedFieldFactory&); ///< Not implemented
 
 }; // class DerivedFieldFactory

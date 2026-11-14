@@ -14,8 +14,8 @@
 
 #include "pylith/faults/KinSrcAuxiliaryFactory.hh" // USES KinSrcAuxiliaryFactory
 
-#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
@@ -24,16 +24,15 @@
 namespace pylith {
     namespace faults {
         namespace _KinSrcBrune {
-            inline
-            PylithReal
+            inline PylithReal
             tau(const PylithReal riseTime) {
                 return 0.21081916 * riseTime;
             } // tau
 
 
-        } // _KinSrcBrune
-    } // faults
-} // pylith
+        } // namespace _KinSrcBrune
+    } // namespace faults
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -44,7 +43,8 @@ pylith::faults::KinSrcBrune::KinSrcBrune(void) {
 
 // ------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::faults::KinSrcBrune::~KinSrcBrune(void) {}
+pylith::faults::KinSrcBrune::~KinSrcBrune(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -89,7 +89,7 @@ pylith::faults::KinSrcBrune::slipFn(const PylithInt dim,
     if (t >= t0) {
         const PylithScalar tau = _KinSrcBrune::tau(riseTime);
         for (PylithInt i = 0; i < dim; ++i) {
-            slip[i] = finalSlip[i] * (1.0 - exp(-(t-t0)/tau) * (1.0 + (t-t0)/tau));
+            slip[i] = finalSlip[i] * (1.0 - exp(-(t - t0) / tau) * (1.0 + (t - t0) / tau));
         } // for
     } else {
         for (PylithInt i = 0; i < dim; ++i) {
@@ -141,7 +141,7 @@ pylith::faults::KinSrcBrune::slipRateFn(const PylithInt dim,
     if (t >= t0) {
         const PylithScalar tau = _KinSrcBrune::tau(riseTime);
         for (PylithInt i = 0; i < dim; ++i) {
-            slipRate[i] = finalSlip[i] * (t-t0)/(tau*tau) * exp(-(t-t0)/tau);
+            slipRate[i] = finalSlip[i] * (t - t0) / (tau * tau) * exp(-(t - t0) / tau);
         } // for
     } else {
         for (PylithInt i = 0; i < dim; ++i) {
@@ -193,7 +193,7 @@ pylith::faults::KinSrcBrune::slipAccFn(const PylithInt dim,
     if (t >= t0) {
         const PylithScalar tau = _KinSrcBrune::tau(riseTime);
         for (PylithInt i = 0; i < dim; ++i) {
-            slipAcc[i] = finalSlip[i] * 1.0/(tau*tau) * (1.0 - (t-t0)/tau) * exp(-(t-t0)/tau);
+            slipAcc[i] = finalSlip[i] * 1.0 / (tau * tau) * (1.0 - (t - t0) / tau) * exp(-(t - t0) / tau);
         } // for
     } else {
         for (PylithInt i = 0; i < dim; ++i) {

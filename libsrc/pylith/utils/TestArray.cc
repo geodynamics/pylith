@@ -15,8 +15,8 @@
 
 #include "pylith/utils/array.hh" // USES scalar_array
 
-#include <iostream> // USES std::cerr
 #include <cassert>
+#include <iostream> // USES std::cerr
 
 // ----------------------------------------------------------------------
 // Check to make sure array of values match expected values.
@@ -24,12 +24,10 @@ bool
 pylith::utils::TestArray::check(const PylithScalar* valuesE,
                                 const int nvalues,
                                 const scalar_array& values) {
-    assert( ((0 == nvalues && 0 == valuesE) ||
-             (0 < nvalues && 0 != valuesE)) );
+    assert(((0 == nvalues && 0 == valuesE) || (0 < nvalues && 0 != valuesE)));
 
     if (size_t(nvalues) != values.size()) {
-        std::cerr << "Array size mismatch, expected: " << nvalues
-                  << " actual: " << values.size() << std::endl;
+        std::cerr << "Array size mismatch, expected: " << nvalues << " actual: " << values.size() << std::endl;
         return false;
     } // if
 
@@ -38,7 +36,7 @@ pylith::utils::TestArray::check(const PylithScalar* valuesE,
     for (int i = 0; i < nvalues; ++i) {
         okay = true;
         if (0.0 != valuesE[i]) {
-            if (fabs(1.0 - values[i]/valuesE[i]) > tolerance) {
+            if (fabs(1.0 - values[i] / valuesE[i]) > tolerance) {
                 okay = false;
             }
         } else if (fabs(values[i] - valuesE[i]) > tolerance) {
@@ -46,8 +44,8 @@ pylith::utils::TestArray::check(const PylithScalar* valuesE,
         }
 
         if (!okay) {
-            std::cerr << "Mismatch in array at index " << i << ", expected: "
-                      << valuesE[i] << ", actual: " << values[i] << std::endl;
+            std::cerr << "Mismatch in array at index " << i << ", expected: " << valuesE[i] << ", actual: " << values[i]
+                      << std::endl;
             return false;
         } // if
     } // for

@@ -24,8 +24,8 @@ namespace pylith {
         class TSMonitor;
 
         class TSAdaptImpulse;
-    } // petsc
-} // pylith
+    } // namespace petsc
+} // namespace pylith
 
 
 // End of file

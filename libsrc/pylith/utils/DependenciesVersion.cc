@@ -12,8 +12,8 @@
 
 #include "pylith/utils/DependenciesVersion.hh" // Implementation of class methods
 
-#include "mpi.h"
 #include "H5pubconf.h"
+#include "mpi.h"
 
 // ----------------------------------------------------------------------
 #define STR_HELPER(x) #x
@@ -50,12 +50,14 @@ const char* pylith::utils::DependenciesVersion::_hdf5Version = H5_VERSION;
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::utils::DependenciesVersion::DependenciesVersion(void) {}
+pylith::utils::DependenciesVersion::DependenciesVersion(void) {
+}
 
 
 // ----------------------------------------------------------------------
 // Default destructor.
-pylith::utils::DependenciesVersion::~DependenciesVersion(void) {}
+pylith::utils::DependenciesVersion::~DependenciesVersion(void) {
+}
 
 
 // ----------------------------------------------------------------------

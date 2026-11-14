@@ -19,8 +19,7 @@ class pylith::feassemble::PhysicsImplementationStub : public pylith::feassemble:
     friend class TestPhysicsImplementationStub; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     PhysicsImplementationStub(void);
 
@@ -34,8 +33,7 @@ public:
     const pylith::topology::Mesh& getPhysicsDomainMesh(void) const;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     PhysicsImplementationStub(const PhysicsImplementationStub&); ///< Not implemented.
     const PhysicsImplementationStub& operator=(const PhysicsImplementationStub&); ///< Not implemented
 

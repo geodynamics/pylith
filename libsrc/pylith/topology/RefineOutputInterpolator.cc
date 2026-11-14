@@ -12,10 +12,10 @@
 
 #include "pylith/topology/RefineOutputInterpolator.hh" // implementation of class methods
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
 
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/petsc/EventLogger.hh" // USES EventLogger
@@ -26,13 +26,10 @@
 namespace pylith {
     namespace topology {
         class _RefineOutputInterpolator {
-public:
-
+          public:
             class Events {
-public:
-
-                static
-                void init(void);
+              public:
+                static void init(void);
 
                 static pylith::petsc::EventLogger logger;
                 static PetscLogEvent initialize;
@@ -40,8 +37,8 @@ public:
             };
 
         }; // _RefineOutputInterpolator
-    } // topology
-} // pylith
+    } // namespace topology
+} // namespace pylith
 
 pylith::petsc::EventLogger pylith::topology::_RefineOutputInterpolator::Events::logger;
 PetscLogEvent pylith::topology::_RefineOutputInterpolator::Events::initialize;
@@ -100,29 +97,31 @@ pylith::topology::RefineOutputInterpolator::getInputDM(void) {
 // Get PETSc DM for output (finest level)
 PetscDM
 pylith::topology::RefineOutputInterpolator::getOutputDM(void) {
-    return (_levels.size() > 0) ? _levels[_levels.size()-1].dm : PETSC_NULLPTR;
+    return (_levels.size() > 0) ? _levels[_levels.size() - 1].dm : PETSC_NULLPTR;
 }
 
 
 // ------------------------------------------------------------------------------------------------
 // Initialize interpolation to refined mesh.
 void
-pylith::topology::RefineOutputInterpolator::initialize(const PetscDM& dmMesh,
-                                                       const int refineLevels,
-                                                       const int outputBasisOrder,
-                                                       const pylith::topology::FieldBase::Description& description,
-                                                       const pylith::topology::FieldBase::Discretization& discretization) {
+pylith::topology::RefineOutputInterpolator::initialize(
+    const PetscDM& dmMesh,
+    const int refineLevels,
+    const int outputBasisOrder,
+    const pylith::topology::FieldBase::Description& description,
+    const pylith::topology::FieldBase::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
     pylith::petsc::EventLogger::Scope logScope(_RefineOutputInterpolator::Events::initialize);
 
     _levels.resize(refineLevels);
 
-    PetscDM dmStart = pylith::topology::MeshOps::removeHangingCells(dmMesh);assert(dmStart);
+    PetscDM dmStart = pylith::topology::MeshOps::removeHangingCells(dmMesh);
+    assert(dmStart);
     PylithCallPetsc(DMCopyDisc(dmMesh, dmStart));
 
     PetscDM dmPrev = dmStart;
     PetscReal lengthScale = 1.0;
-    MPI_Comm comm = PetscObjectComm((PetscObject) dmMesh);
+    MPI_Comm comm = PetscObjectComm((PetscObject)dmMesh);
     for (size_t iLevel = 0; iLevel < _levels.size(); ++iLevel) {
         _levels[iLevel].dm = PETSC_NULLPTR;
         _levels[iLevel].interpolateMatrix = PETSC_NULLPTR;
@@ -144,7 +143,7 @@ pylith::topology::RefineOutputInterpolator::initialize(const PetscDM& dmMesh,
         PylithCallPetsc(DMGetCoordinatesLocal(rdm, &rcl));
 #endif
 
-        if (iLevel < _levels.size()-1) {
+        if (iLevel < _levels.size() - 1) {
             PylithCallPetsc(DMCopyDisc(dmPrev, _levels[iLevel].dm));
         } else {
             const PetscInt minBasisOrder = PETSC_DETERMINE;

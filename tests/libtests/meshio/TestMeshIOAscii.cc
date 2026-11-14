@@ -24,9 +24,9 @@
 
 // ----------------------------------------------------------------------
 // Constructor.
-pylith::meshio::TestMeshIOAscii::TestMeshIOAscii(TestMeshIO_Data* data) :
-    TestMeshIO(data) {
-    _io = new MeshIOAscii();REQUIRE(_io);
+pylith::meshio::TestMeshIOAscii::TestMeshIOAscii(TestMeshIO_Data* data) : TestMeshIO(data) {
+    _io = new MeshIOAscii();
+    REQUIRE(_io);
     _io->PyreComponent::setIdentifier("TestMeshIOAscii");
 } // constructor
 
@@ -34,7 +34,8 @@ pylith::meshio::TestMeshIOAscii::TestMeshIOAscii(TestMeshIO_Data* data) :
 // ----------------------------------------------------------------------
 // Destructor.
 pylith::meshio::TestMeshIOAscii::~TestMeshIOAscii(void) {
-    delete _io;_io = nullptr;
+    delete _io;
+    _io = nullptr;
 } // destructor
 
 
@@ -60,14 +61,16 @@ pylith::meshio::TestMeshIOAscii::testWriteRead(void) {
     PYLITH_METHOD_BEGIN;
     REQUIRE(_io);
 
-    TestMeshIO::_createMesh();REQUIRE(_mesh);
+    TestMeshIO::_createMesh();
+    REQUIRE(_mesh);
 
     // Write mesh
     _io->setFilename(_data->filename.c_str());
     _io->write(_mesh);
 
     // Read mesh
-    delete _mesh;_mesh = new pylith::topology::Mesh;
+    delete _mesh;
+    _mesh = new pylith::topology::Mesh;
     _io->read(_mesh);
 
     // Make sure meshIn matches data
@@ -85,7 +88,8 @@ pylith::meshio::TestMeshIOAscii::testRead(void) {
     REQUIRE(_io);
 
     // Read mesh
-    delete _mesh;_mesh = new pylith::topology::Mesh;
+    delete _mesh;
+    _mesh = new pylith::topology::Mesh;
     _io->setFilename(_data->filename.c_str());
     _io->read(_mesh);
 
@@ -104,7 +108,8 @@ pylith::meshio::TestMeshIOAscii::testReadError(void) {
     REQUIRE(_io);
 
     // Read mesh
-    delete _mesh;_mesh = new pylith::topology::Mesh;
+    delete _mesh;
+    _mesh = new pylith::topology::Mesh;
     _io->setFilename(_data->filename.c_str());
     CHECK_THROWS_AS(_io->read(_mesh), pylith::exceptions::IOError);
 

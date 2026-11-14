@@ -20,12 +20,11 @@ namespace pylith {
     namespace meshio {
         class TestDataWriterVTKSubmesh_Cases;
     }
-}
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterVTKSubmesh_Cases {
-public:
-
+  public:
     // Data factory methods
     static TestDataWriterVTKSubmesh_Data* Tri(void);
 
@@ -34,55 +33,75 @@ public:
     static TestDataWriterVTKSubmesh_Data* Tet(void);
 
     static TestDataWriterVTKSubmesh_Data* Hex(void);
-
 };
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestDataWriterVTKMesh::Tri::testTimeStep", "[DataWriter][VTK][Submesh][Tri][testTimeStep]") {
+TEST_CASE("TestDataWriterVTKMesh::Tri::testTimeStep",
+          "[DataWriter][VTK][Submesh][Tri][testTimeStep]") {
     pylith::meshio::TestDataWriterVTKSubmesh(pylith::meshio::TestDataWriterVTKSubmesh_Cases::Tri()).testTimeStep();
 }
-TEST_CASE("TestDataWriterVTKSubmesh::Tri::testWriteVertexField", "[DataWriter][VTK][Submesh][Tri][testWriteVertexField]") {
-    pylith::meshio::TestDataWriterVTKSubmesh(pylith::meshio::TestDataWriterVTKSubmesh_Cases::Tri()).testWriteVertexField();
+TEST_CASE("TestDataWriterVTKSubmesh::Tri::testWriteVertexField",
+          "[DataWriter][VTK][Submesh][Tri][testWriteVertexField]") {
+    pylith::meshio::TestDataWriterVTKSubmesh(pylith::meshio::TestDataWriterVTKSubmesh_Cases::Tri())
+        .testWriteVertexField();
 }
-TEST_CASE("TestDataWriterVTKSubmesh::Tri::testWriteCellField", "[DataWriter][VTK][Submesh][Tri][testWriteCellField]") {
-    pylith::meshio::TestDataWriterVTKSubmesh(pylith::meshio::TestDataWriterVTKSubmesh_Cases::Tri()).testWriteCellField();
+TEST_CASE("TestDataWriterVTKSubmesh::Tri::testWriteCellField",
+          "[DataWriter][VTK][Submesh][Tri][testWriteCellField]") {
+    pylith::meshio::TestDataWriterVTKSubmesh(pylith::meshio::TestDataWriterVTKSubmesh_Cases::Tri())
+        .testWriteCellField();
 }
 
-TEST_CASE("TestDataWriterVTKSubmesh::Quad::testTimeStep", "[DataWriter][VTK][Submesh][Quad][testTimeStep]") {
+TEST_CASE("TestDataWriterVTKSubmesh::Quad::testTimeStep",
+          "[DataWriter][VTK][Submesh][Quad][testTimeStep]") {
     pylith::meshio::TestDataWriterVTKSubmesh(pylith::meshio::TestDataWriterVTKSubmesh_Cases::Quad()).testTimeStep();
 }
-TEST_CASE("TestDataWriterVTKSubmesh::Quad::testWriteVertexField", "[DataWriter][VTK][Submesh][Quad][testWriteVertexField]") {
-    pylith::meshio::TestDataWriterVTKSubmesh(pylith::meshio::TestDataWriterVTKSubmesh_Cases::Quad()).testWriteVertexField();
+TEST_CASE("TestDataWriterVTKSubmesh::Quad::testWriteVertexField",
+          "[DataWriter][VTK][Submesh][Quad][testWriteVertexField]") {
+    pylith::meshio::TestDataWriterVTKSubmesh(pylith::meshio::TestDataWriterVTKSubmesh_Cases::Quad())
+        .testWriteVertexField();
 }
-TEST_CASE("TestDataWriterVTKSubmesh::Quad::testWriteCellField", "[DataWriter][VTK][Submesh][Quad][testWriteCellField]") {
-    pylith::meshio::TestDataWriterVTKSubmesh(pylith::meshio::TestDataWriterVTKSubmesh_Cases::Quad()).testWriteCellField();
+TEST_CASE("TestDataWriterVTKSubmesh::Quad::testWriteCellField",
+          "[DataWriter][VTK][Submesh][Quad][testWriteCellField]") {
+    pylith::meshio::TestDataWriterVTKSubmesh(pylith::meshio::TestDataWriterVTKSubmesh_Cases::Quad())
+        .testWriteCellField();
 }
 
-TEST_CASE("TestDataWriterVTKSubmesh::Tet::testTimeStep", "[DataWriter][VTK][Submesh][Tet][testTimeStep]") {
+TEST_CASE("TestDataWriterVTKSubmesh::Tet::testTimeStep",
+          "[DataWriter][VTK][Submesh][Tet][testTimeStep]") {
     pylith::meshio::TestDataWriterVTKSubmesh(pylith::meshio::TestDataWriterVTKSubmesh_Cases::Tet()).testTimeStep();
 }
-TEST_CASE("TestDataWriterVTKSubmesh::Tet::testWriteVertexField", "[DataWriter][VTK][Submesh][Tet][testWriteVertexField]") {
-    pylith::meshio::TestDataWriterVTKSubmesh(pylith::meshio::TestDataWriterVTKSubmesh_Cases::Tet()).testWriteVertexField();
+TEST_CASE("TestDataWriterVTKSubmesh::Tet::testWriteVertexField",
+          "[DataWriter][VTK][Submesh][Tet][testWriteVertexField]") {
+    pylith::meshio::TestDataWriterVTKSubmesh(pylith::meshio::TestDataWriterVTKSubmesh_Cases::Tet())
+        .testWriteVertexField();
 }
-TEST_CASE("TestDataWriterVTKSubmesh::Tet::testWriteCellField", "[DataWriter][VTK][Submesh][Tet][testWriteCellField]") {
-    pylith::meshio::TestDataWriterVTKSubmesh(pylith::meshio::TestDataWriterVTKSubmesh_Cases::Tet()).testWriteCellField();
+TEST_CASE("TestDataWriterVTKSubmesh::Tet::testWriteCellField",
+          "[DataWriter][VTK][Submesh][Tet][testWriteCellField]") {
+    pylith::meshio::TestDataWriterVTKSubmesh(pylith::meshio::TestDataWriterVTKSubmesh_Cases::Tet())
+        .testWriteCellField();
 }
 
-TEST_CASE("TestDataWriterVTKSubmesh::Hex::testTimeStep", "[DataWriter][VTK][Submesh][Hex][testTimeStep]") {
+TEST_CASE("TestDataWriterVTKSubmesh::Hex::testTimeStep",
+          "[DataWriter][VTK][Submesh][Hex][testTimeStep]") {
     pylith::meshio::TestDataWriterVTKSubmesh(pylith::meshio::TestDataWriterVTKSubmesh_Cases::Hex()).testTimeStep();
 }
-TEST_CASE("TestDataWriterVTKSubmesh::Hex::testWriteVertexField", "[DataWriter][VTK][Submesh][Hex][testWriteVertexField]") {
-    pylith::meshio::TestDataWriterVTKSubmesh(pylith::meshio::TestDataWriterVTKSubmesh_Cases::Hex()).testWriteVertexField();
+TEST_CASE("TestDataWriterVTKSubmesh::Hex::testWriteVertexField",
+          "[DataWriter][VTK][Submesh][Hex][testWriteVertexField]") {
+    pylith::meshio::TestDataWriterVTKSubmesh(pylith::meshio::TestDataWriterVTKSubmesh_Cases::Hex())
+        .testWriteVertexField();
 }
-TEST_CASE("TestDataWriterVTKSubmesh::Hex::testWriteCellField", "[DataWriter][VTK][Submesh][Hex][testWriteCellField]") {
-    pylith::meshio::TestDataWriterVTKSubmesh(pylith::meshio::TestDataWriterVTKSubmesh_Cases::Hex()).testWriteCellField();
+TEST_CASE("TestDataWriterVTKSubmesh::Hex::testWriteCellField",
+          "[DataWriter][VTK][Submesh][Hex][testWriteCellField]") {
+    pylith::meshio::TestDataWriterVTKSubmesh(pylith::meshio::TestDataWriterVTKSubmesh_Cases::Hex())
+        .testWriteCellField();
 }
 
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestDataWriterVTKSubmesh_Data*
 pylith::meshio::TestDataWriterVTKSubmesh_Cases::Tri(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterVTKSubmesh_Data* data = new TestDataWriterVTKSubmesh_Data();REQUIRE(data);
+    TestDataWriterVTKSubmesh_Data* data = new TestDataWriterVTKSubmesh_Data();
+    REQUIRE(data);
 
     data->timestepFilename = "tri3_surf.vtu";
     data->vertexFilename = "tri3_surf_vertex.vtu";
@@ -98,7 +117,8 @@ pylith::meshio::TestDataWriterVTKSubmesh_Cases::Tri(void) {
 pylith::meshio::TestDataWriterVTKSubmesh_Data*
 pylith::meshio::TestDataWriterVTKSubmesh_Cases::Quad(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterVTKSubmesh_Data* data = new TestDataWriterVTKSubmesh_Data();REQUIRE(data);
+    TestDataWriterVTKSubmesh_Data* data = new TestDataWriterVTKSubmesh_Data();
+    REQUIRE(data);
 
     data->timestepFilename = "quad4_surf.vtu";
     data->vertexFilename = "quad4_surf_vertex.vtu";
@@ -114,7 +134,8 @@ pylith::meshio::TestDataWriterVTKSubmesh_Cases::Quad(void) {
 pylith::meshio::TestDataWriterVTKSubmesh_Data*
 pylith::meshio::TestDataWriterVTKSubmesh_Cases::Tet(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterVTKSubmesh_Data* data = new TestDataWriterVTKSubmesh_Data();REQUIRE(data);
+    TestDataWriterVTKSubmesh_Data* data = new TestDataWriterVTKSubmesh_Data();
+    REQUIRE(data);
 
     data->timestepFilename = "tet4_surf.vtu";
     data->vertexFilename = "tet4_surf_vertex.vtu";
@@ -130,7 +151,8 @@ pylith::meshio::TestDataWriterVTKSubmesh_Cases::Tet(void) {
 pylith::meshio::TestDataWriterVTKSubmesh_Data*
 pylith::meshio::TestDataWriterVTKSubmesh_Cases::Hex(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterVTKSubmesh_Data* data = new TestDataWriterVTKSubmesh_Data();REQUIRE(data);
+    TestDataWriterVTKSubmesh_Data* data = new TestDataWriterVTKSubmesh_Data();
+    REQUIRE(data);
 
     data->timestepFilename = "hex8_surf.vtu";
     data->vertexFilename = "hex8_surf_vertex.vtu";

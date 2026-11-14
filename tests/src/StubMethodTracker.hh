@@ -11,15 +11,14 @@
 
 #include "pylith/testing/testingfwd.hh" // forward declarations
 
-#include <string> // USES std::string
 #include <map> // USES std::map
+#include <string> // USES std::string
 
 class pylith::testing::StubMethodTracker {
     friend class TestStubMethodTracker; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     StubMethodTracker(void);
 
@@ -49,8 +48,7 @@ public:
     size_t getMethodCount(const char* methodName);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     StubMethodTracker(const StubMethodTracker&); ///< Not implemented.
     const StubMethodTracker& operator=(const StubMethodTracker&); ///< Not implemented
 

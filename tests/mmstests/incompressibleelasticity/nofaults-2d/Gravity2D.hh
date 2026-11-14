@@ -17,8 +17,7 @@ namespace pylith {
 }
 
 class pylith::Gravity2D {
-public:
-
+  public:
     // Data factory methods
     static TestIncompressibleElasticity_Data* TriP1(void);
 
@@ -38,8 +37,7 @@ public:
 
     static TestIncompressibleElasticity_Data* QuadQ4(void);
 
-private:
-
+  private:
     Gravity2D(void); ///< Not implemented
 }; // Gravity2D
 

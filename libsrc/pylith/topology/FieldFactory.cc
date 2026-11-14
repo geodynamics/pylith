@@ -16,9 +16,9 @@
 
 #include "pylith/scales/Scales.hh" // USES Scales
 
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
-#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include <cassert>
 
@@ -39,8 +39,10 @@ pylith::topology::FieldFactory::FieldFactory(void) :
 pylith::topology::FieldFactory::~FieldFactory(void) {
     _field = NULL; // :TODO: use shared pointer
 
-    delete _defaultDescription;_defaultDescription = NULL;
-    delete _scales;_scales = NULL;
+    delete _defaultDescription;
+    _defaultDescription = NULL;
+    delete _scales;
+    _scales = NULL;
 } // destructor
 
 
@@ -64,7 +66,11 @@ pylith::topology::FieldFactory::setSubfieldDiscretization(const char* subfieldNa
                                                           const pylith::topology::FieldBase::SpaceEnum feSpace,
                                                           const bool isBasisContinuous) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "setSubfieldDiscretization(subfieldName="<<subfieldName<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", dimension="<<dimension<<", cellBasis="<<cellBasis<<", isBasisContinuous="<<isBasisContinuous<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 "setSubfieldDiscretization(subfieldName=" << subfieldName << ", basisOrder=" << basisOrder
+                                                           << ", quadOrder=" << quadOrder << ", dimension=" << dimension
+                                                           << ", cellBasis=" << cellBasis
+                                                           << ", isBasisContinuous=" << isBasisContinuous << ")");
     assert(dimension != 0);
 
     pylith::topology::FieldBase::Discretization feInfo;
@@ -86,7 +92,7 @@ pylith::topology::FieldFactory::setSubfieldDiscretization(const char* subfieldNa
 const pylith::topology::FieldBase::Discretization&
 pylith::topology::FieldFactory::getSubfieldDiscretization(const char* subfieldName) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "getSubfieldDiscretization(subfieldName="<<subfieldName<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "getSubfieldDiscretization(subfieldName=" << subfieldName << ")");
 
     pylith::topology::FieldBase::discretizations_map::const_iterator iter = _subfieldDiscretizations.find(subfieldName);
     if (iter != _subfieldDiscretizations.end()) {
@@ -94,8 +100,7 @@ pylith::topology::FieldFactory::getSubfieldDiscretization(const char* subfieldNa
     } else { // not found so try default
         iter = _subfieldDiscretizations.find("default");
         if (iter == _subfieldDiscretizations.end()) {
-            PYLITH_ERROR(pylith::exceptions::InternalLogicError,
-                         "Default discretization not set in field factory.");
+            PYLITH_ERROR(pylith::exceptions::InternalLogicError, "Default discretization not set in field factory.");
         } // if
     } // if/else
 
@@ -111,18 +116,22 @@ pylith::topology::FieldFactory::initialize(pylith::topology::Field* field,
                                            const int spaceDim,
                                            const pylith::topology::FieldBase::Description* defaultDescription) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "initialize(field="<<field<<", scales="<<&scales<<", spaceDim="<<spaceDim<<", defaultDescription="<<defaultDescription<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 "initialize(field=" << field << ", scales=" << &scales << ", spaceDim=" << spaceDim
+                                     << ", defaultDescription=" << defaultDescription << ")");
 
     assert(field);
 
     _field = field;
     if (defaultDescription) {
         if (!_defaultDescription) {
-            _defaultDescription = new pylith::topology::FieldBase::Description;assert(_defaultDescription);
+            _defaultDescription = new pylith::topology::FieldBase::Description;
+            assert(_defaultDescription);
         } // if
         *_defaultDescription = *defaultDescription;
     } else {
-        delete _defaultDescription;_defaultDescription = NULL;
+        delete _defaultDescription;
+        _defaultDescription = NULL;
     } // if/else
     assert(_scales);
     *_scales = scales;

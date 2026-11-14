@@ -10,24 +10,21 @@
 #pragma once
 
 // Make copy of this object.
-inline
-pylith::meshio::DataWriter*
+inline pylith::meshio::DataWriter*
 pylith::meshio::DataWriterVTK::clone(void) const {
     return new DataWriterVTK(*this);
 }
 
 
 // Set filename for VTK file.
-inline
-void
+inline void
 pylith::meshio::DataWriterVTK::filename(const char* filename) {
     _filename = filename;
 }
 
 
 // Set time format for time stamp in name of VTK file.
-inline
-void
+inline void
 pylith::meshio::DataWriterVTK::timeFormat(const char* format) {
     _timeFormat = format;
 }

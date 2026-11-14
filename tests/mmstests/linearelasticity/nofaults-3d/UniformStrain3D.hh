@@ -17,8 +17,7 @@ namespace pylith {
 }
 
 class pylith::UniformStrain3D {
-public:
-
+  public:
     // Data factory methods
     static TestLinearElasticity_Data* TetP1(void);
 
@@ -36,8 +35,7 @@ public:
 
     static TestLinearElasticity_Data* HexQ4(void);
 
-private:
-
+  private:
     UniformStrain3D(void); ///< Not implemented
 }; // UniformStrain3D
 

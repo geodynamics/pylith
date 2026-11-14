@@ -20,12 +20,11 @@ namespace pylith {
     namespace meshio {
         class TestDataWriterHDF5Points_Cases;
     }
-}
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterHDF5Points_Cases {
-public:
-
+  public:
     // Data factory methods
     static TestDataWriterHDF5Points_Data* Tri(void);
 
@@ -34,43 +33,55 @@ public:
     static TestDataWriterHDF5Points_Data* Tet(void);
 
     static TestDataWriterHDF5Points_Data* Hex(void);
-
 };
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestDataWriterHDF5Points::Tri::testOpenClose", "[DataWriter][HDF5][Points][Tri][testOpenClose]") {
+TEST_CASE("TestDataWriterHDF5Points::Tri::testOpenClose",
+          "[DataWriter][HDF5][Points][Tri][testOpenClose]") {
     pylith::meshio::TestDataWriterHDF5Points(pylith::meshio::TestDataWriterHDF5Points_Cases::Tri()).testOpenClose();
 }
-TEST_CASE("TestDataWriterHDF5Points::Tri::testWriteVertexField", "[DataWriter][HDF5][Points][Tri][testWriteVertexField]") {
-    pylith::meshio::TestDataWriterHDF5Points(pylith::meshio::TestDataWriterHDF5Points_Cases::Tri()).testWriteVertexField();
+TEST_CASE("TestDataWriterHDF5Points::Tri::testWriteVertexField",
+          "[DataWriter][HDF5][Points][Tri][testWriteVertexField]") {
+    pylith::meshio::TestDataWriterHDF5Points(pylith::meshio::TestDataWriterHDF5Points_Cases::Tri())
+        .testWriteVertexField();
 }
 
-TEST_CASE("TestDataWriterHDF5Points::Quad::testOpenClose", "[DataWriter][HDF5][Points][Quad][testOpenClose]") {
+TEST_CASE("TestDataWriterHDF5Points::Quad::testOpenClose",
+          "[DataWriter][HDF5][Points][Quad][testOpenClose]") {
     pylith::meshio::TestDataWriterHDF5Points(pylith::meshio::TestDataWriterHDF5Points_Cases::Quad()).testOpenClose();
 }
-TEST_CASE("TestDataWriterHDF5Points::Quad::testWriteVertexField", "[DataWriter][HDF5][Points][Quad][testWriteVertexField]") {
-    pylith::meshio::TestDataWriterHDF5Points(pylith::meshio::TestDataWriterHDF5Points_Cases::Quad()).testWriteVertexField();
+TEST_CASE("TestDataWriterHDF5Points::Quad::testWriteVertexField",
+          "[DataWriter][HDF5][Points][Quad][testWriteVertexField]") {
+    pylith::meshio::TestDataWriterHDF5Points(pylith::meshio::TestDataWriterHDF5Points_Cases::Quad())
+        .testWriteVertexField();
 }
 
-TEST_CASE("TestDataWriterHDF5Points::Tet::testOpenClose", "[DataWriter][HDF5][Points][Tet][testOpenClose]") {
+TEST_CASE("TestDataWriterHDF5Points::Tet::testOpenClose",
+          "[DataWriter][HDF5][Points][Tet][testOpenClose]") {
     pylith::meshio::TestDataWriterHDF5Points(pylith::meshio::TestDataWriterHDF5Points_Cases::Tet()).testOpenClose();
 }
-TEST_CASE("TestDataWriterHDF5Points::Tet::testWriteVertexField", "[DataWriter][HDF5][Points][Tet][testWriteVertexField]") {
-    pylith::meshio::TestDataWriterHDF5Points(pylith::meshio::TestDataWriterHDF5Points_Cases::Tet()).testWriteVertexField();
+TEST_CASE("TestDataWriterHDF5Points::Tet::testWriteVertexField",
+          "[DataWriter][HDF5][Points][Tet][testWriteVertexField]") {
+    pylith::meshio::TestDataWriterHDF5Points(pylith::meshio::TestDataWriterHDF5Points_Cases::Tet())
+        .testWriteVertexField();
 }
 
-TEST_CASE("TestDataWriterHDF5Points::Hex::testOpenClose", "[DataWriter][HDF5][Points][Hex][testOpenClose]") {
+TEST_CASE("TestDataWriterHDF5Points::Hex::testOpenClose",
+          "[DataWriter][HDF5][Points][Hex][testOpenClose]") {
     pylith::meshio::TestDataWriterHDF5Points(pylith::meshio::TestDataWriterHDF5Points_Cases::Hex()).testOpenClose();
 }
-TEST_CASE("TestDataWriterHDF5Points::Hex::testWriteVertexField", "[DataWriter][HDF5][Points][Hex][testWriteVertexField]") {
-    pylith::meshio::TestDataWriterHDF5Points(pylith::meshio::TestDataWriterHDF5Points_Cases::Hex()).testWriteVertexField();
+TEST_CASE("TestDataWriterHDF5Points::Hex::testWriteVertexField",
+          "[DataWriter][HDF5][Points][Hex][testWriteVertexField]") {
+    pylith::meshio::TestDataWriterHDF5Points(pylith::meshio::TestDataWriterHDF5Points_Cases::Hex())
+        .testWriteVertexField();
 }
 
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestDataWriterHDF5Points_Data*
 pylith::meshio::TestDataWriterHDF5Points_Cases::Tri(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterHDF5Points_Data* data = new TestDataWriterHDF5Points_Data();REQUIRE(data);
+    TestDataWriterHDF5Points_Data* data = new TestDataWriterHDF5Points_Data();
+    REQUIRE(data);
 
     data->opencloseFilename = "tri3_points.h5";
     data->vertexFilename = "tri3_points_vertex.h5";
@@ -85,7 +96,8 @@ pylith::meshio::TestDataWriterHDF5Points_Cases::Tri(void) {
 pylith::meshio::TestDataWriterHDF5Points_Data*
 pylith::meshio::TestDataWriterHDF5Points_Cases::Quad(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterHDF5Points_Data* data = new TestDataWriterHDF5Points_Data();REQUIRE(data);
+    TestDataWriterHDF5Points_Data* data = new TestDataWriterHDF5Points_Data();
+    REQUIRE(data);
 
     data->opencloseFilename = "quad4_points.h5";
     data->vertexFilename = "quad4_points_vertex.h5";
@@ -100,7 +112,8 @@ pylith::meshio::TestDataWriterHDF5Points_Cases::Quad(void) {
 pylith::meshio::TestDataWriterHDF5Points_Data*
 pylith::meshio::TestDataWriterHDF5Points_Cases::Tet(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterHDF5Points_Data* data = new TestDataWriterHDF5Points_Data();REQUIRE(data);
+    TestDataWriterHDF5Points_Data* data = new TestDataWriterHDF5Points_Data();
+    REQUIRE(data);
 
     data->opencloseFilename = "tet4_points.h5";
     data->vertexFilename = "tet4_points_vertex.h5";
@@ -115,7 +128,8 @@ pylith::meshio::TestDataWriterHDF5Points_Cases::Tet(void) {
 pylith::meshio::TestDataWriterHDF5Points_Data*
 pylith::meshio::TestDataWriterHDF5Points_Cases::Hex(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterHDF5Points_Data* data = new TestDataWriterHDF5Points_Data();REQUIRE(data);
+    TestDataWriterHDF5Points_Data* data = new TestDataWriterHDF5Points_Data();
+    REQUIRE(data);
 
     data->opencloseFilename = "hex8_points.h5";
     data->vertexFilename = "hex8_points_vertex.h5";

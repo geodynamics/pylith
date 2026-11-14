@@ -25,8 +25,7 @@
  */
 
 class pylith::fekernels::Tensor {
-public:
-
+  public:
     PylithReal xx;
     PylithReal yy;
     PylithReal zz;
@@ -40,7 +39,8 @@ public:
         zz(0.0),
         xy(0.0),
         yz(0.0),
-        xz(0.0) {}
+        xz(0.0) {
+    }
 
 
     static const TensorOps ops2D;
@@ -49,8 +49,8 @@ public:
 
 class pylith::fekernels::TensorOps {
     friend class Tensor;
-public:
 
+  public:
     typedef void (*fromfn_type_scalar)(const PylithReal,
                                        Tensor*);
     typedef void (*fromfn_type)(const PylithReal[],
@@ -66,35 +66,25 @@ public:
 
     const int vectorSize;
 
-    static inline
-    TensorOps _create2D(void) {
-        return TensorOps(_fromScalar2D,
-                         _fromVector2D,
-                         _fromTensor2D,
-                         _toVector2D,
-                         _toTensor2D,
-                         4);
+    static inline TensorOps
+    _create2D(void) {
+        return TensorOps(_fromScalar2D, _fromVector2D, _fromTensor2D, _toVector2D, _toTensor2D, 4);
     }
 
-    static inline
-    TensorOps _create3D(void) {
-        return TensorOps(_fromScalar3D,
-                         _fromVector3D,
-                         _fromTensor3D,
-                         _toVector3D,
-                         _toTensor3D,
-                         6);
+    static inline TensorOps
+    _create3D(void) {
+        return TensorOps(_fromScalar3D, _fromVector3D, _fromTensor3D, _toVector3D, _toTensor3D, 6);
     }
 
-    static inline
-    PylithReal scalarProduct(const Tensor& a,
-                             const Tensor& b) {
+    static inline PylithReal
+    scalarProduct(const Tensor& a,
+                  const Tensor& b) {
         return a.xx * b.xx + a.yy * b.yy + a.zz * b.zz + 2.0 * (a.xy * b.xy + a.yz * b.yz + a.xz * b.xz);
     }
 
-    static inline
-    void print(const char* name,
-               const Tensor& tensor) {
+    static inline void
+    print(const char* name,
+          const Tensor& tensor) {
         std::cout << name << ": "
                   << "xx=" << tensor.xx << ", "
                   << "yy=" << tensor.yy << ", "
@@ -104,26 +94,25 @@ public:
                   << "xz=" << tensor.xz << std::endl;
     }
 
-private:
-
-    inline
-    TensorOps(fromfn_type_scalar fromS,
-              fromfn_type fromV,
-              fromfn_type fromT,
-              tofn_type toV,
-              tofn_type toT,
-              const int vSize) :
+  private:
+    inline TensorOps(fromfn_type_scalar fromS,
+                     fromfn_type fromV,
+                     fromfn_type fromT,
+                     tofn_type toV,
+                     tofn_type toT,
+                     const int vSize) :
         fromScalar(fromS),
         fromVector(fromV),
         fromTensor(fromT),
         toVector(toV),
         toTensor(toT),
-        vectorSize(vSize) {}
+        vectorSize(vSize) {
+    }
 
 
-    static inline
-    void _fromScalar2D(const PylithReal scalar,
-                       Tensor* tensor) {
+    static inline void
+    _fromScalar2D(const PylithReal scalar,
+                  Tensor* tensor) {
         assert(scalar);
         assert(tensor);
         tensor->xx = scalar;
@@ -134,9 +123,9 @@ private:
         tensor->xz = 0.0;
     }
 
-    static inline
-    void _fromVector2D(const PylithReal vector2D[],
-                       Tensor* tensor) {
+    static inline void
+    _fromVector2D(const PylithReal vector2D[],
+                  Tensor* tensor) {
         assert(vector2D);
         assert(tensor);
         tensor->xx = vector2D[0];
@@ -147,9 +136,9 @@ private:
         tensor->xz = 0.0;
     }
 
-    static inline
-    void _fromTensor2D(const PylithReal tensor2D[],
-                       Tensor* tensor) {
+    static inline void
+    _fromTensor2D(const PylithReal tensor2D[],
+                  Tensor* tensor) {
         assert(tensor);
         assert(tensor2D);
         tensor->xx = tensor2D[0];
@@ -160,9 +149,9 @@ private:
         tensor->xz = 0.0;
     }
 
-    static inline
-    void _toVector2D(const Tensor& tensor,
-                     PylithReal vector2D[]) {
+    static inline void
+    _toVector2D(const Tensor& tensor,
+                PylithReal vector2D[]) {
         assert(vector2D);
         vector2D[0] = tensor.xx;
         vector2D[1] = tensor.yy;
@@ -170,9 +159,9 @@ private:
         vector2D[3] = tensor.xy;
     }
 
-    static inline
-    void _toTensor2D(const Tensor& tensor,
-                     PylithReal tensor2D[]) {
+    static inline void
+    _toTensor2D(const Tensor& tensor,
+                PylithReal tensor2D[]) {
         assert(tensor2D);
         tensor2D[0] = tensor.xx;
         tensor2D[1] = tensor.xy;
@@ -180,9 +169,9 @@ private:
         tensor2D[3] = tensor.yy;
     }
 
-    static inline
-    void _fromScalar3D(const PylithReal scalar,
-                       Tensor* tensor) {
+    static inline void
+    _fromScalar3D(const PylithReal scalar,
+                  Tensor* tensor) {
         assert(scalar);
         assert(tensor);
         tensor->xx = scalar;
@@ -193,9 +182,9 @@ private:
         tensor->xz = 0.0;
     }
 
-    static inline
-    void _fromVector3D(const PylithReal vector3D[],
-                       Tensor* tensor) {
+    static inline void
+    _fromVector3D(const PylithReal vector3D[],
+                  Tensor* tensor) {
         assert(vector3D);
         assert(tensor);
         tensor->xx = vector3D[0];
@@ -206,9 +195,9 @@ private:
         tensor->xz = vector3D[5];
     }
 
-    static inline
-    void _fromTensor3D(const PylithReal tensor3D[],
-                       Tensor* tensor) {
+    static inline void
+    _fromTensor3D(const PylithReal tensor3D[],
+                  Tensor* tensor) {
         assert(tensor);
         assert(tensor3D);
         tensor->xx = tensor3D[0];
@@ -219,9 +208,9 @@ private:
         tensor->xz = tensor3D[2];
     }
 
-    static inline
-    void _toVector3D(const Tensor& tensor,
-                     PylithReal vector3D[]) {
+    static inline void
+    _toVector3D(const Tensor& tensor,
+                PylithReal vector3D[]) {
         assert(vector3D);
         vector3D[0] = tensor.xx;
         vector3D[1] = tensor.yy;
@@ -231,9 +220,9 @@ private:
         vector3D[5] = tensor.xz;
     }
 
-    static inline
-    void _toTensor3D(const Tensor& tensor,
-                     PylithReal tensor3D[]) {
+    static inline void
+    _toTensor3D(const Tensor& tensor,
+                PylithReal tensor3D[]) {
         assert(tensor3D);
         tensor3D[0] = tensor.xx;
         tensor3D[1] = tensor.xy;

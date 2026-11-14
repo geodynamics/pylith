@@ -24,7 +24,7 @@ namespace pylith {
 
         class TestArray;
         class TSAdaptImpulse;
-    } // utils
-} // pylith
+    } // namespace utils
+} // namespace pylith
 
 // End of file

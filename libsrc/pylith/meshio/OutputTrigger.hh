@@ -19,8 +19,7 @@ class pylith::meshio::OutputTrigger : public pylith::utils::PyreComponent {
     friend class TestOutputTrigger; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     OutputTrigger(void);
 
@@ -39,21 +38,17 @@ public:
      * @param[in] tindex Inxex of current time step.
      * @returns True if output should be written at time t, false otherwise.
      */
-    virtual
-    bool shouldWrite(const PylithReal t,
-                     const PylithInt tindex) = 0;
+    virtual bool shouldWrite(const PylithReal t,
+                             const PylithInt tindex) = 0;
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     PylithReal _timeScale; ///< Time scale for nondimensionalizing time.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     OutputTrigger(const OutputTrigger&); ///< Not implemented.
     const OutputTrigger& operator=(const OutputTrigger&); ///< Not implemented
-
 };
 
 // OutputTrigger

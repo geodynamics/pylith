@@ -19,17 +19,15 @@ class pylith::topology::Stratum { // Stratum
     friend class TestStratum; // unit testing
 
     // PUBLIC ENUMS /////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Type of stratum (height or depth).
     enum StratumEnum {
-        HEIGHT=0,
-        DEPTH=1,
+        HEIGHT = 0,
+        DEPTH = 1,
     }; // StratumEnum
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /** Default constructor.
      *
      * @param dmMesh PETSc DM for finite-element mesh.
@@ -62,8 +60,7 @@ public:
     PetscInt size(void) const;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     PetscInt _begin; ///< Starting point.
     PetscInt _end; ///< End point.
 
@@ -75,8 +72,7 @@ class pylith::topology::StratumIS {
     friend class TestStratumIS; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /** Default constructor.
      *
      * @param dmMesh PETSc DM for finite-element mesh.
@@ -86,7 +82,7 @@ public:
     StratumIS(const PetscDM dmMesh,
               const char* label,
               const int id,
-              const bool includeOnlyCells=false);
+              const bool includeOnlyCells = false);
 
     /// Default destructor.
     ~StratumIS(void);
@@ -107,8 +103,7 @@ public:
     PetscInt size(void) const;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     PetscIS _indexSet; ///< PETSc index set.
     PetscInt _size; ///< Size of index set.
     const PetscInt* _points; ///< Array of points in index set.

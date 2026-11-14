@@ -14,7 +14,7 @@ namespace pylith {
         class Scales;
         class ElasticityScales;
         class PoroelasticityScales;
-    } // units
-} // spatialdata
+    } // namespace scales
+} // namespace pylith
 
 // End of file

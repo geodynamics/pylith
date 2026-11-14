@@ -17,8 +17,7 @@ namespace pylith {
 }
 
 class pylith::UniformStrain2D {
-public:
-
+  public:
     // Data factory methods
     static TestLinearElasticity_Data* TriP1(void);
 
@@ -38,8 +37,7 @@ public:
 
     static TestLinearElasticity_Data* QuadQ4(void);
 
-private:
-
+  private:
     UniformStrain2D(void); ///< Not implemented
 }; // UniformStrain2D
 

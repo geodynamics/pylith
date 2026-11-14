@@ -14,13 +14,12 @@
 namespace pylith {
     namespace bc {
         class DirichletDataQuad4;
-    } // pylith
-} // bc
+    } // namespace bc
+} // namespace pylith
 
 class pylith::bc::DirichletDataQuad4 : public DirichletData {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     DirichletDataQuad4(void);
 
@@ -28,8 +27,7 @@ public:
     ~DirichletDataQuad4(void);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     static const int _numDOF; ///< Number of degrees of freedom at each point.
 
     static const int _numFixedDOF; ///< Number of fixedDOF at constrained points.

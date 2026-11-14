@@ -13,13 +13,13 @@
 
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
-#include "pylith/topology/FieldBase.hh" // USES FieldBase::SpaceDim
 #include "pylith/feassemble/feassemblefwd.hh" // USES AuxiliaryFactory
 #include "pylith/petsc/petsc_types.h" // HASA PetscVec
+#include "pylith/topology/FieldBase.hh" // USES FieldBase::SpaceDim
 
+#include "pylith/scales/scalesfwd.hh" // USES Scales
 #include "spatialdata/geocoords/geocoordsfwd.hh" // USES CoordSys
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
-#include "pylith/scales/scalesfwd.hh" // USES Scales
 
 // KinSrc -------------------------------------------------------------
 /** @brief Kinematic earthquake source.
@@ -34,15 +34,13 @@ class pylith::faults::KinSrc : public pylith::utils::PyreComponent {
     friend class TestKinSrc; // unit testing
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     static const int GET_SLIP;
     static const int GET_SLIP_RATE;
     static const int GET_SLIP_ACC;
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     KinSrc(void);
 
@@ -50,8 +48,7 @@ public:
     virtual ~KinSrc(void);
 
     /// Deallocate PETSc and local data structures.
-    virtual
-    void deallocate(void);
+    virtual void deallocate(void);
 
     /** Set origin time for earthquake source.
      *
@@ -95,16 +92,14 @@ public:
      * @param[in] timeScale Time scale for nondimensionalization.
      * @param[in] bitSlipSubfields Slip subfields to compute.
      */
-    virtual
-    void getSlipSubfields(PetscVec slipLocalVec,
-                          pylith::topology::Field* faultAuxiliaryField,
-                          const PylithScalar t,
-                          const PylithScalar timeScale,
-                          const int bitSlipSubfields);
+    virtual void getSlipSubfields(PetscVec slipLocalVec,
+                                  pylith::topology::Field* faultAuxiliaryField,
+                                  const PylithScalar t,
+                                  const PylithScalar timeScale,
+                                  const int bitSlipSubfields);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Setup auxiliary subfields (discretization and query fns).
      *
      * Create subfields in auxiliary fields (includes name of the field,
@@ -118,9 +113,8 @@ protected:
      * @param[in] scales Scales for nondimensionalizing values.
      * @param[in] cs Coordinate system for problem.
      */
-    virtual
-    void _auxiliaryFieldSetup(const pylith::scales::Scales& scales,
-                              const spatialdata::geocoords::CoordSys* cs) = 0;
+    virtual void _auxiliaryFieldSetup(const pylith::scales::Scales& scales,
+                                      const spatialdata::geocoords::CoordSys* cs) = 0;
 
     /** Set constants used in finite-element integrations.
      *
@@ -129,8 +123,7 @@ protected:
     void _setFEConstants(const pylith::topology::Field& auxField) const;
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     pylith::faults::KinSrcAuxiliaryFactory* _auxiliaryFactory; ///< Factory for auxiliary subfields.
     PetscPointFn* _slipFnKernel; ///< Kernel for slip time function.
     PetscPointFn* _slipRateFnKernel; ///< Kernel for slip rate time function.
@@ -138,13 +131,11 @@ protected:
     pylith::topology::Field* _auxiliaryField; ///< Auxiliary field for this integrator.
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     PylithReal _originTime; ///< Origin time for earthquake source
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     KinSrc(const KinSrc&); ///< Not implemented
     const KinSrc& operator=(const KinSrc&); ///< Not implemented
 

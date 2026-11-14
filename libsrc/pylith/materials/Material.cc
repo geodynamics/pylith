@@ -19,8 +19,8 @@
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::materials::Material::Material(void) :
-    _gravityField(NULL) {}
+pylith::materials::Material::Material(void) : _gravityField(NULL) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -55,7 +55,8 @@ pylith::materials::Material::setGravityField(spatialdata::spatialdb::GravityFiel
 // ------------------------------------------------------------------------------------------------
 // Set body force kernels (intended for use in MMS tests).
 void
-pylith::materials::Material::setMMSBodyForceKernels(const std::vector<pylith::feassemble::IntegratorDomain::ResidualKernels>& kernels) {
+pylith::materials::Material::setMMSBodyForceKernels(
+    const std::vector<pylith::feassemble::IntegratorDomain::ResidualKernels>& kernels) {
     _mmsBodyForceKernels = kernels;
 }
 
@@ -65,7 +66,8 @@ pylith::materials::Material::setMMSBodyForceKernels(const std::vector<pylith::fe
 std::vector<pylith::feassemble::Constraint*>
 pylith::materials::Material::createConstraints(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createConstraints(solution="<<solution.getLabel()<<") empty method");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "createConstraints(solution=" << solution.getLabel() << ") empty method");
     std::vector<pylith::feassemble::Constraint*> constraintArray;
 
     PYLITH_METHOD_RETURN(constraintArray);
@@ -87,7 +89,9 @@ std::vector<pylith::materials::Material::InterfaceResidualKernels>
 pylith::materials::Material::getInterfaceKernelsResidual(const pylith::topology::Field& solution,
                                                          pylith::feassemble::IntegratorInterface::FaceEnum face) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getInterfaceResidualKernels(solution="<<solution.getLabel()<<", face="<<face<<") empty method");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "getInterfaceResidualKernels(solution=" << solution.getLabel() << ", face=" << face
+                                                                   << ") empty method");
     std::vector<InterfaceResidualKernels> kernels;
 
     PYLITH_METHOD_RETURN(kernels);
@@ -100,7 +104,9 @@ std::vector<pylith::materials::Material::InterfaceJacobianKernels>
 pylith::materials::Material::getInterfaceKernelsJacobian(const pylith::topology::Field& solution,
                                                          pylith::feassemble::IntegratorInterface::FaceEnum face) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getInterfaceJacobianKernels(solution="<<solution.getLabel()<<", face="<<face<<") empty method");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "getInterfaceJacobianKernels(solution=" << solution.getLabel() << ", face=" << face
+                                                                   << ") empty method");
     std::vector<InterfaceJacobianKernels> kernels;
 
     PYLITH_METHOD_RETURN(kernels);

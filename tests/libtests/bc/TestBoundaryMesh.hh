@@ -25,8 +25,8 @@ namespace pylith {
         class TestBoundaryMesh;
 
         class TestBoundaryMesh_Data; // test data
-    } // bc
-} // pylith
+    } // namespace bc
+} // namespace pylith
 
 // ======================================================================
 /// C++ unit testing for BoundaryMesh.
@@ -40,8 +40,7 @@ class pylith::bc::TestBoundaryMesh : public CppUnit::TestFixture {
     CPPUNIT_TEST_SUITE_END();
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Setup testing data.
     void setUp(void);
 
@@ -55,8 +54,7 @@ public:
     void testSubmeshFault(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected:
-
+  protected:
     TestBoundaryMesh_Data* _data; ///< Data for testing
 
 }; // class TestBoundaryMesh
@@ -64,8 +62,7 @@ protected:
 // ======================================================================
 class pylith::bc::TestBoundaryMesh_Data {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestBoundaryMesh_Data(void);
 
@@ -73,8 +70,7 @@ public:
     ~TestBoundaryMesh_Data(void);
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     const char* filename; ///< Name of file with input mesh.
     const char* bcLabel; ///< Name of group of vertices for bc.
     const char* faultLabel; ///< Name of group of vertices for fault.

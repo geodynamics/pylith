@@ -18,30 +18,26 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
-#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
-#include "pylith/utils/journals.hh" // USES journals
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/petsc/EventLogger.hh" // USES EventLogger
+#include "pylith/utils/journals.hh" // USES journals
 
 namespace pylith {
     namespace topology {
         class _FieldQuery {
-public:
-
+          public:
             /** Find indices of spatial database values to use for subfield.
              *
              * Allocate buffer for query values.
              */
-            static
-            void findQueryIndices(FieldQuery::DBQueryContext* context,
-                                  const pylith::string_vector& valuesForSubfield);
+            static void findQueryIndices(FieldQuery::DBQueryContext* context,
+                                         const pylith::string_vector& valuesForSubfield);
 
             // Logging events
             class Events {
-public:
-
-                static
-                void init(void);
+              public:
+                static void init(void);
 
                 static pylith::petsc::EventLogger logger;
                 static PetscLogEvent queryDB;
@@ -50,8 +46,8 @@ public:
             };
 
         }; // _FieldQuery
-    } // topology
-} // pylith
+    } // namespace topology
+} // namespace pylith
 pylith::petsc::EventLogger pylith::topology::_FieldQuery::Events::logger;
 PetscLogEvent pylith::topology::_FieldQuery::Events::queryDB;
 PetscLogEvent pylith::topology::_FieldQuery::Events::queryDBLabel;
@@ -95,9 +91,12 @@ void
 pylith::topology::FieldQuery::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete[] _functions;_functions = NULL;
-    delete[] _contexts;_contexts = NULL;
-    delete[] _contextPtrs;_contextPtrs = NULL;
+    delete[] _functions;
+    _functions = NULL;
+    delete[] _contexts;
+    _contexts = NULL;
+    delete[] _contextPtrs;
+    _contextPtrs = NULL;
 
     _subfieldQueries.clear();
 
@@ -177,9 +176,12 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
     // context.
     const Field::subfields_type& subfields = _field._subfields;
     const size_t size = subfields.size();
-    delete[] _functions;_functions = (size > 0) ? new queryfn_type[size] : NULL;
-    delete[] _contexts;_contexts = (size > 0) ? new DBQueryContext[size] : NULL;
-    delete[] _contextPtrs;_contextPtrs = (size > 0) ? new DBQueryContext*[size] : NULL;
+    delete[] _functions;
+    _functions = (size > 0) ? new queryfn_type[size] : NULL;
+    delete[] _contexts;
+    _contexts = (size > 0) ? new DBQueryContext[size] : NULL;
+    delete[] _contextPtrs;
+    _contextPtrs = (size > 0) ? new DBQueryContext*[size] : NULL;
 
     for (Field::subfields_type::const_iterator iter = subfields.begin(); iter != subfields.end(); ++iter) {
         const std::string& name = iter->first;
@@ -223,7 +225,11 @@ pylith::topology::FieldQuery::queryDB(void) {
     pylith::petsc::EventLogger::Scope logScope(_FieldQuery::Events::queryDB);
 
     PetscReal dummyTime = 0.0;
-    PylithCallPetsc(DMProjectFunctionLocal(_field.getDM(), dummyTime, _functions, (void**)_contextPtrs, INSERT_ALL_VALUES,
+    PylithCallPetsc(DMProjectFunctionLocal(_field.getDM(),
+                                           dummyTime,
+                                           _functions,
+                                           (void**)_contextPtrs,
+                                           INSERT_ALL_VALUES,
                                            _field.getLocalVector()));
 
     PYLITH_METHOD_END;
@@ -249,10 +255,19 @@ pylith::topology::FieldQuery::queryDBLabel(const char* labelName,
     } // for
 
     PetscDMLabel dmLabel = NULL;
-    PylithCallPetsc(DMGetLabel(_field.getDM(), labelName, &dmLabel));assert(dmLabel);
-    PylithCallPetsc(DMProjectFunctionLabelLocal(_field.getDM(), dummyTime, dmLabel, 1, &labelValue,
-                                                numSubfields, &subfieldIndices[0], _functions, (void**)_contextPtrs,
-                                                INSERT_ALL_VALUES, _field.getLocalVector()));
+    PylithCallPetsc(DMGetLabel(_field.getDM(), labelName, &dmLabel));
+    assert(dmLabel);
+    PylithCallPetsc(DMProjectFunctionLabelLocal(_field.getDM(),
+                                                dummyTime,
+                                                dmLabel,
+                                                1,
+                                                &labelValue,
+                                                numSubfields,
+                                                &subfieldIndices[0],
+                                                _functions,
+                                                (void**)_contextPtrs,
+                                                INSERT_ALL_VALUES,
+                                                _field.getLocalVector()));
 
     PYLITH_METHOD_END;
 } // queryDBLabel
@@ -264,9 +279,12 @@ void
 pylith::topology::FieldQuery::closeDB(spatialdata::spatialdb::SpatialDB* db) {
     PYLITH_METHOD_BEGIN;
 
-    delete[] _functions;_functions = NULL;
-    delete[] _contexts;_contexts = NULL;
-    delete[] _contextPtrs;_contextPtrs = NULL;
+    delete[] _functions;
+    _functions = NULL;
+    delete[] _contexts;
+    _contexts = NULL;
+    delete[] _contextPtrs;
+    _contextPtrs = NULL;
 
     // Close spatial database.
     if (db) {
@@ -292,7 +310,8 @@ pylith::topology::FieldQuery::queryDBPointFn(PylithInt dim,
     assert(values);
     assert(context);
 
-    pylith::topology::FieldQuery::DBQueryContext* queryctx = (pylith::topology::FieldQuery::DBQueryContext*)context;assert(queryctx);
+    pylith::topology::FieldQuery::DBQueryContext* queryctx = (pylith::topology::FieldQuery::DBQueryContext*)context;
+    assert(queryctx);
     if (!queryctx->db) {
         PYLITH_METHOD_RETURN(0);
     } // if
@@ -306,7 +325,8 @@ pylith::topology::FieldQuery::queryDBPointFn(PylithInt dim,
 
     // Query database.
     assert(queryctx->cs);
-    const int err = queryctx->db->query(&queryctx->queryValues[0], queryctx->queryValues.size(), xDim, dim, queryctx->cs);
+    const int err =
+        queryctx->db->query(&queryctx->queryValues[0], queryctx->queryValues.size(), xDim, dim, queryctx->cs);
     if (err) {
         std::ostringstream msg;
         msg << "Could not find values for " << queryctx->description << " at (";
@@ -319,15 +339,15 @@ pylith::topology::FieldQuery::queryDBPointFn(PylithInt dim,
 
     // Convert database values to subfield values if converter function specified.
     if (queryctx->converter) {
-        const std::string& invalidMsg = queryctx->converter(values, numValues, queryctx->queryValues, queryctx->queryIndices);
+        const std::string& invalidMsg =
+            queryctx->converter(values, numValues, queryctx->queryValues, queryctx->queryIndices);
         if (invalidMsg.length() > 0) {
             std::ostringstream msg;
             msg << "Error converting spatial database values for " << queryctx->description << " at (";
             for (int i = 0; i < dim; ++i) {
                 msg << "  " << xDim[i];
             }
-            msg << ") in spatial database '" << queryctx->db->getDescription() << "'. "
-                << invalidMsg;
+            msg << ") in spatial database '" << queryctx->db->getDescription() << "'. " << invalidMsg;
             PYLITH_ERROR_RETURN(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
         }
     } else {
@@ -339,11 +359,11 @@ pylith::topology::FieldQuery::queryDBPointFn(PylithInt dim,
     // Validate subfield values if validator function was specified.
     if (queryctx->validator) {
         for (PylithInt i = 0; i < numValues; ++i) {
-            const std::string& invalidMsg = queryctx->validator(values[i], queryctx->valueScale, queryctx->validatorTolerance);
+            const std::string& invalidMsg =
+                queryctx->validator(values[i], queryctx->valueScale, queryctx->validatorTolerance);
             if (invalidMsg.length() > 0) {
                 std::ostringstream msg;
-                msg << "Found invalid value (" << values[i] << ") for " << queryctx->description
-                    << " at location (";
+                msg << "Found invalid value (" << values[i] << ") for " << queryctx->description << " at location (";
                 for (int i = 0; i < dim; ++i) {
                     msg << "  " << xDim[i];
                 } // for
@@ -455,10 +475,11 @@ pylith::topology::_FieldQuery::findQueryIndices(FieldQuery::DBQueryContext* cont
         if (!foundName) {
             std::ostringstream msg;
             if (0 == numDBValues) {
-                delete dbValues;dbValues = NULL;
+                delete dbValues;
+                dbValues = NULL;
                 PYLITH_ERROR(pylith::exceptions::InternalLogicError,
-                             "No values found in spatial database '"
-                             << context->db->getDescription() << "'. Did you forget to open the database?");
+                             "No values found in spatial database '" << context->db->getDescription()
+                                                                     << "'. Did you forget to open the database?");
             } // if
             msg << "Could not find value '" << valuesForSubfield[iValue] << "' in spatial database '"
                 << context->db->getDescription() << "'. Available values are:";
@@ -466,11 +487,13 @@ pylith::topology::_FieldQuery::findQueryIndices(FieldQuery::DBQueryContext* cont
                 msg << "\n  " << dbValues[iValueDB];
             } // for
             msg << "\n";
-            delete dbValues;dbValues = NULL;
+            delete dbValues;
+            dbValues = NULL;
             PYLITH_ERROR(pylith::exceptions::ValueError, msg.str());
         } // if
     } // for
-    delete[] dbValues;dbValues = NULL;
+    delete[] dbValues;
+    dbValues = NULL;
 
     context->queryValues.resize(numDBValues);
 } // findQueryIndices

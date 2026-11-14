@@ -20,8 +20,7 @@
 
 class pylith::testing::MMSTest : public pylith::utils::GenericComponent {
     // PUBLIC TYPEDEFS ////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     typedef PetscErrorCode (*solution_fn)(PetscInt /* dim */,
                                           PetscReal /* t */,
                                           const PetscReal /* x */[],
@@ -30,8 +29,7 @@ public:
                                           void* /* ctx */);
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     MMSTest(void);
 
@@ -57,8 +55,7 @@ public:
     void testJacobianFiniteDiff(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Initialize objects for test.
     virtual void _initialize(void);
 
@@ -66,8 +63,7 @@ protected:
     virtual void _setExactSolution(void) = 0;
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     pylith::problems::TimeDependent* _problem; ///< Time-dependent problem.
     pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
     pylith::topology::Field* _solution; ///< Solution field.

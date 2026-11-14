@@ -20,100 +20,116 @@
 
 namespace pylith {
     class _UniformStrain3D;
-} // pylith
+} // namespace pylith
 
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::_UniformStrain3D {
-private:
-
+  private:
     // Density
-    static double density(const double x,
-                          const double y,
-                          const double z) {
+    static double
+    density(const double x,
+            const double y,
+            const double z) {
         return 2500.0;
     } // density
 
-    static const char* density_units(void) {
+    static const char*
+    density_units(void) {
         return "kg/m**3";
     } // density_units
 
     // Vs
-    static double vs(const double x,
-                     const double y,
-                     const double z) {
+    static double
+    vs(const double x,
+       const double y,
+       const double z) {
         return 3000.0;
     } // vs
 
-    static const char* vs_units(void) {
+    static const char*
+    vs_units(void) {
         return "m/s";
     } // vs_units
 
     // Vp
-    static double vp(const double x,
-                     const double y,
-                     const double z) {
-        return sqrt(3.0)*vs(x,y,z);
+    static double
+    vp(const double x,
+       const double y,
+       const double z) {
+        return sqrt(3.0) * vs(x, y, z);
     } // vp
 
-    static const char* vp_units(void) {
+    static const char*
+    vp_units(void) {
         return "m/s";
     } // vp_units
 
     // Solution subfields.
 
-    static double strain_xx(void) {
+    static double
+    strain_xx(void) {
         return 0.1;
     } // strain_xx
 
-    static double strain_yy(void) {
+    static double
+    strain_yy(void) {
         return 0.25;
     } // strain_yy
 
-    static double strain_zz(void) {
+    static double
+    strain_zz(void) {
         return -0.05;
     } // strain_zz
 
-    static double strain_xy(void) {
+    static double
+    strain_xy(void) {
         return 0.3;
     } // strain_xy
 
-    static double strain_yz(void) {
+    static double
+    strain_yz(void) {
         return PETSC_SUCCESS;
     } // strain_yz
 
-    static double strain_xz(void) {
+    static double
+    strain_xz(void) {
         return -0.08;
     } // strain_xz
 
     // Displacement
-    static double disp_x(const double x,
-                         const double y,
-                         const double z) {
-        return strain_xx()*x + strain_xy()*y + strain_xz()*z;
+    static double
+    disp_x(const double x,
+           const double y,
+           const double z) {
+        return strain_xx() * x + strain_xy() * y + strain_xz() * z;
     } // disp_x
 
-    static double disp_y(const double x,
-                         const double y,
-                         const double z) {
-        return strain_xy()*x + strain_yy()*y * strain_yz()*z;
+    static double
+    disp_y(const double x,
+           const double y,
+           const double z) {
+        return strain_xy() * x + strain_yy() * y * strain_yz() * z;
     } // disp_y
 
-    static double disp_z(const double x,
-                         const double y,
-                         const double z) {
-        return strain_xz()*x + strain_yz()*y * strain_zz()*z;
+    static double
+    disp_z(const double x,
+           const double y,
+           const double z) {
+        return strain_xz() * x + strain_yz() * y * strain_zz() * z;
     } // disp_z
 
-    static const char* disp_units(void) {
+    static const char*
+    disp_units(void) {
         return "m";
     } // disp_units
 
-    static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
-                                          PetscReal t,
-                                          const PetscReal x[],
-                                          PetscInt numComponents,
-                                          PetscScalar* s,
-                                          void* context) {
+    static PetscErrorCode
+    solnkernel_disp(PetscInt spaceDim,
+                    PetscReal t,
+                    const PetscReal x[],
+                    PetscInt numComponents,
+                    PetscScalar* s,
+                    void* context) {
         REQUIRE(3 == spaceDim);
         REQUIRE(x);
         REQUIRE(3 == numComponents);
@@ -126,11 +142,11 @@ private:
         return PETSC_SUCCESS;
     } // solnkernel_disp
 
-public:
-
-    static
-    TestLinearElasticity_Data* createData(void) {
-        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();REQUIRE(data);
+  public:
+    static TestLinearElasticity_Data*
+    createData(void) {
+        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();
+        REQUIRE(data);
 
         data->journalName = "UniformStrain3D";
 
@@ -165,10 +181,11 @@ public:
         data->material.setName("material-id=24");
         data->material.setLabelValue(24);
 
-        static const PylithInt constrainedDOF[3] = { 0, 1, 2 };
+        static const PylithInt constrainedDOF[3] = {0, 1, 2};
         static const PylithInt numConstrained = 3;
         data->bcs.resize(1);
-        pylith::bc::DirichletUserFn*bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
+        pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
+        REQUIRE(bc);
         bc->setSubfieldName("displacement");
         bc->setLabelName("boundary");
         bc->setLabelValue(1);
@@ -190,7 +207,8 @@ public:
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain3D::TetP1(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tet.msh";
 
@@ -207,7 +225,8 @@ pylith::UniformStrain3D::TetP1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain3D::TetP2(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tet.msh";
 
@@ -231,7 +250,8 @@ pylith::UniformStrain3D::TetP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain3D::TetP3(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tet.msh";
 
@@ -255,7 +275,8 @@ pylith::UniformStrain3D::TetP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain3D::TetP4(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tet.msh";
 
@@ -279,7 +300,8 @@ pylith::UniformStrain3D::TetP4(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain3D::HexQ1(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/hex.msh";
 
@@ -296,7 +318,8 @@ pylith::UniformStrain3D::HexQ1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain3D::HexQ2(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/hex.msh";
 
@@ -320,7 +343,8 @@ pylith::UniformStrain3D::HexQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain3D::HexQ3(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/hex.msh";
 
@@ -344,7 +368,8 @@ pylith::UniformStrain3D::HexQ3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain3D::HexQ4(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/hex.msh";
 

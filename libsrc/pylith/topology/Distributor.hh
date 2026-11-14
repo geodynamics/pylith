@@ -13,8 +13,8 @@
 
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
-#include "pylith/meshio/meshiofwd.hh" // USES DataWriter
 #include "pylith/faults/faultsfwd.hh" // USES FaultCohesive
+#include "pylith/meshio/meshiofwd.hh" // USES DataWriter
 #include "pylith/petsc/petsc_types.h" // USES PetscDM
 
 #include <vector> // USES std::vector
@@ -23,8 +23,7 @@ class pylith::topology::Distributor : public pylith::utils::PyreComponent {
     friend class TestDistributor; // unit testing
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     Distributor(void);
 
@@ -68,21 +67,18 @@ public:
      *
      * @returns PETSc error code (0==success).
      */
-    static
-    PetscErrorCode distributeOverlap(PetscDM* dmOverlap,
-                                     PetscDM dmMesh,
-                                     const std::vector<pylith::faults::FaultCohesive*>& faults);
+    static PetscErrorCode distributeOverlap(PetscDM* dmOverlap,
+                                            PetscDM dmMesh,
+                                            const std::vector<pylith::faults::FaultCohesive*>& faults);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::meshio::DataWriter* _writer; ///< Data writer for partition.
     std::string _partitioner; ///< Name of mesh partitioner
     bool _useEdgeWeighting; ///< Use edge weighting in partitioning.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     Distributor(const Distributor&); ///< Not implemented
     const Distributor& operator=(const Distributor&); ///< Not implemented
 

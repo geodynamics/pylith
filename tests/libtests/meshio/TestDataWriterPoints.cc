@@ -15,16 +15,16 @@
 #include "FieldFactory.hh" // USES FieldFactory
 #include "tests/src/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
-#include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
 #include "pylith/meshio/MeshBuilder.hh" // USES MeshBuilder
-#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
-#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
 #include "catch2/catch_test_macros.hpp"
 
@@ -32,24 +32,22 @@
 namespace pylith {
     namespace meshio {
         class _TestDataWriterPoints {
-public:
-
+          public:
             static PetscErrorCode analyticalFn(PetscInt spaceDim,
                                                PetscReal t,
                                                const PetscReal x[],
                                                PetscInt numComponents,
                                                PetscScalar* values,
                                                void* context);
-
         };
-    }
-}
+    } // namespace meshio
+} // namespace pylith
 
 
 // ------------------------------------------------------------------------------------------------
 // Constructor.
-pylith::meshio::TestDataWriterPoints::TestDataWriterPoints(void) :
-    _pointMesh(nullptr) {}
+pylith::meshio::TestDataWriterPoints::TestDataWriterPoints(void) : _pointMesh(nullptr) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -57,7 +55,8 @@ pylith::meshio::TestDataWriterPoints::TestDataWriterPoints(void) :
 pylith::meshio::TestDataWriterPoints::~TestDataWriterPoints(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _pointMesh;_pointMesh = nullptr;
+    delete _pointMesh;
+    _pointMesh = nullptr;
 
     PYLITH_METHOD_END;
 } // destructor
@@ -79,10 +78,13 @@ pylith::meshio::TestDataWriterPoints::setDataTri(TestDataWriterPoints_Data* data
 
     static const size_t numPoints = 3;
     data->numPoints = numPoints;
-    static const PylithReal points[numPoints*2] = {
-        -0.3333333, 0.0,
-        0.0000001, 0.0,
-        0.9999999, 0.0,
+    static const PylithReal points[numPoints * 2] = {
+        -0.3333333,
+        0.0,
+        0.0000001,
+        0.0,
+        0.9999999,
+        0.0,
     };
     data->points = const_cast<PylithReal*>(points);
     data->names = pylith::string_vector({"ZZ.A", "ZZ.B", "ZZ.C"});
@@ -106,10 +108,13 @@ pylith::meshio::TestDataWriterPoints::setDataQuad(TestDataWriterPoints_Data* dat
 
     static const size_t numPoints = 3;
     data->numPoints = numPoints;
-    static const PylithReal points[numPoints*2] = {
-        -0.5, 0.0,
-        0.00000001, 0.0,
-        0.99999999, -0.99999999,
+    static const PylithReal points[numPoints * 2] = {
+        -0.5,
+        0.0,
+        0.00000001,
+        0.0,
+        0.99999999,
+        -0.99999999,
     };
     data->points = const_cast<PylithReal*>(points);
     data->names = pylith::string_vector({"ZZ.A", "ZZ.B", "ZZ.C"});
@@ -133,11 +138,19 @@ pylith::meshio::TestDataWriterPoints::setDataTet(TestDataWriterPoints_Data* data
 
     static const size_t numPoints = 4;
     data->numPoints = numPoints;
-    static const PylithReal points[numPoints*3] = {
-        -0.33333333, 0.0, 0.33333333,
-        +0.00000001, 0.0, 0.33333333,
-        +0.00000001, 0.0, 0.00000001,
-        0.0, -0.99999999, 0.00000001,
+    static const PylithReal points[numPoints * 3] = {
+        -0.33333333,
+        0.0,
+        0.33333333,
+        +0.00000001,
+        0.0,
+        0.33333333,
+        +0.00000001,
+        0.0,
+        0.00000001,
+        0.0,
+        -0.99999999,
+        0.00000001,
     };
     data->points = const_cast<PylithReal*>(points);
     data->names = pylith::string_vector({"ZZ.A", "ZZ.B", "ZZ.C", "ZZ.DD"});
@@ -161,11 +174,19 @@ pylith::meshio::TestDataWriterPoints::setDataHex(TestDataWriterPoints_Data* data
 
     static const size_t numPoints = 4;
     data->numPoints = numPoints;
-    static const PylithReal points[numPoints*3] = {
-        -0.5, 0.0, 0.5,
-        -0.00000001, 0.0, 0.0,
-        -0.00000001, 0.0, 0.99999999,
-        0.99999999, 0.99999999, -0.99999999,
+    static const PylithReal points[numPoints * 3] = {
+        -0.5,
+        0.0,
+        0.5,
+        -0.00000001,
+        0.0,
+        0.0,
+        -0.00000001,
+        0.0,
+        0.99999999,
+        0.99999999,
+        0.99999999,
+        -0.99999999,
     };
     data->points = const_cast<PylithReal*>(points);
     data->names = pylith::string_vector({"ZZ.A", "ZZ.B", "ZZ.C", "ZZ.DD"});
@@ -180,13 +201,19 @@ void
 pylith::meshio::TestDataWriterPoints::_initialize(void) {
     PYLITH_METHOD_BEGIN;
 
-    const TestDataWriterPoints_Data* data = _getData();REQUIRE(data);
+    const TestDataWriterPoints_Data* data = _getData();
+    REQUIRE(data);
 
     spatialdata::geocoords::CSCart cs;
     cs.setSpaceDim(data->spaceDim);
 
-    delete _pointMesh;_pointMesh = pylith::topology::MeshOps::createFromPoints(
-        data->points, data->numPoints, &cs, data->lengthScale, PETSC_COMM_WORLD, "points");
+    delete _pointMesh;
+    _pointMesh = pylith::topology::MeshOps::createFromPoints(data->points,
+                                                             data->numPoints,
+                                                             &cs,
+                                                             data->lengthScale,
+                                                             PETSC_COMM_WORLD,
+                                                             "points");
 
     pylith::scales::Scales scales;
     scales.setLengthScale(data->lengthScale);
@@ -203,7 +230,8 @@ pylith::meshio::TestDataWriterPoints::_createVertexField(pylith::topology::Field
     PYLITH_METHOD_BEGIN;
     REQUIRE(field);
 
-    const TestDataWriterPoints_Data* data = _getData();REQUIRE(data);
+    const TestDataWriterPoints_Data* data = _getData();
+    REQUIRE(data);
 
     FieldFactory factory(*field);
     factory.addScalar(data->vertexDiscretization);
@@ -216,7 +244,8 @@ pylith::meshio::TestDataWriterPoints::_createVertexField(pylith::topology::Field
     field->allocate();
 
     pylith::topology::VecVisitorMesh fieldVisitor(*field);
-    PylithScalar* fieldArray = fieldVisitor.localArray();REQUIRE(fieldArray);
+    PylithScalar* fieldArray = fieldVisitor.localArray();
+    REQUIRE(fieldArray);
     const PylithInt fieldSize = field->getStorageSize();
     for (PylithInt i = 0; i < fieldSize; ++i) {
         fieldArray[i] = 1.1 + PetscScalar(i);
@@ -233,12 +262,14 @@ pylith::meshio::TestDataWriterPoints::_createVertexField(pylith::topology::Field
 // Constructor
 pylith::meshio::TestDataWriterPoints_Data::TestDataWriterPoints_Data(void) :
     numPoints(0),
-    points(NULL) {}
+    points(NULL) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
 // Destructor
-pylith::meshio::TestDataWriterPoints_Data::~TestDataWriterPoints_Data(void) {}
+pylith::meshio::TestDataWriterPoints_Data::~TestDataWriterPoints_Data(void) {
+}
 
 
 // End of file

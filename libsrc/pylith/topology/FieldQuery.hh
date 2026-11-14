@@ -11,12 +11,12 @@
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
-#include "pylith/topology/FieldBase.hh" // HASA validatorfn_type
 #include "pylith/testing/testingfwd.hh" // USES FieldTester
+#include "pylith/topology/FieldBase.hh" // HASA validatorfn_type
 #include "pylith/utils/utilsfwd.hh" // USES EventLogger
 
-#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
 #include "spatialdata/geocoords/geocoordsfwd.hh" // USES CoordSys
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
 
 #include <map> // HOLDSA std::map
 #include <string> // HASA std::string
@@ -24,8 +24,8 @@
 namespace pylith {
     namespace feassemble {
         class TestAuxiliaryFactory;
-    } // feassemble
-} // pylith
+    } // namespace feassemble
+} // namespace pylith
 
 class pylith::topology::FieldQuery {
     friend class _FieldQuery;
@@ -34,13 +34,11 @@ class pylith::topology::FieldQuery {
     friend class pylith::feassemble::TestAuxiliaryFactory; // unit testing
 
     // PUBLIC TYPEDEF ///////////////////////////////////////////////////////
-public:
-
+  public:
     static const PylithReal SCALE_TOLERANCE;
 
     // PUBLIC TYPEDEF ///////////////////////////////////////////////////////
-public:
-
+  public:
     /** Function prototype for converter functions.
      *
      * @param[out] values Values for subfield.
@@ -54,8 +52,7 @@ public:
                                           const pylith::int_array);
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /** Default constructor.
      *
      * @param field Field associated with query.
@@ -82,10 +79,10 @@ public:
      * @param[in] db Spatial database to query (optional).
      */
     void setQuery(const char* subfield,
-                  const char* queryValues[]=NULL,
-                  const size_t numValues=0,
-                  convertfn_type converter=NULL,
-                  spatialdata::spatialdb::SpatialDB* db=NULL);
+                  const char* queryValues[] = NULL,
+                  const size_t numValues = 0,
+                  convertfn_type converter = NULL,
+                  spatialdata::spatialdb::SpatialDB* db = NULL);
 
     /// Initialize query with default query information.
     void initializeWithDefaultQueries(void);
@@ -108,7 +105,7 @@ public:
      * @param[in] value Value of label.
      */
     void queryDBLabel(const char* name,
-                      const PylithInt value=1);
+                      const PylithInt value = 1);
 
     /** Close spatial database query for setting values in field.
      *
@@ -128,13 +125,12 @@ public:
      * @param[in] context Query context.
      * @returns PETSc error code (0 for success).
      */
-    static
-    PetscErrorCode queryDBPointFn(PylithInt dim,
-                                  PylithReal t,
-                                  const PylithReal x[],
-                                  PylithInt numValues,
-                                  PylithScalar* values,
-                                  void* context);
+    static PetscErrorCode queryDBPointFn(PylithInt dim,
+                                         PylithReal t,
+                                         const PylithReal x[],
+                                         PylithInt numValues,
+                                         PylithScalar* values,
+                                         void* context);
 
     /** Validator for positive values.
      *
@@ -146,10 +142,9 @@ public:
      * @param[in] tolerance Tolerance relative to scale for validation.
      * @returns Error message if not positive, empty string otherwise.
      */
-    static
-    std::string validatorPositive(const PylithReal value,
-                                  const PylithReal scale,
-                                  const PylithReal tolerance);
+    static std::string validatorPositive(const PylithReal value,
+                                         const PylithReal scale,
+                                         const PylithReal tolerance);
 
     /** Validator for nonnegative values.
      *
@@ -161,10 +156,9 @@ public:
      * @param[in] tolerance Tolerance relative to scale for validation.
      * @returns Error message if negative, empty string otherwise.
      */
-    static
-    std::string validatorNonnegative(const PylithReal value,
-                                     const PylithReal scale,
-                                     const PylithReal tolerance);
+    static std::string validatorNonnegative(const PylithReal value,
+                                            const PylithReal scale,
+                                            const PylithReal tolerance);
 
     /** Validator for scale only.
      *
@@ -176,14 +170,12 @@ public:
      * @param[in] tolerance Tolerance relative to scale for validation.
      * @returns Error message if negative, empty string otherwise.
      */
-    static
-    std::string validatorScale(const PylithReal value,
-                               const PylithReal scale,
-                               const PylithReal tolerance);
+    static std::string validatorScale(const PylithReal value,
+                                      const PylithReal scale,
+                                      const PylithReal tolerance);
 
     // PRIVATE TYPEDEFS /////////////////////////////////////////////////////
-private:
-
+  private:
     struct SubfieldQuery {
         pylith::string_vector queryValues; ///< Values to use from spatial database.
         convertfn_type converter; ///< Function to convert spatial database values to subfield values.
@@ -191,7 +183,8 @@ private:
 
         SubfieldQuery(void) :
             converter(NULL),
-            db(NULL) {}
+            db(NULL) {
+        }
 
 
     }; // SubfieldQuery
@@ -227,14 +220,14 @@ private:
             validatorTolerance(0.0),
             description("unknown"),
             converter(NULL),
-            validator(NULL) {}
+            validator(NULL) {
+        }
 
 
     }; // DBQueryStruct
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     const pylith::topology::Field& _field; ///< Field associated with query.
 
     subfieldquery_map_type _subfieldQueries;
@@ -244,8 +237,7 @@ private:
     DBQueryContext** _contextPtrs; ///< Array of pointers to contexts.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
-private:
-
+  private:
     FieldQuery(const FieldQuery&); ///< Not implemented
     const FieldQuery& operator=(const FieldQuery&); ///< Not implemented
 

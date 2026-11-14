@@ -14,13 +14,12 @@
 namespace pylith {
     namespace faults {
         class CohesiveDynData;
-    } // pylith
-} // faults
+    } // namespace faults
+} // namespace pylith
 
 class pylith::faults::CohesiveDynData {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     CohesiveDynData(void);
 
@@ -28,8 +27,7 @@ public:
     ~CohesiveDynData(void);
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     char* meshFilename; ///< Filename for input mesh
 
     /// @name Scales information for nondimensionalization.
@@ -84,7 +82,6 @@ public:
     int* negativeVertices; ///< Expected points for negative side fault vertices
     int numConstraintEdges; ///< Number of constraint edges
     //@}
-
 };
 
 // End of file

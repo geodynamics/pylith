@@ -32,7 +32,7 @@ namespace pylith {
         class ProgressMonitorTime;
         class ProgressMonitorStep;
 
-    } // problems
-} // pylith
+    } // namespace problems
+} // namespace pylith
 
 // End of file

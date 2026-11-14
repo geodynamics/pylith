@@ -34,7 +34,8 @@ pylith::materials::AuxiliaryFactoryElasticity::AuxiliaryFactoryElasticity(void) 
 
 // ------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::materials::AuxiliaryFactoryElasticity::~AuxiliaryFactoryElasticity(void) {}
+pylith::materials::AuxiliaryFactoryElasticity::~AuxiliaryFactoryElasticity(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------

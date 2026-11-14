@@ -21,8 +21,7 @@ class pylith::feassemble::UpdateStateVars : public pylith::utils::GenericCompone
     friend class TestUpdateStateVars; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     UpdateStateVars(void);
 
@@ -30,8 +29,7 @@ public:
     virtual ~UpdateStateVars(void);
 
     /// Deallocate PETSc and local data structures.
-    virtual
-    void deallocate(void);
+    virtual void deallocate(void);
 
     /** Get PETSc DM associated with state variables.
      *
@@ -64,8 +62,7 @@ public:
     void restore(pylith::topology::Field* auxiliaryField);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     PetscIS _stateVarsIS; ///< Petsc IS for state vars in auxiliary field.
     PetscDM _stateVarsDM; ///< Petsc DM for state vars subfield.
     PetscVec _stateVarsVecLocal; ///< Petsc Vec with global vector for state vars.
@@ -73,9 +70,8 @@ private:
     PetscVec _auxiliaryFieldVecGlobal; ///< Petsc Vec with global vector for auxiliary field.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
-    UpdateStateVars(const UpdateStateVars &); ///< Not implemented
+  private:
+    UpdateStateVars(const UpdateStateVars&); ///< Not implemented
     const UpdateStateVars& operator=(const UpdateStateVars&); ///< Not implemented
 
 }; // class UpdateStateVars

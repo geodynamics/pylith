@@ -16,8 +16,8 @@
 
 // ------------------------------------------------------------------------------------------------
 // Constructor.
-pylith::problems::ObserverPhysics::ObserverPhysics(void) :
-    _physics(NULL) {}
+pylith::problems::ObserverPhysics::ObserverPhysics(void) : _physics(NULL) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -38,7 +38,8 @@ pylith::problems::ObserverPhysics::deallocate(void) {
 // ------------------------------------------------------------------------------------------------
 // Set physics implementation to observe.
 void
-pylith::problems::ObserverPhysics::setPhysicsImplementation(const pylith::feassemble::PhysicsImplementation* const physics) {
+pylith::problems::ObserverPhysics::setPhysicsImplementation(
+    const pylith::feassemble::PhysicsImplementation* const physics) {
     PYLITH_METHOD_BEGIN;
 
     _physics = physics;

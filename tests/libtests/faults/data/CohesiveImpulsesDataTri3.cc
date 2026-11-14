@@ -44,8 +44,7 @@
 
 #include "CohesiveImpulsesDataTri3.hh"
 
-const char* pylith::faults::CohesiveImpulsesDataTri3::_meshFilename =
-    "data/tri3.mesh";
+const char* pylith::faults::CohesiveImpulsesDataTri3::_meshFilename = "data/tri3.mesh";
 
 const int pylith::faults::CohesiveImpulsesDataTri3::_spaceDim = 2;
 
@@ -56,33 +55,33 @@ const int pylith::faults::CohesiveImpulsesDataTri3::_numBasis = 2;
 const int pylith::faults::CohesiveImpulsesDataTri3::_numQuadPts = 2;
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataTri3::_quadPts[] = {
-    -1.0, 1.0,
+    -1.0,
+    1.0,
 };
 
-const PylithScalar pylith::faults::CohesiveImpulsesDataTri3::_quadWts[] = {
-    1.0, 1.0
-};
+const PylithScalar pylith::faults::CohesiveImpulsesDataTri3::_quadWts[] = {1.0, 1.0};
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataTri3::_basis[] = {
-    1.0, 0.0,
-    0.0, 1.0,
+    1.0,
+    0.0,
+    0.0,
+    1.0,
 };
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataTri3::_basisDeriv[] = {
-    -0.5, 0.5,
-    -0.5, 0.5,
+    -0.5,
+    0.5,
+    -0.5,
+    0.5,
 };
 
-const PylithScalar pylith::faults::CohesiveImpulsesDataTri3::_verticesRef[] = {
-    -1.0, 1.0
-};
+const PylithScalar pylith::faults::CohesiveImpulsesDataTri3::_verticesRef[] = {-1.0, 1.0};
 
 const int pylith::faults::CohesiveImpulsesDataTri3::_id = 10;
 
 const char* pylith::faults::CohesiveImpulsesDataTri3::_label = "fault";
 
-const char* pylith::faults::CohesiveImpulsesDataTri3::_impulseAmpFilename =
-    "data/tri3_impulses.spatialdb";
+const char* pylith::faults::CohesiveImpulsesDataTri3::_impulseAmpFilename = "data/tri3_impulses.spatialdb";
 
 const int pylith::faults::CohesiveImpulsesDataTri3::_impulseDOF[1] = {
     1,
@@ -90,35 +89,49 @@ const int pylith::faults::CohesiveImpulsesDataTri3::_impulseDOF[1] = {
 const int pylith::faults::CohesiveImpulsesDataTri3::_numComponents = 1;
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataTri3::_fieldT[] = {
-    8.1, 9.1,
-    8.2, 9.2, // 3
-    8.3, 9.3, // 4
-    8.4, 9.4,
-    8.5, 9.5, // 6
-    8.7, 9.7, // 7
-    8.6, 9.6, // 8
-    8.8, 9.8, // 9
+    8.1,
+    9.1,
+    8.2,
+    9.2, // 3
+    8.3,
+    9.3, // 4
+    8.4,
+    9.4,
+    8.5,
+    9.5, // 6
+    8.7,
+    9.7, // 7
+    8.6,
+    9.6, // 8
+    8.8,
+    9.8, // 9
 };
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataTri3::_fieldIncr[] = {
-    3.1, 4.1,
-    3.2, 4.2, // 3
-    3.3, 4.3, // 4
-    3.4, 4.4,
-    3.5, 4.5, // 6
-    3.7, 4.7, // 7
-    3.6, 4.6, // 8
-    3.8, 4.8, // 9
+    3.1,
+    4.1,
+    3.2,
+    4.2, // 3
+    3.3,
+    4.3, // 4
+    3.4,
+    4.4,
+    3.5,
+    4.5, // 6
+    3.7,
+    4.7, // 7
+    3.6,
+    4.6, // 8
+    3.8,
+    4.8, // 9
 };
 
 // ----------------------------------------------------------------------
 // Computed values
 // ----------------------------------------------------------------------
 
-const PylithScalar pylith::faults::CohesiveImpulsesDataTri3::_orientation[] = {
-    0.0, +1.0,  +1.0, 0.0,
-    0.0, +1.0,  +1.0, 0.0
-};
+const PylithScalar pylith::faults::CohesiveImpulsesDataTri3::_orientation[] =
+    {0.0, +1.0, +1.0, 0.0, 0.0, +1.0, +1.0, 0.0};
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataTri3::_area[] = {
     1.0,
@@ -133,24 +146,26 @@ const PylithScalar pylith::faults::CohesiveImpulsesDataTri3::_amplitude[] = {
 const int pylith::faults::CohesiveImpulsesDataTri3::_numImpulses = 2;
 
 const int pylith::faults::CohesiveImpulsesDataTri3::_numConstraintEdges = 2;
-const int pylith::faults::CohesiveImpulsesDataTri3::_constraintEdges[] = {
-    15, 16
-};
-const int pylith::faults::CohesiveImpulsesDataTri3::_negativeVertices[] = {
-    4, 5
-};
+const int pylith::faults::CohesiveImpulsesDataTri3::_constraintEdges[] = {15, 16};
+const int pylith::faults::CohesiveImpulsesDataTri3::_negativeVertices[] = {4, 5};
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataTri3::_residual[] = {
-    0.0,  0.0,
-    +8.6, +9.6, // 3
-    +8.8, +9.8, // 4
-    0.0,  0.0,
-    -8.6, -9.6, // 6
-    -8.8, -9.8, // 7
-    -(8.5-8.2) + (2.0),
-    -(9.5-9.2) + (0), // 8
-    -(8.7-8.3) + (0),
-    -(9.7-9.3) + (0), // 9
+    0.0,
+    0.0,
+    +8.6,
+    +9.6, // 3
+    +8.8,
+    +9.8, // 4
+    0.0,
+    0.0,
+    -8.6,
+    -9.6, // 6
+    -8.8,
+    -9.8, // 7
+    -(8.5 - 8.2) + (2.0),
+    -(9.5 - 9.2) + (0), // 8
+    -(8.7 - 8.3) + (0),
+    -(9.7 - 9.3) + (0), // 9
 };
 
 pylith::faults::CohesiveImpulsesDataTri3::CohesiveImpulsesDataTri3(void) { // constructor
@@ -182,7 +197,8 @@ pylith::faults::CohesiveImpulsesDataTri3::CohesiveImpulsesDataTri3(void) { // co
 } // constructor
 
 
-pylith::faults::CohesiveImpulsesDataTri3::~CohesiveImpulsesDataTri3(void) {}
+pylith::faults::CohesiveImpulsesDataTri3::~CohesiveImpulsesDataTri3(void) {
+}
 
 
 // End of file

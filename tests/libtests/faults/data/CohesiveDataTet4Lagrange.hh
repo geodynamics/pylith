@@ -14,13 +14,12 @@
 namespace pylith {
     namespace faults {
         class CohesiveDataTet4Lagrange;
-    } // pylith
-} // faults
+    } // namespace faults
+} // namespace pylith
 
 class pylith::faults::CohesiveDataTet4Lagrange : public CohesiveData {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     CohesiveDataTet4Lagrange(void);
 
@@ -28,8 +27,7 @@ public:
     ~CohesiveDataTet4Lagrange(void);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     static const int _numVertices; ///< Number of vertices
     static const int _spaceDim; ///< Number of dimensions in vertex coordinates
     static const int _numCells; ///< Number of cells

@@ -17,8 +17,7 @@ namespace pylith {
 }
 
 class pylith::UniformShear2D {
-public:
-
+  public:
     // Data factory methods
     static TestIncompressibleElasticity_Data* TriP1(void);
 
@@ -38,8 +37,7 @@ public:
 
     static TestIncompressibleElasticity_Data* QuadQ4(void);
 
-private:
-
+  private:
     UniformShear2D(void); ///< Not implemented
 }; // UniformShear2D
 

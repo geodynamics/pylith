@@ -12,11 +12,11 @@
 
 #include "TestDataWriterVTKMaterial.hh" // Implementation of class methods
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/meshio/DataWriterVTK.hh" // USES DataWriterVTK
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
-#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
@@ -34,7 +34,8 @@ pylith::meshio::TestDataWriterVTKMaterial::TestDataWriterVTKMaterial(TestDataWri
 pylith::meshio::TestDataWriterVTKMaterial::~TestDataWriterVTKMaterial(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _data;_data = NULL;
+    delete _data;
+    _data = NULL;
 
     PYLITH_METHOD_END;
 } // destructor.
@@ -108,7 +109,8 @@ pylith::meshio::TestDataWriterVTKMaterial::testWriteVertexField(void) {
         writer.writeVertexField(t, *subfield);
         REQUIRE(writer._wroteVertexHeader);
         CHECK(false == writer._wroteCellHeader);
-        delete subfield;subfield = NULL;
+        delete subfield;
+        subfield = NULL;
     } // for
     writer.closeTimeStep();
     writer.close();
@@ -152,7 +154,8 @@ pylith::meshio::TestDataWriterVTKMaterial::testWriteCellField(void) {
         writer.writeCellField(t, *subfield);
         CHECK(false == writer._wroteVertexHeader);
         REQUIRE(writer._wroteCellHeader);
-        delete subfield;subfield = NULL;
+        delete subfield;
+        subfield = NULL;
     } // for
     writer.closeTimeStep();
     writer.close();

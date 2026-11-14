@@ -12,11 +12,11 @@
 
 #include "TestDataWriterHDF5Material.hh" // Implementation of class methods
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/meshio/DataWriterHDF5.hh" // USES DataWriterHDF5
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
-#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include "catch2/catch_test_macros.hpp"
 
@@ -33,7 +33,8 @@ pylith::meshio::TestDataWriterHDF5Material::TestDataWriterHDF5Material(TestDataW
 pylith::meshio::TestDataWriterHDF5Material::~TestDataWriterHDF5Material(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _data;_data = nullptr;
+    delete _data;
+    _data = nullptr;
 
     PYLITH_METHOD_END;
 } // tearDown
@@ -92,7 +93,8 @@ pylith::meshio::TestDataWriterHDF5Material::testWriteVertexField(void) {
         REQUIRE(subfield);
         subfield->project(vertexField.getOutputVector());
         writer.writeVertexField(t, *subfield);
-        delete subfield;subfield = NULL;
+        delete subfield;
+        subfield = NULL;
     } // for
     writer.closeTimeStep();
     writer.close();
@@ -133,7 +135,8 @@ pylith::meshio::TestDataWriterHDF5Material::testWriteCellField(void) {
         REQUIRE(subfield);
         subfield->project(cellField.getOutputVector());
         writer.writeCellField(t, *subfield);
-        delete subfield;subfield = NULL;
+        delete subfield;
+        subfield = NULL;
     } // for
     writer.closeTimeStep();
     writer.close();

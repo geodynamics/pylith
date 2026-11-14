@@ -21,19 +21,18 @@ namespace pylith {
     namespace testing {
         class TestStubMethodTracker;
     }
-}
+} // namespace pylith
 
 class pylith::testing::TestStubMethodTracker : public pylith::utils::GenericComponent {
-public:
-
+  public:
     /// Test methodCount().
-    static
-    void testMethodCount(void);
+    static void testMethodCount(void);
 
 }; // class TestStubMethodTracker
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestStubMethodTracker::testMethodCount", "[TestStubMethodTracker]") {
+TEST_CASE("TestStubMethodTracker::testMethodCount",
+          "[TestStubMethodTracker]") {
     pylith::testing::TestStubMethodTracker::testMethodCount();
 }
 

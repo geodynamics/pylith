@@ -9,16 +9,15 @@
 // =================================================================================================
 #pragma once
 
-#include "pylith/materials/materialsfwd.hh" // forward declarations
 #include "pylith/materials/AuxiliaryFactoryElastic.hh" // ISA AuxiliaryFactoryElastic
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 
 /// @brief C++ helper class for setting up auxiliary fields for materials.
 class pylith::materials::AuxiliaryFactoryViscoelastic : public pylith::materials::AuxiliaryFactoryElastic {
     friend class TestAuxiliaryFactoryViscoelastic; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     AuxiliaryFactoryViscoelastic(void);
 
@@ -56,9 +55,8 @@ public:
     void addViscousStrainGeneralizedMaxwell(void);
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
-    AuxiliaryFactoryViscoelastic(const AuxiliaryFactoryViscoelastic &); ///< Not implemented.
+  private:
+    AuxiliaryFactoryViscoelastic(const AuxiliaryFactoryViscoelastic&); ///< Not implemented.
     const AuxiliaryFactoryViscoelastic& operator=(const AuxiliaryFactoryViscoelastic&); ///< Not implemented
 
 }; // class AuxiliaryFactoryViscoelastic

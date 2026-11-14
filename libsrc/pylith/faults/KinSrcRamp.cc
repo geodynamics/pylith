@@ -14,8 +14,8 @@
 
 #include "pylith/faults/KinSrcAuxiliaryFactory.hh" // USES KinSrcAuxiliaryFactory
 
-#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
@@ -28,9 +28,9 @@ namespace pylith {
                           const double riseTime,
                           const double impulseDuration);
 
-        } // _KinSrcRamp
-    } // faults
-} // pylith
+        } // namespace _KinSrcRamp
+    } // namespace faults
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -41,7 +41,8 @@ pylith::faults::KinSrcRamp::KinSrcRamp(void) {
 
 // ------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::faults::KinSrcRamp::~KinSrcRamp(void) {}
+pylith::faults::KinSrcRamp::~KinSrcRamp(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -85,62 +86,39 @@ pylith::faults::KinSrcRamp::slipFn(const PylithInt dim,
     const PylithScalar originTime = constants[i_originTime];
     const PylithScalar t0 = originTime + initiationTime;
 
-    const double finalSlipMag = dim == 2 ?
-                                sqrt(pow(finalSlip[0],2) + pow(finalSlip[1],2)) :
-                                sqrt(pow(finalSlip[0],2) + pow(finalSlip[1],2) + pow(finalSlip[2],2));
-    const double slipCoef = impulseDuration > 0.0 ?
-                            2.0 * _KinSrcRamp::maxAcc(finalSlipMag, riseTime, impulseDuration) / impulseDuration :
-                            0.0;
+    const double finalSlipMag = dim == 2 ? sqrt(pow(finalSlip[0], 2) + pow(finalSlip[1], 2))
+                                         : sqrt(pow(finalSlip[0], 2) + pow(finalSlip[1], 2) + pow(finalSlip[2], 2));
+    const double slipCoef = impulseDuration > 0.0
+                                ? 2.0 * _KinSrcRamp::maxAcc(finalSlipMag, riseTime, impulseDuration) / impulseDuration
+                                : 0.0;
 
     double slipTimeFn = 0.0;
-    if (t-t0 <= 0.0) {
+    if (t - t0 <= 0.0) {
         slipTimeFn = 0.0;
-    } else if (t-t0 <= 0.5*impulseDuration) {
-        slipTimeFn = 1/6.0*pow(t,3);
-    } else if (t-t0 <= impulseDuration) {
-        slipTimeFn =
-            0.5*impulseDuration*pow(t,2)
-            -1/6.0*pow(t,3)
-            -0.25*pow(impulseDuration,2)*t
-            +1.0/24.0*pow(impulseDuration,3);
-    } else if (t-t0 <= riseTime-impulseDuration) {
-        slipTimeFn =
-            0.25*pow(impulseDuration,2)*t
-            -0.125*pow(impulseDuration,3);
-    } else if (t-t0 <= riseTime-0.5*impulseDuration) {
-        slipTimeFn =
-            -1/6.0*pow(t,3)
-            +0.5*(riseTime-impulseDuration)*pow(t,2)
-            -0.5*pow(riseTime-impulseDuration,2)*t
-            +0.25*pow(impulseDuration,2)*t
-            +1/6.0*pow(riseTime-impulseDuration,3)
-            -0.125*pow(impulseDuration,3);
-    } else if (t-t0 <= riseTime) {
-        const double ti = riseTime - 0.5*impulseDuration;
-        slipTimeFn =
-            1/6.0*pow(t,3)
-            -0.5*riseTime*pow(t,2)
-            +0.5*pow(riseTime,2)*t
-            -1/3.0*pow(ti,3)
-            +0.5*riseTime*pow(ti,2)
-            -0.5*pow(riseTime,2)*ti
-            +0.5*(riseTime-impulseDuration)*pow(ti,2)
-            -0.5*pow(riseTime-impulseDuration,2)*ti
-            +0.25*pow(impulseDuration,2)*ti
-            +1/6.0*pow(riseTime-impulseDuration,3)
-            -0.125*pow(impulseDuration,3);
+    } else if (t - t0 <= 0.5 * impulseDuration) {
+        slipTimeFn = 1 / 6.0 * pow(t, 3);
+    } else if (t - t0 <= impulseDuration) {
+        slipTimeFn = 0.5 * impulseDuration * pow(t, 2) - 1 / 6.0 * pow(t, 3) - 0.25 * pow(impulseDuration, 2) * t +
+                     1.0 / 24.0 * pow(impulseDuration, 3);
+    } else if (t - t0 <= riseTime - impulseDuration) {
+        slipTimeFn = 0.25 * pow(impulseDuration, 2) * t - 0.125 * pow(impulseDuration, 3);
+    } else if (t - t0 <= riseTime - 0.5 * impulseDuration) {
+        slipTimeFn = -1 / 6.0 * pow(t, 3) + 0.5 * (riseTime - impulseDuration) * pow(t, 2) -
+                     0.5 * pow(riseTime - impulseDuration, 2) * t + 0.25 * pow(impulseDuration, 2) * t +
+                     1 / 6.0 * pow(riseTime - impulseDuration, 3) - 0.125 * pow(impulseDuration, 3);
+    } else if (t - t0 <= riseTime) {
+        const double ti = riseTime - 0.5 * impulseDuration;
+        slipTimeFn = 1 / 6.0 * pow(t, 3) - 0.5 * riseTime * pow(t, 2) + 0.5 * pow(riseTime, 2) * t -
+                     1 / 3.0 * pow(ti, 3) + 0.5 * riseTime * pow(ti, 2) - 0.5 * pow(riseTime, 2) * ti +
+                     0.5 * (riseTime - impulseDuration) * pow(ti, 2) - 0.5 * pow(riseTime - impulseDuration, 2) * ti +
+                     0.25 * pow(impulseDuration, 2) * ti + 1 / 6.0 * pow(riseTime - impulseDuration, 3) -
+                     0.125 * pow(impulseDuration, 3);
     } else {
-        const double ti = riseTime - 0.5*impulseDuration;
-        slipTimeFn =
-            1/6.0*pow(riseTime,3)
-            -1/3.0*pow(ti,3)
-            +0.5*riseTime*pow(ti,2)
-            -0.5*pow(riseTime,2)*ti
-            +0.5*(riseTime-impulseDuration)*pow(ti,2)
-            -0.5*pow(riseTime-impulseDuration,2)*ti
-            +0.25*pow(impulseDuration,2)*ti
-            +1/6.0*pow(riseTime-impulseDuration,3)
-            -0.125*pow(impulseDuration,3);
+        const double ti = riseTime - 0.5 * impulseDuration;
+        slipTimeFn = 1 / 6.0 * pow(riseTime, 3) - 1 / 3.0 * pow(ti, 3) + 0.5 * riseTime * pow(ti, 2) -
+                     0.5 * pow(riseTime, 2) * ti + 0.5 * (riseTime - impulseDuration) * pow(ti, 2) -
+                     0.5 * pow(riseTime - impulseDuration, 2) * ti + 0.25 * pow(impulseDuration, 2) * ti +
+                     1 / 6.0 * pow(riseTime - impulseDuration, 3) - 0.125 * pow(impulseDuration, 3);
     } // if/else
 
     for (PylithInt i = 0; i < dim; ++i) {
@@ -190,30 +168,26 @@ pylith::faults::KinSrcRamp::slipRateFn(const PylithInt dim,
     const PylithScalar originTime = constants[i_originTime];
     const PylithScalar t0 = originTime + initiationTime;
 
-    const double finalSlipMag = dim == 2 ?
-                                sqrt(pow(finalSlip[0],2) + pow(finalSlip[1],2)) :
-                                sqrt(pow(finalSlip[0],2) + pow(finalSlip[1],2) + pow(finalSlip[2],2));
-    const double slipCoef = impulseDuration > 0.0 ?
-                            2.0 * _KinSrcRamp::maxAcc(finalSlipMag, riseTime, impulseDuration) / impulseDuration :
-                            0.0;
+    const double finalSlipMag = dim == 2 ? sqrt(pow(finalSlip[0], 2) + pow(finalSlip[1], 2))
+                                         : sqrt(pow(finalSlip[0], 2) + pow(finalSlip[1], 2) + pow(finalSlip[2], 2));
+    const double slipCoef = impulseDuration > 0.0
+                                ? 2.0 * _KinSrcRamp::maxAcc(finalSlipMag, riseTime, impulseDuration) / impulseDuration
+                                : 0.0;
 
     double slipRateTimeFn = 0.0;
-    if (t-t0 < 0.0) {
+    if (t - t0 < 0.0) {
         slipRateTimeFn = 0.0;
-    } else if (t-t0 <= 0.5*impulseDuration) {
-        slipRateTimeFn = 0.5*pow(t,2);
-    } else if (t-t0 <= impulseDuration) {
-        slipRateTimeFn = impulseDuration*t -0.5*pow(t,2) -0.25*pow(impulseDuration,2);
-    } else if (t-t0 <= riseTime-impulseDuration) {
-        slipRateTimeFn = 0.25*pow(impulseDuration,2);
-    } else if (t-t0 <= riseTime-0.5*impulseDuration) {
-        slipRateTimeFn =
-            -0.5*pow(t,2)
-            +(riseTime-impulseDuration)*t
-            -0.5*pow(riseTime-impulseDuration,2)
-            +0.25*pow(impulseDuration,2);
-    } else if (t-t0 <= riseTime) {
-        slipRateTimeFn = 0.5*pow(t,2) -riseTime*t +0.5*pow(riseTime,2);
+    } else if (t - t0 <= 0.5 * impulseDuration) {
+        slipRateTimeFn = 0.5 * pow(t, 2);
+    } else if (t - t0 <= impulseDuration) {
+        slipRateTimeFn = impulseDuration * t - 0.5 * pow(t, 2) - 0.25 * pow(impulseDuration, 2);
+    } else if (t - t0 <= riseTime - impulseDuration) {
+        slipRateTimeFn = 0.25 * pow(impulseDuration, 2);
+    } else if (t - t0 <= riseTime - 0.5 * impulseDuration) {
+        slipRateTimeFn = -0.5 * pow(t, 2) + (riseTime - impulseDuration) * t -
+                         0.5 * pow(riseTime - impulseDuration, 2) + 0.25 * pow(impulseDuration, 2);
+    } else if (t - t0 <= riseTime) {
+        slipRateTimeFn = 0.5 * pow(t, 2) - riseTime * t + 0.5 * pow(riseTime, 2);
     } else {
         slipRateTimeFn = 0.0;
     } // if/else
@@ -265,26 +239,25 @@ pylith::faults::KinSrcRamp::slipAccFn(const PylithInt dim,
     const PylithScalar originTime = constants[i_originTime];
     const PylithScalar t0 = originTime + initiationTime;
 
-    const double finalSlipMag = dim == 2 ?
-                                sqrt(pow(finalSlip[0],2) + pow(finalSlip[1],2)) :
-                                sqrt(pow(finalSlip[0],2) + pow(finalSlip[1],2) + pow(finalSlip[2],2));
-    const double slipCoef = impulseDuration > 0.0 ?
-                            2.0 * _KinSrcRamp::maxAcc(finalSlipMag, riseTime, impulseDuration) / impulseDuration :
-                            0.0;
+    const double finalSlipMag = dim == 2 ? sqrt(pow(finalSlip[0], 2) + pow(finalSlip[1], 2))
+                                         : sqrt(pow(finalSlip[0], 2) + pow(finalSlip[1], 2) + pow(finalSlip[2], 2));
+    const double slipCoef = impulseDuration > 0.0
+                                ? 2.0 * _KinSrcRamp::maxAcc(finalSlipMag, riseTime, impulseDuration) / impulseDuration
+                                : 0.0;
 
     double slipAccTimeFn = 0.0;
-    if (t-t0 < 0.0) {
+    if (t - t0 < 0.0) {
         slipAccTimeFn = 0.0;
-    } else if (t-t0 <= 0.5*impulseDuration) {
+    } else if (t - t0 <= 0.5 * impulseDuration) {
         slipAccTimeFn = t;
-    } else if (t-t0 <= impulseDuration) {
-        slipAccTimeFn = impulseDuration-t;
-    } else if (t-t0 <= riseTime-impulseDuration) {
+    } else if (t - t0 <= impulseDuration) {
+        slipAccTimeFn = impulseDuration - t;
+    } else if (t - t0 <= riseTime - impulseDuration) {
         slipAccTimeFn = 0.0;
-    } else if (t-t0 <= riseTime-0.5*impulseDuration) {
-        slipAccTimeFn = -(t-(riseTime-impulseDuration));
-    } else if (t-t0 <= riseTime) {
-        slipAccTimeFn = t-riseTime;
+    } else if (t - t0 <= riseTime - 0.5 * impulseDuration) {
+        slipAccTimeFn = -(t - (riseTime - impulseDuration));
+    } else if (t - t0 <= riseTime) {
+        slipAccTimeFn = t - riseTime;
     } else {
         slipAccTimeFn = 0.0;
     } // if/else
@@ -329,16 +302,13 @@ double
 pylith::faults::_KinSrcRamp::maxAcc(const double finalSlip,
                                     const double riseTime,
                                     const double impulseDuration) {
-    const double a =
-        1.0/6.0*pow(riseTime,3)
-        -1.0/3.0*pow(riseTime-0.5*impulseDuration,3)
-        +0.5*riseTime*pow(riseTime-0.5*impulseDuration,2)
-        -0.5*pow(riseTime,2)*(riseTime-0.5*impulseDuration)
-        +0.5*(riseTime-impulseDuration)*pow(riseTime-0.5*impulseDuration,2)
-        -0.5*pow(riseTime-impulseDuration,2)*(riseTime-0.5*impulseDuration)
-        +0.25*pow(impulseDuration,2)*(riseTime-0.5*impulseDuration)
-        +1.0/6.0*pow(riseTime-impulseDuration,3)
-        -0.125*pow(impulseDuration,3);
+    const double a = 1.0 / 6.0 * pow(riseTime, 3) - 1.0 / 3.0 * pow(riseTime - 0.5 * impulseDuration, 3) +
+                     0.5 * riseTime * pow(riseTime - 0.5 * impulseDuration, 2) -
+                     0.5 * pow(riseTime, 2) * (riseTime - 0.5 * impulseDuration) +
+                     0.5 * (riseTime - impulseDuration) * pow(riseTime - 0.5 * impulseDuration, 2) -
+                     0.5 * pow(riseTime - impulseDuration, 2) * (riseTime - 0.5 * impulseDuration) +
+                     0.25 * pow(impulseDuration, 2) * (riseTime - 0.5 * impulseDuration) +
+                     1.0 / 6.0 * pow(riseTime - impulseDuration, 3) - 0.125 * pow(impulseDuration, 3);
 
     return 0.5 * finalSlip * impulseDuration / a;
 } // maxAcc

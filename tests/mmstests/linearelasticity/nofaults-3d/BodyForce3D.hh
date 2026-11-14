@@ -17,8 +17,7 @@ namespace pylith {
 }
 
 class pylith::BodyForce3D {
-public:
-
+  public:
     // Data factory methods
 
     static TestLinearElasticity_Data* TetP2(void);
@@ -29,8 +28,7 @@ public:
 
     static TestLinearElasticity_Data* HexQ3(void);
 
-private:
-
+  private:
     BodyForce3D(void); ///< Not implemented
 }; // BodyForce3D
 

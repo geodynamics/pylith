@@ -14,15 +14,14 @@
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
 
-#include <string> // USES std::string
 #include <map> // USES std::map
+#include <string> // USES std::string
 
 class pylith::feassemble::IntegrationData : pylith::utils::GenericComponent {
     friend class TestIntegrationData; // unit testing
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     static const std::string time;
     static const std::string time_step;
     static const std::string s_tshift;
@@ -38,8 +37,7 @@ public:
     static const std::string dae_mass_weighting;
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     IntegrationData(void);
 
@@ -120,8 +118,7 @@ public:
     std::string str(void) const;
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     typedef std::map<std::string, PylithReal> scalars_map_t;
     typedef std::map<std::string, pylith::topology::Field*> fields_map_t;
     typedef std::map<std::string, pylith::topology::Mesh*> meshes_map_t;
@@ -131,8 +128,7 @@ private:
     meshes_map_t _meshes;
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     IntegrationData(const IntegrationData&); ///< Not implemented.
     const IntegrationData& operator=(const IntegrationData&); ///< Not implemented.
 

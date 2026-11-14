@@ -17,14 +17,13 @@ namespace pylith {
     namespace topology {
         class TestReverseCuthillMcKee;
         class TestReverseCuthillMcKee_Data;
-    } // topology
-} // pylith
+    } // namespace topology
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::topology::TestReverseCuthillMcKee : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestReverseCuthillMcKee(TestReverseCuthillMcKee_Data* data);
 
@@ -35,14 +34,12 @@ public:
     void testReorder(void);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     TestReverseCuthillMcKee_Data* _data; ///< Data for testing.
     Mesh* _mesh; ///< Finite-element mesh.
 
     // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     /// Setup mesh.
     void _initialize();
 
@@ -51,8 +48,7 @@ private:
 // ------------------------------------------------------------------------------------------------
 class pylith::topology::TestReverseCuthillMcKee_Data {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestReverseCuthillMcKee_Data(void);
 
@@ -60,8 +56,7 @@ public:
     ~TestReverseCuthillMcKee_Data(void);
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     const char* filename; ///< Name of mesh file.
     const char* faultLabel; ///< Label for fault (use NULL for no fault).
 

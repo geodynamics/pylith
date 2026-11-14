@@ -16,8 +16,8 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
-pylith::problems::ObserverSolnStub::ObserverSolnStub(void) :
-    _timeScale(1.0) {}
+pylith::problems::ObserverSolnStub::ObserverSolnStub(void) : _timeScale(1.0) {
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------

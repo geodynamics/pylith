@@ -13,16 +13,15 @@
 
 #include "pylith/fekernels/fekernelsfwd.hh" // forward declarations
 
-#include "pylith/utils/types.hh"
-#include "pylith/utils/journals.hh"
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/utils/journals.hh"
+#include "pylith/utils/types.hh"
 
 #include <cassert> // USES assert()
 
 class pylith::fekernels::BoundaryDirections {
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /** Compute tangential directions for boundary in 3D.
      *
      * @param[out] tanDir1 First tangential direction.
@@ -31,12 +30,12 @@ public:
      * @param[in] refDir2 Second choice for reference direction if first fails.
      * @param[in] normDir Normal direction.
      */
-    static inline
-    void tangential_directions(PylithScalar tanDir1[],
-                               PylithScalar tanDir2[],
-                               const PylithScalar refDir1[],
-                               const PylithScalar refDir2[],
-                               const PylithScalar normalDir[]) {
+    static inline void
+    tangential_directions(PylithScalar tanDir1[],
+                          PylithScalar tanDir2[],
+                          const PylithScalar refDir1[],
+                          const PylithScalar refDir2[],
+                          const PylithScalar normalDir[]) {
         assert(tanDir1);
         assert(tanDir2);
         assert(refDir1);
@@ -46,8 +45,8 @@ public:
         const int dim = 3;
 
         // Choose reference direction 1 unless it nearly coincides with normal direction.
-        PylithScalar refDir[dim] = { refDir1[0], refDir1[1], refDir1[2] };
-        if (fabs(refDir[0]*normalDir[0] + refDir[1]*normalDir[1] + refDir[2]*normalDir[2]) > 0.999) {
+        PylithScalar refDir[dim] = {refDir1[0], refDir1[1], refDir1[2]};
+        if (fabs(refDir[0] * normalDir[0] + refDir[1] * normalDir[1] + refDir[2] * normalDir[2]) > 0.999) {
             for (int i = 0; i < dim; ++i) {
                 refDir[i] = refDir2[i];
             } // for
@@ -59,7 +58,7 @@ public:
         // tranDir2 = normalDir x tanDir1
         _unitCrossProduct(tanDir2, normalDir, tanDir1);
 
-        if (refDir2[0]*normalDir[0] + refDir2[1]*normalDir[1] + refDir2[1]*normalDir[1] < 0.0) {
+        if (refDir2[0] * normalDir[0] + refDir2[1] * normalDir[1] + refDir2[1] * normalDir[1] < 0.0) {
             for (int i = 0; i < dim; ++i) {
                 tanDir2[i] *= -1.0;
             } // for
@@ -69,26 +68,26 @@ public:
     // ------------------------------------------------------------------------------------------------
     /** Normal direction.
      */
-    static inline
-    void normalDir(const PylithInt dim,
-                   const PylithInt numS,
-                   const PylithInt numA,
-                   const PylithInt sOff[],
-                   const PylithInt sOff_x[],
-                   const PylithScalar s[],
-                   const PylithScalar s_t[],
-                   const PylithScalar s_x[],
-                   const PylithInt aOff[],
-                   const PylithInt aOff_x[],
-                   const PylithScalar a[],
-                   const PylithScalar a_t[],
-                   const PylithScalar a_x[],
-                   const PylithReal t,
-                   const PylithScalar x[],
-                   const PylithScalar n[],
-                   const PylithInt numConstants,
-                   const PylithScalar constants[],
-                   PylithScalar normalDir[]) {
+    static inline void
+    normalDir(const PylithInt dim,
+              const PylithInt numS,
+              const PylithInt numA,
+              const PylithInt sOff[],
+              const PylithInt sOff_x[],
+              const PylithScalar s[],
+              const PylithScalar s_t[],
+              const PylithScalar s_x[],
+              const PylithInt aOff[],
+              const PylithInt aOff_x[],
+              const PylithScalar a[],
+              const PylithScalar a_t[],
+              const PylithScalar a_x[],
+              const PylithReal t,
+              const PylithScalar x[],
+              const PylithScalar n[],
+              const PylithInt numConstants,
+              const PylithScalar constants[],
+              PylithScalar normalDir[]) {
         const PylithInt spaceDim = dim; // dim passed in is embedded dimension (spaceDim).
 
         for (PylithInt i = 0; i < spaceDim; ++i) {
@@ -101,32 +100,32 @@ public:
      *
      * If normal direction is parallel to the z-direction, then .
      */
-    static inline
-    void tangentialDirHoriz(const PylithInt dim,
-                            const PylithInt numS,
-                            const PylithInt numA,
-                            const PylithInt sOff[],
-                            const PylithInt sOff_x[],
-                            const PylithScalar s[],
-                            const PylithScalar s_t[],
-                            const PylithScalar s_x[],
-                            const PylithInt aOff[],
-                            const PylithInt aOff_x[],
-                            const PylithScalar a[],
-                            const PylithScalar a_t[],
-                            const PylithScalar a_x[],
-                            const PylithReal t,
-                            const PylithScalar x[],
-                            const PylithScalar n[],
-                            const PylithInt numConstants,
-                            const PylithScalar constants[],
-                            PylithScalar tangentialDir[]) {
+    static inline void
+    tangentialDirHoriz(const PylithInt dim,
+                       const PylithInt numS,
+                       const PylithInt numA,
+                       const PylithInt sOff[],
+                       const PylithInt sOff_x[],
+                       const PylithScalar s[],
+                       const PylithScalar s_t[],
+                       const PylithScalar s_x[],
+                       const PylithInt aOff[],
+                       const PylithInt aOff_x[],
+                       const PylithScalar a[],
+                       const PylithScalar a_t[],
+                       const PylithScalar a_x[],
+                       const PylithReal t,
+                       const PylithScalar x[],
+                       const PylithScalar n[],
+                       const PylithInt numConstants,
+                       const PylithScalar constants[],
+                       PylithScalar tangentialDir[]) {
         const PylithInt spaceDim = dim; // dim passed in is embedded dimension (spaceDim).
 
         switch (spaceDim) {
         case 2: {
             const PylithInt _dim = 2;
-            const PylithScalar tanDir[2] = {-n[1], n[0] };
+            const PylithScalar tanDir[2] = {-n[1], n[0]};
             for (PylithInt i = 0; i < _dim; ++i) {
                 tangentialDir[i] = tanDir[i];
             } // for
@@ -154,26 +153,26 @@ public:
     // ------------------------------------------------------------------------------------------------
     /** Direction up dip (only valid in 3D).
      */
-    static inline
-    void tangentialDirVert(const PylithInt dim,
-                           const PylithInt numS,
-                           const PylithInt numA,
-                           const PylithInt sOff[],
-                           const PylithInt sOff_x[],
-                           const PylithScalar s[],
-                           const PylithScalar s_t[],
-                           const PylithScalar s_x[],
-                           const PylithInt aOff[],
-                           const PylithInt aOff_x[],
-                           const PylithScalar a[],
-                           const PylithScalar a_t[],
-                           const PylithScalar a_x[],
-                           const PylithReal t,
-                           const PylithScalar x[],
-                           const PylithScalar n[],
-                           const PylithInt numConstants,
-                           const PylithScalar constants[],
-                           PylithScalar tangentialDir[]) {
+    static inline void
+    tangentialDirVert(const PylithInt dim,
+                      const PylithInt numS,
+                      const PylithInt numA,
+                      const PylithInt sOff[],
+                      const PylithInt sOff_x[],
+                      const PylithScalar s[],
+                      const PylithScalar s_t[],
+                      const PylithScalar s_x[],
+                      const PylithInt aOff[],
+                      const PylithInt aOff_x[],
+                      const PylithScalar a[],
+                      const PylithScalar a_t[],
+                      const PylithScalar a_x[],
+                      const PylithReal t,
+                      const PylithScalar x[],
+                      const PylithScalar n[],
+                      const PylithInt numConstants,
+                      const PylithScalar constants[],
+                      PylithScalar tangentialDir[]) {
         const PylithInt spaceDim = dim; // dim passed in is embedded dimension (spaceDim).
 
         switch (spaceDim) {
@@ -206,15 +205,15 @@ public:
      * @param[in] valuesTN Values in tangential-normal coordinate system.
      * @param[in] normalDir Normal direction unit vector.
      */
-    static inline
-    void toXY(PylithReal valuesXY[],
-              const PylithReal valuesTN[],
-              const PylithReal normalDir[]) {
+    static inline void
+    toXY(PylithReal valuesXY[],
+         const PylithReal valuesTN[],
+         const PylithReal normalDir[]) {
         const PylithInt _dim = 2;
-        const PylithReal tanDir[2] = {-normalDir[1], normalDir[0] };
+        const PylithReal tanDir[2] = {-normalDir[1], normalDir[0]};
 
         for (PylithInt i = 0; i < _dim; ++i) {
-            valuesXY[i] += valuesTN[0]*tanDir[i] + valuesTN[1]*normalDir[i];
+            valuesXY[i] += valuesTN[0] * tanDir[i] + valuesTN[1] * normalDir[i];
         } // for
     } // toXY
 
@@ -226,40 +225,39 @@ public:
      * @param[in] refDir2 Reference direction 2.
      * @param[in] normalDir Normal direction unit vector.
      */
-    static inline
-    void toXYZ(PylithReal valuesXYZ[],
-               const PylithReal valuesTN[],
-               const PylithReal refDir1[],
-               const PylithReal refDir2[],
-               const PylithReal normalDir[]) {
+    static inline void
+    toXYZ(PylithReal valuesXYZ[],
+          const PylithReal valuesTN[],
+          const PylithReal refDir1[],
+          const PylithReal refDir2[],
+          const PylithReal normalDir[]) {
         const PylithInt _dim = 3;
 
         PylithScalar tanDir1[3], tanDir2[3];
         BoundaryDirections::tangential_directions(tanDir1, tanDir2, refDir1, refDir2, normalDir);
 
         for (PylithInt i = 0; i < _dim; ++i) {
-            valuesXYZ[i] += valuesTN[0]*tanDir1[i] + valuesTN[1]*tanDir2[i] + valuesTN[2]*normalDir[i];
+            valuesXYZ[i] += valuesTN[0] * tanDir1[i] + valuesTN[1] * tanDir2[i] + valuesTN[2] * normalDir[i];
         } // for
     } // toXYZ
 
-private:
-
-    static inline
-    void _unitCrossProduct(PylithScalar result[],
-                           const PylithScalar vec1[],
-                           const PylithScalar vec2[]) {
+  private:
+    static inline void
+    _unitCrossProduct(PylithScalar result[],
+                      const PylithScalar vec1[],
+                      const PylithScalar vec2[]) {
         assert(result);
         assert(vec1);
         assert(vec2);
 
-        result[0] = +vec1[1]*vec2[2] - vec1[2]*vec2[1];
-        result[1] = +vec1[2]*vec2[0] - vec1[0]*vec2[2];
-        result[2] = +vec1[0]*vec2[1] - vec1[1]*vec2[0];
+        result[0] = +vec1[1] * vec2[2] - vec1[2] * vec2[1];
+        result[1] = +vec1[2] * vec2[0] - vec1[0] * vec2[2];
+        result[2] = +vec1[0] * vec2[1] - vec1[1] * vec2[0];
 
         const int dim = 3;
         PylithScalar resultMag = 0.0;
         for (int i = 0; i < dim; ++i) {
-            resultMag += result[i]*result[i];
+            resultMag += result[i] * result[i];
         } // for
         resultMag = sqrt(resultMag);
         assert(resultMag >= 1.0e-4);

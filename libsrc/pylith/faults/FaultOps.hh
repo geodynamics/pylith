@@ -18,25 +18,21 @@ class pylith::faults::FaultOps {
     friend class TestFaultOps; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /** Create weighting vector for dynamic prescribed slip integration.
      *
      * @param[in] integrationData Data for finite-element integration.
      */
-    static
-    void createDAEMassWeighting(pylith::feassemble::IntegrationData* integrationData);
+    static void createDAEMassWeighting(pylith::feassemble::IntegrationData* integrationData);
 
     /** Update weighting vector for dynamic prescribed slip integration.
      *
      * @param[in] integrationData Data for finite-element integration.
      */
-    static
-    void updateDAEMassWeighting(pylith::feassemble::IntegrationData* integrationData);
+    static void updateDAEMassWeighting(pylith::feassemble::IntegrationData* integrationData);
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
-private:
-
+  private:
     FaultOps(void); ///< Not implemented.
     FaultOps(const FaultOps&); ///< Not implemented.
     const FaultOps& operator=(const FaultOps&); ///< Not implemented.

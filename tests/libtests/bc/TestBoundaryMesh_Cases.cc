@@ -17,12 +17,15 @@ namespace pylith {
     namespace bc {
         // --------------------------------------------------------------
         class TestBoundaryMesh_Tri : public TestBoundaryMesh {
-            CPPUNIT_TEST_SUB_SUITE(TestBoundaryMesh_Tri, TestBoundaryMesh);
+            CPPUNIT_TEST_SUB_SUITE(TestBoundaryMesh_Tri,
+                                   TestBoundaryMesh);
             CPPUNIT_TEST_SUITE_END();
 
-            void setUp(void) {
+            void
+            setUp(void) {
                 TestBoundaryMesh::setUp();
-                _data = new TestBoundaryMesh_Data();CPPUNIT_ASSERT(_data);
+                _data = new TestBoundaryMesh_Data();
+                CPPUNIT_ASSERT(_data);
                 _data->filename = "data/tri3.mesh";
                 _data->bcLabel = "bc";
                 _data->faultLabel = "fault";
@@ -39,12 +42,15 @@ namespace pylith {
 
         // --------------------------------------------------------------
         class TestBoundaryMesh_Quad : public TestBoundaryMesh {
-            CPPUNIT_TEST_SUB_SUITE(TestBoundaryMesh_Quad, TestBoundaryMesh);
+            CPPUNIT_TEST_SUB_SUITE(TestBoundaryMesh_Quad,
+                                   TestBoundaryMesh);
             CPPUNIT_TEST_SUITE_END();
 
-            void setUp(void) {
+            void
+            setUp(void) {
                 TestBoundaryMesh::setUp();
-                _data = new TestBoundaryMesh_Data();CPPUNIT_ASSERT(_data);
+                _data = new TestBoundaryMesh_Data();
+                CPPUNIT_ASSERT(_data);
                 _data->filename = "data/quad4.mesh";
                 _data->bcLabel = "bc3";
                 _data->faultLabel = "fault";
@@ -61,12 +67,15 @@ namespace pylith {
 
         // --------------------------------------------------------------
         class TestBoundaryMesh_Tet : public TestBoundaryMesh {
-            CPPUNIT_TEST_SUB_SUITE(TestBoundaryMesh_Tet, TestBoundaryMesh);
+            CPPUNIT_TEST_SUB_SUITE(TestBoundaryMesh_Tet,
+                                   TestBoundaryMesh);
             CPPUNIT_TEST_SUITE_END();
 
-            void setUp(void) {
+            void
+            setUp(void) {
                 TestBoundaryMesh::setUp();
-                _data = new TestBoundaryMesh_Data();CPPUNIT_ASSERT(_data);
+                _data = new TestBoundaryMesh_Data();
+                CPPUNIT_ASSERT(_data);
                 _data->filename = "data/tet4.mesh";
                 _data->bcLabel = "bc4";
                 _data->faultLabel = "fault";
@@ -83,12 +92,15 @@ namespace pylith {
 
         // --------------------------------------------------------------
         class TestBoundaryMesh_Hex : public TestBoundaryMesh {
-            CPPUNIT_TEST_SUB_SUITE(TestBoundaryMesh_Hex, TestBoundaryMesh);
+            CPPUNIT_TEST_SUB_SUITE(TestBoundaryMesh_Hex,
+                                   TestBoundaryMesh);
             CPPUNIT_TEST_SUITE_END();
 
-            void setUp(void) {
+            void
+            setUp(void) {
                 TestBoundaryMesh::setUp();
-                _data = new TestBoundaryMesh_Data();CPPUNIT_ASSERT(_data);
+                _data = new TestBoundaryMesh_Data();
+                CPPUNIT_ASSERT(_data);
                 _data->filename = "data/hex8.mesh";
                 _data->bcLabel = "bc2";
                 _data->faultLabel = "fault";

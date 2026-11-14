@@ -16,16 +16,17 @@
 
 #include "spatialdata/units/Parser.hh" // USES Parser
 
+#include <cassert> // USES assert()
 #include <ctime> // USES C time_t
 #include <iomanip> // USES std::setw, etcm
 #include <iostream> // USES std::ofstream
-#include <cassert> // USES assert()
 
 // ------------------------------------------------------------------------------------------------
 // Constructor
 pylith::problems::ProgressMonitorTime::ProgressMonitorTime(void) :
     _baseTime(1.0),
-    _baseUnit("second") {}
+    _baseUnit("second") {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -94,7 +95,7 @@ pylith::problems::ProgressMonitorTime::update(const double current,
                                               const double stop) {
     double percentComplete = 0.0;
     if (_iUpdate != -1) {
-        percentComplete = (100*(current-start)) / (stop-start);
+        percentComplete = (100 * (current - start)) / (stop - start);
     } else {
         _iUpdate = 0;
         percentComplete = 0.0;
@@ -122,12 +123,9 @@ pylith::problems::ProgressMonitorTime::_update(const double t,
     const double tSimNorm = t / _baseTime;
     std::tm* now_tm = localtime(&now);
     std::string now_str = asctime(now_tm);
-    now_str = now_str.erase(now_str.find_last_not_of('\n')+1);
-    _sout << now_str << "   "
-          << std::setprecision(2) << std::setw(8) << tSimNorm
-          << "*" << std::left << std::setw(6) << _baseUnit << std::right
-          << std::setprecision(0) << std::setw(13) << percentComplete
-          << "   " << finished
+    now_str = now_str.erase(now_str.find_last_not_of('\n') + 1);
+    _sout << now_str << "   " << std::setprecision(2) << std::setw(8) << tSimNorm << "*" << std::left << std::setw(6)
+          << _baseUnit << std::right << std::setprecision(0) << std::setw(13) << percentComplete << "   " << finished
           << std::endl;
 } // _update
 

@@ -21,8 +21,7 @@ class pylith::meshio::OutputObserver : public pylith::utils::PyreComponent {
     friend class TestOutputObserver; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     OutputObserver(void);
 
@@ -30,8 +29,7 @@ public:
     virtual ~OutputObserver(void);
 
     /// Deallocate PETSc and local data structures.
-    virtual
-    void deallocate(void);
+    virtual void deallocate(void);
 
     /** Set output trigger for how often to write output.
      *
@@ -67,17 +65,15 @@ public:
      *
      * @param[in] value Time scale for dimensionalizing time.
      */
-    virtual
-    void setTimeScale(const PylithReal value);
+    virtual void setTimeScale(const PylithReal value);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Set context.
      *
      * @param[in] mesh Mesh associated with output.
      */
-    void _setContext(const pylith::topology::Mesh & mesh);
+    void _setContext(const pylith::topology::Mesh& mesh);
 
     /** Get mesh associated with subfield output.
      *
@@ -92,10 +88,9 @@ protected:
      * @param[in] submesh Submesh associated with output.
      * @param[in] name Name of subfield.
      */
-    virtual
-    OutputSubfield* _getSubfield(const pylith::topology::Field& field,
-                                 const pylith::topology::Mesh& submesh,
-                                 const char* name);
+    virtual OutputSubfield* _getSubfield(const pylith::topology::Field& field,
+                                         const pylith::topology::Mesh& submesh,
+                                         const char* name);
 
     /** Append subfield at current time to output.
      *
@@ -106,8 +101,7 @@ protected:
                       const pylith::meshio::OutputSubfield& subfield);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     PylithReal _timeScale; ///< Time scale for dimentionalizing time.
     std::map<std::string, OutputSubfield*> _subfields; ///< Subfields extracted for output.
     pylith::topology::Mesh* _outputMesh; ///< Mesh associated with output.ß
@@ -117,8 +111,7 @@ protected:
     int _refineLevels; ///< Number of mesh refinement levels for output.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     OutputObserver(const OutputObserver&); ///< Not implemented.
     const OutputObserver& operator=(const OutputObserver&); ///< Not implemented
 

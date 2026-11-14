@@ -9,15 +9,14 @@
 // =================================================================================================
 #pragma once
 
-#include "pylith/materials/materialsfwd.hh" // forward declarations
 #include "pylith/materials/AuxiliaryFactoryElasticity.hh" // ISA AuxiliaryFactoryElasticity
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 
 class pylith::materials::AuxiliaryFactoryElastic : public pylith::materials::AuxiliaryFactoryElasticity {
     friend class TestAuxiliaryFactoryElastic; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     AuxiliaryFactoryElastic(void);
 
@@ -37,9 +36,8 @@ public:
     void addReferenceStrain(void);
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
-    AuxiliaryFactoryElastic(const AuxiliaryFactoryElastic &); ///< Not implemented.
+  private:
+    AuxiliaryFactoryElastic(const AuxiliaryFactoryElastic&); ///< Not implemented.
     const AuxiliaryFactoryElastic& operator=(const AuxiliaryFactoryElastic&); ///< Not implemented
 
 }; // class AuxiliaryFactoryElastic

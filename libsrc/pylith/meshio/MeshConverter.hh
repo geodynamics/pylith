@@ -16,18 +16,16 @@
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::MeshConverter : public pylith::utils::GenericComponent {
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /** Convert mesh format.
      *
      * @param[in] writer Mesh writer.
      * @param[in] reader Mesh reader.
      * @param[in] checkTopology Check topology of input mesh.
      */
-    static
-    void convert(pylith::meshio::MeshIO* writer,
-                 pylith::meshio::MeshIO* reader,
-                 const bool checkTopology=true);
+    static void convert(pylith::meshio::MeshIO* writer,
+                        pylith::meshio::MeshIO* reader,
+                        const bool checkTopology = true);
 
 }; // MeshConverter
 

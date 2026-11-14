@@ -10,45 +10,42 @@
 
 #include <portinfo>
 
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/testing/testingfwd.hh"
 #include "pylith/topology/FieldOps.hh" // USES FieldOps::deallocate()
 #include "pylith/utils/journals.hh" // USES journals
-#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "petsc.h"
 #include <Python.h>
 
-#include <cppunit/extensions/TestFactoryRegistry.h>
-#include <cppunit/Test.h>
 #include <cppunit/BriefTestProgressListener.h>
-#include <cppunit/extensions/TestFactoryRegistry.h>
+#include <cppunit/Test.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestResultCollector.h>
 #include <cppunit/TestRunner.h>
 #include <cppunit/TextOutputter.h>
+#include <cppunit/extensions/TestFactoryRegistry.h>
 
-#include <getopt.h> // USES getopt_long()
 #include <cstdlib> // USES abort()
+#include <getopt.h> // USES getopt_long()
 #include <sstream> // USES std::ostringstream, std::istringstream
-#include <vector> // USES std::vector
-#include <utility> // USES std::pair
 #include <string> // USES std::string
+#include <utility> // USES std::pair
+#include <vector> // USES std::vector
 
 // ------------------------------------------------------------------------------------------------
 class pylith::testing::TestDriver {
-public:
-
+  public:
     enum JournalEnum {
-        JOURNAL_INFO=0,
-        JOURNAL_DEBUG=1,
-        JOURNAL_WARNING=2,
+        JOURNAL_INFO = 0,
+        JOURNAL_DEBUG = 1,
+        JOURNAL_WARNING = 2,
     };
 
-    typedef std::vector< std::pair<JournalEnum,std::string> > journals_t;
+    typedef std::vector<std::pair<JournalEnum, std::string>> journals_t;
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestDriver(void);
 
@@ -62,8 +59,7 @@ public:
             char* argv[]);
 
     // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     /** Parse command line arguments.
      *
      * @param[in] argc Number of arguments passed.
@@ -114,8 +110,7 @@ private:
                                    const std::string& name);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     std::vector<std::string> _tests;
     std::vector<std::string> _petscOptions;
     journals_t _journals;
@@ -125,11 +120,9 @@ private:
 
     // NOT IMPLEMENTED
     // ////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     TestDriver(const TestDriver&); ///< Not implemented
     const TestDriver& operator=(const TestDriver&); ///< Not implemented
-
 };
 
 // ------------------------------------------------------------------------------------------------
@@ -137,7 +130,8 @@ private:
 pylith::testing::TestDriver::TestDriver(void) :
     _showHelp(false),
     _listTests(false),
-    _mallocDump(true) {}
+    _mallocDump(true) {
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -155,7 +149,8 @@ pylith::testing::TestDriver::run(int argc,
     CppUnit::TestResultCollector result;
     try {
         // Initialize PETSc
-        int err = _initializePetsc(argc, argv, _petscOptions, _mallocDump);CHKERRQ(err);
+        int err = _initializePetsc(argc, argv, _petscOptions, _mallocDump);
+        CHKERRQ(err);
 
         // Initialize Python (to eliminate need to initialize when
         // parsing units in spatial databases).
@@ -198,7 +193,8 @@ pylith::testing::TestDriver::run(int argc,
 
         // Finalize PETSc
         pylith::topology::FieldOps::deallocate();
-        err = PetscFinalize();CHKERRQ(err);
+        err = PetscFinalize();
+        CHKERRQ(err);
     } catch (...) {
         abort();
     } // catch
@@ -216,23 +212,23 @@ pylith::testing::TestDriver::run(int argc,
 void
 pylith::testing::TestDriver::_parseArgs(int argc,
                                         char* argv[]) {
-    static struct option options[9] = {
-        {"help", no_argument, NULL, 'h'},
-        {"list", no_argument, NULL, 'l'},
-        {"quiet", no_argument, NULL, 'q'},
-        {"tests", required_argument, NULL, 't'},
-        {"petsc", required_argument, NULL, 'p'},
-        {"journal.info", required_argument, NULL, 'i'},
-        {"journal.debug", required_argument, NULL, 'd'},
-        {"journal.warning", required_argument, NULL, 'w'},
-        {0, 0, 0, 0}
-    };
+    static struct option options[9] = {{"help", no_argument, NULL, 'h'},
+                                       {"list", no_argument, NULL, 'l'},
+                                       {"quiet", no_argument, NULL, 'q'},
+                                       {"tests", required_argument, NULL, 't'},
+                                       {"petsc", required_argument, NULL, 'p'},
+                                       {"journal.info", required_argument, NULL, 'i'},
+                                       {"journal.debug", required_argument, NULL, 'd'},
+                                       {"journal.warning", required_argument, NULL, 'w'},
+                                       {0, 0, 0, 0}};
 
     _petscOptions.reserve(4);
     while (true) {
         // extern char* optarg;
         const int c = getopt_long(argc, argv, "hlqt:p:i:d:w:", options, NULL);
-        if (-1 == c) { break; }
+        if (-1 == c) {
+            break;
+        }
         switch (c) {
         case 'h':
             _showHelp = true;
@@ -253,8 +249,8 @@ pylith::testing::TestDriver::_parseArgs(int argc,
             break;
         } // 't'
         case 'p': {
-            if (_petscOptions.size()+1 > _petscOptions.capacity()) {
-                _petscOptions.reserve(_petscOptions.capacity()+4);
+            if (_petscOptions.size() + 1 > _petscOptions.capacity()) {
+                _petscOptions.reserve(_petscOptions.capacity() + 4);
             } // if
             _petscOptions.push_back(optarg);
             break;
@@ -291,7 +287,8 @@ pylith::testing::TestDriver::_printHelp(void) {
               << "    --quiet           Turn off dump of leaked memory.\n"
               << "    --tests           Comma separated list of tests to run (default is all tests).\n"
               << "    --petsc ARG=VALUE Arguments to pass to PETSc. May be repeated for multiple arguments.\n"
-              << "    --journal.TYPE=COMPONENT Activate journal (TYPE=[info,debug,warning,error]) for COMPONENT. May be repeated with different components.\n"
+              << "    --journal.TYPE=COMPONENT Activate journal (TYPE=[info,debug,warning,error]) for COMPONENT. May "
+                 "be repeated with different components.\n"
               << std::endl;
 } // _printHelp
 
@@ -304,24 +301,29 @@ pylith::testing::TestDriver::_initializePetsc(int argc,
                                               const std::vector<std::string>& petscOptions,
                                               const bool mallocDump) {
     int argcP = 1;
-    char** argvP = new char*[argcP+1];
+    char** argvP = new char*[argcP + 1];
     argvP[0] = argv[0];
     argvP[argcP] = NULL; // C standard is argv[argc] == NULL.
-    err = PetscInitialize(&argcP, &argvP, NULL, NULL);CHKERRQ(err);
-    delete[] argvP;argvP = NULL;
+    err = PetscInitialize(&argcP, &argvP, NULL, NULL);
+    CHKERRQ(err);
+    delete[] argvP;
+    argvP = NULL;
 
     if (mallocDump) {
-        err = PetscOptionsSetValue(NULL, "-malloc_dump", "");CHKERRQ(err);
+        err = PetscOptionsSetValue(NULL, "-malloc_dump", "");
+        CHKERRQ(err);
     } // if
     for (size_t i = 0; i < petscOptions.size(); ++i) {
         const size_t pos = petscOptions[i].find_first_of('=');
         if (pos < petscOptions[i].length()) {
             const std::string& arg = std::string("-") + petscOptions[i].substr(0, pos);
-            const std::string& value = petscOptions[i].substr(pos+1);
-            err = PetscOptionsSetValue(NULL, arg.c_str(), value.c_str());CHKERRQ(err);
+            const std::string& value = petscOptions[i].substr(pos + 1);
+            err = PetscOptionsSetValue(NULL, arg.c_str(), value.c_str());
+            CHKERRQ(err);
         } else {
             const std::string& arg = std::string("-") + petscOptions[i];
-            err = PetscOptionsSetValue(NULL, arg.c_str(), "");CHKERRQ(err);
+            err = PetscOptionsSetValue(NULL, arg.c_str(), "");
+            CHKERRQ(err);
         } // if/else
     } // for
 
@@ -334,8 +336,8 @@ pylith::testing::TestDriver::_initializePetsc(int argc,
 void
 pylith::testing::TestDriver::_addJournal(JournalEnum category,
                                          const char* const name) {
-    if (_journals.size()+1 > _journals.capacity()) {
-        _journals.reserve(_journals.capacity()+4);
+    if (_journals.size() + 1 > _journals.capacity()) {
+        _journals.reserve(_journals.capacity() + 4);
     } // if
     _journals.push_back(std::pair<JournalEnum, std::string>(category, name));
 } // addJournal
@@ -365,7 +367,7 @@ pylith::testing::TestDriver::_activateJournals(void) {
             break;
         } // INFO
         default:
-            PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unknown journal category '"<<category<<"'.");
+            PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unknown journal category '" << category << "'.");
         } // switch
     } // for
 } // _activateJournal
@@ -378,9 +380,13 @@ pylith::testing::TestDriver::_activateJournals(void) {
  */
 void
 pylith::testing::TestDriver::_printTests(const CppUnit::Test* const test) {
-    if (!test) { return; }
+    if (!test) {
+        return;
+    }
     std::cout << test->getName() << std::endl;
-    if (!test->getChildTestCount()) { return; }
+    if (!test->getChildTestCount()) {
+        return;
+    }
     for (int i = 0; i < test->getChildTestCount(); ++i) {
         _printTests(test->getChildTestAt(i));
     } // for
@@ -392,13 +398,21 @@ pylith::testing::TestDriver::_printTests(const CppUnit::Test* const test) {
 const CppUnit::Test*
 pylith::testing::TestDriver::_findTest(const CppUnit::Test* test,
                                        const std::string& name) {
-    if (!test) { return NULL;}
-    if (test->getName() == name) { return test; }
-    if (!test->getChildTestCount()) { return NULL; }
+    if (!test) {
+        return NULL;
+    }
+    if (test->getName() == name) {
+        return test;
+    }
+    if (!test->getChildTestCount()) {
+        return NULL;
+    }
 
     for (int i = 0; i < test->getChildTestCount(); ++i) {
         const CppUnit::Test* testCase = _findTest(test->getChildTestAt(i), name);
-        if (testCase) { return testCase; }
+        if (testCase) {
+            return testCase;
+        }
     } // for
 
     return NULL;

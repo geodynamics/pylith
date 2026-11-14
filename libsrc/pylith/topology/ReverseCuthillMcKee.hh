@@ -13,16 +13,14 @@
 
 class pylith::topology::ReverseCuthillMcKee {
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /** Reorder vertices and cells of mesh using PETSc routines
      * implementing reverse Cuthill-McKee algorithm.
      *
      * @param mesh PyLith finite-element mesh.
      * @returns Mesh after reordering.
      */
-    static
-    pylith::topology::Mesh* reorder(const pylith::topology::Mesh& mesh);
+    static pylith::topology::Mesh* reorder(const pylith::topology::Mesh& mesh);
 
 }; // ReverseCuthillMcKee
 

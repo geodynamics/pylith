@@ -19,7 +19,7 @@ typedef PetscErrorCode (*PetscUserFieldFunc)(PetscInt,
                                              PetscReal,
                                              const PetscReal x[],
                                              PetscInt,
-                                             PetscScalar *u,
-                                             void *ctx);
+                                             PetscScalar* u,
+                                             void* ctx);
 
 // End of file

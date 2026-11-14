@@ -12,10 +12,10 @@
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
+#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Stratum.hh" // USES Stratum
-#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
@@ -30,62 +30,61 @@ namespace pylith {
     namespace topology {
         class TestMesh;
     }
-}
+} // namespace pylith
 
 class pylith::topology::TestMesh : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test constructor.
-    static
-    void testConstructor(void);
+    static void testConstructor(void);
 
     /// Test dmMesh().
-    static
-    void testDMMesh(void);
+    static void testDMMesh(void);
 
     /// Test coordsys().
-    static
-    void testCoordsys(void);
+    static void testCoordsys(void);
 
     /// Test dimension().
-    static
-    void testDimension(void);
+    static void testDimension(void);
 
     /// Test numCorners(), numCells(), numVertices(), isSimplex().
-    static
-    void testAccessors(void);
+    static void testAccessors(void);
 
     /// Test comm().
-    static
-    void testComm(void);
+    static void testComm(void);
 
     /// Test view().
-    static
-    void testView(void);
+    static void testView(void);
 
 }; // class TestMesh
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestMesh::testConstructor", "[TestMesh]") {
+TEST_CASE("TestMesh::testConstructor",
+          "[TestMesh]") {
     pylith::topology::TestMesh::testConstructor();
 }
-TEST_CASE("TestMesh::testDMMesh", "[TestMesh]") {
+TEST_CASE("TestMesh::testDMMesh",
+          "[TestMesh]") {
     pylith::topology::TestMesh::testDMMesh();
 }
-TEST_CASE("TestMesh::testCoordsys", "[TestMesh]") {
+TEST_CASE("TestMesh::testCoordsys",
+          "[TestMesh]") {
     pylith::topology::TestMesh::testCoordsys();
 }
-TEST_CASE("TestMesh::testDimension", "[TestMesh]") {
+TEST_CASE("TestMesh::testDimension",
+          "[TestMesh]") {
     pylith::topology::TestMesh::testDimension();
 }
-TEST_CASE("TestMesh::testAccessors", "[TestMesh]") {
+TEST_CASE("TestMesh::testAccessors",
+          "[TestMesh]") {
     pylith::topology::TestMesh::testAccessors();
 }
-TEST_CASE("TestMesh::testComm", "[TestMesh]") {
+TEST_CASE("TestMesh::testComm",
+          "[TestMesh]") {
     pylith::topology::TestMesh::testComm();
 }
-TEST_CASE("TestMesh::testView", "[TestMesh]") {
+TEST_CASE("TestMesh::testView",
+          "[TestMesh]") {
     pylith::topology::TestMesh::testView();
 }
 
@@ -132,7 +131,8 @@ pylith::topology::TestMesh::testDMMesh(void) {
     PetscInt dmDim;
     Mesh mesh(dim);
 
-    PetscDM dmMesh = mesh.getDM();REQUIRE(dmMesh);
+    PetscDM dmMesh = mesh.getDM();
+    REQUIRE(dmMesh);
     PylithCallPetscRequire(DMGetDimension(dmMesh, &dmDim));
     CHECK(dim == dmDim);
 

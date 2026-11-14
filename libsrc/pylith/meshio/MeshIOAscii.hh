@@ -20,8 +20,7 @@ class pylith::meshio::MeshIOAscii : public MeshIO {
     friend class TestMeshIOAscii; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     MeshIOAscii(void);
 
@@ -44,8 +43,7 @@ public:
     const char* getFilename(void) const;
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Write mesh
     void _write(void) const;
 
@@ -53,8 +51,7 @@ protected:
     void _read(void);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     std::string _filename; ///< Name of file
     bool _useIndexZero; ///< Flag indicating if indicates start at 0 (T) or 1 (F)
 

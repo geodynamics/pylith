@@ -18,14 +18,13 @@ namespace pylith {
     namespace faults {
         class TestTransformTopology;
         class TestTransformTopology_Data;
-    } // faults
-} // pylith
+    } // namespace faults
+} // namespace pylith
 
 /// C++ unit testing of FaultCohesive::transformTopology()
 class pylith::faults::TestTransformTopology : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestTransformTopology(TestTransformTopology_Data* data);
 
@@ -36,14 +35,12 @@ public:
     void run(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     TestTransformTopology_Data* _data; ///< Data for testing.
     pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
 
     // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     /// Setup mesh.
     void _initialize();
 
@@ -51,8 +48,7 @@ private:
 
 class pylith::faults::TestTransformTopology_Data {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestTransformTopology_Data(void);
 
@@ -60,17 +56,16 @@ public:
     ~TestTransformTopology_Data(void);
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     typedef int (*matid_fn)(const int, // cell
                             const int, // numNoncohesiveCells
                             const double* // centroid
-                            );
+    );
 
-    static
-    int getMatIdDefault(const int cell,
-                        const int numNoncohesiveCells,
-                        const double* xyz) {
+    static int
+    getMatIdDefault(const int cell,
+                    const int numNoncohesiveCells,
+                    const double* xyz) {
         return (cell < numNoncohesiveCells) ? 0 : 100;
     }
 

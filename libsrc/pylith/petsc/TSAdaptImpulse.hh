@@ -19,50 +19,43 @@ class pylith::petsc::TSAdaptImpulse {
     friend class TestTSAdapImpulse; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /** Set time step for impulse portion.
      *
      * @param[in] timestep Time step (nondimensional).
      */
-    static
-    void setImpulseTimeStep(const double timestep);
+    static void setImpulseTimeStep(const double timestep);
 
     /** Get time step for impulse portion.
      *
      * @returns Time step (nondimensional).
      */
-    static
-    double getImpulseTimeStep(void);
+    static double getImpulseTimeStep(void);
 
     /** Set PETSc TS adapt.
      *
      * @param[inout] ts PETSc TS.
      */
-    static
-    void set(PetscTS ts);
+    static void set(PetscTS ts);
 
     /** PETSc adaptive time stepper.
      *
      */
-    static
-    PetscErrorCode TSAdaptChoose(TSAdapt adapt,
-                                 PetscTS ts,
-                                 PetscReal h,
-                                 PetscInt *next_sc,
-                                 PetscReal *next_h,
-                                 PetscBool *accept,
-                                 PetscReal *wlte,
-                                 PetscReal *wltea,
-                                 PetscReal *wlter);
+    static PetscErrorCode TSAdaptChoose(TSAdapt adapt,
+                                        PetscTS ts,
+                                        PetscReal h,
+                                        PetscInt* next_sc,
+                                        PetscReal* next_h,
+                                        PetscBool* accept,
+                                        PetscReal* wlte,
+                                        PetscReal* wltea,
+                                        PetscReal* wlter);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     static double _impulseStep; ///< Time step for impulse portion.
 
     // Not impemented /////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     TSAdaptImpulse(void); ///< Not implemented.
 };

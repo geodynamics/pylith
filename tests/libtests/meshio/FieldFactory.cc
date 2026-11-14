@@ -12,24 +12,25 @@
 
 #include "FieldFactory.hh" // implementation of object methods
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/exceptions/error.hh" // USES PylithCallPetscRequire()
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
-#include "pylith/utils/journals.hh" // USES journals
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/utils/journals.hh" // USES journals
 
 #include "catch2/catch_test_macros.hpp"
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::meshio::FieldFactory::FieldFactory(pylith::topology::Field& field) :
-    _field(field) {}
+pylith::meshio::FieldFactory::FieldFactory(pylith::topology::Field& field) : _field(field) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::meshio::FieldFactory::~FieldFactory(void) {}
+pylith::meshio::FieldFactory::~FieldFactory(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -62,7 +63,7 @@ pylith::meshio::FieldFactory::addVector(const pylith::topology::FieldBase::Discr
     PYLITH_METHOD_BEGIN;
 
     const char* fieldName = "vector";
-    const char* components[3] = { "vector_x", "vector_y", "vector_z" };
+    const char* components[3] = {"vector_x", "vector_y", "vector_z"};
 
     const int spaceDim = _field.getSpaceDim();
 
@@ -98,7 +99,7 @@ pylith::meshio::FieldFactory::addTensor(const pylith::topology::FieldBase::Discr
     description.vectorFieldType = pylith::topology::Field::TENSOR;
     if (2 == spaceDim) {
         const int tensorSize = 3;
-        const char* componentNames[tensorSize] = { "tensor_xx", "tensor_yy", "tensor_xy" };
+        const char* componentNames[tensorSize] = {"tensor_xx", "tensor_yy", "tensor_xy"};
         description.numComponents = tensorSize;
         description.componentNames.resize(tensorSize);
         for (int i = 0; i < tensorSize; ++i) {
@@ -106,15 +107,14 @@ pylith::meshio::FieldFactory::addTensor(const pylith::topology::FieldBase::Discr
         } // for
     } else if (3 == spaceDim) {
         const int tensorSize = 6;
-        const char* componentNames[6] = { "tensor_xx", "tensor_yy", "tensor_zz", "tensor_xy", "tensor_yz", "tensor_xz" };
+        const char* componentNames[6] = {"tensor_xx", "tensor_yy", "tensor_zz", "tensor_xy", "tensor_yz", "tensor_xz"};
         description.numComponents = tensorSize;
         description.componentNames.resize(tensorSize);
         for (int i = 0; i < tensorSize; ++i) {
             description.componentNames[i] = componentNames[i];
         } // for
     } else {
-        PYLITH_ERROR(pylith::exceptions::SwitchLogicError,
-                     "Unknown spatial dimension " << spaceDim << ".");
+        PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unknown spatial dimension " << spaceDim << ".");
     } // if/else
     description.scale = 1.0;
     description.validator = NULL;
@@ -132,7 +132,7 @@ pylith::meshio::FieldFactory::addOther(const pylith::topology::FieldBase::Discre
     PYLITH_METHOD_BEGIN;
     const char* fieldName = "other";
     const int otherSize = 2;
-    const char* componentNames[otherSize] = { "other_1", "other_2" };
+    const char* componentNames[otherSize] = {"other_1", "other_2"};
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -161,7 +161,12 @@ pylith::meshio::FieldFactory::setValues(PetscUserFieldFunc fieldFn) {
     std::vector<PetscDM> contexts(numFields, _field.getDM());
     for (size_t iField = 0; iField < numFields; ++iField) {
         const PylithReal time = 0.0;
-        PylithCallPetscRequire(DMProjectFunctionLocal(_field.getDM(), time, fieldFns.data(), (void**)contexts.data(), INSERT_VALUES, _field.getLocalVector()));
+        PylithCallPetscRequire(DMProjectFunctionLocal(_field.getDM(),
+                                                      time,
+                                                      fieldFns.data(),
+                                                      (void**)contexts.data(),
+                                                      INSERT_VALUES,
+                                                      _field.getLocalVector()));
     } // for
 
     PYLITH_METHOD_END;

@@ -18,8 +18,7 @@ class pylith::meshio::OutputSolnDomain : public pylith::meshio::OutputSoln {
     friend class TestOutputSolnDomain; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     OutputSolnDomain(void);
 
@@ -27,8 +26,7 @@ public:
     virtual ~OutputSolnDomain(void);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Write solution at time step.
      *
      * @param[in] t Current time.
@@ -40,8 +38,7 @@ protected:
                         const pylith::topology::Field& solution);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     OutputSolnDomain(const OutputSolnDomain&); ///< Not implemented.
     const OutputSolnDomain& operator=(const OutputSolnDomain&); ///< Not implemented
 

@@ -23,8 +23,7 @@ class pylith::utils::GenericComponent {
     friend class TestGenericComponent; // unit testing
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     GenericComponent(void);
 
@@ -44,13 +43,11 @@ public:
     const char* getName(void) const;
 
     // PRIVATE METHODS //////////////////////////////////////////////////////
-private:
-
+  private:
     std::string _name; ///< Name of component (used in journals).
 
     // PRIVATE METHODS //////////////////////////////////////////////////////
-private:
-
+  private:
     GenericComponent(const GenericComponent&); ///< Not implemented
     const GenericComponent& operator=(const GenericComponent&); ///< Not implemented
 

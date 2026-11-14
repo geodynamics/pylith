@@ -36,8 +36,7 @@ class pylith::bc::DirichletTimeDependent : public pylith::bc::BoundaryCondition 
     friend class TestDirichletTimeDependent; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     DirichletTimeDependent(void);
 
@@ -151,8 +150,7 @@ public:
                               const double t);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get auxiliary factory associated with physics.
      *
      * @return Auxiliary factory for physics object.
@@ -160,8 +158,7 @@ protected:
     pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     int_array _constrainedDOF; ///< List of constrained degrees of freedom at each location.
     spatialdata::spatialdb::TimeHistory* _dbTimeHistory; ///< Time history database.
     pylith::bc::TimeDependentAuxiliaryFactory* _auxiliaryFactory; ///< Factory for auxiliary subfields.
@@ -171,8 +168,7 @@ private:
     bool _useTimeHistory; ///< Use time history term.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     DirichletTimeDependent(const DirichletTimeDependent&); ///< Not implemented.
     const DirichletTimeDependent& operator=(const DirichletTimeDependent&); ///< Not implemented.
 

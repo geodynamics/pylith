@@ -17,8 +17,7 @@ class pylith::bc::NeumannUserFn : public pylith::bc::BoundaryCondition {
     friend class TestNeumannUserFn; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     NeumannUserFn(void);
 
@@ -65,8 +64,7 @@ public:
                                                   const pylith::topology::Mesh& domainMesh);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get auxiliary factory associated with physics.
      *
      * @return Auxiliary factory for physics object.
@@ -74,13 +72,11 @@ protected:
     pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     PetscBdPointFn* _fn; ///< Kernel for boundary integration.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     NeumannUserFn(const NeumannUserFn&); ///< Not implemented.
     const NeumannUserFn& operator=(const NeumannUserFn&); ///< Not implemented.
 

@@ -14,13 +14,12 @@
 namespace pylith {
     namespace faults {
         class CohesiveImpulsesData;
-    } // pylith
-} // faults
+    } // namespace faults
+} // namespace pylith
 
 class pylith::faults::CohesiveImpulsesData {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     CohesiveImpulsesData(void);
 
@@ -28,8 +27,7 @@ public:
     ~CohesiveImpulsesData(void);
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     char* meshFilename; ///< Filename for input mesh
 
     /// @name Scales information for nondimensionalization.
@@ -82,7 +80,6 @@ public:
     int* negativeVertices; ///< Expected points for negative side fault vertices
     int numConstraintEdges; ///< Number of constraint edges
     //@}
-
 };
 
 // End of file

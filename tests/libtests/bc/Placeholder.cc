@@ -19,19 +19,18 @@ namespace pylith {
     namespace bc {
         class TestPlaceholder;
     }
-}
+} // namespace pylith
 
 class pylith::bc::TestPlaceholder : public pylith::utils::GenericComponent {
-public:
-
+  public:
     /// Test methodCount().
-    static
-    void emptyTest(void);
+    static void emptyTest(void);
 
 }; // class TestPlaceholder
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestPlaceholder::emptyTest", "[TestPlaceholder]") {
+TEST_CASE("TestPlaceholder::emptyTest",
+          "[TestPlaceholder]") {
     pylith::bc::TestPlaceholder::emptyTest();
 }
 

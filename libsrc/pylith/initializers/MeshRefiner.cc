@@ -19,7 +19,8 @@
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor
-pylith::initializers::MeshRefiner::MeshRefiner(void) : _refiner(nullptr) {}
+pylith::initializers::MeshRefiner::MeshRefiner(void) : _refiner(nullptr) {
+}
 
 
 // ------------------------------------------------------------------------------------------------

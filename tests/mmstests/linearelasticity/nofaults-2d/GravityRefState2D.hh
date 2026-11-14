@@ -17,8 +17,7 @@ namespace pylith {
 }
 
 class pylith::GravityRefState2D {
-public:
-
+  public:
     // Data factory methods
 
     static TestLinearElasticity_Data* TriP1(void);
@@ -33,8 +32,7 @@ public:
 
     static TestLinearElasticity_Data* QuadQ3(void);
 
-private:
-
+  private:
     GravityRefState2D(void); ///< Not implemented
 }; // GravityRefState2D
 

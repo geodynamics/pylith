@@ -36,8 +36,7 @@ class pylith::bc::NeumannTimeDependent : public pylith::bc::BoundaryCondition {
     friend class TestNeumannTimeDependent; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     NeumannTimeDependent(void);
 
@@ -141,8 +140,7 @@ public:
                               const double t);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get auxiliary factory associated with physics.
      *
      * @return Auxiliary factory for physics object.
@@ -150,8 +148,7 @@ protected:
     pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     spatialdata::spatialdb::TimeHistory* _dbTimeHistory; ///< Time history database.
     pylith::bc::TimeDependentAuxiliaryFactory* _auxiliaryFactory; ///< Factory for auxiliary subfields.
     std::string _scaleName; ///< Name of scale associated with Neumann boundary condition.
@@ -162,8 +159,7 @@ private:
 
     // NOT IMPLEMENTED
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     NeumannTimeDependent(const NeumannTimeDependent&); ///< Not implemented.
     const NeumannTimeDependent& operator=(const NeumannTimeDependent&); ///< Not implemented.
 

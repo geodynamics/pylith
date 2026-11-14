@@ -9,8 +9,8 @@
 // =================================================================================================
 #pragma once
 
-#include "TestDataWriterVTK.hh" // ISA TestDataWriterVTK
 #include "TestDataWriterPoints.hh" // ISA TestDataWriterPoints
+#include "TestDataWriterVTK.hh" // ISA TestDataWriterVTK
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 
@@ -19,14 +19,13 @@ namespace pylith {
     namespace meshio {
         class TestDataWriterVTKPoints;
         class TestDataWriterVTKPoints_Data;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterVTKPoints : public TestDataWriterVTK, public TestDataWriterPoints {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestDataWriterVTKPoints(TestDataWriterVTKPoints_Data* data);
 
@@ -40,8 +39,7 @@ public:
     void testWriteVertexField(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get test data.
      *
      * @returns Test data.
@@ -49,8 +47,7 @@ protected:
     TestDataWriterPoints_Data* _getData(void);
 
     // PROTECTED MEMBDERS /////////////////////////////////////////////////
-protected:
-
+  protected:
     TestDataWriterVTKPoints_Data* _data; ///< Data for testing.
 
 }; // class TestDataWriterVTKPoints

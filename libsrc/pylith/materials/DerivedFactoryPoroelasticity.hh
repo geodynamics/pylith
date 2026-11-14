@@ -9,15 +9,14 @@
 // =================================================================================================
 #pragma once
 
-#include "pylith/materials/materialsfwd.hh" // forward declarations
 #include "pylith/materials/DerivedFactoryElasticity.hh" // ISA DerivedFactoryElasticity
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 
 class pylith::materials::DerivedFactoryPoroelasticity : public pylith::materials::DerivedFactoryElasticity {
     friend class TestDerivedFactoryElasticity; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     DerivedFactoryPoroelasticity(void);
 
@@ -34,9 +33,8 @@ public:
     void addSubfields(void);
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
-    DerivedFactoryPoroelasticity(const DerivedFactoryPoroelasticity &); ///< Not implemented.
+  private:
+    DerivedFactoryPoroelasticity(const DerivedFactoryPoroelasticity&); ///< Not implemented.
     const DerivedFactoryPoroelasticity& operator=(const DerivedFactoryPoroelasticity&); ///< Not implemented
 
 }; // class DerivedFactoryPoroelasticity

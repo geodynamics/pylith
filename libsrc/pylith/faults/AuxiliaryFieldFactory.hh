@@ -16,8 +16,7 @@ class pylith::faults::AuxiliaryFieldFactory : public pylith::feassemble::Auxilia
     friend class TestAuxiliaryFieldFactory; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     AuxiliaryFieldFactory(void);
 
@@ -34,9 +33,8 @@ public:
     void addSlipAcceleration(void);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
-    AuxiliaryFieldFactory(const AuxiliaryFieldFactory &); ///< Not implemented.
+  private:
+    AuxiliaryFieldFactory(const AuxiliaryFieldFactory&); ///< Not implemented.
     const AuxiliaryFieldFactory& operator=(const AuxiliaryFieldFactory&); ///< Not implemented
 
 }; // class AuxiliaryFieldFactory

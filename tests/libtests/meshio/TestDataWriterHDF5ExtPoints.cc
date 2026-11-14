@@ -12,12 +12,12 @@
 
 #include "TestDataWriterHDF5ExtPoints.hh" // Implementation of class methods
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/Field.hh" // USES Field
-#include "pylith/meshio/OutputSolnPoints.hh" // USES OutputSolnPoints
-#include "pylith/meshio/DataWriterHDF5Ext.hh" // USES DataWriterHDF5Ext
-#include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
+#include "pylith/meshio/DataWriterHDF5Ext.hh" // USES DataWriterHDF5Ext
+#include "pylith/meshio/OutputSolnPoints.hh" // USES OutputSolnPoints
+#include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include "pylith/scales/Scales.hh" // USES Scales
 
@@ -37,7 +37,8 @@ pylith::meshio::TestDataWriterHDF5ExtPoints::TestDataWriterHDF5ExtPoints(TestDat
 pylith::meshio::TestDataWriterHDF5ExtPoints::~TestDataWriterHDF5ExtPoints(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _data;_data = nullptr;
+    delete _data;
+    _data = nullptr;
 
     PYLITH_METHOD_END;
 } // destructor
@@ -98,7 +99,8 @@ pylith::meshio::TestDataWriterHDF5ExtPoints::testWriteVertexField(void) {
         subfield->extractSubfield(vertexField, info.index);
 
         writer.writeVertexField(t, *subfield);
-        delete subfield;subfield = NULL;
+        delete subfield;
+        subfield = NULL;
     } // for
     writer.closeTimeStep();
     writer.close();

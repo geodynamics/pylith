@@ -17,8 +17,7 @@ class pylith::materials::IsotropicPowerLaw : public pylith::materials::RheologyE
     friend class TestIsotropicPowerLaw; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     IsotropicPowerLaw(void);
 
@@ -111,14 +110,12 @@ public:
                                const PylithReal dt) const;
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::materials::AuxiliaryFactoryViscoelastic* _auxiliaryFactory; ///< Factory for creating auxiliary subfields.
     bool _useReferenceState; ///< Flag to use reference stress and strain.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     IsotropicPowerLaw(const IsotropicPowerLaw&); ///< Not implemented.
     const IsotropicPowerLaw& operator=(const IsotropicPowerLaw&); ///< Not implemented
 

@@ -22,12 +22,14 @@ pylith::meshio::TestDataWriter_Data::TestDataWriter_Data(void) :
     lengthScale(1.0),
     time(0.0),
     timeFormat(nullptr),
-    fieldFn(nullptr) {}
+    fieldFn(nullptr) {
+}
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshio::TestDataWriter_Data::~TestDataWriter_Data(void) {}
+pylith::meshio::TestDataWriter_Data::~TestDataWriter_Data(void) {
+}
 
 
 // End of file

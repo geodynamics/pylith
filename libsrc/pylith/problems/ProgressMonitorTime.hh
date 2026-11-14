@@ -17,8 +17,7 @@ class pylith::problems::ProgressMonitorTime : public pylith::problems::ProgressM
     friend class TestProgressMonitorTime; // unit testing
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     ProgressMonitorTime(void);
 
@@ -51,8 +50,7 @@ public:
                 const double stop);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Open progress monitor.
     void _open(void);
 
@@ -72,15 +70,13 @@ protected:
                  const char* finished);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     double _baseTime; ///< Units of time as seconds.
     std::string _baseUnit; ///< Unit of time.
     std::ofstream _sout; ///< Output stream.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     ProgressMonitorTime(const ProgressMonitorTime&); ///< Not implemented.
     const ProgressMonitorTime& operator=(const ProgressMonitorTime&); ///< Not implemented.
 

@@ -16,96 +16,108 @@
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES PYLITH_DEBUG
 
-#include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
+#include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
 #include "catch2/catch_test_macros.hpp"
 
 namespace pylith {
     class _BodyForce2D;
-} // pylith
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::_BodyForce2D {
-private:
-
+  private:
     static pylith::scales::Scales scales;
     static const double BODY_FORCE; // dimensioned
     static const double X_MAX; // dimensioned
 
     // Density
-    static double density(const double x,
-                          const double y) {
+    static double
+    density(const double x,
+            const double y) {
         return 2500.0;
     } // density
 
-    static const char* density_units(void) {
+    static const char*
+    density_units(void) {
         return "kg/m**3";
     } // density_units
 
     // Vs
-    static double vs(const double x,
-                     const double y) {
+    static double
+    vs(const double x,
+       const double y) {
         return 3000.0;
     } // vs
 
-    static const char* vs_units(void) {
+    static const char*
+    vs_units(void) {
         return "m/s";
     } // vs_units
 
     // Vp
-    static double vp(const double x,
-                     const double y) {
+    static double
+    vp(const double x,
+       const double y) {
         return 1.0e+15;
     } // vp
 
-    static const char* vp_units(void) {
+    static const char*
+    vp_units(void) {
         return "m/s";
     } // vp_units
 
-    static double bodyforce_x(const double x,
-                              const double y) {
+    static double
+    bodyforce_x(const double x,
+                const double y) {
         return BODY_FORCE;
     } // bodyforce_x
 
-    static double bodyforce_y(const double x,
-                              const double y) {
+    static double
+    bodyforce_y(const double x,
+                const double y) {
         return 0.0;
     } // bodyforce_y
 
-    static const char* bodyforce_units(void) {
+    static const char*
+    bodyforce_units(void) {
         return "kg/(m**2*s**2)";
     } // bodyforce_units
 
     // Solution fields (nondimensional)
 
     // Displacement
-    static double disp_x(const double x,
-                         const double y) {
+    static double
+    disp_x(const double x,
+           const double y) {
         return 0.0;
     } // disp_x
 
-    static double disp_y(const double x,
-                         const double y) {
+    static double
+    disp_y(const double x,
+           const double y) {
         return 0.0;
     } // disp_y
 
     // Pressure
-    static double pressure(const double x,
-                           const double y) {
+    static double
+    pressure(const double x,
+             const double y) {
         const double lengthScale = scales.getLengthScale();
         const double bodyForceScale = pylith::scales::ElasticityScales::getBodyForceScale(scales);
 
         const double bodyforceN = BODY_FORCE / bodyForceScale;
-        return -bodyforceN * (X_MAX/lengthScale - x);
+        return -bodyforceN * (X_MAX / lengthScale - x);
     } // pressure
 
-    static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
-                                          PetscReal t,
-                                          const PetscReal x[],
-                                          PetscInt numComponents,
-                                          PetscScalar* s,
-                                          void* context) {
+    static PetscErrorCode
+    solnkernel_disp(PetscInt spaceDim,
+                    PetscReal t,
+                    const PetscReal x[],
+                    PetscInt numComponents,
+                    PetscScalar* s,
+                    void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(2 == numComponents);
         REQUIRE(s);
@@ -117,12 +129,13 @@ private:
         return PETSC_SUCCESS;
     } // solnkernel_disp
 
-    static PetscErrorCode solnkernel_pressure(PetscInt spaceDim,
-                                              PetscReal t,
-                                              const PetscReal x[],
-                                              PetscInt numComponents,
-                                              PetscScalar* s,
-                                              void* context) {
+    static PetscErrorCode
+    solnkernel_pressure(PetscInt spaceDim,
+                        PetscReal t,
+                        const PetscReal x[],
+                        PetscInt numComponents,
+                        PetscScalar* s,
+                        void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(x);
         REQUIRE(1 == numComponents);
@@ -133,11 +146,11 @@ private:
         return PETSC_SUCCESS;
     } // solnkernel_pressure
 
-public:
-
-    static
-    TestIncompressibleElasticity_Data* createData(void) {
-        TestIncompressibleElasticity_Data* data = new TestIncompressibleElasticity_Data();REQUIRE(data);
+  public:
+    static TestIncompressibleElasticity_Data*
+    createData(void) {
+        TestIncompressibleElasticity_Data* data = new TestIncompressibleElasticity_Data();
+        REQUIRE(data);
 
         data->journalName = "BodyForce2D";
 
@@ -181,7 +194,8 @@ public:
         { // disp
             static const PylithInt constrainedDOF[2] = {0, 1};
             static const PylithInt numConstrainedDOF = 2;
-            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
+            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
+            REQUIRE(bc);
             bc->setSubfieldName("displacement");
             bc->setLabelName("boundary");
             bc->setLabelValue(1);
@@ -193,7 +207,8 @@ public:
         { // pressure
             static const PylithInt constrainedDOF[1] = {0};
             static const PylithInt numConstrainedDOF = 1;
-            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
+            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
+            REQUIRE(bc);
             bc->setSubfieldName("pressure");
             bc->setLabelName("boundary");
             bc->setLabelValue(1);
@@ -220,7 +235,8 @@ const double pylith::_BodyForce2D::X_MAX = +4.0e+3;
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::BodyForce2D::TriP1(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_BodyForce2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_BodyForce2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -246,7 +262,8 @@ pylith::BodyForce2D::TriP1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::BodyForce2D::TriP2(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_BodyForce2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_BodyForce2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -272,7 +289,8 @@ pylith::BodyForce2D::TriP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::BodyForce2D::TriP3(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_BodyForce2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_BodyForce2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -298,7 +316,8 @@ pylith::BodyForce2D::TriP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::BodyForce2D::QuadQ2(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_BodyForce2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_BodyForce2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -324,7 +343,8 @@ pylith::BodyForce2D::QuadQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::BodyForce2D::QuadQ3(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_BodyForce2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_BodyForce2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 

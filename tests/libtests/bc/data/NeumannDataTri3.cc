@@ -25,8 +25,7 @@
 
 #include "NeumannDataTri3.hh"
 
-const char* pylith::bc::NeumannDataTri3::_meshFilename =
-    "data/tri3.mesh";
+const char* pylith::bc::NeumannDataTri3::_meshFilename = "data/tri3.mesh";
 
 const int pylith::bc::NeumannDataTri3::_numBasis = 2;
 const int pylith::bc::NeumannDataTri3::_numQuadPts = 1;
@@ -45,8 +44,7 @@ const PylithScalar pylith::bc::NeumannDataTri3::_basisDerivRef[] = {
     0.5,
 };
 
-const char* pylith::bc::NeumannDataTri3::_spatialDBFilename =
-    "data/tri3_tractions.spatialdb";
+const char* pylith::bc::NeumannDataTri3::_spatialDBFilename = "data/tri3_tractions.spatialdb";
 const int pylith::bc::NeumannDataTri3::_id = 0;
 const char* pylith::bc::NeumannDataTri3::_label = "bc";
 
@@ -57,17 +55,23 @@ const int pylith::bc::NeumannDataTri3::_numCells = 1;
 const int pylith::bc::NeumannDataTri3::_numCorners = 2;
 /* Now vertices are renumbered in the submesh */
 const int pylith::bc::NeumannDataTri3::_cells[] = {
-    1 /*3*/, 2 /*5*/,
+    1 /*3*/,
+    2 /*5*/,
 };
 
 const PylithScalar pylith::bc::NeumannDataTri3::_tractionsCell[] = {
-    1.4142135624,  0.0,
+    1.4142135624,
+    0.0,
 };
 const PylithScalar pylith::bc::NeumannDataTri3::_valsResidual[] = {
-    0.0,  0.0,
-    1.0,  0.0,
-    0.0,  0.0,
-    1.0,  0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
 };
 
 pylith::bc::NeumannDataTri3::NeumannDataTri3(void) { // constructor
@@ -97,7 +101,8 @@ pylith::bc::NeumannDataTri3::NeumannDataTri3(void) { // constructor
 } // constructor
 
 
-pylith::bc::NeumannDataTri3::~NeumannDataTri3(void) {}
+pylith::bc::NeumannDataTri3::~NeumannDataTri3(void) {
+}
 
 
 // End of file

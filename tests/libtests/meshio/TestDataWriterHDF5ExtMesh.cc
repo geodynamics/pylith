@@ -14,11 +14,11 @@
 
 #include "pylith/utils/types.hh" // HASA PylithScalar
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
 #include "pylith/meshio/DataWriterHDF5Ext.hh" // USES DataWriterHDF5Ext
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
-#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
@@ -36,7 +36,8 @@ pylith::meshio::TestDataWriterHDF5ExtMesh::TestDataWriterHDF5ExtMesh(TestDataWri
 pylith::meshio::TestDataWriterHDF5ExtMesh::~TestDataWriterHDF5ExtMesh(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _data;_data = nullptr;
+    delete _data;
+    _data = nullptr;
 
     PYLITH_METHOD_END;
 } // destructor
@@ -160,7 +161,8 @@ pylith::meshio::TestDataWriterHDF5ExtMesh::testWriteVertexField(void) {
         REQUIRE(subfield);
         subfield->project(vertexField.getOutputVector());
         writer.writeVertexField(t, *subfield);
-        delete subfield;subfield = NULL;
+        delete subfield;
+        subfield = NULL;
     } // for
     writer.closeTimeStep();
     writer.close();
@@ -201,7 +203,8 @@ pylith::meshio::TestDataWriterHDF5ExtMesh::testWriteCellField(void) {
         REQUIRE(subfield);
         subfield->project(cellField.getOutputVector());
         writer.writeCellField(t, *subfield);
-        delete subfield;subfield = NULL;
+        delete subfield;
+        subfield = NULL;
     } // for
     writer.closeTimeStep();
     writer.close();

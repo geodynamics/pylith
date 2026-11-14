@@ -14,14 +14,13 @@
 namespace pylith {
     namespace meshio {
         class TestMeshIOCubit;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestMeshIOCubit : public TestMeshIO {
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestMeshIOCubit(TestMeshIO_Data* data);
 
@@ -35,8 +34,7 @@ public:
     void testRead(void);
 
     // PROTECTED METHODS ////////////////////////////////////////////////
-protected:
-
+  protected:
     MeshIOCubit* _io; ///< Test subject.
 
 }; // class TestMeshIOCubit

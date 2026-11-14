@@ -17,13 +17,14 @@ namespace pylith {
         class TestIsotropicLinearElasticityPlaneStrain;
 
         class TestIsotropicLinearElasticityPlaneStrain_Data;
-    } // materials
-} // pylith
+    } // namespace materials
+} // namespace pylith
 
 /// C++ unit testing for IsotropicLinearElasticityPlaneStrain
 class pylith::materials::TestIsotropicLinearElasticityPlaneStrain : public TestMaterial {
     // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticityPlaneStrain, TestMaterial);
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticityPlaneStrain,
+                           TestMaterial);
 
     // Tests specific to this materials parameters.
     CPPUNIT_TEST(testAccessors);
@@ -35,8 +36,7 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain : public TestM
     CPPUNIT_TEST_SUITE_END();
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Setup testing data.
     void setUp(void);
 
@@ -53,8 +53,7 @@ public:
     void testGetAuxField(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get material.
      *
      * @returns Pointer to material.
@@ -71,8 +70,7 @@ protected:
     void _setupSolutionFields(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected:
-
+  protected:
     IsotropicLinearElasticityPlaneStrain* _mymaterial; ///< Object for testing.
     TestIsotropicLinearElasticityPlaneStrain_Data* _mydata; ///< Data for testing.
 
@@ -81,8 +79,7 @@ protected:
 // =============================================================================
 class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Data : public TestMaterial_Data {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestIsotropicLinearElasticityPlaneStrain_Data(void);
 
@@ -90,11 +87,9 @@ public:
     ~TestIsotropicLinearElasticityPlaneStrain_Data(void);
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     // SPECIFIC TO MATERIAL, VALUES DEPEND ON TEST CASE
     double gravityVector[3]; ///< Array for gravity vector.
-
 };
 
 // End of file

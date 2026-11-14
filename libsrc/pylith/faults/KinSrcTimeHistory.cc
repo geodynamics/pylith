@@ -14,16 +14,15 @@
 
 #include "pylith/faults/KinSrcAuxiliaryFactory.hh" // USES KinSrcAuxiliaryFactory
 
-#include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory#include <cassert> // USES assert()
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+#include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory#include <cassert> // USES assert()
 
-#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::faults::KinSrcTimeHistory::KinSrcTimeHistory(void) :
-    _dbTimeHistory(NULL) {
+pylith::faults::KinSrcTimeHistory::KinSrcTimeHistory(void) : _dbTimeHistory(NULL) {
     pylith::utils::PyreComponent::setName("kinsrctimehistory");
 } // constructor
 
@@ -39,7 +38,7 @@ pylith::faults::KinSrcTimeHistory::~KinSrcTimeHistory(void) {
 // Set time history database.
 void
 pylith::faults::KinSrcTimeHistory::setTimeHistoryDB(spatialdata::spatialdb::TimeHistory* th) {
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setTimeHistoryDB(th"<<th<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setTimeHistoryDB(th" << th << ")");
 
     _dbTimeHistory = th;
 } // setTimeHistoryDB
@@ -62,9 +61,10 @@ pylith::faults::KinSrcTimeHistory::getSlipSubfields(PetscVec slipLocalVec,
                                                     const PylithScalar timeScale,
                                                     const int bitSlipSubfields) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getSlipSubfields="<<slipLocalVec<<", faultAuxiliaryField="<<faultAuxiliaryField
-                                                                                 <<", t="<<t<<", timeScale="<<timeScale
-                                                                                 <<", bitSlipSubfields="<<bitSlipSubfields<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "getSlipSubfields=" << slipLocalVec << ", faultAuxiliaryField=" << faultAuxiliaryField
+                                               << ", t=" << t << ", timeScale=" << timeScale
+                                               << ", bitSlipSubfields=" << bitSlipSubfields << ")");
     KinSrcAuxiliaryFactory::updateTimeHistoryValue(_auxiliaryField, t, timeScale, _dbTimeHistory);
     KinSrc::getSlipSubfields(slipLocalVec, faultAuxiliaryField, t, timeScale, bitSlipSubfields);
 

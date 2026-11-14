@@ -17,9 +17,9 @@
 
 #include "pylith/scales/Scales.hh" // USES Scales
 
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
-#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include <cassert>
 
@@ -37,7 +37,8 @@ pylith::feassemble::AuxiliaryFactory::AuxiliaryFactory(void) :
 pylith::feassemble::AuxiliaryFactory::~AuxiliaryFactory(void) {
     _queryDB = NULL; // :TODO: use shared pointer
 
-    delete _fieldQuery;_fieldQuery = NULL;
+    delete _fieldQuery;
+    _fieldQuery = NULL;
 } // destructor
 
 
@@ -65,10 +66,13 @@ pylith::feassemble::AuxiliaryFactory::initialize(pylith::topology::Field* field,
                                                  const int spaceDim,
                                                  const pylith::topology::FieldBase::Description* defaultDescription) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "initialize(field="<<field<<", scales="<<&scales<<", spaceDim="<<spaceDim<<", defaultDescription="<<defaultDescription<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 "initialize(field=" << field << ", scales=" << &scales << ", spaceDim=" << spaceDim
+                                     << ", defaultDescription=" << defaultDescription << ")");
 
     FieldFactory::initialize(field, scales, spaceDim, defaultDescription);
-    delete _fieldQuery;_fieldQuery = new pylith::topology::FieldQuery(*field);
+    delete _fieldQuery;
+    _fieldQuery = new pylith::topology::FieldQuery(*field);
 
     PYLITH_METHOD_END;
 } // initialize
@@ -89,11 +93,11 @@ pylith::feassemble::AuxiliaryFactory::setValuesFromDB(void) {
         _fieldQuery->queryDB();
         _fieldQuery->closeDB(_queryDB);
     } else {
-        PYLITH_ERROR(pylith::exceptions::InternalLogicError,
-                     "Unknown case for filling auxiliary subfields.");
+        PYLITH_ERROR(pylith::exceptions::InternalLogicError, "Unknown case for filling auxiliary subfields.");
     } // if/else
 
-    delete _fieldQuery;_fieldQuery = NULL;
+    delete _fieldQuery;
+    _fieldQuery = NULL;
     _field = NULL;
 
     // this->view("AUXILIARY FIELDS"); // :DEBUGGING: TEMPORARY
@@ -111,7 +115,10 @@ pylith::feassemble::AuxiliaryFactory::setSubfieldQuery(const char* subfieldName,
                                                        pylith::topology::FieldQuery::convertfn_type convertFn,
                                                        spatialdata::spatialdb::SpatialDB* db) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "setSubfieldQuery(subfieldName="<<subfieldName<<", namesDBValues="<<namesDBValues<<", numDBValues="<<numDBValues<<", convertFn="<<convertFn<<", db="<<db<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 "setSubfieldQuery(subfieldName=" << subfieldName << ", namesDBValues=" << namesDBValues
+                                                  << ", numDBValues=" << numDBValues << ", convertFn=" << convertFn
+                                                  << ", db=" << db << ")");
 
     assert(_fieldQuery);
     _fieldQuery->setQuery(subfieldName, namesDBValues, numDBValues, convertFn, db);

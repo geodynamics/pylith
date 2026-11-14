@@ -19,14 +19,13 @@ namespace pylith {
     namespace meshio {
         class TestDataWriterHDF5Mesh;
         class TestDataWriterHDF5Mesh_Data;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterHDF5Mesh : public TestDataWriterHDF5, public TestDataWriterMesh {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestDataWriterHDF5Mesh(TestDataWriterHDF5Mesh_Data* data);
 
@@ -34,12 +33,10 @@ public:
     ~TestDataWriterHDF5Mesh(void);
 
     /// Test filename()
-    static
-    void testAccessors(void);
+    static void testAccessors(void);
 
     /// Test hdf5Filename.
-    static
-    void testHdf5Filename(void);
+    static void testHdf5Filename(void);
 
     /// Test open() and close()
     void testOpenClose(void);
@@ -51,8 +48,7 @@ public:
     void testWriteCellField(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get test data.
      *
      * @returns Test data.
@@ -60,8 +56,7 @@ protected:
     TestDataWriter_Data* _getData(void);
 
     // PROTECTED MEMBDERS /////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     TestDataWriterHDF5Mesh_Data* _data; ///< Data for testing.
 
 }; // class TestDataWriterHDF5Mesh

@@ -17,8 +17,7 @@ class pylith::initializers::MeshRefiner : public pylith::initializers::Initializ
     friend class TestMeshRefiner;
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     MeshRefiner(void);
 
@@ -44,13 +43,11 @@ public:
                                 const pylith::problems::Problem& problem);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::topology::RefineMesh* _refiner; ///< Mesh refiner.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     MeshRefiner(const MeshRefiner&); ///< Not implemented
     const MeshRefiner& operator=(const MeshRefiner&); ///< Not implemented
 

@@ -17,8 +17,7 @@ class pylith::initializers::MeshReader : public pylith::initializers::Initialize
     friend class TestMeshReader;
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     MeshReader(void);
 
@@ -44,13 +43,11 @@ public:
                                 const pylith::problems::Problem& problem);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::meshio::MeshIO* _reader; ///< Mesh reader.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     MeshReader(const MeshReader&); ///< Not implemented
     const MeshReader& operator=(const MeshReader&); ///< Not implemented
 

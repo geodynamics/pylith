@@ -15,16 +15,16 @@
 #include "FieldFactory.hh" // USES FieldFactory
 #include "tests/src/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 
+#include "pylith/meshio/DataWriter.hh" // USES DataWriter
+#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
-#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
-#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/meshio/DataWriter.hh" // USES DataWriter
 
-#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
 #include "catch2/catch_test_macros.hpp"
 
@@ -32,25 +32,24 @@
 namespace pylith {
     namespace meshio {
         class _TestDataWriterSubmesh {
-public:
-
+          public:
             static PetscErrorCode analyticalFn(PetscInt spaceDim,
                                                PetscReal t,
                                                const PetscReal x[],
                                                PetscInt numComponents,
                                                PetscScalar* values,
                                                void* context);
-
         };
-    }
-}
+    } // namespace meshio
+} // namespace pylith
 
 
 // ------------------------------------------------------------------------------------------------
 // Constructor.
 pylith::meshio::TestDataWriterSubmesh::TestDataWriterSubmesh(void) :
     _mesh(nullptr),
-    _submesh(nullptr) {}
+    _submesh(nullptr) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -58,8 +57,10 @@ pylith::meshio::TestDataWriterSubmesh::TestDataWriterSubmesh(void) :
 pylith::meshio::TestDataWriterSubmesh::~TestDataWriterSubmesh(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _mesh;_mesh = nullptr;
-    delete _submesh;_submesh = nullptr;
+    delete _mesh;
+    _mesh = nullptr;
+    delete _submesh;
+    _submesh = nullptr;
 
     PYLITH_METHOD_END;
 } // destructor
@@ -150,9 +151,12 @@ void
 pylith::meshio::TestDataWriterSubmesh::_initialize(void) {
     PYLITH_METHOD_BEGIN;
 
-    const TestDataWriterSubmesh_Data* data = _getData();REQUIRE(data);
+    const TestDataWriterSubmesh_Data* data = _getData();
+    REQUIRE(data);
 
-    delete _mesh;_mesh = new pylith::topology::Mesh;REQUIRE(_mesh);
+    delete _mesh;
+    _mesh = new pylith::topology::Mesh;
+    REQUIRE(_mesh);
     MeshIOAscii iohandler;
     iohandler.setFilename(data->meshFilename);
     iohandler.read(_mesh);
@@ -170,12 +174,15 @@ pylith::meshio::TestDataWriterSubmesh::_initialize(void) {
         fault.setSurfaceLabelName(data->faultLabel);
         fault.setCohesiveLabelValue(data->faultId);
         pylith::topology::Mesh* meshNew = fault.transformTopology(_mesh);
-        delete _mesh;_mesh = meshNew;
+        delete _mesh;
+        _mesh = meshNew;
     } // if
 
     REQUIRE(data->bcLabel);
     const int labelValue = 1;
-    delete _submesh;_submesh = pylith::topology::MeshOps::createLowerDimMesh(*_mesh, data->bcLabel, labelValue, "subdomain_bc");REQUIRE(_submesh);
+    delete _submesh;
+    _submesh = pylith::topology::MeshOps::createLowerDimMesh(*_mesh, data->bcLabel, labelValue, "subdomain_bc");
+    REQUIRE(_submesh);
 
     PYLITH_METHOD_END;
 } // _initialize
@@ -189,7 +196,8 @@ pylith::meshio::TestDataWriterSubmesh::_createVertexField(pylith::topology::Fiel
     REQUIRE(field);
     REQUIRE(_mesh);
 
-    const TestDataWriterSubmesh_Data* data = _getData();REQUIRE(data);
+    const TestDataWriterSubmesh_Data* data = _getData();
+    REQUIRE(data);
 
     FieldFactory factory(*field);
     factory.addScalar(data->vertexDiscretization);
@@ -217,7 +225,8 @@ pylith::meshio::TestDataWriterSubmesh::_createCellField(pylith::topology::Field*
     PYLITH_METHOD_BEGIN;
     REQUIRE(field);
 
-    const TestDataWriterSubmesh_Data* data = _getData();REQUIRE(data);
+    const TestDataWriterSubmesh_Data* data = _getData();
+    REQUIRE(data);
 
     FieldFactory factory(*field);
     factory.addScalar(data->cellDiscretization);
@@ -240,13 +249,14 @@ pylith::meshio::TestDataWriterSubmesh::_createCellField(pylith::topology::Field*
 
 // ------------------------------------------------------------------------------------------------
 // Constructor
-pylith::meshio::TestDataWriterSubmesh_Data::TestDataWriterSubmesh_Data(void) :
-    bcLabel(NULL) {}
+pylith::meshio::TestDataWriterSubmesh_Data::TestDataWriterSubmesh_Data(void) : bcLabel(NULL) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
 // Destructor
-pylith::meshio::TestDataWriterSubmesh_Data::~TestDataWriterSubmesh_Data(void) {}
+pylith::meshio::TestDataWriterSubmesh_Data::~TestDataWriterSubmesh_Data(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -267,15 +277,19 @@ pylith::meshio::_TestDataWriterSubmesh::analyticalFn(PetscInt spaceDim,
     PetscDM dmMesh = PetscDM(context);
     PetscInt cell = -1;
     err = DMPlexGetActivePoint(dmMesh, &cell);
-    if (err) { PYLITH_METHOD_RETURN(err); }
+    if (err) {
+        PYLITH_METHOD_RETURN(err);
+    }
 
-    PetscReal centroid[3] = { 0.0, 0.0, 0.0 };
+    PetscReal centroid[3] = {0.0, 0.0, 0.0};
     err = DMPlexComputeCellGeometryFVM(dmMesh, cell, nullptr, centroid, nullptr);
-    if (err) { PYLITH_METHOD_RETURN(err); }
+    if (err) {
+        PYLITH_METHOD_RETURN(err);
+    }
 
-    const PetscScalar constants[3] = { 11.0, 13.0, 17.0 };
+    const PetscScalar constants[3] = {11.0, 13.0, 17.0};
     const PetscScalar faultOffset = (centroid[0] < X_FAULT) ? -1.1 : +1.1;
-    const PetscScalar fieldBase = 2.0*numComponents/7.0;
+    const PetscScalar fieldBase = 2.0 * numComponents / 7.0;
     for (PetscInt iC = 0; iC < numComponents; ++iC) {
         values[iC] = faultOffset + fieldBase + iC;
         for (PetscInt iDim = 0; iDim < spaceDim; ++iDim) {

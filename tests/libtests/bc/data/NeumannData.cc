@@ -35,7 +35,7 @@ pylith::bc::NeumannData::NeumannData(void) :
     tractionsCell(0),
     valsResidual(0) { // constructor
     const PylithScalar velScale = lengthScale / timeScale;
-    densityScale = rigidityScale / (velScale*velScale);
+    densityScale = rigidityScale / (velScale * velScale);
 } // constructor
 
 

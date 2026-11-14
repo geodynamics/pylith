@@ -14,22 +14,19 @@
 namespace pylith {
     namespace utils {
         class MPI {
-public:
-
+          public:
             /** Is process root (0) process?
              *
              * @returns True on process 0, otherwise false.
              */
-            static
-            inline
-            bool isRoot(void) {
+            static inline bool
+            isRoot(void) {
                 int rank = 0;
                 MPI_Comm_rank(MPI_COMM_WORLD, &rank);
                 return rank == 0;
             } // isRoot
-
         };
-    } // utils
-} // pylith
+    } // namespace utils
+} // namespace pylith
 
 // End of file

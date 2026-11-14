@@ -18,15 +18,16 @@ namespace pylith {
         class TestDataWriterHDF5ExtMatMeshQuad4;
         class TestDataWriterHDF5ExtMatMeshTet4;
         class TestDataWriterHDF5ExtMatMeshHex8;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // ----------------------------------------------------------------------
 /// C++ unit testing for DataWriterHDF5Ext
-class pylith::meshio::TestDataWriterHDF5ExtMatMeshTri3 : public TestDataWriterHDF5ExtMesh { // class
-                                                                                            // TestDataWriterHDF5ExtMatMeshTri3
-                                                                                            // CPPUNIT TEST SUITE
-                                                                                            // /////////////////////////////////////////////////
+class pylith::meshio::TestDataWriterHDF5ExtMatMeshTri3
+    : public TestDataWriterHDF5ExtMesh { // class
+                                         // TestDataWriterHDF5ExtMatMeshTri3
+                                         // CPPUNIT TEST SUITE
+                                         // /////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestDataWriterHDF5ExtMatMeshTri3);
 
     CPPUNIT_TEST(testOpenClose);
@@ -36,8 +37,7 @@ class pylith::meshio::TestDataWriterHDF5ExtMatMeshTri3 : public TestDataWriterHD
     CPPUNIT_TEST_SUITE_END();
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Setup testing data.
     void setUp(void);
 
@@ -45,10 +45,11 @@ public:
 
 // ----------------------------------------------------------------------
 /// C++ unit testing for DataWriterHDF5Ext
-class pylith::meshio::TestDataWriterHDF5ExtMatMeshQuad4 : public TestDataWriterHDF5ExtMesh { // class
-                                                                                             // TestDataWriterHDF5ExtMatMeshQuad4
-                                                                                             // CPPUNIT TEST SUITE
-                                                                                             // /////////////////////////////////////////////////
+class pylith::meshio::TestDataWriterHDF5ExtMatMeshQuad4
+    : public TestDataWriterHDF5ExtMesh { // class
+                                         // TestDataWriterHDF5ExtMatMeshQuad4
+                                         // CPPUNIT TEST SUITE
+                                         // /////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestDataWriterHDF5ExtMatMeshQuad4);
 
     CPPUNIT_TEST(testOpenClose);
@@ -58,8 +59,7 @@ class pylith::meshio::TestDataWriterHDF5ExtMatMeshQuad4 : public TestDataWriterH
     CPPUNIT_TEST_SUITE_END();
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Setup testing data.
     void setUp(void);
 
@@ -67,10 +67,11 @@ public:
 
 // ----------------------------------------------------------------------
 /// C++ unit testing for DataWriterHDF5Ext
-class pylith::meshio::TestDataWriterHDF5ExtMatMeshTet4 : public TestDataWriterHDF5ExtMesh { // class
-                                                                                            // TestDataWriterHDF5ExtMatMeshTet4
-                                                                                            // CPPUNIT TEST SUITE
-                                                                                            // /////////////////////////////////////////////////
+class pylith::meshio::TestDataWriterHDF5ExtMatMeshTet4
+    : public TestDataWriterHDF5ExtMesh { // class
+                                         // TestDataWriterHDF5ExtMatMeshTet4
+                                         // CPPUNIT TEST SUITE
+                                         // /////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestDataWriterHDF5ExtMatMeshTet4);
 
     CPPUNIT_TEST(testOpenClose);
@@ -80,8 +81,7 @@ class pylith::meshio::TestDataWriterHDF5ExtMatMeshTet4 : public TestDataWriterHD
     CPPUNIT_TEST_SUITE_END();
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Setup testing data.
     void setUp(void);
 
@@ -89,10 +89,11 @@ public:
 
 // ----------------------------------------------------------------------
 /// C++ unit testing for DataWriterHDF5Ext
-class pylith::meshio::TestDataWriterHDF5ExtMatMeshHex8 : public TestDataWriterHDF5ExtMesh { // class
-                                                                                            // TestDataWriterHDF5ExtMatMeshHex8
-                                                                                            // CPPUNIT TEST SUITE
-                                                                                            // /////////////////////////////////////////////////
+class pylith::meshio::TestDataWriterHDF5ExtMatMeshHex8
+    : public TestDataWriterHDF5ExtMesh { // class
+                                         // TestDataWriterHDF5ExtMatMeshHex8
+                                         // CPPUNIT TEST SUITE
+                                         // /////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestDataWriterHDF5ExtMatMeshHex8);
 
     CPPUNIT_TEST(testOpenClose);
@@ -102,8 +103,7 @@ class pylith::meshio::TestDataWriterHDF5ExtMatMeshHex8 : public TestDataWriterHD
     CPPUNIT_TEST_SUITE_END();
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Setup testing data.
     void setUp(void);
 

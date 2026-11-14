@@ -23,76 +23,87 @@
 
 namespace pylith {
     class _UniformPressure2D;
-} // pylith
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::_UniformPressure2D {
-private:
-
+  private:
     static pylith::scales::Scales scales;
     static const double PRESSURE; // nondimensional
 
     // Density
-    static double density(const double x,
-                          const double y) {
+    static double
+    density(const double x,
+            const double y) {
         return 2500.0;
     } // density
 
-    static const char* density_units(void) {
+    static const char*
+    density_units(void) {
         return "kg/m**3";
     } // density_units
 
     // Vs
-    static double vs(const double x,
-                     const double y) {
+    static double
+    vs(const double x,
+       const double y) {
         return 3000.0;
     } // vs
 
-    static const char* vs_units(void) {
+    static const char*
+    vs_units(void) {
         return "m/s";
     } // vs_units
 
     // Vp
-    static double vp(const double x,
-                     const double y) {
+    static double
+    vp(const double x,
+       const double y) {
         return 1.0e+20;
     } // vp
 
-    static const char* vp_units(void) {
+    static const char*
+    vp_units(void) {
         return "m/s";
     } // vp_units
 
     // Solution subfields.
 
     // Displacement
-    static double disp_x(const double x,
-                         const double y) {
+    static double
+    disp_x(const double x,
+           const double y) {
         const double rigidityScale = scales.getRigidityScale();
-        const double bulkModulus = density(x, y) * (vp(x,y)*vp(x,y) - 4.0/3.0*vs(x,y)*vs(x,y)) / rigidityScale;
+        const double bulkModulus =
+            density(x, y) * (vp(x, y) * vp(x, y) - 4.0 / 3.0 * vs(x, y) * vs(x, y)) / rigidityScale;
 
         return -0.5 * PRESSURE / bulkModulus * x;
     } // disp_x
 
-    static double disp_y(const double x,
-                         const double y) {
+    static double
+    disp_y(const double x,
+           const double y) {
         const double rigidityScale = scales.getRigidityScale();
-        const double bulkModulus = density(x, y) * (vp(x,y)*vp(x,y) - 4.0/3.0*vs(x,y)*vs(x,y)) / rigidityScale;
+        const double bulkModulus =
+            density(x, y) * (vp(x, y) * vp(x, y) - 4.0 / 3.0 * vs(x, y) * vs(x, y)) / rigidityScale;
 
         return -0.5 * PRESSURE / bulkModulus * y;
     } // disp_y
 
     // Pressure
-    static double pressure(const double x,
-                           const double y) {
+    static double
+    pressure(const double x,
+             const double y) {
         return PRESSURE;
     } // pressure
 
-    static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
-                                          PetscReal t,
-                                          const PetscReal x[],
-                                          PetscInt numComponents,
-                                          PetscScalar* s,
-                                          void* context) {
+    static PetscErrorCode
+    solnkernel_disp(PetscInt spaceDim,
+                    PetscReal t,
+                    const PetscReal x[],
+                    PetscInt numComponents,
+                    PetscScalar* s,
+                    void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(x);
         REQUIRE(2 == numComponents);
@@ -104,12 +115,13 @@ private:
         return PETSC_SUCCESS;
     } // solnkernel_disp
 
-    static PetscErrorCode solnkernel_pressure(PetscInt spaceDim,
-                                              PetscReal t,
-                                              const PetscReal x[],
-                                              PetscInt numComponents,
-                                              PetscScalar* s,
-                                              void* context) {
+    static PetscErrorCode
+    solnkernel_pressure(PetscInt spaceDim,
+                        PetscReal t,
+                        const PetscReal x[],
+                        PetscInt numComponents,
+                        PetscScalar* s,
+                        void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(x);
         REQUIRE(1 == numComponents);
@@ -120,11 +132,11 @@ private:
         return PETSC_SUCCESS;
     } // solnkernel_pressure
 
-public:
-
-    static
-    TestIncompressibleElasticity_Data* createData(void) {
-        TestIncompressibleElasticity_Data* data = new TestIncompressibleElasticity_Data();REQUIRE(data);
+  public:
+    static TestIncompressibleElasticity_Data*
+    createData(void) {
+        TestIncompressibleElasticity_Data* data = new TestIncompressibleElasticity_Data();
+        REQUIRE(data);
 
         data->journalName = "UniformPressure2D";
 
@@ -166,7 +178,8 @@ public:
         { // disp
             static const PylithInt constrainedDOF[2] = {0, 1};
             static const PylithInt numConstrainedDOF = 2;
-            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
+            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
+            REQUIRE(bc);
             bc->setSubfieldName("displacement");
             bc->setLabelName("boundary");
             bc->setLabelValue(1);
@@ -178,7 +191,8 @@ public:
         { // pressure
             static const PylithInt constrainedDOF[1] = {0};
             static const PylithInt numConstrainedDOF = 1;
-            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
+            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
+            REQUIRE(bc);
             bc->setSubfieldName("pressure");
             bc->setLabelName("boundary");
             bc->setLabelValue(1);
@@ -204,7 +218,8 @@ const double pylith::_UniformPressure2D::PRESSURE = 3.0e+6;
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformPressure2D::TriP1(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformPressure2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformPressure2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -222,7 +237,8 @@ pylith::UniformPressure2D::TriP1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformPressure2D::TriP2(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformPressure2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformPressure2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -247,7 +263,8 @@ pylith::UniformPressure2D::TriP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformPressure2D::TriP3(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformPressure2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformPressure2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -272,7 +289,8 @@ pylith::UniformPressure2D::TriP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformPressure2D::TriP4(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformPressure2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformPressure2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -297,7 +315,8 @@ pylith::UniformPressure2D::TriP4(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformPressure2D::QuadQ1(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformPressure2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformPressure2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -315,7 +334,8 @@ pylith::UniformPressure2D::QuadQ1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformPressure2D::QuadQ2(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformPressure2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformPressure2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -340,7 +360,8 @@ pylith::UniformPressure2D::QuadQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformPressure2D::QuadQ3(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformPressure2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformPressure2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -365,7 +386,8 @@ pylith::UniformPressure2D::QuadQ3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformPressure2D::QuadQ4(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformPressure2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformPressure2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 

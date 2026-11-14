@@ -42,27 +42,20 @@ const int pylith::faults::CohesiveDataHex8Lagrange::_numCorners[3] = {
     8,
 };
 
-const int pylith::faults::CohesiveDataHex8Lagrange::_materialIds[3] = {
-    0,  0,
-    1
-};
+const int pylith::faults::CohesiveDataHex8Lagrange::_materialIds[3] = {0, 0, 1};
 
 const int pylith::faults::CohesiveDataHex8Lagrange::_numGroups = 2;
 
 const int pylith::faults::CohesiveDataHex8Lagrange::_groupSizes[2] = {
-    8+8+2, 8+8+2, // vertices+edges+faces
+    8 + 8 + 2,
+    8 + 8 + 2, // vertices+edges+faces
 };
 
-const char* pylith::faults::CohesiveDataHex8Lagrange::_groupNames[2] = {
-    "output", "fault"
-};
+const char* pylith::faults::CohesiveDataHex8Lagrange::_groupNames[2] = {"output", "fault"};
 
-const char* pylith::faults::CohesiveDataHex8Lagrange::_groupTypes[2] = {
-    "vertex", "vertex"
-};
+const char* pylith::faults::CohesiveDataHex8Lagrange::_groupTypes[2] = {"vertex", "vertex"};
 
-const char* pylith::faults::CohesiveDataHex8Lagrange::_filename =
-    "data/hex8.mesh";
+const char* pylith::faults::CohesiveDataHex8Lagrange::_filename = "data/hex8.mesh";
 
 pylith::faults::CohesiveDataHex8Lagrange::CohesiveDataHex8Lagrange(void) { // constructor
     numVertices = _numVertices;
@@ -79,7 +72,8 @@ pylith::faults::CohesiveDataHex8Lagrange::CohesiveDataHex8Lagrange(void) { // co
 } // constructor
 
 
-pylith::faults::CohesiveDataHex8Lagrange::~CohesiveDataHex8Lagrange(void) {}
+pylith::faults::CohesiveDataHex8Lagrange::~CohesiveDataHex8Lagrange(void) {
+}
 
 
 // End of file

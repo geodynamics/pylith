@@ -15,8 +15,8 @@
 #include "pylith/topology/Field.hh" // HOLDSA AuxiliaryField
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 
-#include "pylith/scales/Scales.hh" // USES Scales
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
@@ -32,7 +32,8 @@ pylith::bc::AbsorbingDampersAuxiliaryFactory::AbsorbingDampersAuxiliaryFactory(v
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::bc::AbsorbingDampersAuxiliaryFactory::~AbsorbingDampersAuxiliaryFactory(void) {}
+pylith::bc::AbsorbingDampersAuxiliaryFactory::~AbsorbingDampersAuxiliaryFactory(void) {
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------

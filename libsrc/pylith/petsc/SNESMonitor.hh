@@ -19,8 +19,7 @@ class pylith::petsc::SNESMonitor : public pylith::utils::PyreComponent {
     friend class TestSNESMonitor; // unit testing
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     SNESMonitor(void);
 
@@ -43,24 +42,21 @@ public:
      * @param[in] residualNorm Relative norma.
      * @param[inout] context User defined context.
      */
-    static
-    PetscErrorCode PylithSNESMonitor(PetscSNES snes,
-                                     PetscInt iteration,
-                                     PetscReal residualNorm,
-                                     PetscCtx context);
+    static PetscErrorCode PylithSNESMonitor(PetscSNES snes,
+                                            PetscInt iteration,
+                                            PetscReal residualNorm,
+                                            PetscCtx context);
 
     /** PyLith SNES converged reason function.
      *
      * @param[in] snes PETSc SNES
      * @param[inout] context User defined context.
      */
-    static
-    PetscErrorCode PylithSNESConvergedReason(PetscSNES snes,
-                                             PetscCtx context);
+    static PetscErrorCode PylithSNESConvergedReason(PetscSNES snes,
+                                                    PetscCtx context);
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     SNESMonitor(const SNESMonitor&) = delete;
 
     const SNESMonitor& operator=(const SNESMonitor&) = delete;

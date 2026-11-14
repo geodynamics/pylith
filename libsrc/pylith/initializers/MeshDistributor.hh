@@ -17,8 +17,7 @@ class pylith::initializers::MeshDistributor : public pylith::initializers::Initi
     friend class TestMeshDistributor;
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     MeshDistributor(void);
 
@@ -44,13 +43,11 @@ public:
                                 const pylith::problems::Problem& problem);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::topology::Distributor* _distributor; ///< Mesh distributor.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     MeshDistributor(const MeshDistributor&); ///< Not implemented
     const MeshDistributor& operator=(const MeshDistributor&); ///< Not implemented
 

@@ -18,19 +18,16 @@
 /// Helper object for creation of cohesive cells.
 class pylith::faults::TopologyOps {
     // PUBLIC TYPEDEFS ////////////////////////////////////////////////////
-public:
-
-    typedef std::set < PetscInt > PointSet;
+  public:
+    typedef std::set<PetscInt> PointSet;
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /** Complete labels and change value to match dimension of point.
      */
-    static
-    void updateCohesiveLabel(const pylith::topology::Mesh* mesh,
-                             const char* labelName,
-                             const int labelValue);
+    static void updateCohesiveLabel(const pylith::topology::Mesh* mesh,
+                                    const char* labelName,
+                                    const int labelValue);
 
     /** Set label and label value for newly created cohesive cells.
      *
@@ -39,18 +36,16 @@ public:
      * @param[in] labelName Name of label for cohesive cells.
      * @param[in] labelValue Label value for cohesive cells.
      */
-    static
-    void setCohesiveCellLabel(PetscDM dmMeshNew,
-                              PetscDM dmMesh,
-                              const char* labelName,
-                              const int labelValue);
+    static void setCohesiveCellLabel(PetscDM dmMeshNew,
+                                     PetscDM dmMesh,
+                                     const char* labelName,
+                                     const int labelValue);
 
     /** Remove cohesive points from labels.
      *
      * @param[inout] dmMeshNew PETSc DM with cohesive cells.
      */
-    static
-    void labelsRemoveCohesivePoints(PetscDM dmMeshNew);
+    static void labelsRemoveCohesivePoints(PetscDM dmMeshNew);
 
     /** Create buried edge label.
      *
@@ -61,13 +56,12 @@ public:
      * @param[in] surfaceLabel Label identifying fault surface.
      * @param[in] transform Transform creating cohesive cells.
      */
-    static
-    void createBuriedEdgeLabel(PetscDM dmMeshNew,
-                               PetscDM dmMesh,
-                               const char* buriedEdgeLabelName,
-                               const PylithInt buriedEdgeLabelValue,
-                               PetscDMLabel surfaceLabel,
-                               DMPlexTransform transform);
+    static void createBuriedEdgeLabel(PetscDM dmMeshNew,
+                                      PetscDM dmMesh,
+                                      const char* buriedEdgeLabelName,
+                                      const PylithInt buriedEdgeLabelValue,
+                                      PetscDMLabel surfaceLabel,
+                                      DMPlexTransform transform);
 
     /** Create (distributed) fault mesh from cohesive cells.
      *
@@ -77,27 +71,24 @@ public:
      * @param labelName Name of label associated with integration domain.
      * @param surfaceLabel Name of label for interface surface.
      */
-    static
-    void createFaultFromCohesiveCells(pylith::topology::Mesh* faultMesh,
-                                      const topology::Mesh& mesh,
-                                      const char* labelName,
-                                      const int labelValue,
-                                      const char* surfaceLabel);
+    static void createFaultFromCohesiveCells(pylith::topology::Mesh* faultMesh,
+                                             const topology::Mesh& mesh,
+                                             const char* labelName,
+                                             const int labelValue,
+                                             const char* surfaceLabel);
 
     /** Get name of PETSc DM label for interfaces.
      *
      * @returns PETSc Label name.
      */
-    static
-    const char* getInterfacesLabelName(void);
+    static const char* getInterfacesLabelName(void);
 
     /** Get PETSc DM label for interfaces, creating if necessary.
      *
      * @param[inout] dm PETSc DM holding interfaces label.
      * @returns PETSc DM label for interfaces.
      */
-    static
-    PetscDMLabel getInterfacesLabel(PetscDM dm);
+    static PetscDMLabel getInterfacesLabel(PetscDM dm);
 
     /** Get cells adjacent to cohesive cell on negative and positive sides of the fault.
      *
@@ -106,11 +97,10 @@ public:
      * @param[in] dmMesh DM for finite-element mesh.
      * @param[in] cohesiveCell Cohesive cell.
      */
-    static
-    void getAdjacentCells(PylithInt* adjacentCellNegative,
-                          PylithInt* adjacentCellPositive,
-                          PetscDM dmMesh,
-                          const PylithInt cohesiveCell);
+    static void getAdjacentCells(PylithInt* adjacentCellNegative,
+                                 PylithInt* adjacentCellPositive,
+                                 PetscDM dmMesh,
+                                 const PylithInt cohesiveCell);
 
 }; // class TopologyOps
 

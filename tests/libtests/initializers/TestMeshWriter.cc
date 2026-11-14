@@ -13,9 +13,9 @@
 #include "pylith/initializers/MeshWriter.hh" // USES MeshWriter
 
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/problems/Problem.hh" // USES Problem
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
-#include "pylith/problems/Problem.hh" // USES Problem
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
@@ -27,35 +27,34 @@
 namespace pylith {
     namespace initializers {
         class TestMeshWriter;
-    } // initializers
-} // pylith
+    } // namespace initializers
+} // namespace pylith
 
 class pylith::initializers::TestMeshWriter {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test constructors.
-    static
-    void testConstructors(void);
+    static void testConstructors(void);
 
     /// Test accessors.
-    static
-    void testAccessors(void);
+    static void testAccessors(void);
 
     /// Test run().
-    static
-    void testRun(void);
+    static void testRun(void);
 
 }; // class TestMeshWriter
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestMeshWriter::testConstructors", "[TestMeshWriter]") {
+TEST_CASE("TestMeshWriter::testConstructors",
+          "[TestMeshWriter]") {
     pylith::initializers::TestMeshWriter::testConstructors();
 }
-TEST_CASE("TestMeshWriter::testAccessors", "[TestMeshWriter]") {
+TEST_CASE("TestMeshWriter::testAccessors",
+          "[TestMeshWriter]") {
     pylith::initializers::TestMeshWriter::testAccessors();
 }
-TEST_CASE("TestMeshWriter::testRun", "[TestMeshWriter]") {
+TEST_CASE("TestMeshWriter::testRun",
+          "[TestMeshWriter]") {
     pylith::initializers::TestMeshWriter::testRun();
 }
 
@@ -109,7 +108,8 @@ pylith::initializers::TestMeshWriter::testRun(void) {
     CHECK(dim == meshNew->getDimension());
     CHECK(numCells == pylith::topology::MeshOps::getNumCells(*meshNew));
     CHECK(numVertices == pylith::topology::MeshOps::getNumVertices(*meshNew));
-    delete meshNew;meshNew = nullptr;
+    delete meshNew;
+    meshNew = nullptr;
 
     io.read(&mesh);
     CHECK(dim == mesh.getDimension());

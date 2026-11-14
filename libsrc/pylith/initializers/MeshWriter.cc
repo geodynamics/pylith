@@ -12,13 +12,14 @@
 
 #include "pylith/initializers/MeshWriter.hh" // implementation of class methods
 
-#include "pylith/meshio/MeshIO.hh" // HOLDSA MeshIO
 #include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
+#include "pylith/meshio/MeshIO.hh" // HOLDSA MeshIO
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor
-pylith::initializers::MeshWriter::MeshWriter(void) : _writer(nullptr) {}
+pylith::initializers::MeshWriter::MeshWriter(void) : _writer(nullptr) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -58,9 +59,11 @@ pylith::initializers::MeshWriter::run(pylith::topology::Mesh* mesh,
 
     _writer->write(mesh);
 
-    PetscDM dmOrig = mesh->getDM();assert(dmOrig);
+    PetscDM dmOrig = mesh->getDM();
+    assert(dmOrig);
     PetscObjectReference(PetscObject(dmOrig));
-    pylith::topology::Mesh* meshNew = new pylith::topology::Mesh(dmOrig, *mesh);assert(meshNew);
+    pylith::topology::Mesh* meshNew = new pylith::topology::Mesh(dmOrig, *mesh);
+    assert(meshNew);
 
     PYLITH_METHOD_RETURN(meshNew);
 } // run

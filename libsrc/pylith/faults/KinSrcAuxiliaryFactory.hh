@@ -16,8 +16,7 @@ class pylith::faults::KinSrcAuxiliaryFactory : public pylith::feassemble::Auxili
     friend class TestSlipFnAuxiliaryFactory; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     KinSrcAuxiliaryFactory(void);
 
@@ -49,15 +48,13 @@ public:
      * @param[in] timeScale Time scale for nondimensionalization.
      * @param[in] dbTimeHistory Time history database.
      */
-    static
-    void updateTimeHistoryValue(pylith::topology::Field* auxiliaryField,
-                                const PylithReal t,
-                                const PylithReal timeScale,
-                                spatialdata::spatialdb::TimeHistory* const dbTimeHistory);
+    static void updateTimeHistoryValue(pylith::topology::Field* auxiliaryField,
+                                       const PylithReal t,
+                                       const PylithReal timeScale,
+                                       spatialdata::spatialdb::TimeHistory* const dbTimeHistory);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     KinSrcAuxiliaryFactory(const KinSrcAuxiliaryFactory&); ///< Not implemented.
     const KinSrcAuxiliaryFactory& operator=(const KinSrcAuxiliaryFactory&); ///< Not implemented
 

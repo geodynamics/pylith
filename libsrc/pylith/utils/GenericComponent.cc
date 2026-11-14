@@ -12,16 +12,15 @@
 
 #include "pylith/utils/GenericComponent.hh" // Implementation of class methods
 
-#include "pylith/utils/journals.hh"
 #include "pylith/exceptions/Exceptions.hh"
+#include "pylith/utils/journals.hh"
 
 #include <Python.h>
 
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::utils::GenericComponent::GenericComponent(void) :
-    _name("") {
+pylith::utils::GenericComponent::GenericComponent(void) : _name("") {
     if (!Py_IsInitialized()) {
         PYLITH_ERROR(pylith::exceptions::InternalLogicError,
                      "Python must be initialized to use GenericComponent in C++.");
@@ -31,7 +30,8 @@ pylith::utils::GenericComponent::GenericComponent(void) :
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::utils::GenericComponent::~GenericComponent(void) {}
+pylith::utils::GenericComponent::~GenericComponent(void) {
+}
 
 
 // ----------------------------------------------------------------------
@@ -39,8 +39,7 @@ pylith::utils::GenericComponent::~GenericComponent(void) {}
 void
 pylith::utils::GenericComponent::setName(const char* value) {
     if (!strlen(value)) {
-        PYLITH_ERROR(pylith::exceptions::EmptyStringError,
-                     "Cannot set name of Generic component to empty string.");
+        PYLITH_ERROR(pylith::exceptions::EmptyStringError, "Cannot set name of Generic component to empty string.");
     } // if
     _name = value;
 } // setName

@@ -22,28 +22,27 @@
 namespace pylith {
     namespace topology {
         class TestFieldBase;
-    } // topology
-} // pylith
+    } // namespace topology
+} // namespace pylith
 
 class pylith::topology::TestFieldBase : public pylith::utils::GenericComponent {
     // PUBLIC METHODS ///////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test vectorFieldString().
-    static
-    void testVectorFieldString(void);
+    static void testVectorFieldString(void);
 
     /// Test parseVectorFieldString().
-    static
-    void testParseVectorFieldString(void);
+    static void testParseVectorFieldString(void);
 
 }; // class TestFieldBase
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestFieldBase::testVectorFieldString", "[TestFieldBase]") {
+TEST_CASE("TestFieldBase::testVectorFieldString",
+          "[TestFieldBase]") {
     pylith::topology::TestFieldBase::testVectorFieldString();
 }
-TEST_CASE("TestFieldBase::testParVectorFieldString", "[TestFieldBase]") {
+TEST_CASE("TestFieldBase::testParVectorFieldString",
+          "[TestFieldBase]") {
     pylith::topology::TestFieldBase::testParseVectorFieldString();
 }
 

@@ -35,8 +35,8 @@
 
 #include "pylith/petsc/petsc_types.h" // HASA PetscVec
 
-#include <string> // USES std::string
 #include <map> // HASA std::map
+#include <string> // USES std::string
 
 class pylith::meshio::DataWriterHDF5 : public DataWriter {
     friend class TestDataWriterHDF5Mesh; // unit testing
@@ -47,8 +47,7 @@ class pylith::meshio::DataWriterHDF5 : public DataWriter {
 
     // PUBLIC METHODS
     // //////////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     DataWriterHDF5(void);
 
@@ -119,8 +118,7 @@ public:
                          const topology::Mesh& mesh);
 
     // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     /** Copy constructor.
      *
      * @param[in] w Object to copy.
@@ -136,8 +134,7 @@ private:
                          const int commRank);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     std::string _filename; ///< Name of HDF5 file.
     PetscViewer _viewer; ///< Output file.
     PetscVec _tstamp; ///< Single value vector holding time stamp.
@@ -146,8 +143,7 @@ private:
     int _tstampIndex; ///< Index of last time stamp written.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     const DataWriterHDF5& operator=(const DataWriterHDF5&); ///< Not implemented
 
 }; // DataWriterHDF5

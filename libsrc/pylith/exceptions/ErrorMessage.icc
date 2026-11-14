@@ -45,6 +45,7 @@ pylith::exceptions::ErrorMessage::str() const {
 
 // ------------------------------------------------------------------------------------------------
 // Implicit conversion so std::string can be passed to constructor.
-pylith::exceptions::ErrorMessage::operator std::string() const {
+pylith::exceptions::ErrorMessage::
+operator std::string() const {
     return _buffer.str();
 }

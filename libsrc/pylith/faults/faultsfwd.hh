@@ -29,7 +29,7 @@ namespace pylith {
 
         class TopologyOps;
         class FaultOps;
-    } // faults
-} // pylith
+    } // namespace faults
+} // namespace pylith
 
 // End of file

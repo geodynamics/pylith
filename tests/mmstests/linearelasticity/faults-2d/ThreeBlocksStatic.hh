@@ -17,8 +17,7 @@ namespace pylith {
 }
 
 class pylith::ThreeBlocksStatic {
-public:
-
+  public:
     // Data factory methods
     static TestFaultKin_Data* TriP1(void);
 
@@ -38,8 +37,7 @@ public:
 
     static TestFaultKin_Data* QuadQ4(void);
 
-private:
-
+  private:
     ThreeBlocksStatic(void); ///< Not implemented
 }; // ThreeBlocksStatic
 

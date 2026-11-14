@@ -21,8 +21,7 @@ class pylith::feassemble::ConstraintSimple : public pylith::feassemble::Constrai
     // friend class TestConstraintSimple; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /** Constructor
      *
      * @param[in] physics Physics implemented by constraint.
@@ -42,26 +41,22 @@ public:
      *
      * @param[in] solution Solution field (layout).
      */
-    virtual
-    void initialize(const pylith::topology::Field& solution);
+    virtual void initialize(const pylith::topology::Field& solution);
 
     /** Set constrained values in solution field.
      *
      * @param[inout] integrationData Data needed to integrate governing equation.
      */
-    virtual
-    void setSolution(pylith::feassemble::IntegrationData* integrationData);
+    virtual void setSolution(pylith::feassemble::IntegrationData* integrationData);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     PetscUserFieldFunc _fn; ///< Function for computing constrained values.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     ConstraintSimple(void); /// Not implemented.
-    ConstraintSimple(const Constraint &); ///< Not implemented
+    ConstraintSimple(const Constraint&); ///< Not implemented
     const ConstraintSimple& operator=(const ConstraintSimple&); ///< Not implemented
 
 }; // class Constraint.

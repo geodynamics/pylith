@@ -17,8 +17,7 @@ class pylith::problems::InitialConditionPatch : public pylith::problems::Initial
     friend class TestInitialConditionPatch; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     InitialConditionPatch(void);
 
@@ -74,15 +73,13 @@ public:
 
     // PRIVATE MEMBERS
     // //////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     std::string _labelName; ///< Name of label associated with patch.
     int _labelValue; ///< Value of label associated with patch.
     spatialdata::spatialdb::SpatialDB* _db; ///< Spatial database with values for initial condition.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     InitialConditionPatch(const InitialConditionPatch&); ///< Not implemented
     const InitialConditionPatch& operator=(const InitialConditionPatch&); ///< Not implemented
 

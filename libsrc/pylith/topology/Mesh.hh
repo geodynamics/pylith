@@ -24,13 +24,11 @@ class pylith::topology::Mesh {
     friend class TestMesh; // unit testing
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     static const char* cells_label_name; ///< Name of label covering all cells.
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     Mesh(void);
 
@@ -40,7 +38,7 @@ public:
      * @param comm MPI communicator for mesh.
      */
     Mesh(const int dim,
-         const MPI_Comm& comm=PETSC_COMM_WORLD);
+         const MPI_Comm& comm = PETSC_COMM_WORLD);
 
     /** Constructor with new PETSc DM and original mesh.
      *
@@ -74,7 +72,7 @@ public:
      * @param label Label for mesh.
      */
     void setDM(PetscDM dm,
-               const char* label=NULL);
+               const char* label = NULL);
 
     /** Set coordinate system.
      *
@@ -121,17 +119,15 @@ public:
      *   HDF5 XDMF hdf5:mesh.h5:hdf5_xdmf
      *   PyVista pyvista:myscript.py
      */
-    void view(const char* viewOption="::ascii_info_detail") const;
+    void view(const char* viewOption = "::ascii_info_detail") const;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     spatialdata::geocoords::CoordSys* _coordSys; ///< Coordinate system.
     PetscDM _dm; ///< PETSc DM with topology.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
-private:
-
+  private:
     Mesh(const Mesh&); ///< Not implemented
     const Mesh& operator=(const Mesh&); ///< Not implemented
 

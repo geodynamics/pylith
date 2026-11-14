@@ -21,8 +21,7 @@ class pylith::feassemble::ConstraintSpatialDB : public pylith::feassemble::Const
     friend class TestConstraintSpatialDB; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /** Constructor
      *
      * @param[in] physics Physics implemented by constraint.
@@ -57,15 +56,13 @@ public:
     void setSolution(pylith::feassemble::IntegrationData* integrationData);
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     PetscBdPointFn* _kernelConstraint; ///< Kernel for computing constrained values from auxiliary field.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     ConstraintSpatialDB(void); /// Not implemented.
-    ConstraintSpatialDB(const ConstraintSpatialDB &); ///< Not implemented
+    ConstraintSpatialDB(const ConstraintSpatialDB&); ///< Not implemented
     const ConstraintSpatialDB& operator=(const ConstraintSpatialDB&); ///< Not implemented
 
 }; // class Constraint

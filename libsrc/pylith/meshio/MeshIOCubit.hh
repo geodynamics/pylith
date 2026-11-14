@@ -17,8 +17,7 @@ class pylith::meshio::MeshIOCubit : public MeshIO {
     friend class TestMeshIOCubit; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     MeshIOCubit(void);
 
@@ -41,8 +40,7 @@ public:
     const char* getFilename(void) const;
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Write mesh
     void _write(void) const;
 
@@ -50,8 +48,7 @@ protected:
     void _read(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Read groups of vertices.
      *
      * @param[inout] fileIn Input file.
@@ -65,8 +62,7 @@ protected:
     void _readSideSets(pylith::meshio::ExodusII& fileIn);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     std::string _filename; ///< Name of file
 
 }; // MeshIOCubit

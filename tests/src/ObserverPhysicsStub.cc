@@ -16,8 +16,8 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
-pylith::problems::ObserverPhysicsStub::ObserverPhysicsStub(void) :
-    _timeScale(1.0) {}
+pylith::problems::ObserverPhysicsStub::ObserverPhysicsStub(void) : _timeScale(1.0) {
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------

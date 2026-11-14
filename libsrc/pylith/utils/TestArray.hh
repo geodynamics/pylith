@@ -24,18 +24,16 @@
  */
 class pylith::utils::TestArray { // TestArray
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /** Check to make sure array of values match expected values.
      *
      * @param valuesE Array of expected values.
      * @param nvalues Array size.
      * @param values Array of values to check.
      */
-    static
-    bool check(const PylithScalar* valuesE,
-               const int nvalues,
-               const scalar_array& values);
+    static bool check(const PylithScalar* valuesE,
+                      const int nvalues,
+                      const scalar_array& values);
 
 }; // EventLogger
 

@@ -17,8 +17,7 @@ class pylith::materials::IsotropicLinearPoroelasticity : public pylith::material
     friend class TestIsotropicLinearPoroelasticity; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     IsotropicLinearPoroelasticity(void);
 
@@ -187,26 +186,22 @@ public:
                                            const bool _useStateVars) const;
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get auxiliary factory associated with physics.
      * @return Auxiliary factory for physics object.
      */
     pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::materials::AuxiliaryFactoryPoroelastic* _auxiliaryFactory; ///< Factory for auxiliary subfields.
     bool _useReferenceState; ///< Flag to use reference stress and strain.
     bool _useTensorPermeability; ///< Flag to use tensor permeability
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     IsotropicLinearPoroelasticity(const IsotropicLinearPoroelasticity&); ///< Not implemented.
     const IsotropicLinearPoroelasticity& operator=(const IsotropicLinearPoroelasticity&); ///< Not implemented
-
 };
 
 // class IsotropicLinearPoroelasticity

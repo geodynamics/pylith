@@ -14,21 +14,21 @@
 
 #include "pylith/bc/AbsorbingDampers.hh" // USES AbsorbingDampers
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
-#include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
-#include "pylith/topology/VisitorMesh.hh" // USES VisitorMesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
+#include "pylith/topology/VisitorMesh.hh" // USES VisitorMesh
 
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
-#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+#include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 
 const double pylith::bc::TestAbsorbingDampers::FILL_VALUE = -999.0;
 
@@ -38,7 +38,8 @@ void
 pylith::bc::TestAbsorbingDampers::setUp(void) {
     PYLITH_METHOD_BEGIN;
 
-    _bc = new pylith::bc::AbsorbingDampers();CPPUNIT_ASSERT(_bc);
+    _bc = new pylith::bc::AbsorbingDampers();
+    CPPUNIT_ASSERT(_bc);
 
     _data = NULL;
     _mesh = NULL;
@@ -54,11 +55,15 @@ void
 pylith::bc::TestAbsorbingDampers::tearDown(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _bc;_bc = NULL;
+    delete _bc;
+    _bc = NULL;
 
-    delete _data;_data = NULL;
-    delete _mesh;_mesh = NULL;
-    delete _solution;_solution = NULL;
+    delete _data;
+    _data = NULL;
+    delete _mesh;
+    _mesh = NULL;
+    delete _solution;
+    _solution = NULL;
 
     PYLITH_METHOD_END;
 } // tearDown
@@ -70,8 +75,10 @@ void
 pylith::bc::TestAbsorbingDampers::testConstructor(void) {
     PYLITH_METHOD_BEGIN;
 
-    AbsorbingDampers* bc = new AbsorbingDampers();CPPUNIT_ASSERT(bc);
-    delete bc;bc = NULL;
+    AbsorbingDampers* bc = new AbsorbingDampers();
+    CPPUNIT_ASSERT(bc);
+    delete bc;
+    bc = NULL;
 
     PYLITH_METHOD_END;
 } // testConstructor
@@ -99,9 +106,12 @@ void
 pylith::bc::TestAbsorbingDampers::testAuxFieldDiscretization(void) {
     PYLITH_METHOD_BEGIN;
 
-    const topology::FieldBase::Discretization infoDefault = pylith::topology::Field::Discretization(1, 1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE);
-    const topology::FieldBase::Discretization infoA = pylith::topology::Field::Discretization(1, 2, false, pylith::topology::FieldBase::POLYNOMIAL_SPACE);
-    const topology::FieldBase::Discretization infoB = pylith::topology::Field::Discretization(2, 2, true, pylith::topology::FieldBase::POINT_SPACE);
+    const topology::FieldBase::Discretization infoDefault =
+        pylith::topology::Field::Discretization(1, 1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE);
+    const topology::FieldBase::Discretization infoA =
+        pylith::topology::Field::Discretization(1, 2, false, pylith::topology::FieldBase::POLYNOMIAL_SPACE);
+    const topology::FieldBase::Discretization infoB =
+        pylith::topology::Field::Discretization(2, 2, true, pylith::topology::FieldBase::POINT_SPACE);
 
     CPPUNIT_ASSERT(_bc);
     _bc->auxSubfieldDiscretization("A", infoA.basisOrder, infoA.quadOrder, infoA.isBasisContinuous, infoA.feSpace);
@@ -133,7 +143,8 @@ pylith::bc::TestAbsorbingDampers::testAuxFieldDiscretization(void) {
     } // C (default)
 
     { // default
-        const topology::FieldBase::Discretization& test = _bc->_auxiliaryFactory()->getSubfieldDiscretization("default");
+        const topology::FieldBase::Discretization& test =
+            _bc->_auxiliaryFactory()->getSubfieldDiscretization("default");
         CPPUNIT_ASSERT_EQUAL(infoDefault.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.isBasisContinuous, test.isBasisContinuous);
@@ -231,18 +242,22 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void) {
     // Verify auxiliary field.
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_mesh);
-    const pylith::topology::Field* auxField = _bc->auxField();CPPUNIT_ASSERT(auxField);
+    const pylith::topology::Field* auxField = _bc->auxField();
+    CPPUNIT_ASSERT(auxField);
     CPPUNIT_ASSERT_EQUAL(std::string("auxiliary subfields"), std::string(auxField->getLabel()));
     CPPUNIT_ASSERT_EQUAL(_mesh->getDimension(), auxField->getSpaceDim());
 
     PylithReal norm = 0.0;
     PylithReal t = _data->t;
-    const PetscDM dm = auxField->getDM();CPPUNIT_ASSERT(dm);
+    const PetscDM dm = auxField->getDM();
+    CPPUNIT_ASSERT(dm);
     pylith::topology::FieldQuery query(*auxField);
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(_data->scales);
     query.openDB(_data->auxDB, _data->scales->getLengthScale());
-    err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm);CPPUNIT_ASSERT(!err);
+    err =
+        DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm);
+    CPPUNIT_ASSERT(!err);
     query.closeDB(_data->auxDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
@@ -299,11 +314,18 @@ pylith::bc::TestAbsorbingDampers::testComputeRHSResidual(void) {
     // Verify values in solution field.
     PylithReal norm = 0.0;
     PylithReal t = _data->t;
-    const PetscDM dmSoln = _solution->getDM();CPPUNIT_ASSERT(dmSoln);
+    const PetscDM dmSoln = _solution->getDM();
+    CPPUNIT_ASSERT(dmSoln);
     pylith::topology::FieldQuery* query = _db->_auxiliaryFieldsQuery;
     query->openDB(queryDB, _data->lengthScale);
 
-    err = DMPlexComputeL2DiffLocal(dm, t, query->functions(), (void**)query->contextPtrs(), _solution->localVector(), &norm);CPPUNIT_ASSERT(!err);
+    err = DMPlexComputeL2DiffLocal(dm,
+                                   t,
+                                   query->functions(),
+                                   (void**)query->contextPtrs(),
+                                   _solution->localVector(),
+                                   &norm);
+    CPPUNIT_ASSERT(!err);
     query->closeDB(queryDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
@@ -328,10 +350,13 @@ pylith::bc::TestAbsorbingDampers::testAuxFieldSetup(void) {
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_data->scales);
 
-    delete _bc->_boundaryMesh;_bc->_boundaryMesh = new pylith::topology::Mesh(_solution->mesh(), _data->bcLabel);
+    delete _bc->_boundaryMesh;
+    _bc->_boundaryMesh = new pylith::topology::Mesh(_solution->mesh(), _data->bcLabel);
     CPPUNIT_ASSERT(_bc->_boundaryMesh);
 
-    delete _bc->_auxiliaryField;_bc->_auxiliaryField = new pylith::topology::Field(*_bc->_boundaryMesh);CPPUNIT_ASSERT(_bc->_auxiliaryField);
+    delete _bc->_auxiliaryField;
+    _bc->_auxiliaryField = new pylith::topology::Field(*_bc->_boundaryMesh);
+    CPPUNIT_ASSERT(_bc->_auxiliaryField);
     _bc->_auxiliaryFieldSetup(*_solution);
 
     // Check discretizations
@@ -400,7 +425,9 @@ pylith::bc::TestAbsorbingDampers::_initialize(void) {
 
     CPPUNIT_ASSERT(_data);
 
-    delete _mesh;_mesh = new pylith::topology::Mesh();CPPUNIT_ASSERT(_mesh);
+    delete _mesh;
+    _mesh = new pylith::topology::Mesh();
+    CPPUNIT_ASSERT(_mesh);
     pylith::meshio::MeshIOAscii iohandler;
     CPPUNIT_ASSERT(_data->meshFilename);
     iohandler.filename(_data->meshFilename);
@@ -416,7 +443,11 @@ pylith::bc::TestAbsorbingDampers::_initialize(void) {
     for (int ifield = 0; ifield < _data->numAuxSubfields; ++ifield) {
         const pylith::topology::Field::Discretization& discretization = _data->auxDiscretizations[ifield];
         const char* name = _data->auxSubfields[ifield];
-        _bc->auxSubfieldDiscretization(name, discretization.basisOrder, discretization.quadOrder, discretization.isBasisContinuous, discretization.feSpace);
+        _bc->auxSubfieldDiscretization(name,
+                                       discretization.basisOrder,
+                                       discretization.quadOrder,
+                                       discretization.isBasisContinuous,
+                                       discretization.feSpace);
     } // for
 
     PYLITH_METHOD_END;
@@ -432,7 +463,8 @@ pylith::bc::TestAbsorbingDampers::_setupSolutionField(void) {
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_data->scales);
 
-    delete _solution;_solution = new pylith::topology::Field(*_mesh);
+    delete _solution;
+    _solution = new pylith::topology::Field(*_mesh);
     pylith::problems::SolutionFactory factory(*_solution, *_data->scales);
     factory.displacement(_data->solnDiscretizations[0]);
     factory.velocity(_data->solnDiscretizations[1]);
@@ -458,16 +490,21 @@ pylith::bc::TestAbsorbingDampers_Data::TestAbsorbingDampers_Data(void) :
     t(0.0),
     solnNumSubfields(0),
     solnDiscretizations(NULL),
-    solnDB(new spatialdata::spatialdb::UserFunctionDB) {} // constructor
+    solnDB(new spatialdata::spatialdb::UserFunctionDB) {
+} // constructor
 
 
 // ----------------------------------------------------------------------
 // Destructor
 pylith::bc::TestAbsorbingDampers_Data::~TestAbsorbingDampers_Data(void) {
-    delete cs;cs = NULL;
-    delete scales;scales = NULL;
-    delete auxDB;auxDB = NULL;
-    delete solnDB;solnDB = NULL;
+    delete cs;
+    cs = NULL;
+    delete scales;
+    scales = NULL;
+    delete auxDB;
+    auxDB = NULL;
+    delete solnDB;
+    solnDB = NULL;
 } // destructor
 
 

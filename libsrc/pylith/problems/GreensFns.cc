@@ -13,22 +13,22 @@
 #include "pylith/problems/GreensFns.hh" // implementation of class methods
 
 #include "pylith/feassemble/IntegrationData.hh" // HOLDSA IntegrationData
-#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include "pylith/faults/FaultCohesiveImpulses.hh" // USES FaultCohesiveImpulses
-#include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface
 #include "pylith/feassemble/Constraint.hh" // USES Constraint
+#include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface
+#include "pylith/petsc/KSPMonitor.hh" // USES KSPMonitor
+#include "pylith/petsc/Options.hh" // USES SolverDefaults
+#include "pylith/petsc/SNESMonitor.hh" // USES SNESMonitor
 #include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
 #include "pylith/problems/ProgressMonitorStep.hh" // USES ProgressMonitorStep
 #include "pylith/scales/Scales.hh" // USES Scales
-#include "pylith/petsc/SNESMonitor.hh" // USES SNESMonitor
-#include "pylith/petsc/KSPMonitor.hh" // USES KSPMonitor
-#include "pylith/petsc/Options.hh" // USES SolverDefaults
 
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "petscsnes.h" // USES PetscSNES
 
@@ -38,14 +38,13 @@
 namespace pylith {
     namespace problems {
         class _GreensFns {
-public:
-
+          public:
             static const char* pyreComponent;
         }; // _GreensFns
 
         const char* _GreensFns::pyreComponent = "greensfns";
-    } // problems
-} // pylith
+    } // namespace problems
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 // Constructor
@@ -93,7 +92,7 @@ pylith::problems::GreensFns::deallocate(void) {
 // Set name of label for fault with impulses.
 void
 pylith::problems::GreensFns::setFaultLabelName(const char* value) {
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setFaultLabelName(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setFaultLabelName(value=" << value << ")");
 
     if (strlen(value) == 0) {
         PYLITH_COMPONENT_ERROR(pylith::exceptions::EmptyStringError,
@@ -116,7 +115,7 @@ pylith::problems::GreensFns::getFaultLabelName(void) const {
 // Set value of label for fault with impulses.
 void
 pylith::problems::GreensFns::setFaultLabelValue(const int value) {
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "fsetFaultLabelValue(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "fsetFaultLabelValue(value=" << value << ")");
 
     _faultLabelValue = value;
 } // setFaultLabelvalue
@@ -168,16 +167,19 @@ pylith::problems::GreensFns::verifyConfiguration(void) const {
             (_faultLabelValue == _interfaces[i]->getSurfaceLabelValue())) {
             faultImpulses = dynamic_cast<pylith::faults::FaultCohesiveImpulses*>(_interfaces[i]);
             if (!faultImpulses) {
-                PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError,
-                                       "Found fault with "<<_faultLabelName<<"="<<_faultLabelValue
-                                                          <<" in interfaces for imposing impulses, but type is not FaultCohesiveImpulses.");
+                PYLITH_COMPONENT_ERROR(
+                    pylith::exceptions::ValueError,
+                    "Found fault with "
+                        << _faultLabelName << "=" << _faultLabelValue
+                        << " in interfaces for imposing impulses, but type is not FaultCohesiveImpulses.");
             } // if
             break;
         } // if
     } // for
     if (!faultImpulses) {
         PYLITH_COMPONENT_ERROR(pylith::exceptions::LabelNotFoundError,
-                               "Could not find fault with "<<_faultLabelName<<"="<<_faultLabelValue<<" in interfaces for imposing impulses.");
+                               "Could not find fault with " << _faultLabelName << "=" << _faultLabelValue
+                                                            << " in interfaces for imposing impulses.");
     } // if
 
     PYLITH_METHOD_END;
@@ -206,12 +208,14 @@ pylith::problems::GreensFns::initialize(void) {
     } // for
     assert(_faultImpulses);
 
-    PylithCallPetsc(SNESDestroy(&_snes));assert(!_snes);
+    PylithCallPetsc(SNESDestroy(&_snes));
+    assert(!_snes);
     assert(_integrationData);
     pylith::topology::Field* solution = _integrationData->getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
 
-    PylithCallPetsc(SNESCreate(solution->getMesh().getComm(), &_snes));assert(_snes);
+    PylithCallPetsc(SNESCreate(solution->getMesh().getComm(), &_snes));
+    assert(_snes);
     PylithCallPetsc(SNESSetApplicationContext(_snes, (void*)this));
     PylithCallPetsc(SNESSetDM(_snes, solution->getDM()));
 
@@ -220,12 +224,14 @@ pylith::problems::GreensFns::initialize(void) {
     PylithCallPetsc(SNESSetSolution(_snes, solutionVector));
 
     // Initialize solution_dot.
-    pylith::topology::Field* solutionDot = new pylith::topology::Field(*solution);assert(solutionDot);
+    pylith::topology::Field* solutionDot = new pylith::topology::Field(*solution);
+    assert(solutionDot);
     solutionDot->setLabel("solution_dot");
     _integrationData->setField(pylith::feassemble::IntegrationData::solution_dot, solutionDot);
 
     // Initialize residual.
-    pylith::topology::Field* residual = new pylith::topology::Field(*solution);assert(residual);
+    pylith::topology::Field* residual = new pylith::topology::Field(*solution);
+    assert(residual);
     residual->setLabel("residual");
     _integrationData->setField(pylith::feassemble::IntegrationData::residual, residual);
 
@@ -235,20 +241,24 @@ pylith::problems::GreensFns::initialize(void) {
 
     switch (_formulation) {
     case pylith::problems::Physics::QUASISTATIC:
-        PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Setting PetscSNES callbacks SNESSetFunction() and SNESSetJacobian().");
+        PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                               "Setting PetscSNES callbacks SNESSetFunction() and SNESSetJacobian().");
         PylithCallPetsc(SNESSetFunction(_snes, NULL, computeResidual, (void*)this));
         PylithCallPetsc(SNESSetJacobian(_snes, NULL, NULL, computeJacobian, (void*)this));
         PylithCallPetsc(SNESSetType(_snes, SNESKSPONLY));
         PylithCallPetsc(SNESSetLagJacobian(_snes, -2));
         break;
     case pylith::problems::Physics::DYNAMIC_IMEX:
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError, "Dynamic Green's functions problems not yet supported.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError,
+                               "Dynamic Green's functions problems not yet supported.");
         break;
     case pylith::problems::Physics::DYNAMIC:
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError, "Dynamic Green's functions problems not yet supported.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError,
+                               "Dynamic Green's functions problems not yet supported.");
         break;
     default: {
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown Green's functions formulation '" << _formulation << "'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError,
+                               "Unknown Green's functions formulation '" << _formulation << "'.");
     } // default
     } // switch
 
@@ -259,14 +269,16 @@ pylith::problems::GreensFns::initialize(void) {
     assert(!_integratorImpulses);
     const size_t numIntegrators = _integrators.size();
     for (size_t i = 0; i < numIntegrators; ++i) {
-        pylith::feassemble::IntegratorInterface* integrator = dynamic_cast<pylith::feassemble::IntegratorInterface*>(_integrators[i]);
+        pylith::feassemble::IntegratorInterface* integrator =
+            dynamic_cast<pylith::feassemble::IntegratorInterface*>(_integrators[i]);
         if (integrator && (_faultLabelName == std::string(integrator->getSurfaceLabelName()))) {
             _integratorImpulses = _integrators[i];
         } // if
     } // for
     if (!_integratorImpulses) {
         PYLITH_COMPONENT_ERROR(pylith::exceptions::LabelNotFoundError,
-                               "Could not find integrator for fault "<<_faultLabelName<<"="<<_faultLabelValue<<" in integrators for problem.");
+                               "Could not find integrator for fault " << _faultLabelName << "=" << _faultLabelValue
+                                                                      << " in integrators for problem.");
     } // if
 
     pythia::journal::debug_t debug(pylith::journal::solution);
@@ -295,17 +307,22 @@ pylith::problems::GreensFns::solve(void) {
     assert(_integrationData);
     pylith::topology::Field* solution = _integrationData->getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
-    pylith::topology::Field* residual = _integrationData->getField(pylith::feassemble::IntegrationData::residual);assert(residual);
+    pylith::topology::Field* residual = _integrationData->getField(pylith::feassemble::IntegrationData::residual);
+    assert(residual);
 
     int mpiRank = 0;
     int mpiNumProcs = 0;
     PetscDM dm = getPetscDM();
     MPI_Comm comm = PetscObjectComm((PetscObject)dm);
-    int err = MPI_Comm_rank(comm, &mpiRank);assert(!err);
-    err = MPI_Comm_size(comm, &mpiNumProcs);assert(!err);
+    int err = MPI_Comm_rank(comm, &mpiRank);
+    assert(!err);
+    err = MPI_Comm_size(comm, &mpiNumProcs);
+    assert(!err);
 
     PetscInt numImpulsesLocal = _faultImpulses->getNumImpulsesLocal();
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "[" << mpiRank << "] Contributing " << numImpulsesLocal << " impulses for Green's functions.");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "[" << mpiRank << "] Contributing " << numImpulsesLocal
+                               << " impulses for Green's functions.");
     int_array numImpulses(mpiNumProcs);
     PylithCallPetsc(MPI_Allgather(&numImpulsesLocal, 1, MPI_INT, &numImpulses[0], 1, MPI_INT, comm));
 
@@ -317,7 +334,9 @@ pylith::problems::GreensFns::solve(void) {
     const PylithReal tolerance = 1.0e-4;
     for (int iProc = 0, iImpulseGlobal = 0; iProc < mpiNumProcs; ++iProc) {
         for (int iImpulseLocal = 0; iImpulseLocal < numImpulses[iProc]; ++iImpulseLocal, ++iImpulseGlobal) {
-            PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow, "Computing Green's function " << iImpulseGlobal+1 << " of " << numImpulsesGlobal << ".");
+            PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow,
+                                       "Computing Green's function " << iImpulseGlobal + 1 << " of "
+                                                                     << numImpulsesGlobal << ".");
 
             // Update impulse on fault
             const PetscReal impulseReal = (mpiRank == iProc) ? iImpulseLocal + tolerance : -1.0;
@@ -340,7 +359,7 @@ void
 pylith::problems::GreensFns::poststep(const size_t impulse,
                                       const size_t numImpulses) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "poststep(impulse"<<impulse<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "poststep(impulse" << impulse << ")");
 
     // Get current solution. ParaView needs valid times.
     const PetscReal t = impulse / _scales->getTimeScale();
@@ -382,11 +401,12 @@ pylith::problems::GreensFns::poststep(const size_t impulse,
 void
 pylith::problems::GreensFns::setSolutionLocal(PetscVec solutionVec) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setSolutionLocal(solutionVec="<<solutionVec<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setSolutionLocal(solutionVec=" << solutionVec << ")");
 
     // Update PyLith view of the solution.
     assert(_integrationData);
-    pylith::topology::Field* solution = _integrationData->getField(pylith::feassemble::IntegrationData::solution);assert(solution);
+    pylith::topology::Field* solution = _integrationData->getField(pylith::feassemble::IntegrationData::solution);
+    assert(solution);
     solution->scatterVectorToLocal(solutionVec);
 
     const size_t numConstraints = _constraints.size();
@@ -406,7 +426,8 @@ void
 pylith::problems::GreensFns::computeResidual(PetscVec residualVec,
                                              PetscVec solutionVec) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "computeResidual(solutionVec="<<solutionVec<<", residualVec="<<residualVec<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "computeResidual(solutionVec=" << solutionVec << ", residualVec=" << residualVec << ")");
 
     assert(residualVec);
     assert(solutionVec);
@@ -440,7 +461,9 @@ pylith::problems::GreensFns::computeJacobian(PetscMat jacobianMat,
                                              PetscMat precondMat,
                                              PetscVec solutionVec) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "GreensFns::computeJacobian(solutionVec="<<solutionVec<<",jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "GreensFns::computeJacobian(solutionVec=" << solutionVec << ",jacobianMat=" << jacobianMat
+                                                                     << ", precondMat=" << precondMat << ")");
 
     assert(jacobianMat);
     assert(solutionVec);
@@ -455,11 +478,15 @@ pylith::problems::GreensFns::computeJacobian(PetscMat jacobianMat,
 
     PetscBool hasJacobian = PETSC_FALSE;
     PylithCallPetsc(PetscDSHasJacobian(dsSoln, &hasJacobian));
-    if (hasJacobian) { PylithCallPetsc(MatZeroEntries(jacobianMat)); }
+    if (hasJacobian) {
+        PylithCallPetsc(MatZeroEntries(jacobianMat));
+    }
 
     PetscBool hasPreconditioner = PETSC_FALSE;
     PylithCallPetsc(PetscDSHasJacobianPreconditioner(dsSoln, &hasPreconditioner));
-    if (hasPreconditioner) { PylithCallPetsc(MatZeroEntries(precondMat)); }
+    if (hasPreconditioner) {
+        PylithCallPetsc(MatZeroEntries(precondMat));
+    }
 
     // Update PyLith view of the solution.
     setSolutionLocal(solutionVec);

@@ -26,12 +26,11 @@
 namespace pylith {
     namespace problems {
         class TestProgressMonitor;
-    } // problems
-} // pylith
+    } // namespace problems
+} // namespace pylith
 
 class pylith::problems::TestProgressMonitor : public pylith::utils::GenericComponent {
-public:
-
+  public:
     /// Constructor.
     TestProgressMonitor(void);
 
@@ -47,34 +46,38 @@ public:
     /// Test update().
     void testUpdate(void);
 
-private:
-
+  private:
     pylith::problems::ProgressMonitorStub* _monitor; ///< Test subject.
 
 }; // class TestProgressMonitor
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestProgressMonitor::testAccessors", "[TestProgressMonitor]") {
+TEST_CASE("TestProgressMonitor::testAccessors",
+          "[TestProgressMonitor]") {
     pylith::problems::TestProgressMonitor().testAccessors();
 }
-TEST_CASE("TestProgressMonitor::testOpenClose", "[TestProgressMonitor]") {
+TEST_CASE("TestProgressMonitor::testOpenClose",
+          "[TestProgressMonitor]") {
     pylith::problems::TestProgressMonitor().testOpenClose();
 }
-TEST_CASE("TestProgressMonitor::testUpdate", "[TestProgressMonitor]") {
+TEST_CASE("TestProgressMonitor::testUpdate",
+          "[TestProgressMonitor]") {
     pylith::problems::TestProgressMonitor().testUpdate();
 }
 
 // ------------------------------------------------------------------------------------------------
 // Constructor.
 pylith::problems::TestProgressMonitor::TestProgressMonitor(void) {
-    _monitor = new ProgressMonitorStub();REQUIRE(_monitor);
+    _monitor = new ProgressMonitorStub();
+    REQUIRE(_monitor);
 } // setUp
 
 
 // ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::problems::TestProgressMonitor::~TestProgressMonitor(void) {
-    delete _monitor;_monitor = NULL;
+    delete _monitor;
+    _monitor = NULL;
 } // tearDown
 
 

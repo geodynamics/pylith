@@ -19,15 +19,14 @@ namespace pylith {
     namespace meshio {
         class TestDataWriterHDF5ExtMaterial;
         class TestDataWriterHDF5ExtMaterial_Data;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 /// C++ unit testing for DataWriterHDF5Ext
 class pylith::meshio::TestDataWriterHDF5ExtMaterial : public TestDataWriterHDF5, public TestDataWriterMaterial {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestDataWriterHDF5ExtMaterial(TestDataWriterHDF5ExtMaterial_Data* data);
 
@@ -44,8 +43,7 @@ public:
     void testWriteCellField(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get test data.
      *
      * @returns Test data.
@@ -53,13 +51,13 @@ protected:
     TestDataWriterMaterial_Data* _getData(void);
 
     // PROTECTED MEMBDERS /////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     TestDataWriterHDF5ExtMaterial_Data* _data; ///< Data for testing.
 
 }; // class TestDataWriterHDF5ExtMaterial
 
 // ------------------------------------------------------------------------------------------------
-class pylith::meshio::TestDataWriterHDF5ExtMaterial_Data : public TestDataWriterHDF5_Data, public TestDataWriterMaterial_Data {};
+class pylith::meshio::TestDataWriterHDF5ExtMaterial_Data : public TestDataWriterHDF5_Data,
+                                                           public TestDataWriterMaterial_Data {};
 
 // End of file

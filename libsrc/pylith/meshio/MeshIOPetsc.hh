@@ -17,13 +17,12 @@ class pylith::meshio::MeshIOPetsc : public MeshIO {
     friend class TestMeshIOPetsc; // unit testing
 
     enum Format {
-        GMSH=0, // PETSc HDF5 format
-        HDF5=1, // PETSc HDF5 format
+        GMSH = 0, // PETSc HDF5 format
+        HDF5 = 1, // PETSc HDF5 format
     };
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     MeshIOPetsc(void);
 
@@ -82,8 +81,7 @@ public:
     bool getGmshMarkRecursive(void) const;
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Write mesh
     void _write(void) const;
 
@@ -91,8 +89,7 @@ protected:
     void _read(void);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     std::string _filename; ///< Name of file.
     std::string _prefix; ///< Options prefix for mesh.
     Format _format; ///< Mesh format.

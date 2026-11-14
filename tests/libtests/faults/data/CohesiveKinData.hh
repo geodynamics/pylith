@@ -14,13 +14,12 @@
 namespace pylith {
     namespace faults {
         class CohesiveKinData;
-    } // pylith
-} // faults
+    } // namespace faults
+} // namespace pylith
 
 class pylith::faults::CohesiveKinData {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     CohesiveKinData(void);
 
@@ -28,8 +27,7 @@ public:
     ~CohesiveKinData(void);
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     char* meshFilename; ///< Filename for input mesh
 
     /// @name Scales information for nondimensionalization.
@@ -92,7 +90,6 @@ public:
     int* cellMappingFault;
     int* cellMappingCohesive;
     //@}
-
 };
 
 // End of file

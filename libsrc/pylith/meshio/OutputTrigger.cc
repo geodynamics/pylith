@@ -11,19 +11,20 @@
 
 #include "pylith/meshio/OutputTrigger.hh" // Implementation of class methods
 
-#include "pylith/utils/journals.hh" // USES journal macros
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/utils/journals.hh" // USES journal macros
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor
-pylith::meshio::OutputTrigger::OutputTrigger(void) :
-    _timeScale(1.0) {}
+pylith::meshio::OutputTrigger::OutputTrigger(void) : _timeScale(1.0) {
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor
-pylith::meshio::OutputTrigger::~OutputTrigger(void) {}
+pylith::meshio::OutputTrigger::~OutputTrigger(void) {
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -32,7 +33,7 @@ void
 pylith::meshio::OutputTrigger::setTimeScale(const PylithReal value) {
     if (value <= 0.0) {
         PYLITH_COMPONENT_ERROR(pylith::exceptions::OutOfRangeError,
-                               "Time scale ("<<value<<") for solution observer is nonpositive.");
+                               "Time scale (" << value << ") for solution observer is nonpositive.");
     } // if
     _timeScale = value;
 } // setTimeScale

@@ -11,8 +11,8 @@
 
 #include "pylith/feassemble/feassemblefwd.hh" // forward declarations
 
-#include "pylith/feassemble/Integrator.hh" // ISA Integrator
 #include "pylith/feassemble/FEKernelKey.hh" // HASA FEKernelKey
+#include "pylith/feassemble/Integrator.hh" // ISA Integrator
 #include "pylith/materials/materialsfwd.hh" // USES Material
 #include "pylith/utils/arrayfwd.hh" // HASA std::vector
 
@@ -20,12 +20,11 @@ class pylith::feassemble::IntegratorInterface : public pylith::feassemble::Integ
     friend class _IntegratorInterface; // private utility class
     friend class TestIntegratorInterface; // unit testing
 
-public:
-
+  public:
     enum FaceEnum {
-        NEGATIVE_FACE=0,
-        POSITIVE_FACE=1,
-        FAULT_FACE=2,
+        NEGATIVE_FACE = 0,
+        POSITIVE_FACE = 1,
+        FAULT_FACE = 2,
     }; // FaceEnum
 
     /// Project kernels (pointwise functions) for updating state variables or computing derived fields.
@@ -35,20 +34,21 @@ public:
 
         ProjectKernels(void) :
             subfield(""),
-            f(NULL) {}
+            f(NULL) {
+        }
 
 
         ProjectKernels(const char* subfieldValue,
                        PetscBdPointFn* fValue) :
             subfield(subfieldValue),
-            f(fValue) {}
+            f(fValue) {
+        }
 
 
     }; // ProjectKernels
 
     // PUBLIC STRUCTS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Kernels (pointwise functions) for residual.
     struct ResidualKernels {
         std::string subfield; ///< Name of subfield
@@ -62,7 +62,8 @@ public:
             part(pylith::feassemble::Integrator::LHS),
             face(FAULT_FACE),
             r0(NULL),
-            r1(NULL) {}
+            r1(NULL) {
+        }
 
 
         ResidualKernels(const char* subfieldValue,
@@ -74,7 +75,8 @@ public:
             part(partValue),
             face(faceValue),
             r0(r0Value),
-            r1(r1Value) {}
+            r1(r1Value) {
+        }
 
 
     }; // ResidualKernels
@@ -98,7 +100,8 @@ public:
             j0(NULL),
             j1(NULL),
             j2(NULL),
-            j3(NULL) {}
+            j3(NULL) {
+        }
 
 
         JacobianKernels(const char* subfieldTrialValue,
@@ -116,14 +119,14 @@ public:
             j0(j0Value),
             j1(j1Value),
             j2(j2Value),
-            j3(j3Value) {}
+            j3(j3Value) {
+        }
 
 
     }; // JacobianKernels
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     IntegratorInterface(pylith::problems::Physics* const physics);
 
@@ -131,8 +134,7 @@ public:
     virtual ~IntegratorInterface(void);
 
     /// Deallocate PETSc and local data structures.
-    virtual
-    void deallocate(void);
+    virtual void deallocate(void);
 
     /** Set name of label marking interior interface surface.
      *
@@ -262,8 +264,7 @@ public:
                                      const pylith::feassemble::IntegrationData& integrationData);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Update state variables as needed.
      *
      * @param[in] t Current time.
@@ -288,8 +289,7 @@ protected:
                               const pylith::topology::Field& solution);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::topology::Mesh* _interfaceMesh; ///< Boundary mesh.
     std::string _surfaceLabelName; ///< Name of label identifying interface surface.
 
@@ -305,8 +305,7 @@ private:
     bool _hasLHSJacobianWeighted; ///< Has LHS Jacobian with weighted terms.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     IntegratorInterface(void); ///< Not implemented.
     IntegratorInterface(const IntegratorInterface&); ///< Not implemented.
     const IntegratorInterface& operator=(const IntegratorInterface&); ///< Not implemented.

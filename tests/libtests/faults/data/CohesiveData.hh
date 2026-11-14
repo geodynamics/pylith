@@ -14,13 +14,12 @@
 namespace pylith {
     namespace faults {
         class CohesiveData;
-    } // pylith
-} // faults
+    } // namespace faults
+} // namespace pylith
 
 class pylith::faults::CohesiveData {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     CohesiveData(void);
 
@@ -28,8 +27,7 @@ public:
     ~CohesiveData(void);
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     int numVertices; ///< Number of vertices
     int spaceDim; ///< Number of dimensions in vertex coordinates
     int numCells; ///< Number of cells

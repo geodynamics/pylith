@@ -14,8 +14,8 @@
 
 #include "pylith/exceptions/error.hh"
 
-#include "petscts.h"
 #include "petsc/private/tsimpl.h"
+#include "petscts.h"
 
 // ------------------------------------------------------------------------------------------------
 double pylith::petsc::TSAdaptImpulse::_impulseStep = 1.0e-6;
@@ -53,12 +53,12 @@ PetscErrorCode
 pylith::petsc::TSAdaptImpulse::TSAdaptChoose(TSAdapt adapt,
                                              TS ts,
                                              PetscReal h,
-                                             PetscInt *next_sc,
-                                             PetscReal *next_h,
-                                             PetscBool *accept,
-                                             PetscReal *wlte,
-                                             PetscReal *wltea,
-                                             PetscReal *wlter) {
+                                             PetscInt* next_sc,
+                                             PetscReal* next_h,
+                                             PetscBool* accept,
+                                             PetscReal* wlte,
+                                             PetscReal* wltea,
+                                             PetscReal* wlter) {
     static PetscReal dtTarget = -1.0;
     PetscReal dtInitial = TSAdaptImpulse::getImpulseTimeStep();
     PetscInt step;

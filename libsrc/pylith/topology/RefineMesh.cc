@@ -15,12 +15,14 @@
 
 // ------------------------------------------------------------------------------------------------
 // Constructor
-pylith::topology::RefineMesh::RefineMesh(void) {}
+pylith::topology::RefineMesh::RefineMesh(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
 // Destructor
-pylith::topology::RefineMesh::~RefineMesh(void) {}
+pylith::topology::RefineMesh::~RefineMesh(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------

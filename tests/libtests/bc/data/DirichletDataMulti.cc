@@ -50,7 +50,7 @@ pylith::bc::DirichletDataMulti::DirichletDataMulti(void) :
     setRigidityScale(2.0e+6),
     setTimeScale(2.0) {
     const PylithScalar velScale = lengthScale / timeScale;
-    densityScale = rigidityScale / (velScale*velScale);
+    densityScale = rigidityScale / (velScale * velScale);
 } // constructor
 
 

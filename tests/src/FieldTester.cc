@@ -12,9 +12,9 @@
 
 #include "FieldTester.hh" // implementation of class methods
 
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
-#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
@@ -32,12 +32,17 @@ pylith::testing::FieldTester::checkFieldWithDB(const pylith::topology::Field& fi
     PylithReal norm = 0.0;
     PylithReal t = 0.0;
 
-    const PetscDM dmField = field.getDM();REQUIRE(dmField);
+    const PetscDM dmField = field.getDM();
+    REQUIRE(dmField);
     pylith::topology::FieldQuery fieldQuery(field);
     fieldQuery.initializeWithDefaultQueries();
     fieldQuery.openDB(fieldDB, lengthScale);
-    PylithCallPetscRequire(DMPlexComputeL2DiffLocal(dmField, t, fieldQuery._functions, (void**)fieldQuery._contextPtrs,
-                                                    field.getLocalVector(), &norm));
+    PylithCallPetscRequire(DMPlexComputeL2DiffLocal(dmField,
+                                                    t,
+                                                    fieldQuery._functions,
+                                                    (void**)fieldQuery._contextPtrs,
+                                                    field.getLocalVector(),
+                                                    &norm));
     fieldQuery.closeDB(fieldDB);
 
     PYLITH_METHOD_RETURN(norm);

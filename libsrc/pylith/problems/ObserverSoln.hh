@@ -21,8 +21,7 @@ class pylith::problems::ObserverSoln : public pylith::problems::Observer {
     friend class TestObserverSoln; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     ObserverSoln(void);
 
@@ -30,22 +29,19 @@ public:
     virtual ~ObserverSoln(void);
 
     /// Deallocate PETSc and local data structures.
-    virtual
-    void deallocate(void);
+    virtual void deallocate(void);
 
     /** Set time scale.
      *
      * @param[in] value Time scale for dimensionalizing time.
      */
-    virtual
-    void setTimeScale(const PylithReal value) = 0;
+    virtual void setTimeScale(const PylithReal value) = 0;
 
     /** Verify observer is compatible with solution.
      *
      * @param[in] solution Solution field.
      */
-    virtual
-    void verifyConfiguration(const pylith::topology::Field& solution) const = 0;
+    virtual void verifyConfiguration(const pylith::topology::Field& solution) const = 0;
 
     /** Receive update (subject of observer).
      *
@@ -54,20 +50,17 @@ public:
      * @param[in] solution Solution at time t.
      * @param[in] notification Type of notification.
      */
-    virtual
-    void update(const PylithReal t,
-                const PylithInt tindex,
-                const pylith::topology::Field& solution,
-                const NotificationType notification) = 0;
+    virtual void update(const PylithReal t,
+                        const PylithInt tindex,
+                        const pylith::topology::Field& solution,
+                        const NotificationType notification) = 0;
 
     // PRIVATE ////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     size_t index; ///< Index for keeping set of observers ordered.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     ObserverSoln(const ObserverSoln&); ///< Not implemented.
     const ObserverSoln& operator=(const ObserverSoln&); ///< Not implemented
 

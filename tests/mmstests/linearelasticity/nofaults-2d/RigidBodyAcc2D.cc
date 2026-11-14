@@ -12,8 +12,8 @@
 
 #include "RigidBodyAcc2D.hh" // Implementation of test data
 
-#include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
+#include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES PYLITH_DEBUG
 
@@ -24,101 +24,117 @@
 // ---------------------------------------------------------------------------------------------------------------------
 namespace pylith {
     class _RigidBodyAcc2D;
-} // pylith
+} // namespace pylith
 
 class pylith::_RigidBodyAcc2D {
     static pylith::scales::Scales scales;
     static const double TIME_SNAPSHOT; // nondimensional
 
     // Density
-    static double density(const double x,
-                          const double y) {
+    static double
+    density(const double x,
+            const double y) {
         return 2500.0;
     } // density
 
-    static const char* density_units(void) {
+    static const char*
+    density_units(void) {
         return "kg/m**3";
     } // density_units
 
     // Vs
-    static double vs(const double x,
-                     const double y) {
+    static double
+    vs(const double x,
+       const double y) {
         return 3000.0;
     } // vs
 
-    static const char* vs_units(void) {
+    static const char*
+    vs_units(void) {
         return "m/s";
     } // vs_units
 
     // Vp
-    static double vp(const double x,
-                     const double y) {
-        return sqrt(3.0)*vs(x,y);
+    static double
+    vp(const double x,
+       const double y) {
+        return sqrt(3.0) * vs(x, y);
     } // vp
 
-    static const char* vp_units(void) {
+    static const char*
+    vp_units(void) {
         return "m/s";
     } // vp_units
 
     // Solution subfields.
 
     // Displacement
-    static double disp_x(const double x,
-                         const double y,
-                         const double t) {
+    static double
+    disp_x(const double x,
+           const double y,
+           const double t) {
         return 1.0;
     } // disp_x
 
-    static double disp_y(const double x,
-                         const double y,
-                         const double t) {
+    static double
+    disp_y(const double x,
+           const double y,
+           const double t) {
         return 1.5;
     } // disp_y
 
-    static const char* disp_units(void) {
+    static const char*
+    disp_units(void) {
         return "m";
     } // disp_units
 
     // Velocity
-    static double vel_x(const double x,
-                        const double y,
-                        const double t) {
+    static double
+    vel_x(const double x,
+          const double y,
+          const double t) {
         return 2.2;
     } // vel_x
 
-    static double vel_y(const double x,
-                        const double y,
-                        const double t) {
+    static double
+    vel_y(const double x,
+          const double y,
+          const double t) {
         return 2.7;
     } // vel_y
 
-    static const char* vel_units(void) {
+    static const char*
+    vel_units(void) {
         return "m/s";
     } // vel_units
 
     // Acceleration
-    static double acc_x(const double x,
-                        const double y,
-                        const double t) {
+    static double
+    acc_x(const double x,
+          const double y,
+          const double t) {
         return -2.3;
     } // vel_x
 
-    static double acc_y(const double x,
-                        const double y,
-                        const double t) {
+    static double
+    acc_y(const double x,
+          const double y,
+          const double t) {
         return -2.8;
     } // vel_y
 
-    static const char* acc_units(void) {
+    static const char*
+    acc_units(void) {
         return "m/s*2";
     } // vel_units
 
-    static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
-                                          PetscReal t,
-                                          const PetscReal x[],
-                                          PetscInt numComponents,
-                                          PetscScalar* s,
-                                          void* context) {
+    static PetscErrorCode
+    solnkernel_disp(PetscInt spaceDim,
+                    PetscReal t,
+                    const PetscReal x[],
+                    PetscInt numComponents,
+                    PetscScalar* s,
+                    void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(x);
         REQUIRE(2 == numComponents);
@@ -130,12 +146,13 @@ class pylith::_RigidBodyAcc2D {
         return PETSC_SUCCESS;
     } // solnkernel_disp
 
-    static PetscErrorCode solnkernel_vel(PetscInt spaceDim,
-                                         PetscReal t,
-                                         const PetscReal x[],
-                                         PetscInt numComponents,
-                                         PetscScalar* s,
-                                         void* context) {
+    static PetscErrorCode
+    solnkernel_vel(PetscInt spaceDim,
+                   PetscReal t,
+                   const PetscReal x[],
+                   PetscInt numComponents,
+                   PetscScalar* s,
+                   void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(x);
         REQUIRE(2 == numComponents);
@@ -147,12 +164,13 @@ class pylith::_RigidBodyAcc2D {
         return PETSC_SUCCESS;
     } // solnkernel_vel
 
-    static PetscErrorCode solnkernel_acc(PetscInt spaceDim,
-                                         PetscReal t,
-                                         const PetscReal x[],
-                                         PetscInt numComponents,
-                                         PetscScalar* s,
-                                         void* context) {
+    static PetscErrorCode
+    solnkernel_acc(PetscInt spaceDim,
+                   PetscReal t,
+                   const PetscReal x[],
+                   PetscInt numComponents,
+                   PetscScalar* s,
+                   void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(x);
         REQUIRE(2 == numComponents);
@@ -164,24 +182,25 @@ class pylith::_RigidBodyAcc2D {
         return PETSC_SUCCESS;
     } // solnkernel_acc
 
-    static void mmsBodyForceKernel(const PylithInt dim,
-                                   const PylithInt numS,
-                                   const PylithInt numA,
-                                   const PylithInt sOff[],
-                                   const PylithInt sOff_x[],
-                                   const PylithScalar s[],
-                                   const PylithScalar s_t[],
-                                   const PylithScalar s_x[],
-                                   const PylithInt aOff[],
-                                   const PylithInt aOff_x[],
-                                   const PylithScalar a[],
-                                   const PylithScalar a_t[],
-                                   const PylithScalar a_x[],
-                                   const PylithReal t,
-                                   const PylithScalar x[],
-                                   const PylithInt numConstants,
-                                   const PylithScalar constants[],
-                                   PylithScalar f0[]) {
+    static void
+    mmsBodyForceKernel(const PylithInt dim,
+                       const PylithInt numS,
+                       const PylithInt numA,
+                       const PylithInt sOff[],
+                       const PylithInt sOff_x[],
+                       const PylithScalar s[],
+                       const PylithScalar s_t[],
+                       const PylithScalar s_x[],
+                       const PylithInt aOff[],
+                       const PylithInt aOff_x[],
+                       const PylithScalar a[],
+                       const PylithScalar a_t[],
+                       const PylithScalar a_x[],
+                       const PylithReal t,
+                       const PylithScalar x[],
+                       const PylithInt numConstants,
+                       const PylithScalar constants[],
+                       PylithScalar f0[]) {
         REQUIRE(2 == dim);
         REQUIRE(x);
         REQUIRE(f0);
@@ -190,11 +209,11 @@ class pylith::_RigidBodyAcc2D {
         f0[1] += density(x[0], x[1]) / densityScale * acc_y(x[0], x[1], t);
     } // mmsBodyForceKernel
 
-public:
-
-    static
-    TestLinearElasticity_Data* createData(void) {
-        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();REQUIRE(data);
+  public:
+    static TestLinearElasticity_Data*
+    createData(void) {
+        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();
+        REQUIRE(data);
 
         data->journalName = "RigidBodyAcc2D";
         data->isJacobianLinear = true;
@@ -236,7 +255,10 @@ public:
         data->material.setLabelValue(24);
 
         std::vector<pylith::feassemble::IntegratorDomain::ResidualKernels> mmsKernels(1);
-        mmsKernels[0] = pylith::feassemble::IntegratorDomain::ResidualKernels("velocity", pylith::feassemble::Integrator::RHS, mmsBodyForceKernel, NULL);
+        mmsKernels[0] = pylith::feassemble::IntegratorDomain::ResidualKernels("velocity",
+                                                                              pylith::feassemble::Integrator::RHS,
+                                                                              mmsBodyForceKernel,
+                                                                              NULL);
         data->material.setMMSBodyForceKernels(mmsKernels);
 
         // Boundary conditions
@@ -244,7 +266,8 @@ public:
         static const PylithInt numConstrained = 2;
         data->bcs.resize(2);
         pylith::bc::DirichletUserFn* bc = NULL;
-        bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
+        bc = new pylith::bc::DirichletUserFn();
+        REQUIRE(bc);
         bc->setSubfieldName("displacement");
         bc->setLabelName("boundary");
         bc->setLabelValue(1);
@@ -253,7 +276,8 @@ public:
         bc->setUserFnDot(solnkernel_vel);
         data->bcs[0] = bc;
 
-        bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
+        bc = new pylith::bc::DirichletUserFn();
+        REQUIRE(bc);
         bc->setSubfieldName("velocity");
         bc->setLabelName("boundary");
         bc->setLabelValue(1);
@@ -282,7 +306,8 @@ pylith::scales::Scales pylith::_RigidBodyAcc2D::scales;
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::RigidBodyAcc2D::TriP1(void) {
-    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.msh";
     data->useAsciiMesh = false;
@@ -301,7 +326,8 @@ pylith::RigidBodyAcc2D::TriP1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::RigidBodyAcc2D::TriP2(void) {
-    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -326,7 +352,8 @@ pylith::RigidBodyAcc2D::TriP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::RigidBodyAcc2D::TriP3(void) {
-    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.msh";
     data->useAsciiMesh = false;
@@ -352,7 +379,8 @@ pylith::RigidBodyAcc2D::TriP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::RigidBodyAcc2D::TriP4(void) {
-    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -377,7 +405,8 @@ pylith::RigidBodyAcc2D::TriP4(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::RigidBodyAcc2D::QuadQ1(void) {
-    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -395,7 +424,8 @@ pylith::RigidBodyAcc2D::QuadQ1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::RigidBodyAcc2D::QuadQ1Distorted(void) {
-    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad_distorted.mesh";
 
@@ -413,7 +443,8 @@ pylith::RigidBodyAcc2D::QuadQ1Distorted(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::RigidBodyAcc2D::QuadQ2(void) {
-    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.msh";
     data->useAsciiMesh = false;
@@ -439,7 +470,8 @@ pylith::RigidBodyAcc2D::QuadQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::RigidBodyAcc2D::QuadQ3(void) {
-    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -464,7 +496,8 @@ pylith::RigidBodyAcc2D::QuadQ3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::RigidBodyAcc2D::QuadQ4(void) {
-    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 

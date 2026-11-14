@@ -23,8 +23,7 @@ class pylith::utils::PyreComponent {
     friend class TestPyreComponent; // unit testing
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     PyreComponent(void);
 
@@ -62,15 +61,13 @@ public:
     const char* getFullIdentifier(void) const;
 
     // PRIVATE METHODS //////////////////////////////////////////////////////
-private:
-
+  private:
     std::string _name; ///< Name of component (used in journals).
     std::string _identifier; ///< Identifier for object in component hierarchy.
     std::string _fullIdentifier; ///< Full name of component.
 
     // PRIVATE METHODS //////////////////////////////////////////////////////
-private:
-
+  private:
     PyreComponent(const PyreComponent&); ///< Not implemented
     const PyreComponent& operator=(const PyreComponent&); ///< Not implemented
 

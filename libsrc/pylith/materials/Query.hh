@@ -20,52 +20,46 @@ class pylith::materials::Query {
     friend class TestQuery; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /** Setup subfield query in auxiliary factory for shear modulus from density and Vs.
      *
      * @param[in] subfieldName Name for shear modulus subfield.
      * @param[inout] factory Auxiliary factory associated with shear modulus subfield.
      */
-    static
-    void shearModulusFromVM(const char* subfieldName,
-                            pylith::feassemble::AuxiliaryFactory* factory);
+    static void shearModulusFromVM(const char* subfieldName,
+                                   pylith::feassemble::AuxiliaryFactory* factory);
 
     /** Setup subfield query in auxiliary factory for bulk modulus from density, Vs, and Vp.
      *
      * @param[in] subfieldName Name for bulk modulus subfield.
      * @param[inout] factory Auxiliary factory associated with shear modulus subfield.
      */
-    static
-    void bulkModulusFromVM(const char* subfieldName,
-                           pylith::feassemble::AuxiliaryFactory* factory);
+    static void bulkModulusFromVM(const char* subfieldName,
+                                  pylith::feassemble::AuxiliaryFactory* factory);
 
     /** Setup subfield query in auxiliary factory for Maxwell time from density, Vs, and viscosity.
      *
      * @param[in] subfieldName Name for Maxwell time subfield.
      * @param[inout] factory Auxiliary factory associated with shear modulus subfield.
      */
-    static
-    void maxwellTimeFromVM(const char* subfieldName,
-                           pylith::feassemble::AuxiliaryFactory* factory);
+    static void maxwellTimeFromVM(const char* subfieldName,
+                                  pylith::feassemble::AuxiliaryFactory* factory);
 
     /** Setup subfield query in auxiliary factory for generalized Maxwell times from density, Vs, and viscosities.
      *
      * @param[in] subfieldName Name for generalized Maxwelltime subfield.
      * @param[inout] factory Auxiliary factory associated with shear modulus subfield.
      */
-    static
-    void generalizedMaxwellTimesFromVM(const char* subfieldName,
-                                       pylith::feassemble::AuxiliaryFactory* factory);
+    static void generalizedMaxwellTimesFromVM(const char* subfieldName,
+                                              pylith::feassemble::AuxiliaryFactory* factory);
 
     /** Setup subfield query in auxiliary factory for generalized Maxwell shear modulus ratios.
      *
      * @param[in] subfieldName Name for generalized Maxwelltime subfield.
      * @param[inout] factory Auxiliary factory associated with shear modulus subfield.
      */
-    static
-    void generalizedMaxwellShearModulusRatiosFromVM(const char* subfieldName,
-                                                    pylith::feassemble::AuxiliaryFactory* factory);
+    static void generalizedMaxwellShearModulusRatiosFromVM(const char* subfieldName,
+                                                           pylith::feassemble::AuxiliaryFactory* factory);
 
     /** Setup subfield query in auxiliary factory for gravity field from GravityField spatial database.
      *
@@ -74,24 +68,21 @@ public:
      * @param[in] gravityField Spatial database for gravity field.
      * @param[in] Spatial dimension of problem.
      */
-    static
-    void gravityFieldFromDB(const char* subfieldName,
-                            pylith::feassemble::AuxiliaryFactory* factory,
-                            spatialdata::spatialdb::GravityField* gravityField,
-                            const size_t spaceDim);
+    static void gravityFieldFromDB(const char* subfieldName,
+                                   pylith::feassemble::AuxiliaryFactory* factory,
+                                   spatialdata::spatialdb::GravityField* gravityField,
+                                   const size_t spaceDim);
 
     /** Setup subfield query in auxiliary factory for bulk modulus from  gravity field from input parameters.
      *
      * @param[in] subfieldName Name for shear modulus subfield.
      * @param[inout] factory Auxiliary factory associated with shear modulus subfield.
      */
-    static
-    void biotModulusFromInput(const char* subfieldName,
-                              pylith::feassemble::AuxiliaryFactory* factory);
+    static void biotModulusFromInput(const char* subfieldName,
+                                     pylith::feassemble::AuxiliaryFactory* factory);
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     Query(void); ///< Not implemented
     ~Query(void); ///< Not implemented
     Query(const Query&); ///< Not implemented

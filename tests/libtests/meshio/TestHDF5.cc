@@ -12,14 +12,14 @@
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
-#include "pylith/meshio/HDF5.hh" // USES HDF5
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/meshio/HDF5.hh" // USES HDF5
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
 
-#include <memory> // USGS std::unique_ptr
 #include <fstream> // USES ofstream
+#include <memory> // USGS std::unique_ptr
 
 #if H5_VERS_MAJOR == 1 && H5_VERS_MINOR >= 8
 #define PYLITH_HDF5_USE_API_18
@@ -28,106 +28,105 @@
 namespace pylith {
     namespace meshio {
         class TestHDF5;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestHDF5 : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test constructor.
-    static
-    void testConstructor(void);
+    static void testConstructor(void);
 
     /// Test open() and close().
-    static
-    void testOpenClose(void);
+    static void testOpenClose(void);
 
     /// Test hasGroup().
-    static
-    void testHasGroup(void);
+    static void testHasGroup(void);
 
     /// Test hasDataset().
-    static
-    void testHasDataset(void);
+    static void testHasDataset(void);
 
     /// Test getDatasetDims().
-    static
-    void testGetDatasetDims(void);
+    static void testGetDatasetDims(void);
 
     /// Test getGroupDatasets().
-    static
-    void testGetGroupDatasets(void);
+    static void testGetGroupDatasets(void);
 
     /// Test createGroup()
-    static
-    void testCreateGroup(void);
+    static void testCreateGroup(void);
 
     /// Test writeAttribute(scalar) and readAttribute(scalar).
-    static
-    void testAttributeScalar(void);
+    static void testAttributeScalar(void);
 
     /// Test createDataset().
-    static
-    void testCreateDataset(void);
+    static void testCreateDataset(void);
 
     /// Test writeDatasetChunk() and readDatasetChunk().
-    static
-    void testDatasetChunk(void);
+    static void testDatasetChunk(void);
 
     /// Test createDatasetRawExternal() and updateDatasetRawExternal().
-    static
-    void testDatasetRawExternal(void);
+    static void testDatasetRawExternal(void);
 
     /// Test writeAttribute(string) and readAttribute(string).
-    static
-    void testAttributeString(void);
+    static void testAttributeString(void);
 
     /// Test writeDataset(string) and readDataset(string).
-    static
-    void testDatasetString(void);
+    static void testDatasetString(void);
 
 }; // class TestHDF5
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestHDF5::testConstructor", "[TestHDF5]") {
+TEST_CASE("TestHDF5::testConstructor",
+          "[TestHDF5]") {
     pylith::meshio::TestHDF5::testConstructor();
 }
-TEST_CASE("TestHDF5::testOpenClose", "[TestHDF5]") {
+TEST_CASE("TestHDF5::testOpenClose",
+          "[TestHDF5]") {
     pylith::meshio::TestHDF5::testOpenClose();
 }
-TEST_CASE("TestHDF5::testHasGroup", "[TestHDF5]") {
+TEST_CASE("TestHDF5::testHasGroup",
+          "[TestHDF5]") {
     pylith::meshio::TestHDF5::testHasGroup();
 }
-TEST_CASE("TestHDF5::testHasDataset", "[TestHDF5]") {
+TEST_CASE("TestHDF5::testHasDataset",
+          "[TestHDF5]") {
     pylith::meshio::TestHDF5::testHasDataset();
 }
-TEST_CASE("TestHDF5::testGetDatasetDims", "[TestHDF5]") {
+TEST_CASE("TestHDF5::testGetDatasetDims",
+          "[TestHDF5]") {
     pylith::meshio::TestHDF5::testGetDatasetDims();
 }
-TEST_CASE("TestHDF5::testGetGroupDatasets", "[TestHDF5]") {
+TEST_CASE("TestHDF5::testGetGroupDatasets",
+          "[TestHDF5]") {
     pylith::meshio::TestHDF5::testGetGroupDatasets();
 }
-TEST_CASE("TestHDF5::testCreateGroup", "[TestHDF5]") {
+TEST_CASE("TestHDF5::testCreateGroup",
+          "[TestHDF5]") {
     pylith::meshio::TestHDF5::testCreateGroup();
 }
-TEST_CASE("TestHDF5::testAttributeScalar", "[TestHDF5]") {
+TEST_CASE("TestHDF5::testAttributeScalar",
+          "[TestHDF5]") {
     pylith::meshio::TestHDF5::testAttributeScalar();
 }
-TEST_CASE("TestHDF5::testCreateDataset", "[TestHDF5]") {
+TEST_CASE("TestHDF5::testCreateDataset",
+          "[TestHDF5]") {
     pylith::meshio::TestHDF5::testCreateDataset();
 }
-TEST_CASE("TestHDF5::testDatasetChunk", "[TestHDF5]") {
+TEST_CASE("TestHDF5::testDatasetChunk",
+          "[TestHDF5]") {
     pylith::meshio::TestHDF5::testDatasetChunk();
 }
-TEST_CASE("TestHDF5::testDatasetRawExternal", "[TestHDF5]") {
+TEST_CASE("TestHDF5::testDatasetRawExternal",
+          "[TestHDF5]") {
     pylith::meshio::TestHDF5::testDatasetRawExternal();
 }
-TEST_CASE("TestHDF5::testAttributeString", "[TestHDF5]") {
+TEST_CASE("TestHDF5::testAttributeString",
+          "[TestHDF5]") {
     pylith::meshio::TestHDF5::testAttributeString();
 }
-TEST_CASE("TestHDF5::testDatasetString", "[TestHDF5]") {
+TEST_CASE("TestHDF5::testDatasetString",
+          "[TestHDF5]") {
     pylith::meshio::TestHDF5::testDatasetString();
 }
 
@@ -228,7 +227,7 @@ pylith::meshio::TestHDF5::testGetDatasetDims(void) {
     HDF5 h5("test.h5", H5F_ACC_TRUNC);
 
     const size_t ndimsE = 2;
-    const hsize_t dimsE[ndimsE] = { 3, 2 };
+    const hsize_t dimsE[ndimsE] = {3, 2};
     h5.createDataset<int>("/", "data", HDF5::DatasetShape{{3, 2}, {1, 2}});
     h5.close();
 
@@ -370,7 +369,7 @@ pylith::meshio::TestHDF5::testDatasetChunk(void) {
     PYLITH_METHOD_BEGIN;
 
     const int ndimsE = 3;
-    const hsize_t dimsE[ndimsE] = { 4, 2, 3 };
+    const hsize_t dimsE[ndimsE] = {4, 2, 3};
 
     // Create data.
     hsize_t nitems = dimsE[0];
@@ -388,8 +387,8 @@ pylith::meshio::TestHDF5::testDatasetChunk(void) {
     h5.createDataset<int>("/", "data", HDF5::DatasetShape{{{4, 2, 3}}, {{1, 2, 3}}});
 
     for (size_t i = 0; i < dimsE[0]; ++i) {
-        const std::vector<int> chunk(valuesE.get() + i*nitemsS, valuesE.get() + (i+1)*nitemsS);
-        HDF5::ChunkInfo chunkInfo{{i+1, 2, 3}, {1, 2, 3}, (int)i};
+        const std::vector<int> chunk(valuesE.get() + i * nitemsS, valuesE.get() + (i + 1) * nitemsS);
+        HDF5::ChunkInfo chunkInfo{{i + 1, 2, 3}, {1, 2, 3}, (int)i};
         h5.writeDatasetChunk<int>("/", "data", chunk, chunkInfo);
     } // for
     h5.close();
@@ -403,7 +402,7 @@ pylith::meshio::TestHDF5::testDatasetChunk(void) {
         } // for
 
         for (size_t ii = 0; ii < nitemsS; ++ii) {
-            CHECK(valuesE[i*nitemsS+ii] == chunk.data[ii]);
+            CHECK(valuesE[i * nitemsS + ii] == chunk.data[ii]);
         }
     } // for
 
@@ -420,7 +419,7 @@ pylith::meshio::TestHDF5::testDatasetRawExternal(void) {
     PYLITH_METHOD_BEGIN;
 
     const int ndimsE = 2;
-    const hsize_t dimsE[ndimsE] = { 6, 3 };
+    const hsize_t dimsE[ndimsE] = {6, 3};
 
     // Create raw data file
     hsize_t nitems = dimsE[0];
@@ -516,7 +515,7 @@ pylith::meshio::TestHDF5::testDatasetString(void) {
     HDF5 h5("test.h5", H5F_ACC_TRUNC);
 
     const size_t nstrings = 3;
-    const char* dataE[nstrings] = {"abc", "defg", "hijkl" };
+    const char* dataE[nstrings] = {"abc", "defg", "hijkl"};
 
     h5.writeDataset("/", "data", dataE, nstrings);
     h5.close();

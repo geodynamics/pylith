@@ -12,29 +12,36 @@
 
 #include "pylith/petsc/KSPMonitor.hh" // implementation of class methods
 
-#include "pylith/utils/journals.hh"   // USES PYLITH_COMPONENT_*
+<<<<<<< HEAD
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+    == == ==
+    =
+>>>>>>> dbd6ccd44 (cxx: Switch from uncrustify to clang-format for C/C++ formatting.)
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <iomanip> // USES setw()
 
-// ------------------------------------------------------------------------------------------------
-// Constructor
-pylith::petsc::KSPMonitor::KSPMonitor(void) {}
+        // ------------------------------------------------------------------------------------------------
+        // Constructor
+    pylith::petsc::KSPMonitor::KSPMonitor(void) {
+}
 
 // ------------------------------------------------------------------------------------------------
 // Destructor
-pylith::petsc::KSPMonitor::~KSPMonitor(void) {}
+pylith::petsc::KSPMonitor::~KSPMonitor(void) {
+}
 
 // ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
-void pylith::petsc::KSPMonitor::deallocate(void)
-{
+void
+pylith::petsc::KSPMonitor::deallocate(void) {
 }
 
 // ------------------------------------------------------------------------------------------------
 // Register monitor with PETSc.
-void pylith::petsc::KSPMonitor::registerMonitor(PetscKSP KSP)
-{
+void
+pylith::petsc::KSPMonitor::registerMonitor(PetscKSP KSP) {
     PYLITH_METHOD_BEGIN;
 
     PylithCallPetsc(KSPMonitorSet(KSP, PylithKSPMonitor, nullptr, nullptr));
@@ -48,12 +55,14 @@ PetscErrorCode
 pylith::petsc::KSPMonitor::PylithKSPMonitor(PetscKSP KSP,
                                             PetscInt iteration,
                                             PetscReal residualNorm,
-                                            PetscCtx context)
-{
+                                            PetscCtx context) {
     PYLITH_METHOD_BEGIN;
     PetscErrorCode err = PETSC_SUCCESS;
 
-    PYLITH_INFO_ROOT(pylith::journal::solver_detail3, "PETSc KSP: Iteration " << iteration << ", nondimensional preconditioned residual norm=" << std::scientific << std::setprecision(6) << std::setw(12) << residualNorm);
+    PYLITH_INFO_ROOT(pylith::journal::solver_detail3,
+                     "PETSc KSP: Iteration " << iteration
+                                             << ", nondimensional preconditioned residual norm=" << std::scientific
+                                             << std::setprecision(6) << std::setw(12) << residualNorm);
 
     PYLITH_METHOD_RETURN(err);
 }
@@ -62,12 +71,11 @@ pylith::petsc::KSPMonitor::PylithKSPMonitor(PetscKSP KSP,
 // PyLith KSP converged reason function.
 PetscErrorCode
 pylith::petsc::KSPMonitor::PylithKSPConvergedReason(PetscKSP KSP,
-                                                    PetscCtx context)
-{
+                                                    PetscCtx context) {
     PYLITH_METHOD_BEGIN;
     PetscErrorCode err = PETSC_SUCCESS;
 
-    const char *reason = nullptr;
+    const char* reason = nullptr;
     PylithCallPetsc(KSPGetConvergedReasonString(KSP, &reason));
 
     PetscInt numIterations = 0;

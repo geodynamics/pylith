@@ -14,8 +14,8 @@
 
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
-#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include "pylith/exceptions/error.hh" // USES PYLITH_JMETHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
@@ -30,7 +30,8 @@ pylith::problems::Physics::Physics(void) :
     _formulation(QUASISTATIC),
     _labelName(pylith::topology::Mesh::cells_label_name),
     _labelValue(1),
-    _observers(new pylith::problems::ObserversPhysics) {}
+    _observers(new pylith::problems::ObserversPhysics) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -46,8 +47,10 @@ void
 pylith::problems::Physics::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _scales;_scales = NULL;
-    delete _observers;_observers = NULL;
+    delete _scales;
+    _scales = NULL;
+    delete _observers;
+    _observers = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -57,11 +60,10 @@ pylith::problems::Physics::deallocate(void) {
 // Set name of label marking material.
 void
 pylith::problems::Physics::setLabelName(const char* value) {
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setLabelName(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setLabelName(value=" << value << ")");
 
     if (strlen(value) == 0) {
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::EmptyStringError,
-                               "Empty string given for label name.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::EmptyStringError, "Empty string given for label name.");
     } // if
 
     _labelName = value;
@@ -96,7 +98,7 @@ pylith::problems::Physics::getLabelValue(void) const {
 // Set manager of scales used to nondimensionalize problem.
 void
 pylith::problems::Physics::setScales(const pylith::scales::Scales& dim) {
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setScales(dim="<<typeid(dim).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setScales(dim=" << typeid(dim).name() << ")");
 
     if (!_scales) {
         _scales = new pylith::scales::Scales(dim);
@@ -131,9 +133,10 @@ pylith::problems::Physics::setFormulation(const FormulationEnum value) {
 void
 pylith::problems::Physics::setAuxiliaryFieldDB(spatialdata::spatialdb::SpatialDB* value) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setAuxiliaryFieldDB(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setAuxiliaryFieldDB(value=" << value << ")");
 
-    pylith::feassemble::AuxiliaryFactory* factory = _getAuxiliaryFactory();assert(factory);
+    pylith::feassemble::AuxiliaryFactory* factory = _getAuxiliaryFactory();
+    assert(factory);
     factory->setQueryDB(value);
 
     PYLITH_METHOD_END;
@@ -151,11 +154,22 @@ pylith::problems::Physics::setAuxiliarySubfieldDiscretization(const char* subfie
                                                               const pylith::topology::FieldBase::SpaceEnum feSpace,
                                                               const bool isBasisContinuous) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setAuxiliarySubfieldDiscretization(subfieldName="<<subfieldName<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", dimension="<<dimension<<", cellBasis="<<cellBasis<<", isBasisContinuous="<<isBasisContinuous<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "setAuxiliarySubfieldDiscretization(subfieldName="
+                               << subfieldName << ", basisOrder=" << basisOrder << ", quadOrder=" << quadOrder
+                               << ", dimension=" << dimension << ", cellBasis=" << cellBasis
+                               << ", isBasisContinuous=" << isBasisContinuous << ")");
 
-    pylith::feassemble::AuxiliaryFactory* factory = _getAuxiliaryFactory();assert(factory);
+    pylith::feassemble::AuxiliaryFactory* factory = _getAuxiliaryFactory();
+    assert(factory);
     const bool isFaultOnly = false;
-    factory->setSubfieldDiscretization(subfieldName, basisOrder, quadOrder, dimension, isFaultOnly, cellBasis, feSpace,
+    factory->setSubfieldDiscretization(subfieldName,
+                                       basisOrder,
+                                       quadOrder,
+                                       dimension,
+                                       isFaultOnly,
+                                       cellBasis,
+                                       feSpace,
                                        isBasisContinuous);
 
     PYLITH_METHOD_END;
@@ -173,11 +187,22 @@ pylith::problems::Physics::setDerivedSubfieldDiscretization(const char* subfield
                                                             const pylith::topology::FieldBase::SpaceEnum feSpace,
                                                             const bool isBasisContinuous) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setDerivedSubfieldDiscretization(subfieldName="<<subfieldName<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", dimension="<<dimension<<", cellBasis="<<cellBasis<<", isBasisContinuous="<<isBasisContinuous<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "setDerivedSubfieldDiscretization(subfieldName="
+                               << subfieldName << ", basisOrder=" << basisOrder << ", quadOrder=" << quadOrder
+                               << ", dimension=" << dimension << ", cellBasis=" << cellBasis
+                               << ", isBasisContinuous=" << isBasisContinuous << ")");
 
-    pylith::topology::FieldFactory* factory = _getDerivedFactory();assert(factory);
+    pylith::topology::FieldFactory* factory = _getDerivedFactory();
+    assert(factory);
     const bool isFaultOnly = false;
-    factory->setSubfieldDiscretization(subfieldName, basisOrder, quadOrder, dimension, isFaultOnly, cellBasis, feSpace,
+    factory->setSubfieldDiscretization(subfieldName,
+                                       basisOrder,
+                                       quadOrder,
+                                       dimension,
+                                       isFaultOnly,
+                                       cellBasis,
+                                       feSpace,
                                        isBasisContinuous);
 
     PYLITH_METHOD_END;
@@ -189,7 +214,8 @@ pylith::problems::Physics::setDerivedSubfieldDiscretization(const char* subfield
 void
 pylith::problems::Physics::registerObserver(pylith::problems::ObserverPhysics* observer) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "registerObserver(observer="<<typeid(observer).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "registerObserver(observer=" << typeid(observer).name() << ")");
 
     assert(_observers);
     _observers->registerObserver(observer);
@@ -203,7 +229,8 @@ pylith::problems::Physics::registerObserver(pylith::problems::ObserverPhysics* o
 void
 pylith::problems::Physics::removeObserver(pylith::problems::ObserverPhysics* observer) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "removeObserver(observer="<<typeid(observer).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "removeObserver(observer=" << typeid(observer).name() << ")");
 
     assert(_observers);
     _observers->removeObserver(observer);
@@ -236,10 +263,11 @@ pylith::topology::Field*
 pylith::problems::Physics::createDiagnosticField(const pylith::topology::Field& solution,
                                                  const pylith::topology::Mesh& physicsMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createDiagnosticField(solution="<<solution.getLabel()<<", physicsMesh=)"<<typeid(physicsMesh).name()<<") empty method");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "createDiagnosticField(solution=" << solution.getLabel() << ", physicsMesh=)"
+                                                             << typeid(physicsMesh).name() << ") empty method");
 
     PYLITH_METHOD_RETURN(NULL);
-
 }
 
 
@@ -249,7 +277,9 @@ pylith::topology::Field*
 pylith::problems::Physics::createDerivedField(const pylith::topology::Field& solution,
                                               const pylith::topology::Mesh& physicsMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createDerivedField(solution="<<solution.getLabel()<<", physicsMesh=)"<<typeid(physicsMesh).name()<<") empty method");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "createDerivedField(solution=" << solution.getLabel() << ", physicsMesh=)"
+                                                          << typeid(physicsMesh).name() << ") empty method");
 
     PYLITH_METHOD_RETURN(NULL);
 } // createDerivedField
@@ -261,7 +291,8 @@ void
 pylith::problems::Physics::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
                                                 const double t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t<<") empty method");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "updateAuxiliaryField(auxiliaryField=" << auxiliaryField << ", t=" << t << ") empty method");
 
     PYLITH_METHOD_END;
 } // updateAuxiliaryField
@@ -280,7 +311,7 @@ pylith::problems::Physics::_getDerivedFactory(void) {
 void
 pylith::problems::Physics::_updateKernelConstants(const PylithReal dt) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_updateKernelConstants(dt="<<dt<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_updateKernelConstants(dt=" << dt << ")");
 
     // Default is to do nothing.
 

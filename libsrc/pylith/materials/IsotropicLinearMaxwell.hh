@@ -17,8 +17,7 @@ class pylith::materials::IsotropicLinearMaxwell : public pylith::materials::Rheo
     friend class TestIsotropicLinearMaxwell; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     IsotropicLinearMaxwell(void);
 
@@ -111,14 +110,12 @@ public:
                                const PylithReal dt) const;
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::materials::AuxiliaryFactoryViscoelastic* _auxiliaryFactory; ///< Factory for creating auxiliary subfields.
     bool _useReferenceState; ///< Flag to use reference stress and strain.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     IsotropicLinearMaxwell(const IsotropicLinearMaxwell&); ///< Not implemented.
     const IsotropicLinearMaxwell& operator=(const IsotropicLinearMaxwell&); ///< Not implemented
 

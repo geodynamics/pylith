@@ -16,13 +16,13 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps::checkDiscretization()
 
-#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include "pylith/scales/Scales.hh" // USES Scales
 
-#include <typeinfo> // USES typeid()
 #include <cassert> // USES assert()
+#include <typeinfo> // USES typeid()
 
 // ------------------------------------------------------------------------------------------------
 const int pylith::faults::KinSrc::GET_SLIP = 0x1;
@@ -37,7 +37,8 @@ pylith::faults::KinSrc::KinSrc(void) :
     _slipRateFnKernel(NULL),
     _slipAccFnKernel(NULL),
     _auxiliaryField(NULL),
-    _originTime(0.0) {}
+    _originTime(0.0) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -51,8 +52,10 @@ pylith::faults::KinSrc::~KinSrc(void) {
 // Deallocate PETSc and local data structures.
 void
 pylith::faults::KinSrc::deallocate(void) {
-    delete _auxiliaryField;_auxiliaryField = NULL;
-    delete _auxiliaryFactory;_auxiliaryFactory = NULL;
+    delete _auxiliaryField;
+    _auxiliaryField = NULL;
+    delete _auxiliaryFactory;
+    _auxiliaryFactory = NULL;
 } // deallocate
 
 
@@ -88,7 +91,7 @@ pylith::faults::KinSrc::auxField(void) const {
 void
 pylith::faults::KinSrc::auxFieldDB(spatialdata::spatialdb::SpatialDB* value) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "auxFieldDB(value="<<typeid(value).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "auxFieldDB(value=" << typeid(value).name() << ")");
 
     assert(_auxiliaryFactory);
     _auxiliaryFactory->setQueryDB(value);
@@ -104,18 +107,26 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
                                    const pylith::scales::Scales& scales,
                                    const spatialdata::geocoords::CoordSys* cs) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "initialize(faultAuxField"<<faultAuxField.getLabel()<<", scales, cs="<<typeid(cs).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "initialize(faultAuxField" << faultAuxField.getLabel()
+                                                      << ", scales, cs=" << typeid(cs).name() << ")");
 
     // Set default discretization of auxiliary subfields to match slip/slip_rate subfield in integrator auxiliary field.
     assert(_auxiliaryFactory);
     const char* slipFieldName = faultAuxField.hasSubfield("slip") ? "slip" : "slip_rate";
     const pylith::topology::FieldBase::Discretization& discretization = faultAuxField.getSubfieldInfo(slipFieldName).fe;
-    _auxiliaryFactory->setSubfieldDiscretization("default", discretization.basisOrder, discretization.quadOrder,
-                                                 discretization.dimension, discretization.isFaultOnly,
-                                                 discretization.cellBasis, discretization.feSpace,
+    _auxiliaryFactory->setSubfieldDiscretization("default",
+                                                 discretization.basisOrder,
+                                                 discretization.quadOrder,
+                                                 discretization.dimension,
+                                                 discretization.isFaultOnly,
+                                                 discretization.cellBasis,
+                                                 discretization.feSpace,
                                                  discretization.isBasisContinuous);
 
-    delete _auxiliaryField;_auxiliaryField = new pylith::topology::Field(faultAuxField.getMesh());assert(_auxiliaryField);
+    delete _auxiliaryField;
+    _auxiliaryField = new pylith::topology::Field(faultAuxField.getMesh());
+    assert(_auxiliaryField);
     _auxiliaryField->setLabel("auxiliary field");
     _auxiliaryFieldSetup(scales, cs);
     _auxiliaryField->subfieldsSetup();
@@ -127,7 +138,8 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
 
     pythia::journal::debug_t debug(pylith::journal::auxiliary_fields);
     if (debug.state()) {
-        PYLITH_COMPONENT_DEBUG(pylith::journal::auxiliary_fields, "Displaying kinematic earthquake source auxiliary field");
+        PYLITH_COMPONENT_DEBUG(pylith::journal::auxiliary_fields,
+                               "Displaying kinematic earthquake source auxiliary field");
         _auxiliaryField->view("KinSrc auxiliary field");
     } // if
 
@@ -144,8 +156,10 @@ pylith::faults::KinSrc::getSlipSubfields(PetscVec slipLocalVec,
                                          const PylithScalar timeScale,
                                          const int bitSlipSubfields) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getSlipSubfields(slipLocalVec="<<slipLocalVec<<", faultAuxiliaryField="<<faultAuxiliaryField
-                                                                                              <<", t="<<t<<", timeScale="<<timeScale<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "getSlipSubfields(slipLocalVec=" << slipLocalVec
+                                                            << ", faultAuxiliaryField=" << faultAuxiliaryField
+                                                            << ", t=" << t << ", timeScale=" << timeScale << ")");
 
     if (!_slipFnKernel || (t < _originTime)) {
         PYLITH_METHOD_END;
@@ -174,10 +188,9 @@ pylith::faults::KinSrc::getSlipSubfields(PetscVec slipLocalVec,
     PetscDMLabel dmLabel = NULL;
     PetscInt labelValue = 0;
     const PetscInt part = 0;
-    PylithCallPetsc(DMSetAuxiliaryVec(faultAuxiliaryDM, dmLabel, labelValue, part,
-                                      _auxiliaryField->getLocalVector()));
-    PylithCallPetsc(DMProjectFieldLocal(faultAuxiliaryDM, t, slipLocalVec, subfieldKernels, INSERT_VALUES,
-                                        slipLocalVec));
+    PylithCallPetsc(DMSetAuxiliaryVec(faultAuxiliaryDM, dmLabel, labelValue, part, _auxiliaryField->getLocalVector()));
+    PylithCallPetsc(
+        DMProjectFieldLocal(faultAuxiliaryDM, t, slipLocalVec, subfieldKernels, INSERT_VALUES, slipLocalVec));
 
     PYLITH_METHOD_END;
 } // getSlipSubfields
@@ -188,13 +201,16 @@ pylith::faults::KinSrc::getSlipSubfields(PetscVec slipLocalVec,
 void
 pylith::faults::KinSrc::_setFEConstants(const pylith::topology::Field& faultAuxField) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_setFEConstants(faultAuxField="<<faultAuxField.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "_setFEConstants(faultAuxField=" << faultAuxField.getLabel() << ")");
 
     // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
     // the correct one.
     PetscDS ds = NULL;
-    PetscDM dmAux = faultAuxField.getDM();assert(dmAux);
-    PylithCallPetsc(DMGetDS(dmAux, &ds));assert(ds);
+    PetscDM dmAux = faultAuxField.getDM();
+    assert(dmAux);
+    PylithCallPetsc(DMGetDS(dmAux, &ds));
+    assert(ds);
 
     // Pointwise functions have been set in DS
     const int numConstants = 1;

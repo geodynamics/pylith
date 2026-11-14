@@ -22,8 +22,7 @@ class pylith::feassemble::Constraint : public pylith::feassemble::PhysicsImpleme
     friend class TestConstraint; // unit testing
 
     // PUBLIC STRUCTS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Project kernels (pointwise functions) for computing diagnostic fields.
     struct ProjectKernels {
         std::string subfield; ///< Name of subfield for function.
@@ -31,20 +30,21 @@ public:
 
         ProjectKernels(void) :
             subfield(""),
-            f(NULL) {}
+            f(NULL) {
+        }
 
 
         ProjectKernels(const char* subfieldValue,
                        PetscBdPointFn* fValue) :
             subfield(subfieldValue),
-            f(fValue) {}
+            f(fValue) {
+        }
 
 
     }; // ProjectKernels
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /** Constructor
      *
      * @param[in] physics Physics implemented by constraint.
@@ -55,8 +55,7 @@ public:
     virtual ~Constraint(void);
 
     /// Deallocate PETSc and local data structures.
-    virtual
-    void deallocate(void);
+    virtual void deallocate(void);
 
     /** Set name of constrained solution subfield.
      *
@@ -127,8 +126,7 @@ public:
      *
      * @param[in] solution Solution field (layout).
      */
-    virtual
-    void initialize(const pylith::topology::Field& solution);
+    virtual void initialize(const pylith::topology::Field& solution);
 
     /** Update at end of time step.
      *
@@ -138,30 +136,26 @@ public:
      * @param[in] solution Solution at time t.
      * @param[in] notification Type of notification.
      */
-    virtual
-    void poststep(const PylithReal t,
-                  const PylithInt tindex,
-                  const PylithReal dt,
-                  const pylith::topology::Field& solution,
-                  const pylith::problems::Observer::NotificationType notification);
+    virtual void poststep(const PylithReal t,
+                          const PylithInt tindex,
+                          const PylithReal dt,
+                          const pylith::topology::Field& solution,
+                          const pylith::problems::Observer::NotificationType notification);
 
     /** Set auxiliary field values for current time.
      *
      * @param[in] t Current time.
      */
-    virtual
-    void setState(const PylithReal t);
+    virtual void setState(const PylithReal t);
 
     /** Set constrained values in solution field.
      *
      * @param[inout] integrationData Data needed to integrate governing equation.
      */
-    virtual
-    void setSolution(pylith::feassemble::IntegrationData* integrationData) = 0;
+    virtual void setSolution(pylith::feassemble::IntegrationData* integrationData) = 0;
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Set constants used in finite-element kernels.
      *
      * @param[in] solution Solution field.
@@ -171,12 +165,10 @@ protected:
                              const PylithReal dt) const;
 
     /// Compute diagnostic field from auxiliary field.
-    virtual
-    void _computeDiagnosticField(void);
+    virtual void _computeDiagnosticField(void);
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     std::string _subfieldName; ///< Name of solution subfield that is constrained.
     std::string _labelName; ///< Name of label associated with integration domain.
     int _labelValue; ///< Value of label associated with integration domain.
@@ -188,10 +180,9 @@ protected:
     std::vector<ProjectKernels> _kernelsDiagnosticField; ///< kernels for computing diagnostic field.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     Constraint(void); /// Not implemented.
-    Constraint(const Constraint &); ///< Not implemented
+    Constraint(const Constraint&); ///< Not implemented
     const Constraint& operator=(const Constraint&); ///< Not implemented
 
 }; // class Constraint

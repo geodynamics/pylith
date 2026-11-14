@@ -15,15 +15,14 @@
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::Discretization
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery::queryfn_type
 
-#include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
 #include "pylith/scales/scalesfwd.hh" // HOLDSA Scales
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
 
 class pylith::feassemble::AuxiliaryFactory : public pylith::topology::FieldFactory {
     friend class TestAuxiliaryFactory; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     AuxiliaryFactory(void);
 
@@ -52,7 +51,7 @@ public:
     void initialize(pylith::topology::Field* field,
                     const pylith::scales::Scales& scales,
                     const int spaceDim,
-                    const pylith::topology::FieldBase::Description* defaultDescription=NULL);
+                    const pylith::topology::FieldBase::Description* defaultDescription = NULL);
 
     /// Set subfield values using spatial database.
     void setValuesFromDB(void);
@@ -66,14 +65,13 @@ public:
      * @param[in] db Spatial database to query.
      */
     void setSubfieldQuery(const char* subfieldName,
-                          const char* namesDBValues[]=NULL,
-                          const size_t numDBValues=0,
-                          pylith::topology::FieldQuery::convertfn_type convertFn=NULL,
-                          spatialdata::spatialdb::SpatialDB* db=NULL);
+                          const char* namesDBValues[] = NULL,
+                          const size_t numDBValues = 0,
+                          pylith::topology::FieldQuery::convertfn_type convertFn = NULL,
+                          spatialdata::spatialdb::SpatialDB* db = NULL);
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Database of values for filling subfields.
      * Auxiliary subfields are not filled if NULL.
      *
@@ -85,9 +83,8 @@ protected:
     pylith::topology::FieldQuery* _fieldQuery;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
-    AuxiliaryFactory(const AuxiliaryFactory &); ///< Not implemented.
+  private:
+    AuxiliaryFactory(const AuxiliaryFactory&); ///< Not implemented.
     const AuxiliaryFactory& operator=(const AuxiliaryFactory&); ///< Not implemented
 
 }; // class AuxiliaryFactory

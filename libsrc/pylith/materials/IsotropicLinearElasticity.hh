@@ -17,8 +17,7 @@ class pylith::materials::IsotropicLinearElasticity : public pylith::materials::R
     friend class TestIsotropicLinearElasticity; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     IsotropicLinearElasticity(void);
 
@@ -95,14 +94,12 @@ public:
     PetscPointFn* getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const;
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::materials::AuxiliaryFactoryElastic* _auxiliaryFactory; ///< Factory for creating auxiliary subfields.
     bool _useReferenceState; ///< Flag to use reference stress and strain.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     IsotropicLinearElasticity(const IsotropicLinearElasticity&); ///< Not implemented.
     const IsotropicLinearElasticity& operator=(const IsotropicLinearElasticity&); /// Not implemented.
 

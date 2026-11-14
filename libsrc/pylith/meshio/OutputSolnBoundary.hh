@@ -21,8 +21,7 @@ class pylith::meshio::OutputSolnBoundary : public pylith::meshio::OutputSoln {
     friend class TestOutputSolnBoundary; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     OutputSolnBoundary(void);
 
@@ -51,8 +50,7 @@ public:
     void verifyConfiguration(const pylith::topology::Field& solution) const;
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Write solution at time step.
      *
      * @param[in] t Current time.
@@ -64,15 +62,13 @@ protected:
                         const pylith::topology::Field& solution);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::topology::Mesh* _boundaryMesh; ///< Mesh of subdomain.
     std::string _labelName; ///< Name of label for subdomain.
     int _labelValue; ///< Value of label for subdomain.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     OutputSolnBoundary(const OutputSolnBoundary&); ///< Not implemented.
     const OutputSolnBoundary& operator=(const OutputSolnBoundary&); ///< Not implemented
 

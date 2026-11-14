@@ -17,8 +17,7 @@ class pylith::problems::ProgressMonitorStep : public pylith::problems::ProgressM
     friend class TestProgressMonitorStep; // unit testing
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     ProgressMonitorStep(void);
 
@@ -39,8 +38,7 @@ public:
                 const size_t stop);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Open progress monitor.
     void _open(void);
 
@@ -60,13 +58,11 @@ protected:
                  const char* finished);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     std::ofstream _sout; ///< Output stream.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     ProgressMonitorStep(const ProgressMonitorStep&); ///< Not implemented.
     const ProgressMonitorStep& operator=(const ProgressMonitorStep&); ///< Not implemented.
 

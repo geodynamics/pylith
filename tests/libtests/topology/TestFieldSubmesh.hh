@@ -19,14 +19,15 @@
 namespace pylith {
     namespace topology {
         class TestFieldSubmesh;
-    } // topology
-} // pylith
+    } // namespace topology
+} // namespace pylith
 
 // TestFieldSubmesh -----------------------------------------------------
 /// C++ unit testing for Field.
-class pylith::topology::TestFieldSubmesh : public CppUnit::TestFixture { // class TestFieldSubmesh
-                                                                         // CPPUNIT TEST SUITE
-                                                                         // /////////////////////////////////////////////////
+class pylith::topology::TestFieldSubmesh
+    : public CppUnit::TestFixture { // class TestFieldSubmesh
+                                    // CPPUNIT TEST SUITE
+                                    // /////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestFieldSubmesh);
 
     CPPUNIT_TEST(testConstructor);
@@ -54,8 +55,7 @@ class pylith::topology::TestFieldSubmesh : public CppUnit::TestFixture { // clas
     CPPUNIT_TEST_SUITE_END();
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test constructor.
     void testConstructor(void);
 
@@ -120,14 +120,12 @@ public:
     void testScatterGlobalToLocal(void);
 
     // PRIVATE METHODS /////////////////////////////////////////////////////
-private:
-
+  private:
     /** Build mesh.
      *
      * @param mesh Finite-element mesh.
      */
-    static
-    void _buildMesh(Mesh* mesh);
+    static void _buildMesh(Mesh* mesh);
 
 }; // class TestFieldSubmesh
 

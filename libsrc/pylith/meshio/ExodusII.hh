@@ -22,8 +22,7 @@ class pylith::meshio::ExodusII { // ExodusII
     friend class TestExodusII; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     ExodusII(void);
 
@@ -138,8 +137,7 @@ public:
                 const char* name) const;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     std::string _filename; ///< Name of file
     int _file; ///< ExodusII file
 

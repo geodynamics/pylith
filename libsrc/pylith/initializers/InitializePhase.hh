@@ -16,8 +16,7 @@
 
 class pylith::initializers::InitializePhase {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     InitializePhase(void);
 
@@ -37,8 +36,7 @@ public:
                                         const pylith::problems::Problem& problem) = 0;
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     InitializePhase(const InitializePhase&); ///< Not implemented
     const InitializePhase& operator=(const InitializePhase&); ///< Not implemented
 

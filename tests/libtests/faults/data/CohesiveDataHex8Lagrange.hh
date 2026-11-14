@@ -14,13 +14,12 @@
 namespace pylith {
     namespace faults {
         class CohesiveDataHex8Lagrange;
-    } // pylith
-} // faults
+    } // namespace faults
+} // namespace pylith
 
 class pylith::faults::CohesiveDataHex8Lagrange : public CohesiveData {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     CohesiveDataHex8Lagrange(void);
 
@@ -28,8 +27,7 @@ public:
     ~CohesiveDataHex8Lagrange(void);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     static const int _numVertices; ///< Number of vertices
     static const int _spaceDim; ///< Number of dimensions in vertex coordinates
     static const int _numCells; ///< Number of cells

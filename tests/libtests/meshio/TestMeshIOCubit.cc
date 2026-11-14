@@ -25,9 +25,9 @@
 
 // ----------------------------------------------------------------------
 // Constructor.
-pylith::meshio::TestMeshIOCubit::TestMeshIOCubit(TestMeshIO_Data* data) :
-    TestMeshIO(data) {
-    _io = new MeshIOCubit();REQUIRE(_io);
+pylith::meshio::TestMeshIOCubit::TestMeshIOCubit(TestMeshIO_Data* data) : TestMeshIO(data) {
+    _io = new MeshIOCubit();
+    REQUIRE(_io);
     _io->PyreComponent::setIdentifier("TestMeshIOCubit");
 } // constructor
 
@@ -35,7 +35,8 @@ pylith::meshio::TestMeshIOCubit::TestMeshIOCubit(TestMeshIO_Data* data) :
 // ----------------------------------------------------------------------
 // Destructor.
 pylith::meshio::TestMeshIOCubit::~TestMeshIOCubit(void) {
-    delete _io;_io = nullptr;
+    delete _io;
+    _io = nullptr;
 } // destructor
 
 
@@ -65,7 +66,9 @@ pylith::meshio::TestMeshIOCubit::testRead(void) {
     _io->setFilename(_data->filename.c_str());
 
     // Read mesh
-    delete _mesh;_mesh = new topology::Mesh;REQUIRE(_mesh);
+    delete _mesh;
+    _mesh = new topology::Mesh;
+    REQUIRE(_mesh);
     _io->read(_mesh);
 
     pythia::journal::debug_t debug(pylith::journal::mesh_detail5);

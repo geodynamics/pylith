@@ -30,7 +30,8 @@ pylith::faults::DiagnosticFieldFactory::DiagnosticFieldFactory(void) {
 
 // ------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::faults::DiagnosticFieldFactory::~DiagnosticFieldFactory(void) {}
+pylith::faults::DiagnosticFieldFactory::~DiagnosticFieldFactory(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -41,7 +42,7 @@ pylith::faults::DiagnosticFieldFactory::addNormalDir(void) {
     PYLITH_DEBUG(pylith::journal::application_flow, "addNormalDir(void)");
 
     const char* fieldName = "normal_dir";
-    const char* componentNames[3] = { "normal_dir_x", "normal_dir_y", "normal_dir_z" };
+    const char* componentNames[3] = {"normal_dir_x", "normal_dir_y", "normal_dir_z"};
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -70,7 +71,7 @@ pylith::faults::DiagnosticFieldFactory::addStrikeDir(void) {
     PYLITH_DEBUG(pylith::journal::application_flow, "addStrikeDir(void)");
 
     const char* fieldName = "strike_dir";
-    const char* componentNames[3] = { "strike_dir_x", "strike_dir_y", "strike_dir_z" };
+    const char* componentNames[3] = {"strike_dir_x", "strike_dir_y", "strike_dir_z"};
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -99,7 +100,7 @@ pylith::faults::DiagnosticFieldFactory::addUpDipDir(void) {
     PYLITH_DEBUG(pylith::journal::application_flow, "addUpDipDir(void)");
 
     const char* fieldName = "up_dip_dir";
-    const char* componentNames[3] = { "up_dip_dir_x", "up_dip_dir_y", "up_dip_dir_z" };
+    const char* componentNames[3] = {"up_dip_dir_x", "up_dip_dir_y", "up_dip_dir_z"};
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -138,7 +139,6 @@ pylith::faults::DiagnosticFieldFactory::addSubfields(void) {
     } // if
 
     PYLITH_METHOD_END;
-
 }
 
 

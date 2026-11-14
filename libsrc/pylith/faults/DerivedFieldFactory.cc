@@ -14,8 +14,8 @@
 
 #include "pylith/topology/Field.hh" // USES Field
 
-#include "pylith/scales/Scales.hh" // USES Scales
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
@@ -31,7 +31,8 @@ pylith::faults::DerivedFieldFactory::DerivedFieldFactory(void) {
 
 // ------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::faults::DerivedFieldFactory::~DerivedFieldFactory(void) {}
+pylith::faults::DerivedFieldFactory::~DerivedFieldFactory(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -42,7 +43,9 @@ pylith::faults::DerivedFieldFactory::addTractionChange(void) {
     PYLITH_DEBUG(pylith::journal::application_flow, "addTractionChange(void)");
 
     const char* fieldName = "traction_change";
-    const char* componentNames[3] = { "traction_change_opening", "traction_change_left_lateral", "traction_change_reverse" };
+    const char* componentNames[3] = {"traction_change_opening",
+                                     "traction_change_left_lateral",
+                                     "traction_change_reverse"};
     const PylithReal stressScale = pylith::scales::ElasticityScales::getStressScale(*_scales);
 
     pylith::topology::Field::Description description;
@@ -75,7 +78,6 @@ pylith::faults::DerivedFieldFactory::addSubfields(void) {
     } // if
 
     PYLITH_METHOD_END;
-
 }
 
 

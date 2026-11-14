@@ -14,7 +14,8 @@
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor
-pylith::initializers::InitializePhase::InitializePhase(void) {}
+pylith::initializers::InitializePhase::InitializePhase(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------

@@ -14,8 +14,8 @@
 
 #include "pylith/faults/KinSrcAuxiliaryFactory.hh" // USES KinSrcAuxiliaryFactory
 
-#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
@@ -30,7 +30,8 @@ pylith::faults::KinSrcConstRate::KinSrcConstRate(void) {
 
 // ------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::faults::KinSrcConstRate::~KinSrcConstRate(void) {}
+pylith::faults::KinSrcConstRate::~KinSrcConstRate(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------

@@ -16,8 +16,7 @@ class pylith::bc::DiagnosticFieldFactory : public pylith::topology::FieldFactory
     friend class TestDerivedFieldFactory; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     DiagnosticFieldFactory(void);
 
@@ -37,9 +36,8 @@ public:
     virtual void addSubfields(void);
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
-    DiagnosticFieldFactory(const DiagnosticFieldFactory &); ///< Not implemented.
+  private:
+    DiagnosticFieldFactory(const DiagnosticFieldFactory&); ///< Not implemented.
     const DiagnosticFieldFactory& operator=(const DiagnosticFieldFactory&); ///< Not implemented
 
 }; // class DiagnosticFieldFactory

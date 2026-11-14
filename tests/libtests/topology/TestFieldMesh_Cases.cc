@@ -21,53 +21,62 @@ namespace pylith {
     namespace topology {
         class TestFieldMesh_Cases;
     }
-}
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::topology::TestFieldMesh_Cases {
-public:
-
+  public:
     // Data factory methods
     static TestFieldMesh_Data* Quad(void);
-
 };
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestFieldMesh::Quad::testConstructor", "[TestFieldMesh][Quad][testConstructor]") {
+TEST_CASE("TestFieldMesh::Quad::testConstructor",
+          "[TestFieldMesh][Quad][testConstructor]") {
     pylith::topology::TestFieldMesh(pylith::topology::TestFieldMesh_Cases::Quad()).testConstructor();
 }
-TEST_CASE("TestFieldMesh::Quad::testCopyConstructor", "[TestFieldMesh][Quad][testCopyConstructor]") {
+TEST_CASE("TestFieldMesh::Quad::testCopyConstructor",
+          "[TestFieldMesh][Quad][testCopyConstructor]") {
     pylith::topology::TestFieldMesh(pylith::topology::TestFieldMesh_Cases::Quad()).testCopyConstructor();
 }
-TEST_CASE("TestFieldMesh::Quad::testMesh", "[TestFieldMesh][Quad][testMesh]") {
+TEST_CASE("TestFieldMesh::Quad::testMesh",
+          "[TestFieldMesh][Quad][testMesh]") {
     pylith::topology::TestFieldMesh(pylith::topology::TestFieldMesh_Cases::Quad()).testMesh();
 }
-TEST_CASE("TestFieldMesh::Quad::testGeneralAccessors", "[TestFieldMesh][Quad][testGeneralAccessors]") {
+TEST_CASE("TestFieldMesh::Quad::testGeneralAccessors",
+          "[TestFieldMesh][Quad][testGeneralAccessors]") {
     pylith::topology::TestFieldMesh(pylith::topology::TestFieldMesh_Cases::Quad()).testGeneralAccessors();
 }
-TEST_CASE("TestFieldMesh::Quad::testSectionAccessors", "[TestFieldMesh][Quad][testSectionAccessors]") {
+TEST_CASE("TestFieldMesh::Quad::testSectionAccessors",
+          "[TestFieldMesh][Quad][testSectionAccessors]") {
     pylith::topology::TestFieldMesh(pylith::topology::TestFieldMesh_Cases::Quad()).testSectionAccessors();
 }
-TEST_CASE("TestFieldMesh::Quad::testVectorAccessors", "[TestFieldMesh][Quad][testVectorAccessors]") {
+TEST_CASE("TestFieldMesh::Quad::testVectorAccessors",
+          "[TestFieldMesh][Quad][testVectorAccessors]") {
     pylith::topology::TestFieldMesh(pylith::topology::TestFieldMesh_Cases::Quad()).testVectorAccessors();
 }
-TEST_CASE("TestFieldMesh::Quad::testSubfieldAccessors", "[TestFieldMesh][Quad][testSubfieldAccessors]") {
+TEST_CASE("TestFieldMesh::Quad::testSubfieldAccessors",
+          "[TestFieldMesh][Quad][testSubfieldAccessors]") {
     pylith::topology::TestFieldMesh(pylith::topology::TestFieldMesh_Cases::Quad()).testSubfieldAccessors();
 }
-TEST_CASE("TestFieldMesh::Quad::testAllocate", "[TestFieldMesh][Quad][testAllocate]") {
+TEST_CASE("TestFieldMesh::Quad::testAllocate",
+          "[TestFieldMesh][Quad][testAllocate]") {
     pylith::topology::TestFieldMesh(pylith::topology::TestFieldMesh_Cases::Quad()).testAllocate();
 }
-TEST_CASE("TestFieldMesh::Quad::testZeroLocal", "[TestFieldMesh][Quad][testZeroLocal]") {
+TEST_CASE("TestFieldMesh::Quad::testZeroLocal",
+          "[TestFieldMesh][Quad][testZeroLocal]") {
     pylith::topology::TestFieldMesh(pylith::topology::TestFieldMesh_Cases::Quad()).testZeroLocal();
 }
-TEST_CASE("TestFieldMesh::Quad::testView", "[TestFieldMesh][Quad][testView]") {
+TEST_CASE("TestFieldMesh::Quad::testView",
+          "[TestFieldMesh][Quad][testView]") {
     pylith::topology::TestFieldMesh(pylith::topology::TestFieldMesh_Cases::Quad()).testView();
 }
 
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestFieldMesh_Data*
 pylith::topology::TestFieldMesh_Cases::Quad(void) {
-    TestFieldMesh_Data* data = new TestFieldMesh_Data();REQUIRE(data);
+    TestFieldMesh_Data* data = new TestFieldMesh_Data();
+    REQUIRE(data);
 
     const size_t numVertices = 4;
     const size_t spaceDim = 2;
@@ -76,18 +85,27 @@ pylith::topology::TestFieldMesh_Cases::Quad(void) {
     const size_t numCorners = 4;
     const pylith::meshio::MeshBuilder::shape_t cellShape = pylith::meshio::MeshBuilder::QUADRILATERAL;
 
-    static const PylithScalar vertices[numVertices*spaceDim] = {
-        0.0, 0.0,
-        1.0, 0.0,
-        0.0, 1.0,
-        1.0, 1.0,
+    static const PylithScalar vertices[numVertices * spaceDim] = {
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0,
     };
-    delete data->geometry;data->geometry = new pylith::meshio::MeshBuilder::Geometry(numVertices, spaceDim, vertices);
+    delete data->geometry;
+    data->geometry = new pylith::meshio::MeshBuilder::Geometry(numVertices, spaceDim, vertices);
 
-    static const PylithInt cells[numCells*numCorners] = {
-        0, 1, 3, 2,
+    static const PylithInt cells[numCells * numCorners] = {
+        0,
+        1,
+        3,
+        2,
     };
-    delete data->topology;data->topology = new pylith::meshio::MeshBuilder::Topology(cellDim, numCells, numCorners, cellShape, cells);
+    delete data->topology;
+    data->topology = new pylith::meshio::MeshBuilder::Topology(cellDim, numCells, numCorners, cellShape, cells);
 
     // Subfield A
     data->descriptionA.label = "displacement";
@@ -104,24 +122,31 @@ pylith::topology::TestFieldMesh_Cases::Quad(void) {
     data->discretizationA.feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
     data->discretizationA.isBasisContinuous = true;
 
-    static const PylithScalar _subfieldAValues[4*2] = {
-        1.1, 1.2,
-        2.1, 2.2,
-        3.1, 3.2,
-        4.1, 4.2,
+    static const PylithScalar _subfieldAValues[4 * 2] = {
+        1.1,
+        1.2,
+        2.1,
+        2.2,
+        3.1,
+        3.2,
+        4.1,
+        4.2,
     };
     data->subfieldAValues = const_cast<PylithScalar*>(_subfieldAValues);
 
     data->bcALabel = "boundary A";
     data->bcALabelId = 1;
     data->bcANumConstrainedDOF = 1;
-    static const int _bcAConstrainedDOF[1] = { 1 };
+    static const int _bcAConstrainedDOF[1] = {1};
     data->bcAConstrainedDOF = const_cast<int*>(_bcAConstrainedDOF);
     data->bcANumVertices = 2;
-    static const int _bcAVertices[2] = { 1, 3, };
+    static const int _bcAVertices[2] = {
+        1,
+        3,
+    };
     data->bcAVertices = const_cast<int*>(_bcAVertices);
     data->bcAFaceValuesSize = 3;
-    static const int _bcAFaceValues[3] = { 0, 1, 3 };
+    static const int _bcAFaceValues[3] = {0, 1, 3};
     data->bcAFaceValues = const_cast<int*>(_bcAFaceValues);
 
     // Subfield B
@@ -138,7 +163,7 @@ pylith::topology::TestFieldMesh_Cases::Quad(void) {
     data->discretizationB.feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
     data->discretizationB.isBasisContinuous = true;
 
-    static const PylithScalar _subfieldBValues[4*1] = {
+    static const PylithScalar _subfieldBValues[4 * 1] = {
         1.3,
         2.3,
         3.3,
@@ -149,13 +174,16 @@ pylith::topology::TestFieldMesh_Cases::Quad(void) {
     data->bcBLabel = "boundary B";
     data->bcBLabelId = 1;
     data->bcBNumConstrainedDOF = 1;
-    static const int _bcBConstrainedDOF[1] = { 0 };
+    static const int _bcBConstrainedDOF[1] = {0};
     data->bcBConstrainedDOF = const_cast<int*>(_bcBConstrainedDOF);
     data->bcBNumVertices = 2;
-    static const int _bcBVertices[2] = { 2, 3, };
+    static const int _bcBVertices[2] = {
+        2,
+        3,
+    };
     data->bcBVertices = const_cast<int*>(_bcBVertices);
     data->bcBFaceValuesSize = 3;
-    static const int _bcBFaceValues[3] = { 0, 2, 3 };
+    static const int _bcBFaceValues[3] = {0, 2, 3};
     data->bcBFaceValues = const_cast<int*>(_bcBFaceValues);
 
     return data;

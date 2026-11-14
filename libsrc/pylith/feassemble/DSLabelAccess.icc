@@ -15,11 +15,10 @@
 
 // ------------------------------------------------------------------------------------------------
 // Constructor with PetscDM, label name, and label value.
-inline
-pylith::feassemble::DSLabelAccess::DSLabelAccess(const PetscDM dm,
-                                                 const char* labelName,
-                                                 const int labelValue,
-                                                 const int dim) :
+inline pylith::feassemble::DSLabelAccess::DSLabelAccess(const PetscDM dm,
+                                                        const char* labelName,
+                                                        const int labelValue,
+                                                        const int dim) :
     _dm(dm),
     _label(NULL),
     _ds(NULL),
@@ -41,7 +40,8 @@ pylith::feassemble::DSLabelAccess::DSLabelAccess(const PetscDM dm,
         msg << "PETSc DM '" << dmName << "' missing label '" << labelName << "'.";
         throw std::runtime_error(msg.str());
     } // if
-    PylithCallPetsc(DMGetLabel(_dm, labelName, &_label));assert(_label);
+    PylithCallPetsc(DMGetLabel(_dm, labelName, &_label));
+    assert(_label);
 
     PylithCallPetsc(DMGetStratumIS(dm, labelName, labelValue, &_pointsIS));
     if (_pointsIS) {
@@ -50,8 +50,10 @@ pylith::feassemble::DSLabelAccess::DSLabelAccess(const PetscDM dm,
             const PetscInt* pointIndicesOrig = NULL;
             const PetscInt numPointsOrig = _numPoints;
             PylithCallPetsc(ISGetIndices(_pointsIS, &pointIndicesOrig));
-            PylithCallPetsc(DMGetCellDS(dm, pointIndicesOrig[0], &_ds, NULL));assert(_ds);
-            PylithCallPetsc(PetscDSGetWeakForm(_ds, &_weakForm));assert(_weakForm);
+            PylithCallPetsc(DMGetCellDS(dm, pointIndicesOrig[0], &_ds, NULL));
+            assert(_ds);
+            PylithCallPetsc(PetscDSGetWeakForm(_ds, &_weakForm));
+            assert(_weakForm);
             PetscInt numPointsNew = 0;
             for (PetscInt iPoint = 0; iPoint < numPointsOrig; ++iPoint) {
                 const PetscInt point = pointIndicesOrig[iPoint];
@@ -64,7 +66,7 @@ pylith::feassemble::DSLabelAccess::DSLabelAccess(const PetscDM dm,
 
             // Create array with points over which to integrate.
             PetscInt* pointIndicesNew = NULL;
-            PylithCallPetsc(PetscMalloc1(numPointsNew*sizeof(PetscInt), &pointIndicesNew));
+            PylithCallPetsc(PetscMalloc1(numPointsNew * sizeof(PetscInt), &pointIndicesNew));
             for (PetscInt iPoint = 0, index = 0; iPoint < numPointsOrig; ++iPoint) {
                 const PetscInt point = pointIndicesOrig[iPoint];
                 PetscInt depth = 0;
@@ -76,7 +78,8 @@ pylith::feassemble::DSLabelAccess::DSLabelAccess(const PetscDM dm,
 
             PylithCallPetsc(ISRestoreIndices(_pointsIS, &pointIndicesOrig));
             PylithCallPetsc(ISDestroy(&_pointsIS));
-            PylithCallPetsc(ISCreateGeneral(PETSC_COMM_SELF, numPointsNew, pointIndicesNew, PETSC_OWN_POINTER, &_pointsIS));
+            PylithCallPetsc(
+                ISCreateGeneral(PETSC_COMM_SELF, numPointsNew, pointIndicesNew, PETSC_OWN_POINTER, &_pointsIS));
             _numPoints = numPointsNew;
         } else {
             PylithCallPetsc(ISDestroy(&_pointsIS));
@@ -89,16 +92,14 @@ pylith::feassemble::DSLabelAccess::DSLabelAccess(const PetscDM dm,
 
 // ------------------------------------------------------------------------------------------------
 // Default destructor
-inline
-pylith::feassemble::DSLabelAccess::~DSLabelAccess(void) {
+inline pylith::feassemble::DSLabelAccess::~DSLabelAccess(void) {
     ISDestroy(&_pointsIS);
 }
 
 
 // ------------------------------------------------------------------------------------------------
 // Get PETSc DM.
-inline
-PetscDM
+inline PetscDM
 pylith::feassemble::DSLabelAccess::dm(void) const {
     return _dm;
 }
@@ -106,8 +107,7 @@ pylith::feassemble::DSLabelAccess::dm(void) const {
 
 // ------------------------------------------------------------------------------------------------
 // Get PETSc DMLabel.
-inline
-PetscDMLabel
+inline PetscDMLabel
 pylith::feassemble::DSLabelAccess::label(void) const {
     return _label;
 }
@@ -115,8 +115,7 @@ pylith::feassemble::DSLabelAccess::label(void) const {
 
 // ------------------------------------------------------------------------------------------------
 // Get PETSc DMLabel value.
-inline
-PetscInt
+inline PetscInt
 pylith::feassemble::DSLabelAccess::value(void) const {
     return _value;
 }
@@ -124,8 +123,7 @@ pylith::feassemble::DSLabelAccess::value(void) const {
 
 // ------------------------------------------------------------------------------------------------
 // Get PetscDS.
-inline
-PetscDS
+inline PetscDS
 pylith::feassemble::DSLabelAccess::ds(void) const {
     return _ds;
 }
@@ -133,8 +131,7 @@ pylith::feassemble::DSLabelAccess::ds(void) const {
 
 // ------------------------------------------------------------------------------------------------
 // Get weak form associated with PetscDS.
-inline
-PetscWeakForm
+inline PetscWeakForm
 pylith::feassemble::DSLabelAccess::weakForm(void) const {
     return _weakForm;
 }
@@ -142,8 +139,7 @@ pylith::feassemble::DSLabelAccess::weakForm(void) const {
 
 // ------------------------------------------------------------------------------------------------
 // Get PETSc IS associated with label and value.
-inline
-PetscIS
+inline PetscIS
 pylith::feassemble::DSLabelAccess::pointsIS(void) const {
     return _pointsIS;
 }
@@ -151,8 +147,7 @@ pylith::feassemble::DSLabelAccess::pointsIS(void) const {
 
 // ------------------------------------------------------------------------------------------------
 // Get number of points in PETSc IS associated with label and value.
-inline
-PetscInt
+inline PetscInt
 pylith::feassemble::DSLabelAccess::numPoints(void) const {
     return _numPoints;
 }
@@ -160,14 +155,13 @@ pylith::feassemble::DSLabelAccess::numPoints(void) const {
 
 // ------------------------------------------------------------------------------------------------
 // Remove overlap from points index set.
-inline
-void
+inline void
 pylith::feassemble::DSLabelAccess::removeOverlap(void) {
     PYLITH_METHOD_BEGIN;
 
     PetscSF sf = NULL;
     PylithCallPetsc(DMGetPointSF(_dm, &sf));
-    const PetscInt *leaves = NULL;
+    const PetscInt* leaves = NULL;
     PetscInt numLeaves = 0, loc = -1;
     PylithCallPetsc(PetscSFGetGraph(sf, NULL, &numLeaves, &leaves, NULL));
     if ((_numPoints <= 0) || (numLeaves <= 0)) {
@@ -194,7 +188,7 @@ pylith::feassemble::DSLabelAccess::removeOverlap(void) {
 
     // Create array with cells over which to integrate.
     PetscInt* pointIndicesNew = NULL;
-    PylithCallPetsc(PetscMalloc1(numPointsNew*sizeof(PetscInt), &pointIndicesNew));
+    PylithCallPetsc(PetscMalloc1(numPointsNew * sizeof(PetscInt), &pointIndicesNew));
     for (PetscInt iPoint = 0, index = 0; iPoint < numPointsOrig; ++iPoint) {
         const PetscInt cell = pointIndicesOrig[iPoint];
 

@@ -12,49 +12,44 @@
 
 #include "pylith/topology/Field.hh" // implementation of class methods
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
-#include "pylith/topology/MeshOps.hh" // USES isCohesiveCell()
 #include "pylith/faults/TopologyOps.hh" // USES getInterfacesLabel()
+#include "pylith/topology/MeshOps.hh" // USES isCohesiveCell()
 
 #include "pylith/utils/array.hh" // USES scalar_array
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
-#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 #include <cassert> // USES assert()
-#include <iostream> // USES std::cout
 #include <iomanip> // USES std::setw()
+#include <iostream> // USES std::cout
 
 namespace pylith {
     namespace topology {
         class _Field {
-public:
-
+          public:
             /// View field layout.
-            static
-            void viewLayout(const pylith::topology::Field& field);
+            static void viewLayout(const pylith::topology::Field& field);
 
             /// View values in local vector of field.
-            static
-            void viewValues(const pylith::topology::Field& field);
+            static void viewValues(const pylith::topology::Field& field);
 
             /// View local section.
-            static
-            void viewLocalSection(const Field& field);
+            static void viewLocalSection(const Field& field);
 
             /// View global section.
-            static
-            void viewGlobalSection(const Field& field);
+            static void viewGlobalSection(const Field& field);
 
         }; // _Field
-    }
-}
+    } // namespace topology
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -67,7 +62,8 @@ pylith::topology::Field::Field(const pylith::topology::Mesh& mesh) :
 
     GenericComponent::setName("field");
     _label = ":UNKNOWN:";
-    _mesh = mesh.clone();assert(_mesh);
+    _mesh = mesh.clone();
+    assert(_mesh);
 
     PYLITH_METHOD_END;
 } // constructor
@@ -115,7 +111,8 @@ void
 pylith::topology::Field::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _mesh;_mesh = NULL;
+    delete _mesh;
+    _mesh = NULL;
 
     PylithCallPetsc(VecDestroy(&_localVec));
     PylithCallPetsc(VecDestroy(&_globalVec));
@@ -158,20 +155,20 @@ pylith::topology::Field::setLabel(const char* value) {
     assert(_mesh);
 
     const char* dmName = NULL;
-    PylithCallPetsc(PetscObjectGetName((PetscObject) _mesh->getDM(), &dmName));
+    PylithCallPetsc(PetscObjectGetName((PetscObject)_mesh->getDM(), &dmName));
     _label = std::string(dmName) + std::string(" ") + std::string(value);
 
     if (_mesh->getDM()) {
-        PylithCallPetsc(PetscObjectSetName((PetscObject) _mesh->getDM(), _label.c_str()));
+        PylithCallPetsc(PetscObjectSetName((PetscObject)_mesh->getDM(), _label.c_str()));
     } // if
     if (_localVec) {
-        PylithCallPetsc(PetscObjectSetName((PetscObject) _localVec, _label.c_str()));
+        PylithCallPetsc(PetscObjectSetName((PetscObject)_localVec, _label.c_str()));
     } // if
     if (_globalVec) {
-        PylithCallPetsc(PetscObjectSetName((PetscObject) _globalVec, _label.c_str()));
+        PylithCallPetsc(PetscObjectSetName((PetscObject)_globalVec, _label.c_str()));
     } // if
     if (_outputVec) {
-        PylithCallPetsc(PetscObjectSetName((PetscObject) _outputVec, _label.c_str()));
+        PylithCallPetsc(PetscObjectSetName((PetscObject)_outputVec, _label.c_str()));
     } // if
 
     PYLITH_METHOD_END;
@@ -233,7 +230,8 @@ pylith::topology::Field::getOutputVector(void) const {
 size_t
 pylith::topology::Field::getSpaceDim(void) const {
     assert(_mesh);
-    const spatialdata::geocoords::CoordSys* cs = _mesh->getCoordSys();assert(cs);
+    const spatialdata::geocoords::CoordSys* cs = _mesh->getCoordSys();
+    assert(cs);
     return cs->getSpaceDim();
 }
 
@@ -251,7 +249,7 @@ pylith::topology::Field::getChartSize(void) const {
     PylithCallPetsc(DMGetLocalSection(_mesh->getDM(), &s));
     PylithCallPetsc(PetscSectionGetChart(s, &pStart, &pEnd));
 
-    PYLITH_METHOD_RETURN(pEnd-pStart);
+    PYLITH_METHOD_RETURN(pEnd - pStart);
 } // chartSize
 
 
@@ -298,14 +296,16 @@ pylith::topology::Field::allocate(void) {
      * _setupLagrangeMultiplier().
      */
 
-    const PetscDM dm = _mesh->getDM();assert(dm);
-    PylithCallPetsc(DMGetLocalSection(dm, &s));assert(s); // Creates local section
+    const PetscDM dm = _mesh->getDM();
+    assert(dm);
+    PylithCallPetsc(DMGetLocalSection(dm, &s));
+    assert(s); // Creates local section
     PylithCallPetsc(DMSetGlobalSection(dm, NULL)); // Creates global section
     PylithCallPetsc(PetscSectionSetUp(s));
 
     PylithCallPetsc(VecDestroy(&_localVec));
     PylithCallPetsc(DMCreateLocalVector(dm, &_localVec));
-    PylithCallPetsc(PetscObjectSetName((PetscObject) _localVec,  _label.c_str()));
+    PylithCallPetsc(PetscObjectSetName((PetscObject)_localVec, _label.c_str()));
     PylithCallPetsc(VecSet(_localVec, 0.0));
 
     PYLITH_METHOD_END;
@@ -335,7 +335,7 @@ pylith::topology::Field::view(const char* label,
 
     const int rank = _mesh->getCommRank();
     if (!rank) {
-        std::cout << "Viewing field '" << _label << "' "<< label << ".\n";
+        std::cout << "Viewing field '" << _label << "' " << label << ".\n";
         if (_subfields.size() > 0) {
             std::cout << "  Subfields:\n";
             for (subfields_type::const_iterator s_iter = _subfields.begin(); s_iter != _subfields.end(); ++s_iter) {
@@ -363,12 +363,9 @@ pylith::topology::Field::view(const char* label,
                 default:
                     PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unknown cell basis");
                 } // switch
-                std::cout << ", scale: " << sinfo.description.scale
-                          << ", basisOrder: " << sinfo.fe.basisOrder
-                          << ", quadOrder: " << sinfo.fe.quadOrder
-                          << ", dimension: " << sinfo.fe.dimension
-                          << ", cellBasis: " << cellBasisString
-                          << "\n";
+                std::cout << ", scale: " << sinfo.description.scale << ", basisOrder: " << sinfo.fe.basisOrder
+                          << ", quadOrder: " << sinfo.fe.quadOrder << ", dimension: " << sinfo.fe.dimension
+                          << ", cellBasis: " << cellBasisString << "\n";
             } // for
         } // if
     } // if
@@ -376,8 +373,9 @@ pylith::topology::Field::view(const char* label,
     if ((VIEW_LAYOUT == options) || (VIEW_ALL == options)) {
         _Field::viewLayout(*this);
     } // if
-    const PetscDM dm = _mesh->getDM();assert(dm);
-    PylithCallPetsc(PetscBarrier((PetscObject) dm));
+    const PetscDM dm = _mesh->getDM();
+    assert(dm);
+    PylithCallPetsc(PetscBarrier((PetscObject)dm));
 
     if ((VIEW_VALUES == options) || (VIEW_ALL == options)) {
         _Field::viewValues(*this);
@@ -446,7 +444,7 @@ pylith::topology::Field::scatterLocalToOutput(InsertMode mode) const {
 // ------------------------------------------------------------------------------------------------
 // Add subfield to current field (interface to use from SWIG).
 void
-pylith::topology::Field::subfieldAdd(const char *name,
+pylith::topology::Field::subfieldAdd(const char* name,
                                      const char* alias,
                                      const VectorFieldEnum fieldType,
                                      const char* components[],
@@ -527,9 +525,11 @@ pylith::topology::Field::subfieldsSetup(void) {
         if (quadOrderSet) {
             if (quadOrder != sinfo.fe.quadOrder) {
                 PYLITH_ERROR(pylith::exceptions::InvalidParameterError,
-                             "PETSc DMPlex routines currently assume all subfields use the same quadrature order. Quadrature order of "
-                             << sinfo.fe.quadOrder << " for subfield '" << sname << "' does not match the quadrature order of " << quadOrder
-                             << " for other subfields in field '" << getLabel() << "'.");
+                             "PETSc DMPlex routines currently assume all subfields use the same quadrature order. "
+                             "Quadrature order of "
+                                 << sinfo.fe.quadOrder << " for subfield '" << sname
+                                 << "' does not match the quadrature order of " << quadOrder
+                                 << " for other subfields in field '" << getLabel() << "'.");
             } // if
         } else {
             quadOrder = sinfo.fe.quadOrder;
@@ -537,7 +537,8 @@ pylith::topology::Field::subfieldsSetup(void) {
         } // if/else
 
         sinfo.fe.cellBasis = cellBasis;
-        PetscFE fe = FieldOps::createFE(sinfo.fe, dm, sinfo.description.numComponents);assert(fe);
+        PetscFE fe = FieldOps::createFE(sinfo.fe, dm, sinfo.description.numComponents);
+        assert(fe);
         PylithCallPetsc(PetscFESetName(fe, sname));
 
         // :KLUDGE: We need PETSc DMPlex to support specifying subfields over labels and label values.
@@ -620,8 +621,9 @@ pylith::topology::Field::createGlobalVector(void) {
     assert(_mesh);
 
     PylithCallPetsc(VecDestroy(&_globalVec));
-    PylithCallPetsc(DMCreateGlobalVector(_mesh->getDM(), &_globalVec));assert(_globalVec);
-    PylithCallPetsc(PetscObjectSetName((PetscObject) _globalVec, getLabel()));
+    PylithCallPetsc(DMCreateGlobalVector(_mesh->getDM(), &_globalVec));
+    assert(_globalVec);
+    PylithCallPetsc(PetscObjectSetName((PetscObject)_globalVec, getLabel()));
 
     PYLITH_METHOD_END;
 }
@@ -647,8 +649,9 @@ pylith::topology::Field::createOutputVector(void) {
         PylithCallPetsc(PetscDSSetUp(dsOutput));
     } // for
 
-    PylithCallPetsc(DMCreateGlobalVector(dmOutput, &_outputVec));assert(_outputVec);
-    PylithCallPetsc(PetscObjectSetName((PetscObject) _outputVec, getLabel()));
+    PylithCallPetsc(DMCreateGlobalVector(dmOutput, &_outputVec));
+    assert(_outputVec);
+    PylithCallPetsc(PetscObjectSetName((PetscObject)_outputVec, getLabel()));
 
     PYLITH_METHOD_END;
 }
@@ -660,11 +663,12 @@ void
 pylith::topology::_Field::viewLayout(const Field& field) {
     PYLITH_METHOD_BEGIN;
 
-    const PetscDM dm = field.getDM();assert(dm);
+    const PetscDM dm = field.getDM();
+    assert(dm);
 
     PetscMPIInt numProcs, rank;
-    PylithCallPetsc(MPI_Comm_size(PetscObjectComm((PetscObject) dm), &numProcs));
-    PylithCallPetsc(MPI_Comm_rank(PetscObjectComm((PetscObject) dm), &rank));
+    PylithCallPetsc(MPI_Comm_size(PetscObjectComm((PetscObject)dm), &numProcs));
+    PylithCallPetsc(MPI_Comm_rank(PetscObjectComm((PetscObject)dm), &rank));
 
     const pylith::string_vector& subfieldNames = field.getSubfieldNames();
     const size_t numSubfields = subfieldNames.size();
@@ -689,11 +693,12 @@ void
 pylith::topology::_Field::viewValues(const Field& field) {
     PYLITH_METHOD_BEGIN;
 
-    const PetscDM dm = field.getDM();assert(dm);
+    const PetscDM dm = field.getDM();
+    assert(dm);
 
     PetscMPIInt numProcs, rank;
-    PylithCallPetsc(MPI_Comm_size(PetscObjectComm((PetscObject) dm), &numProcs));
-    PylithCallPetsc(MPI_Comm_rank(PetscObjectComm((PetscObject) dm), &rank));
+    PylithCallPetsc(MPI_Comm_size(PetscObjectComm((PetscObject)dm), &numProcs));
+    PylithCallPetsc(MPI_Comm_rank(PetscObjectComm((PetscObject)dm), &rank));
 
     const pylith::string_vector& subfieldNames = field.getSubfieldNames();
     const size_t numSubfields = subfieldNames.size();
@@ -721,7 +726,7 @@ pylith::topology::_Field::viewValues(const Field& field) {
                         assert(numDof == numComponents[iField]);
                         const PetscInt off = fieldVisitor.sectionSubfieldOffset(iField, point);
                         for (PetscInt iDof = 0; iDof < numDof; ++iDof) {
-                            std::cout << std::setw(fwidth) << localArray[off+iDof];
+                            std::cout << std::setw(fwidth) << localArray[off + iDof];
                         } // for
                     } else {
                         for (PetscInt iDof = 0; iDof < numComponents[iField]; ++iDof) {
@@ -734,7 +739,7 @@ pylith::topology::_Field::viewValues(const Field& field) {
             } // for
         } // if
         std::cout << std::flush;
-        PylithCallPetsc(PetscBarrier((PetscObject) dm));
+        PylithCallPetsc(PetscBarrier((PetscObject)dm));
     } // for
 
     PYLITH_METHOD_END;
@@ -749,10 +754,11 @@ pylith::topology::_Field::viewLocalSection(const Field& field) {
     const size_t pwidth = 6;
     const char* none = "--";
 
-    const PetscDM dm = field.getDM();assert(dm);
+    const PetscDM dm = field.getDM();
+    assert(dm);
     PetscMPIInt numProcs, rank;
-    PylithCallPetsc(MPI_Comm_size(PetscObjectComm((PetscObject) dm), &numProcs));
-    PylithCallPetsc(MPI_Comm_rank(PetscObjectComm((PetscObject) dm), &rank));
+    PylithCallPetsc(MPI_Comm_size(PetscObjectComm((PetscObject)dm), &numProcs));
+    PylithCallPetsc(MPI_Comm_rank(PetscObjectComm((PetscObject)dm), &rank));
 
     const pylith::string_vector& subfieldNames = field.getSubfieldNames();
     const size_t numSubfields = subfieldNames.size();
@@ -781,7 +787,7 @@ pylith::topology::_Field::viewLocalSection(const Field& field) {
                     if (numDof > 0) {
                         const PetscInt off = fieldVisitor.sectionSubfieldOffset(iField, point);
                         for (PetscInt iDof = 0; iDof < numDof; ++iDof) {
-                            std::cout << std::setw(pwidth) << off+iDof;
+                            std::cout << std::setw(pwidth) << off + iDof;
                         } // for
                     } else {
                         for (PetscInt iDof = 0; iDof < numComponents[iField]; ++iDof) {
@@ -798,7 +804,7 @@ pylith::topology::_Field::viewLocalSection(const Field& field) {
                     const PetscInt* constraintIndices = NULL;
                     PylithCallPetsc(PetscSectionGetConstraintIndices(section, point, &constraintIndices));
                     for (PetscInt iDof = 0; iDof < numConstraintDof; ++iDof) {
-                        std::cout << " " << off+constraintIndices[iDof];
+                        std::cout << " " << off + constraintIndices[iDof];
                     } // for
                     std::cout << ")";
                 }
@@ -806,7 +812,7 @@ pylith::topology::_Field::viewLocalSection(const Field& field) {
             } // for
         } // if
         std::cout << std::flush;
-        PylithCallPetsc(PetscBarrier((PetscObject) dm));
+        PylithCallPetsc(PetscBarrier((PetscObject)dm));
     } // for
 
     PYLITH_METHOD_END;
@@ -821,10 +827,11 @@ pylith::topology::_Field::viewGlobalSection(const Field& field) {
     const size_t pwidth = 6;
     const char* none = "--";
 
-    const PetscDM dm = field.getDM();assert(dm);
+    const PetscDM dm = field.getDM();
+    assert(dm);
     PetscMPIInt numProcs, rank;
-    PylithCallPetsc(MPI_Comm_size(PetscObjectComm((PetscObject) dm), &numProcs));
-    PylithCallPetsc(MPI_Comm_rank(PetscObjectComm((PetscObject) dm), &rank));
+    PylithCallPetsc(MPI_Comm_size(PetscObjectComm((PetscObject)dm), &numProcs));
+    PylithCallPetsc(MPI_Comm_rank(PetscObjectComm((PetscObject)dm), &rank));
 
     const pylith::string_vector& subfieldNames = field.getSubfieldNames();
     const size_t numSubfields = subfieldNames.size();
@@ -857,20 +864,21 @@ pylith::topology::_Field::viewGlobalSection(const Field& field) {
                             assert(numConstraintDof <= numDof);
                             PetscInt iConstraint = 0;
                             const PetscInt* constraintIndices = NULL;
-                            PylithCallPetsc(PetscSectionGetFieldConstraintIndices(section, point, iField, &constraintIndices));
+                            PylithCallPetsc(
+                                PetscSectionGetFieldConstraintIndices(section, point, iField, &constraintIndices));
                             const PetscInt off = fieldVisitor.sectionSubfieldOffset(iField, point);
                             for (PetscInt iDof = 0; iDof < numDof; ++iDof) {
                                 if ((iConstraint < numConstraintDof) && (constraintIndices[iConstraint] == iDof)) {
                                     std::cout << std::setw(pwidth) << none;
                                     ++iConstraint;
                                 } else {
-                                    std::cout << std::setw(pwidth) << off+iDof-iConstraint;
+                                    std::cout << std::setw(pwidth) << off + iDof - iConstraint;
                                 } // if/else
                             } // for
                         } else {
                             const PetscInt off = fieldVisitor.sectionSubfieldOffset(iField, point);
                             for (PetscInt iDof = 0; iDof < numDof; ++iDof) {
-                                std::cout << std::setw(pwidth) << off+iDof;
+                                std::cout << std::setw(pwidth) << off + iDof;
                             } // for
                         } // if/else
                     } else {
@@ -884,7 +892,7 @@ pylith::topology::_Field::viewGlobalSection(const Field& field) {
             } // for
         } // if
         std::cout << std::flush;
-        PylithCallPetsc(PetscBarrier((PetscObject) dm));
+        PylithCallPetsc(PetscBarrier((PetscObject)dm));
     } // for
 
     PYLITH_METHOD_END;

@@ -18,7 +18,7 @@ namespace pylith {
         class DependenciesVersion;
 
         class TestArray;
-    } // utils
-} // pylith
+    } // namespace utils
+} // namespace pylith
 
 // End of file

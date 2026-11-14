@@ -15,27 +15,28 @@
 #include "pylith/materials/Material.hh" // USES Material
 #include "pylith/materials/Query.hh" // USES Query
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
-#include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/Fields.hh" // USES Fields
-#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
-#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
+#include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/utils/journals.hh" // pythia::journal
 
-#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
+#include "pylith/scales/Scales.hh" // USES Scales
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
-#include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::materials::TestMaterial::setUp(void) {
-    _mesh = new pylith::topology::Mesh();CPPUNIT_ASSERT(_mesh);
+    _mesh = new pylith::topology::Mesh();
+    CPPUNIT_ASSERT(_mesh);
     _solutionFields = NULL;
 } // setUp
 
@@ -44,8 +45,10 @@ pylith::materials::TestMaterial::setUp(void) {
 // Deallocate testing data.
 void
 pylith::materials::TestMaterial::tearDown(void) {
-    delete _solutionFields;_solutionFields = NULL;
-    delete _mesh;_mesh = NULL;
+    delete _solutionFields;
+    _solutionFields = NULL;
+    delete _mesh;
+    _mesh = NULL;
 } // tearDown
 
 
@@ -57,10 +60,13 @@ pylith::materials::TestMaterial::testAuxField(void) {
 
     _initializeFull();
 
-    Material* material = _material();CPPUNIT_ASSERT(material);
-    TestMaterial_Data* data = _data();CPPUNIT_ASSERT(data);
+    Material* material = _material();
+    CPPUNIT_ASSERT(material);
+    TestMaterial_Data* data = _data();
+    CPPUNIT_ASSERT(data);
 
-    const pylith::topology::Field* auxField = material->auxField();CPPUNIT_ASSERT(auxField);
+    const pylith::topology::Field* auxField = material->auxField();
+    CPPUNIT_ASSERT(auxField);
     for (int i = 0; i < data->numAuxSubfields; ++i) {
         CPPUNIT_ASSERT(auxField->hasSubfield(data->auxSubfields[i]));
     } // for
@@ -77,11 +83,15 @@ void
 pylith::materials::TestMaterial::testAuxSubfieldDiscretization(void) {
     PYLITH_METHOD_BEGIN;
 
-    const topology::FieldBase::Discretization infoDefault = pylith::topology::Field::Discretization(1, 1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE);
-    const topology::FieldBase::Discretization infoA = pylith::topology::Field::Discretization(1, 2, false, pylith::topology::FieldBase::POLYNOMIAL_SPACE);
-    const topology::FieldBase::Discretization infoB = pylith::topology::Field::Discretization(2, 2, true, pylith::topology::FieldBase::POINT_SPACE);
+    const topology::FieldBase::Discretization infoDefault =
+        pylith::topology::Field::Discretization(1, 1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE);
+    const topology::FieldBase::Discretization infoA =
+        pylith::topology::Field::Discretization(1, 2, false, pylith::topology::FieldBase::POLYNOMIAL_SPACE);
+    const topology::FieldBase::Discretization infoB =
+        pylith::topology::Field::Discretization(2, 2, true, pylith::topology::FieldBase::POINT_SPACE);
 
-    Material* material = _material();CPPUNIT_ASSERT(material);
+    Material* material = _material();
+    CPPUNIT_ASSERT(material);
     material->auxSubfieldDiscretization("A", infoA.basisOrder, infoA.quadOrder, infoA.isBasisContinuous, infoA.feSpace);
     material->auxSubfieldDiscretization("B", infoB.basisOrder, infoB.quadOrder, infoB.isBasisContinuous, infoB.feSpace);
 
@@ -111,7 +121,8 @@ pylith::materials::TestMaterial::testAuxSubfieldDiscretization(void) {
     } // C (default)
 
     { // default
-        const topology::FieldBase::Discretization& test = material->_auxiliaryFactory()->getSubfieldDiscretization("default");
+        const topology::FieldBase::Discretization& test =
+            material->_auxiliaryFactory()->getSubfieldDiscretization("default");
         CPPUNIT_ASSERT_EQUAL(infoDefault.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.isBasisContinuous, test.isBasisContinuous);
@@ -132,7 +143,8 @@ pylith::materials::TestMaterial::testAuxFieldDB(void) {
     spatialdata::spatialdb::UserFunctionDB db;
     db.setLabel(label.c_str());
 
-    Material* material = _material();CPPUNIT_ASSERT(material);
+    Material* material = _material();
+    CPPUNIT_ASSERT(material);
     material->auxFieldDB(&db);
 
     CPPUNIT_ASSERT(material->_auxiliaryFactory());
@@ -153,7 +165,8 @@ pylith::materials::TestMaterial::testScales(void) {
     const double scale = 5.0;
     scales.setLengthScale(scale);
 
-    Material* material = _material();CPPUNIT_ASSERT(material);
+    Material* material = _material();
+    CPPUNIT_ASSERT(material);
     material->scales(scales);
     CPPUNIT_ASSERT_EQUAL(scale, material->_scales->getLengthScale());
 
@@ -168,7 +181,8 @@ pylith::materials::TestMaterial::testVerifyConfiguration(void) {
     PYLITH_METHOD_BEGIN;
 
     // Call verifyConfiguration()
-    Material* material = _material();CPPUNIT_ASSERT(material);
+    Material* material = _material();
+    CPPUNIT_ASSERT(material);
     CPPUNIT_ASSERT(_solutionFields);
     material->verifyConfiguration(_solutionFields->get("solution"));
 
@@ -184,8 +198,10 @@ void
 pylith::materials::TestMaterial::testAccessors(void) {
     PYLITH_METHOD_BEGIN;
 
-    Material* material = _material();CPPUNIT_ASSERT(material);
-    TestMaterial_Data* data = _data();CPPUNIT_ASSERT(data);
+    Material* material = _material();
+    CPPUNIT_ASSERT(material);
+    TestMaterial_Data* data = _data();
+    CPPUNIT_ASSERT(data);
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of Material::dimension() failed.", data->dimension, material->dimension());
 
@@ -210,24 +226,33 @@ pylith::materials::TestMaterial::testInitialize(void) {
     // Call initialize()
     _initializeFull(); // includes setting up auxField
 
-    Material* material = _material();CPPUNIT_ASSERT(material);
-    const pylith::topology::Field* auxField = material->auxField();CPPUNIT_ASSERT(auxField);
+    Material* material = _material();
+    CPPUNIT_ASSERT(material);
+    const pylith::topology::Field* auxField = material->auxField();
+    CPPUNIT_ASSERT(auxField);
 
     // material->_auxiliaryField->view("AUX FIELDS"); // :DEBUGGING:
 
     // Check result
-    TestMaterial_Data* data = _data();CPPUNIT_ASSERT(data);
+    TestMaterial_Data* data = _data();
+    CPPUNIT_ASSERT(data);
     CPPUNIT_ASSERT_EQUAL(std::string("auxiliary subfields"), std::string(auxField->getLabel()));
     CPPUNIT_ASSERT_EQUAL(data->dimension, auxField->getSpaceDim());
 
     PylithReal norm = 0.0;
     PylithReal t = 0.0;
-    const PetscDM dm = auxField->dmMesh();CPPUNIT_ASSERT(dm);
+    const PetscDM dm = auxField->dmMesh();
+    CPPUNIT_ASSERT(dm);
     pylith::topology::FieldQuery query(*auxField);
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(data->scales);
     query.openDB(data->auxDB, data->scales->getLengthScale());
-    PylithCallPetscRequire(DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm));
+    PylithCallPetscRequire(DMPlexComputeL2DiffLocal(dm,
+                                                    t,
+                                                    query.functions(),
+                                                    (void**)query.contextPtrs(),
+                                                    auxField->localVector(),
+                                                    &norm));
     query.closeDB(data->auxDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of auxiliary field values failed.", 0.0, norm, tolerance);
@@ -239,25 +264,43 @@ pylith::materials::TestMaterial::testInitialize(void) {
 
     pylith::topology::Field& solution = _solutionFields->get("solution");
     // solution.view("SOLUTION"); // :DEBUG:
-    const PetscDM dmSoln = solution.dmMesh();CPPUNIT_ASSERT(dmSoln);
+    const PetscDM dmSoln = solution.dmMesh();
+    CPPUNIT_ASSERT(dmSoln);
     pylith::topology::FieldQuery solnQuery(solution);
     solnQuery.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(data->scales);
     solnQuery.openDB(data->solnDB, data->scales->getLengthScale());
-    PylithCallPetscRequire(DMPlexComputeL2DiffLocal(dmSoln, t, solnQuery.functions(), (void**)solnQuery.contextPtrs(), solution.localVector(), &norm));
+    PylithCallPetscRequire(DMPlexComputeL2DiffLocal(dmSoln,
+                                                    t,
+                                                    solnQuery.functions(),
+                                                    (void**)solnQuery.contextPtrs(),
+                                                    solution.localVector(),
+                                                    &norm));
     solnQuery.closeDB(data->solnDB);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Discretized solution field failed representation test.", 0.0, norm, tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Discretized solution field failed representation test.",
+                                         0.0,
+                                         norm,
+                                         tolerance);
 
     pylith::topology::Field& perturbation = _solutionFields->get("perturbation");
     // perturbation.view("PERTURBATION"); // :DEBUG:
-    const PetscDM dmPerturb = perturbation.dmMesh();CPPUNIT_ASSERT(dmPerturb);
+    const PetscDM dmPerturb = perturbation.dmMesh();
+    CPPUNIT_ASSERT(dmPerturb);
     pylith::topology::FieldQuery perturbQuery(perturbation);
     perturbQuery.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(data->scales);
     perturbQuery.openDB(data->perturbDB, data->scales->getLengthScale());
-    PylithCallPetscRequire(DMPlexComputeL2DiffLocal(dmPerturb, t, perturbQuery.functions(), (void**)perturbQuery.contextPtrs(), perturbation.localVector(), &norm));
+    PylithCallPetscRequire(DMPlexComputeL2DiffLocal(dmPerturb,
+                                                    t,
+                                                    perturbQuery.functions(),
+                                                    (void**)perturbQuery.contextPtrs(),
+                                                    perturbation.localVector(),
+                                                    &norm));
     perturbQuery.closeDB(data->perturbDB);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Discretized perturbation field failed representation test.", 0.0, norm, tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Discretized perturbation field failed representation test.",
+                                         0.0,
+                                         norm,
+                                         tolerance);
 #endif
 
     PYLITH_METHOD_END;
@@ -290,8 +333,10 @@ pylith::materials::TestMaterial::testComputeResidual(void) {
     residualLHS.createDiscretization();
     residualLHS.allocate();
 
-    Material* material = _material();CPPUNIT_ASSERT(material);
-    TestMaterial_Data* data = _data();CPPUNIT_ASSERT(data);
+    Material* material = _material();
+    CPPUNIT_ASSERT(material);
+    TestMaterial_Data* data = _data();
+    CPPUNIT_ASSERT(data);
 
 #if 0 // :DEBUG:
     PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2"); // :DEBUG:
@@ -328,7 +373,8 @@ pylith::materials::TestMaterial::testComputeResidual(void) {
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of F(s) - G(s) == 0 failed.", 0.0, norm, tolerance);
     // Avoid trivial satisfaction of norm with zero values.
-    CPPUNIT_ASSERT_MESSAGE("RHS and LHS residuals are both exactly zero, which is suspicious.", normRHS > 0.0 || normLHS > 0.0);
+    CPPUNIT_ASSERT_MESSAGE("RHS and LHS residuals are both exactly zero, which is suspicious.",
+                           normRHS > 0.0 || normLHS > 0.0);
 
     PYLITH_METHOD_END;
 } // testComputeResidual
@@ -352,8 +398,10 @@ pylith::materials::TestMaterial::testComputeJacobian(void) {
     pylith::topology::Field& solution = _solutionFields->get("solution");
     pylith::topology::Field& perturbation = _solutionFields->get("perturbation");
 
-    Material* material = _material();CPPUNIT_ASSERT(material);
-    TestMaterial_Data* data = _data();CPPUNIT_ASSERT(data);
+    Material* material = _material();
+    CPPUNIT_ASSERT(material);
+    TestMaterial_Data* data = _data();
+    CPPUNIT_ASSERT(data);
 
     pylith::topology::Field residual1(*_mesh);
     residual1.cloneSection(solution);
@@ -441,8 +489,10 @@ void
 pylith::materials::TestMaterial::testComputeLHSJacobianImplicit(void) {
     PYLITH_METHOD_BEGIN;
 
-    Material* material = _material();CPPUNIT_ASSERT(material);
-    const TestMaterial_Data* data = _data();CPPUNIT_ASSERT(data);
+    Material* material = _material();
+    CPPUNIT_ASSERT(material);
+    const TestMaterial_Data* data = _data();
+    CPPUNIT_ASSERT(data);
     if (data->isExplicit) {
         PYLITH_METHOD_END;
     } // if
@@ -535,7 +585,8 @@ pylith::materials::TestMaterial::testComputeLHSJacobianImplicit(void) {
 
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Check of Jf(s)*(p-s) - (F(p) - F(s)) == 0 failed.", 0.0, norm, tolerance);
-    CPPUNIT_ASSERT_MESSAGE("Norm of resulting vector is exactly zero, which is suspicious.", (0 < normResidual && 0 < norm) || (0 == normResidual && 0 == norm));
+    CPPUNIT_ASSERT_MESSAGE("Norm of resulting vector is exactly zero, which is suspicious.",
+                           (0 < normResidual && 0 < norm) || (0 == normResidual && 0 == norm));
 
     PYLITH_METHOD_END;
 } // testComputeLHSJacobianImplicit
@@ -547,8 +598,10 @@ void
 pylith::materials::TestMaterial::testComputeLHSJacobianInverseExplicit(void) {
     PYLITH_METHOD_BEGIN;
 
-    Material* material = _material();CPPUNIT_ASSERT(material);
-    TestMaterial_Data* data = _data();CPPUNIT_ASSERT(data);
+    Material* material = _material();
+    CPPUNIT_ASSERT(material);
+    TestMaterial_Data* data = _data();
+    CPPUNIT_ASSERT(data);
     if (!data->isExplicit) {
         PYLITH_METHOD_END;
     } // if
@@ -565,7 +618,8 @@ void
 pylith::materials::TestMaterial::testUpdateStateVars(void) {
     PYLITH_METHOD_BEGIN;
 
-    TestMaterial_Data* data = _data();CPPUNIT_ASSERT(data);
+    TestMaterial_Data* data = _data();
+    CPPUNIT_ASSERT(data);
     if (!data->auxUpdateDB) {
         PYLITH_METHOD_END;
     } // if
@@ -578,7 +632,8 @@ pylith::materials::TestMaterial::testUpdateStateVars(void) {
     // auxiliary field. We test whether the "updated" auxiliary field
     // matches the database with the updated auxiliary field.
 
-    Material* material = _material();CPPUNIT_ASSERT(material);
+    Material* material = _material();
+    CPPUNIT_ASSERT(material);
     CPPUNIT_ASSERT(_solutionFields);
     pylith::topology::Field& perturbation = _solutionFields->get("perturbation");
 #if 0
@@ -586,13 +641,15 @@ pylith::materials::TestMaterial::testUpdateStateVars(void) {
 #endif
     material->_updateStateVars(data->t, data->dt, perturbation);
 
-    const pylith::topology::Field* auxField = material->auxField();CPPUNIT_ASSERT(auxField);
+    const pylith::topology::Field* auxField = material->auxField();
+    CPPUNIT_ASSERT(auxField);
     material->_auxiliaryField->view("UPDATED_AUX FIELDS"); // :DEBUGGING:
 
     // Check updated auxiliary field.
     PylithReal norm = 0.0;
     PylithReal t = 0.0;
-    const PetscDM dm = auxField->dmMesh();CPPUNIT_ASSERT(dm);
+    const PetscDM dm = auxField->dmMesh();
+    CPPUNIT_ASSERT(dm);
     pylith::topology::FieldQuery query(*auxField);
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(data->scales);
@@ -601,7 +658,12 @@ pylith::materials::TestMaterial::testUpdateStateVars(void) {
     PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "1"); // :DEBUG:
     DMSetFromOptions(dm); // :DEBUG:
 #endif
-    PylithCallPetscRequire(DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm));
+    PylithCallPetscRequire(DMPlexComputeL2DiffLocal(dm,
+                                                    t,
+                                                    query.functions(),
+                                                    (void**)query.contextPtrs(),
+                                                    auxField->localVector(),
+                                                    &norm));
     query.closeDB(data->auxUpdateDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Check of updated auxiliary field values failed.", 0.0, norm, tolerance);
@@ -616,13 +678,16 @@ void
 pylith::materials::TestMaterial::_initializeMin(void) {
     PYLITH_METHOD_BEGIN;
 
-    Material* material = _material();CPPUNIT_ASSERT(material);
-    TestMaterial_Data* data = _data();CPPUNIT_ASSERT(data);
+    Material* material = _material();
+    CPPUNIT_ASSERT(material);
+    TestMaterial_Data* data = _data();
+    CPPUNIT_ASSERT(data);
 
     pylith::meshio::MeshIOAscii iohandler;
     CPPUNIT_ASSERT(data->meshFilename);
     iohandler.filename(data->meshFilename);
-    iohandler.read(_mesh);CPPUNIT_ASSERT(_mesh);
+    iohandler.read(_mesh);
+    CPPUNIT_ASSERT(_mesh);
 
     CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any cells.", _mesh->numCells() > 0);
     CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any vertices.", _mesh->numVertices() > 0);
@@ -637,11 +702,13 @@ pylith::materials::TestMaterial::_initializeMin(void) {
     material->gravityField(data->gravityField);
 
     // Setup solution fields.
-    delete _solutionFields;_solutionFields = new pylith::topology::Fields(*_mesh);CPPUNIT_ASSERT(_solutionFields);
-    _solutionFields->add("solution","solution");
-    _solutionFields->add("solution_dot","solution_dot");
-    _solutionFields->add("perturbation","perturbation");
-    _solutionFields->add("perturbation_dot","perturbation_dot");
+    delete _solutionFields;
+    _solutionFields = new pylith::topology::Fields(*_mesh);
+    CPPUNIT_ASSERT(_solutionFields);
+    _solutionFields->add("solution", "solution");
+    _solutionFields->add("solution_dot", "solution_dot");
+    _solutionFields->add("perturbation", "perturbation");
+    _solutionFields->add("perturbation_dot", "perturbation_dot");
     this->_setupSolutionFields();
 
     PYLITH_METHOD_END;
@@ -654,8 +721,10 @@ void
 pylith::materials::TestMaterial::_initializeFull(void) {
     PYLITH_METHOD_BEGIN;
 
-    Material* material = _material();CPPUNIT_ASSERT(material);
-    TestMaterial_Data* data = _data();CPPUNIT_ASSERT(data);
+    Material* material = _material();
+    CPPUNIT_ASSERT(material);
+    TestMaterial_Data* data = _data();
+    CPPUNIT_ASSERT(data);
     CPPUNIT_ASSERT(_mesh);
 
     // Set auxiliary fields spatial database.
@@ -663,7 +732,11 @@ pylith::materials::TestMaterial::_initializeFull(void) {
 
     for (int i = 0; i < data->numAuxSubfields; ++i) {
         const pylith::topology::FieldBase::Discretization& info = data->auxDiscretizations[i];
-        material->auxSubfieldDiscretization(data->auxSubfields[i], info.basisOrder, info.quadOrder, info.isBasisContinuous, info.feSpace);
+        material->auxSubfieldDiscretization(data->auxSubfields[i],
+                                            info.basisOrder,
+                                            info.quadOrder,
+                                            info.isBasisContinuous,
+                                            info.feSpace);
     } // for
 
     CPPUNIT_ASSERT(_solutionFields);
@@ -680,24 +753,27 @@ pylith::materials::TestMaterial::_zeroBoundary(pylith::topology::Field* field) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(field);
-    TestMaterial_Data* data = _data();CPPUNIT_ASSERT(data);
+    TestMaterial_Data* data = _data();
+    CPPUNIT_ASSERT(data);
     CPPUNIT_ASSERT(data->boundaryLabel);
 
-    PetscDM dmMesh = field->mesh().dmMesh();CPPUNIT_ASSERT(dmMesh);
+    PetscDM dmMesh = field->mesh().dmMesh();
+    CPPUNIT_ASSERT(dmMesh);
     PetscDMLabel label = NULL;
     PetscIS pointIS = NULL;
-    const PetscInt *points;
+    const PetscInt* points;
     PetscInt numPoints = 0;
     PetscBool hasLabel = PETSC_FALSE;
     PetscErrorCode PylithCallPetsc);
-    PylithCallPetscRequire(DMHasLabel(dmMesh, data->boundaryLabel, &hasLabel);CPPUNIT_ASSERT(!err);CPP);
+    PylithCallPetscRequire(DMHasLabel(dmMesh, data->boundaryLabel, &hasLabel); CPPUNIT_ASSERT(!err); CPP);
     PylithCallPetscRequire(DMGetLabel(dmMesh, data->boundaryLabel, &label));
-    PylithCallPetscRequire(DMLabelGetStratumIS(label, 1, &pointIS);CPPUNIT_ASSERT(!err);CP);
+    PylithCallPetscRequire(DMLabelGetStratumIS(label, 1, &pointIS); CPPUNIT_ASSERT(!err); CP);
     PylithCallPetscRequire(ISGetLocalSize(pointIS, &numPoints));
     PylithCallPetscRequire(ISGetIndices(pointIS, &points));
 
     pylith::topology::VecVisitorMesh fieldVisitor(*field);
-    PylithScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);
+    PylithScalar* fieldArray = fieldVisitor.localArray();
+    CPPUNIT_ASSERT(fieldArray);
 
     for (PylithInt p = 0; p < numPoints; ++p) {
         const PylithInt p_bc = points[p];
@@ -705,7 +781,7 @@ pylith::materials::TestMaterial::_zeroBoundary(pylith::topology::Field* field) {
         const PylithInt off = fieldVisitor.sectionOffset(p_bc);
         const PylithInt dof = fieldVisitor.sectionDof(p_bc);
         for (PylithInt i = 0; i < dof; ++i) {
-            fieldArray[off+i] = 0.0;
+            fieldArray[off + i] = 0.0;
         } // for
     } // for
 
@@ -760,12 +836,18 @@ pylith::materials::TestMaterial_Data::TestMaterial_Data(void) :
 // ----------------------------------------------------------------------
 // Destructor
 pylith::materials::TestMaterial_Data::~TestMaterial_Data(void) {
-    delete cs;cs = NULL;
-    delete gravityField;gravityField = NULL;
-    delete scales;scales = NULL;
-    delete solnDB;solnDB = NULL;
-    delete auxDB;auxDB = NULL;
-    delete auxUpdateDB;auxUpdateDB = NULL;
+    delete cs;
+    cs = NULL;
+    delete gravityField;
+    gravityField = NULL;
+    delete scales;
+    scales = NULL;
+    delete solnDB;
+    solnDB = NULL;
+    delete auxDB;
+    auxDB = NULL;
+    delete auxUpdateDB;
+    auxUpdateDB = NULL;
 } // destructor
 
 

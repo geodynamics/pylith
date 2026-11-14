@@ -12,14 +12,14 @@
 
 #include "pylith/meshio/OutputSolnBoundary.hh" // implementation of class methods
 
+#include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES createLowerDimMesh()
-#include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 
-#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 // ------------------------------------------------------------------------------------------------
 // Constructor
@@ -46,7 +46,8 @@ pylith::meshio::OutputSolnBoundary::deallocate(void) {
 
     OutputSoln::deallocate();
 
-    delete _boundaryMesh;_boundaryMesh = NULL;
+    delete _boundaryMesh;
+    _boundaryMesh = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -81,16 +82,19 @@ pylith::meshio::OutputSolnBoundary::setLabelValue(const int value) {
 void
 pylith::meshio::OutputSolnBoundary::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "verifyConfiguration(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "verifyConfiguration(solution=" << solution.getLabel() << ")");
 
     OutputSoln::verifyConfiguration(solution);
 
-    PetscDM dmSoln = solution.getDM();assert(dmSoln);
+    PetscDM dmSoln = solution.getDM();
+    assert(dmSoln);
     PetscBool hasLabel = PETSC_FALSE;
     PylithCallPetsc(DMHasLabel(dmSoln, _labelName.c_str(), &hasLabel));
     if (!hasLabel) {
         PYLITH_COMPONENT_ERROR(pylith::exceptions::LabelNotFoundError,
-                               "Mesh missing group of points '" << _labelName << " for output using solution boundary observer.");
+                               "Mesh missing group of points '" << _labelName
+                                                                << " for output using solution boundary observer.");
     } // if
 
     PYLITH_METHOD_END;
@@ -104,23 +108,30 @@ pylith::meshio::OutputSolnBoundary::_writeSolnStep(const PylithReal t,
                                                    const PylithInt tindex,
                                                    const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "_writeSolnStep(t=" << t << ", tindex=" << tindex << ", solution=" << solution.getLabel()
+                                               << ")");
 
     if (!_boundaryMesh) {
         const char* componentName = this->getFullIdentifier();
-        _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(), _labelName.c_str(), _labelValue, componentName);
+        _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(),
+                                                                      _labelName.c_str(),
+                                                                      _labelValue,
+                                                                      componentName);
         assert(_boundaryMesh);
     } // if
 
     const pylith::string_vector& subfieldNames = pylith::topology::FieldOps::getSubfieldNamesDomain(solution);
-    PetscVec solutionVector = solution.getOutputVector();assert(solutionVector);
+    PetscVec solutionVector = solution.getOutputVector();
+    assert(solutionVector);
 
     const size_t numSubfieldNames = subfieldNames.size();
     for (size_t iField = 0; iField < numSubfieldNames; iField++) {
         assert(solution.hasSubfield(subfieldNames[iField].c_str()));
 
         OutputSubfield* subfield = NULL;
-        subfield = OutputObserver::_getSubfield(solution, *_boundaryMesh, subfieldNames[iField].c_str());assert(subfield);
+        subfield = OutputObserver::_getSubfield(solution, *_boundaryMesh, subfieldNames[iField].c_str());
+        assert(subfield);
         subfield->project(solutionVector);
 
         if (0 == iField) {

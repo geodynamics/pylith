@@ -17,8 +17,7 @@ class pylith::initializers::MeshWriter : public pylith::initializers::Initialize
     friend class TestMeshWriter;
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     MeshWriter(void);
 
@@ -44,13 +43,11 @@ public:
                                 const pylith::problems::Problem& problem);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::meshio::MeshIO* _writer; ///< Mesh writer.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     MeshWriter(const MeshWriter&); ///< Not implemented
     const MeshWriter& operator=(const MeshWriter&); ///< Not implemented
 

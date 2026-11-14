@@ -14,13 +14,12 @@
 namespace pylith {
     namespace faults {
         class CohesiveDynDataTet4;
-    } // pylith
-} // faults
+    } // namespace faults
+} // namespace pylith
 
 class pylith::faults::CohesiveDynDataTet4 : public CohesiveDynData {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     CohesiveDynDataTet4(void);
 
@@ -28,8 +27,7 @@ public:
     ~CohesiveDynDataTet4(void);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     static const char* _meshFilename; ///< Filename of input mesh
 
     static const int _spaceDim; ///< Number of dimensions in vertex coordinates
@@ -64,7 +62,6 @@ private:
     static const int _constraintEdges[]; ///< Expected points for constraint edges
     static const int _negativeVertices[]; ///< Expected points for negative-side fault vertices
     static const int _numConstraintEdges; ///< Number of constraint edges
-
 };
 
 // End of file

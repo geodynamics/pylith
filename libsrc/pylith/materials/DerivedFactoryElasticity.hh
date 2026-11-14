@@ -16,8 +16,7 @@ class pylith::materials::DerivedFactoryElasticity : public pylith::topology::Fie
     friend class TestDerivedFactoryElasticity; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     DerivedFactoryElasticity(void);
 
@@ -34,9 +33,8 @@ public:
     virtual void addSubfields(void);
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
-    DerivedFactoryElasticity(const DerivedFactoryElasticity &); ///< Not implemented.
+  private:
+    DerivedFactoryElasticity(const DerivedFactoryElasticity&); ///< Not implemented.
     const DerivedFactoryElasticity& operator=(const DerivedFactoryElasticity&); ///< Not implemented
 
 }; // class DerivedFactoryElasticity

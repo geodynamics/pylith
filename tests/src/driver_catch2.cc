@@ -9,11 +9,11 @@
 // =================================================================================================
 #include <portinfo>
 
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/testing/testingfwd.hh"
 #include "pylith/topology/FieldOps.hh" // USES FieldOps::deallocate()
 #include "pylith/utils/journals.hh" // USES journals
-#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
-#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "catch2/catch_session.hpp"
 
@@ -21,26 +21,24 @@
 #include <Python.h>
 
 #include <getopt.h> // USES getopt_long()
-#include <sstream> // USES std::ostringstream, std::istringstream
-#include <vector> // USES std::vector
-#include <utility> // USES std::pair
-#include <string> // USES std::string
 #include <iostream> // USES std::cout
+#include <sstream> // USES std::ostringstream, std::istringstream
+#include <string> // USES std::string
+#include <utility> // USES std::pair
+#include <vector> // USES std::vector
 
 // ------------------------------------------------------------------------------------------------
 class pylith::testing::TestDriver {
-public:
-
+  public:
     enum JournalEnum {
-        JOURNAL_INFO=0,
-        JOURNAL_DEBUG=1,
+        JOURNAL_INFO = 0,
+        JOURNAL_DEBUG = 1,
     };
 
-    typedef std::vector< std::pair<JournalEnum,std::string> > journals_t;
+    typedef std::vector<std::pair<JournalEnum, std::string>> journals_t;
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestDriver(void);
 
@@ -54,8 +52,7 @@ public:
             char* argv[]);
 
     // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     /** Initialize PETSc.
      *
      * @param[in] programName Name of executable program.
@@ -82,19 +79,18 @@ private:
      * @param[in] delimiter Character delimiting values.
      */
     std::vector<std::string> _parseList(const std::string& values,
-                                        const char delimiter=',');
+                                        const char delimiter = ',');
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     TestDriver(const TestDriver&); ///< Not implemented
     const TestDriver& operator=(const TestDriver&); ///< Not implemented
-
 };
 
 // ------------------------------------------------------------------------------------------------
 // Constructor
-pylith::testing::TestDriver::TestDriver(void) { }
+pylith::testing::TestDriver::TestDriver(void) {
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -109,12 +105,15 @@ pylith::testing::TestDriver::run(int argc,
     std::string petscArgs;
     std::string infoJournalArgs;
     std::string debugJournalArgs;
-    auto cli = session.cli()
-               | Catch::Clara::Opt(quiet)["--petsc-quiet"]("Turn off some PETSc debugging flags (e.g., memory leak detection)")
-               | Catch::Clara::Opt(trapFloatErrors)["--trap-float-errors"]("Trap floating point errors")
-               | Catch::Clara::Opt(petscArgs, "petsc")["--petsc"]("Comma separated list of PETSc arguments")
-               | Catch::Clara::Opt(infoJournalArgs, "journal.info")["--journal.info"]("Comma separated list of info journal names to activate")
-               | Catch::Clara::Opt(debugJournalArgs, "journal.debug")["--journal.debug"]("Comma separated list of debug journal names to activate");
+    auto cli =
+        session.cli() |
+        Catch::Clara::Opt(quiet)["--petsc-quiet"]("Turn off some PETSc debugging flags (e.g., memory leak detection)") |
+        Catch::Clara::Opt(trapFloatErrors)["--trap-float-errors"]("Trap floating point errors") |
+        Catch::Clara::Opt(petscArgs, "petsc")["--petsc"]("Comma separated list of PETSc arguments") |
+        Catch::Clara::Opt(infoJournalArgs,
+                          "journal.info")["--journal.info"]("Comma separated list of info journal names to activate") |
+        Catch::Clara::Opt(debugJournalArgs, "journal.debug")["--journal.debug"](
+            "Comma separated list of debug journal names to activate");
     session.cli(cli);
     int returnCode = session.applyCommandLine(argc, argv);
     if (returnCode) {
@@ -127,7 +126,8 @@ pylith::testing::TestDriver::run(int argc,
 #else
     const bool mallocDump = !quiet;
 #endif
-    int err = _initializePetsc(argv[0], petscArgs, mallocDump, trapFloatErrors);CHKERRQ(err);
+    int err = _initializePetsc(argv[0], petscArgs, mallocDump, trapFloatErrors);
+    CHKERRQ(err);
 
     // Initialize Python (needed for journals).
     Py_Initialize();
@@ -141,7 +141,8 @@ pylith::testing::TestDriver::run(int argc,
 
     // Finalize PETSc
     pylith::topology::FieldOps::deallocate();
-    err = PetscFinalize();CHKERRQ(err);
+    err = PetscFinalize();
+    CHKERRQ(err);
 
     if (!mallocDump) {
         std::cout << "WARNING PETSc option -malloc dump is OFF\n" << std::endl;
@@ -159,14 +160,15 @@ pylith::testing::TestDriver::_initializePetsc(char* programName,
                                               const bool mallocDump,
                                               const bool trapFloatErrors) {
     int argc = trapFloatErrors ? 2 : 1;
-    char** argv = new char*[argc+1];
+    char** argv = new char*[argc + 1];
     argv[0] = programName;
     if (trapFloatErrors) {
         argv[1] = (char*)"-fp_trap";
     } // if
     argv[argc] = nullptr; // C standard is argv[argc] == nullptr.
     PylithCallPetsc(PetscInitialize(&argc, &argv, nullptr, nullptr));
-    delete[] argv;argv = nullptr;
+    delete[] argv;
+    argv = nullptr;
 
     if (mallocDump) {
         PylithCallPetsc(PetscOptionsSetValue(nullptr, "-malloc_dump", ""));
@@ -177,7 +179,7 @@ pylith::testing::TestDriver::_initializePetsc(char* programName,
         const size_t pos = petscOptions[i].find_first_of('=');
         if (pos < petscOptions[i].length()) {
             const std::string& arg = std::string("-") + petscOptions[i].substr(0, pos);
-            const std::string& value = petscOptions[i].substr(pos+1);
+            const std::string& value = petscOptions[i].substr(pos + 1);
             PylithCallPetsc(PetscOptionsSetValue(NULL, arg.c_str(), value.c_str()));
         } else {
             const std::string& arg = std::string("-") + petscOptions[i];
@@ -207,7 +209,7 @@ pylith::testing::TestDriver::_activateJournals(JournalEnum category,
             break;
         } // DEBUG
         default:
-            PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unknown journal category '"<<category<<"'.");
+            PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unknown journal category '" << category << "'.");
         } // switch
     } // for
 } // _activateJournal

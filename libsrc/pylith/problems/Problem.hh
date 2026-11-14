@@ -20,15 +20,15 @@
 
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
-#include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Integrator, Constraint, Observers
-#include "pylith/materials/materialsfwd.hh" // HOLDSA Material
 #include "pylith/bc/bcfwd.hh" // HOLDSA BoundaryCondition
 #include "pylith/faults/faultsfwd.hh" // HOLDSA FaultCohesive
+#include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Integrator, Constraint, Observers
+#include "pylith/materials/materialsfwd.hh" // HOLDSA Material
 #include "pylith/testing/testingfwd.hh" // MMSTest ISA friend
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HASA GravityField
 
-#include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 #include "pylith/scales/scalesfwd.hh" // HASA Scales
+#include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 
 #include "pylith/petsc/petsc_types.h" // USES PetscVec, PetscMat
 
@@ -41,16 +41,14 @@ class pylith::problems::Problem : public pylith::utils::PyreComponent {
     friend class pylith::testing::MMSTest; // MMS testing
 
     // PUBLIC ENUM /////////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     enum SolverTypeEnum {
         LINEAR, // Linear solver.
         NONLINEAR, // Nonlinear solver.
     }; // SolverType
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     Problem(void);
 
@@ -186,20 +184,16 @@ public:
      *
      * @param mesh Finite-element mesh.
      */
-    virtual
-    void preinitialize(const pylith::topology::Mesh& mesh);
+    virtual void preinitialize(const pylith::topology::Mesh& mesh);
 
     /// Verify configuration.
-    virtual
-    void verifyConfiguration(void) const;
+    virtual void verifyConfiguration(void) const;
 
     /// Initialize problem.
-    virtual
-    void initialize(void);
+    virtual void initialize(void);
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     pylith::feassemble::IntegrationData* _integrationData; /// > Data needed to integrate PDE.
 
     pylith::scales::Scales* _scales; ///< Nondimensionalization of scales.
@@ -218,8 +212,7 @@ protected:
     int _petscDefaults; ///< Flags for PETSc default options for problem.
 
     // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     /// Check material and interface label values.
     void _checkMaterialLabels(void) const;
 
@@ -233,8 +226,7 @@ private:
     void _setupSolution(void);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     Problem(const Problem&); ///< Not implemented
     const Problem& operator=(const Problem&); ///< Not implemented
 

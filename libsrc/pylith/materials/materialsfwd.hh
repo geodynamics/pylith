@@ -42,7 +42,7 @@ namespace pylith {
 
         class Query;
 
-    } // materials
-} // pylith
+    } // namespace materials
+} // namespace pylith
 
 // End of file

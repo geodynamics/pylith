@@ -12,9 +12,9 @@
 
 #include "pylith/petsc/ErrorHandler.hh" // implementation of class methods
 
-#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/exceptions/Exceptions.hh" // USES PetscError
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <petscsys.h>
 
@@ -24,11 +24,11 @@ thread_local std::exception_ptr pylith::petsc::ErrorHandler::_exception;
 PetscErrorCode
 pylith::petsc::ErrorHandler::PylithErrorHandler(MPI_Comm comm,
                                                 int sourceLine,
-                                                const char *sourceFunction,
-                                                const char *sourceFilename,
+                                                const char* sourceFunction,
+                                                const char* sourceFilename,
                                                 PetscErrorCode errorCode,
                                                 PetscErrorType errorType,
-                                                const char *message,
+                                                const char* message,
                                                 PetscCtx context) {
     PYLITH_METHOD_BEGIN;
 
@@ -37,7 +37,8 @@ pylith::petsc::ErrorHandler::PylithErrorHandler(MPI_Comm comm,
         // already guards against overwriting, but constructing the
         // exception object isn't free, so skip the work if we can.
         if (!exists()) {
-            auto exPtr = std::make_exception_ptr(pylith::exceptions::PetscError(message, sourceFilename, sourceLine, sourceFunction));
+            auto exPtr = std::make_exception_ptr(
+                pylith::exceptions::PetscError(message, sourceFilename, sourceLine, sourceFunction));
             set(exPtr);
         }
     } catch (...) {

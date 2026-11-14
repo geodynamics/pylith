@@ -15,13 +15,14 @@
 namespace pylith {
     namespace meshio {
         class TestVertexFilterVecNorm;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 /// C++ unit testing for VertexFilterVecNorm
-class pylith::meshio::TestVertexFilterVecNorm : public CppUnit::TestFixture { // class TestVertexFilterVecNorm
-                                                                              // CPPUNIT TEST SUITE
-                                                                              // /////////////////////////////////////////////////
+class pylith::meshio::TestVertexFilterVecNorm
+    : public CppUnit::TestFixture { // class TestVertexFilterVecNorm
+                                    // CPPUNIT TEST SUITE
+                                    // /////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestVertexFilterVecNorm);
 
     CPPUNIT_TEST(testConstructor);
@@ -30,8 +31,7 @@ class pylith::meshio::TestVertexFilterVecNorm : public CppUnit::TestFixture { //
     CPPUNIT_TEST_SUITE_END();
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test constructor
     void testConstructor(void);
 

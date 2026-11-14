@@ -14,12 +14,14 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
-pylith::problems::Observer::Observer(void) {}
+pylith::problems::Observer::Observer(void) {
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor
-pylith::problems::Observer::~Observer(void) {}
+pylith::problems::Observer::~Observer(void) {
+}
 
 
 // End of file

@@ -11,13 +11,13 @@
 
 #include "tests/src/MMSTest.hh" // ISA MMSTEST
 
+#include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
 #include "pylith/materials/Elasticity.hh" // USES Elasticity
 #include "pylith/materials/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity
-#include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
 
-#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 
 #include "pylith/problems/Physics.hh" // USES FormulationEnum
 #include "pylith/topology/Field.hh" // HASA FieldBase::Discretization
@@ -25,13 +25,12 @@
 namespace pylith {
     class TestLinearElasticity;
     class TestLinearElasticity_Data;
-}
+} // namespace pylith
 
 /// C++ class for testing Elasticity using a variety of MMS tests.
 class pylith::TestLinearElasticity : public pylith::testing::MMSTest {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /** Constructor
      *
      * @param[in] data Data for MMS test.
@@ -42,8 +41,7 @@ public:
     ~TestLinearElasticity(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Initialize objects for test.
     void _initialize(void);
 
@@ -51,8 +49,7 @@ protected:
     void _setExactSolution(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     TestLinearElasticity_Data* _data; ///< Test parameters.
 
 }; // class TestLinearElasticity
@@ -60,8 +57,7 @@ protected:
 // ================================================================================================
 class pylith::TestLinearElasticity_Data {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestLinearElasticity_Data(void);
 
@@ -69,8 +65,7 @@ public:
     ~TestLinearElasticity_Data(void);
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     const char* journalName; ///< Name for MMSTest journals.
     int spaceDim; ///< Spatial dimension of domain.
     const char* meshFilename; ///< Name of file with ASCII mesh.
