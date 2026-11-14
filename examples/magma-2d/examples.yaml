@@ -1,0 +1,5 @@
+commands:
+  - ./generate_gmsh.py --write
+  - pylith step01_inflation.cfg
+  - pylith step01_inflation.cfg step01b_inflation.cfg
+  - pylith step02_inflation_statevars.cfg

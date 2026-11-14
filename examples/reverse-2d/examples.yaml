@@ -1,0 +1,20 @@
+commands:
+  - ./generate_gmsh.py --write
+  - pylith step01a_gravity.cfg
+  - pylith step01b_gravity.cfg
+  - pylith step01c_gravity.cfg
+  - pylith step02_gravity_refstate.cfg
+  - pylith step03_gravity_incompressible.cfg
+  - pylith step04a_surfload.cfg
+  - pylith step04b_surfload.cfg
+  - pylith step04c_surfload.cfg
+  - pylith step05a_onefault.cfg
+  - pylith step05b_onefault.cfg
+  - pylith step05c_onefault.cfg
+  - pylith step06_twofaults_elastic.cfg
+  - pylith step07_twofaults_maxwell.cfg
+  - pylith step07_twofaults_maxwell.cfg step07b_twofaults_maxwell.cfg
+  - ./plot_compare.py --step=7 --no-gui
+  - pylith step08_twofaults_powerlaw.cfg
+  - pylith step08_twofaults_powerlaw.cfg step08b_twofaults_powerlaw.cfg
+  - ./plot_compare.py --step=8 --no-gui

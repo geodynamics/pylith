@@ -24,6 +24,7 @@ dist_noinst_PYTHON = \
 
 dist_noinst_DATA = \
 	README.md \
+	examples.yaml \
 	fault_slabtop_coseismic.spatialdb \
 	fault_slabtop_creep.spatialdb \
 	fault_slabtop_slipweakening.spatialdb \

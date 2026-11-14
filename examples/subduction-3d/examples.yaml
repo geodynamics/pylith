@@ -1,0 +1,25 @@
+commands:
+  - ./generate_gmsh.py --write --filename=mesh_tet.msh
+  - pylith step01_axialdisp.cfg mat_elastic.cfg
+  - pylith step01_axialdisp.cfg step01_axialdisp_cubit.cfg mat_elastic.cfg
+  - pylith step02_coseismic.cfg mat_viscoelastic.cfg
+  - pylith step02_coseismic.cfg step02_coseismic_cubit.cfg mat_viscoelastic.cfg
+  - pylith step03_interseismic.cfg mat_viscoelastic.cfg
+  - pylith step03_interseismic.cfg step03_interseismic_cubit.cfg mat_viscoelastic.cfg
+  - pylith step04_eqcycle.cfg mat_viscoelastic.cfg
+  - pylith step04_eqcycle.cfg step04_eqcycle_cubit.cfg mat_viscoelastic.cfg
+  - ./generate_slowslip.py
+  - pylith step06_slowslip.cfg mat_elastic.cfg
+  - pylith step06_slowslip.cfg step06_slowslip_cubit.cfg mat_elastic.cfg
+  - ./generate_synthetic_gnssdisp.py
+  - pylith step07a_leftlateral.cfg mat_elastic.cfg
+  - pylith step07a_leftlateral.cfg step07a_leftlateral_cubit.cfg mat_elastic.cfg
+  - pylith step07b_reverse.cfg mat_elastic.cfg
+  - pylith step07b_reverse.cfg step07b_reverse_cubit.cfg mat_elastic.cfg
+  - ./invert_slip.py
+  - pylith step08a_gravity_refstate.cfg
+  - pylith step08a_gravity_refstate.cfg step08a_gravity_refstate_cubit.cfg
+  - pylith step08b_gravity_incompressible.cfg mat_elastic_incompressible.cfg
+  - pylith step08b_gravity_incompressible.cfg step08b_gravity_incompressible_cubit.cfg mat_elastic_incompressible.cfg
+  - pylith step08c_gravity_viscoelastic.cfg
+  - pylith step08c_gravity_viscoelastic.cfg step08c_gravity_viscoelastic_cubit.cfg

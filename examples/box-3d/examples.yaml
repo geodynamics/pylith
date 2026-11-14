@@ -1,0 +1,7 @@
+commands:
+  - ./generate_gmsh.py --write
+  - pylith step01_axialdisp.cfg
+  - pylith step02_sheardisp.cfg
+  - pylith step03_sheardisptract.cfg
+  - pylith step04_sheardispic.cfg
+  - pylith step05_sheardisptractrate.cfg

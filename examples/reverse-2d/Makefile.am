@@ -16,6 +16,7 @@ dist_noinst_PYTHON = \
 
 dist_noinst_DATA = \
 	README.md \
+	examples.yaml \
 	mesh_tri.msh \
 	mesh_quad.exo \
 	mesh_tri.exo \

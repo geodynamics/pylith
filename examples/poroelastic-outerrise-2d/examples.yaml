@@ -1,0 +1,7 @@
+commands:
+  - ./generate_gmsh.py --write
+  - ./generate_spatialdb_matprops.py
+  - ./generate_spatialdb_ypos.py
+  - pylith step01_no_faults_no_flexure.cfg
+  - pylith step02_no_faults_flexure.cfg
+  - pylith step03_faults_flexure.cfg
