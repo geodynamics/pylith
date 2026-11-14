@@ -16,6 +16,7 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
   * Added optional use of cpptrace for getting the full C++ stacktrace.
 * **Fixed**
   * Fixed bottleneck in RefineUniform associated with clearing label values.
+  * Fixed `examples/magma-2d/generate_gmsh.py` for compatibility with changes to OpenCascade.
   * Updated full-scale tests to use unittest default loader instead of deprecated makeSuite().
 * **Developer Changes**
   * Refactored EventLogger to allow single line logging of scope.
