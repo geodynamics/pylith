@@ -17,7 +17,7 @@
 #include "petsc.h"
 #include "petsclog.h" // USES PetscLogEventBegin/End() in inline methods
 
-// EventLogger ----------------------------------------------------------
+// EventLogger ------------------------------------------------------------------------------------
 /** @brief C++ object for managing event logging using PETSc.
  *
  * Each logger object manages the events for a single "logging class".
@@ -25,7 +25,35 @@
 class pylith::petsc::EventLogger {
     friend class TestEventLogger; // unit testing
 
-    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
+    // Scope --------------------------------------------------------------------------------------
+public:
+
+    /** @brief Scope guard that logs an event for the lifetime of the object.
+     *
+     * The event begins in the constructor and ends in the destructor, so begin/end calls
+     * always match, including early returns and exceptions.
+     *
+     * Usage: `pylith::petsc::EventLogger::Scope logScope(eventId);`
+     */
+    class Scope {
+public:
+        /** Constructor logs event begin.
+         *
+         * @param[in] event PETSc event identifier from registerEvent().
+         */
+        explicit Scope(const PetscLogEvent event);
+
+        /// Destructor logs event end.
+        ~Scope(void);
+
+private:
+        Scope(const Scope&) = delete;
+        Scope& operator=(const Scope&) = delete;
+
+        PetscLogEvent _event; ///< PETSc event identifier.
+    }; // Scope
+
+    // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -56,26 +84,7 @@ public:
      * @param name Name of event.
      * @returns Event identifier.
      */
-    int registerEvent(const char* name);
-
-    /** Get event identifier.
-     *
-     * @param name Name of event.
-     * @returns Event identifier.
-     */
-    int getEventId(const char* name);
-
-    /** Log event begin.
-     *
-     * @param id Event identifier.
-     */
-    void eventBegin(const int id);
-
-    /** Log event end.
-     *
-     * @param id Event identifier.
-     */
-    void eventEnd(const int id);
+    PetscLogEvent registerEvent(const char* name);
 
     /** Register stage.
      *
@@ -84,42 +93,43 @@ public:
      * @param name Name of stage.
      * @returns Stage identifier.
      */
-    int registerStage(const char* name);
+    PetscLogStage registerStage(const char* name);
 
     /** Get stage identifier.
      *
      * @param name Name of stage.
      * @returns Stage identifier.
      */
-    int getStageId(const char* name);
+    PetscLogStage getStageId(const char* name);
 
     /** Log stage begin.
      *
      * @param id Stage identifier.
      */
-    void stagePush(const int id);
+    void stagePush(const PetscLogStage id);
 
     /// Log stage end.
     void stagePop(void);
 
-    // PRIVATE METHODS //////////////////////////////////////////////////////
+    // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
 private:
 
     EventLogger(const EventLogger&); ///< Not implemented
     const EventLogger& operator=(const EventLogger&); ///< Not implemented
 
-    // PRIVATE TYPEDEFS /////////////////////////////////////////////////////
+    // PRIVATE TYPEDEFS ///////////////////////////////////////////////////////////////////////////
 private:
 
-    typedef std::map<std::string,int> map_event_type;
+    typedef std::map<std::string, PetscLogEvent> map_event_type;
+    typedef std::map<std::string, PetscLogStage> map_stage_type;
 
-    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
     std::string _className; ///< Name of logging class
-    int _classId; ///< PETSc logging identifier for class
+    PetscClassId _classId; ///< PETSc logging identifier for class
     map_event_type _events; ///< PETSc logging identifiers for events
-    map_event_type _stages; ///< PETSc logging identifiers for stages
+    map_stage_type _stages; ///< PETSc logging identifiers for stages
 
 }; // EventLogger
 
