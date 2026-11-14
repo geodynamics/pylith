@@ -44,18 +44,18 @@ public:
                 void init(void);
 
                 static pylith::petsc::EventLogger logger;
-                static PylithInt queryDB;
-                static PylithInt queryDBLabel;
-                static PylithInt openDB;
+                static PetscLogEvent queryDB;
+                static PetscLogEvent queryDBLabel;
+                static PetscLogEvent openDB;
             };
 
         }; // _FieldQuery
     } // topology
 } // pylith
 pylith::petsc::EventLogger pylith::topology::_FieldQuery::Events::logger;
-PylithInt pylith::topology::_FieldQuery::Events::queryDB;
-PylithInt pylith::topology::_FieldQuery::Events::queryDBLabel;
-PylithInt pylith::topology::_FieldQuery::Events::openDB;
+PetscLogEvent pylith::topology::_FieldQuery::Events::queryDB;
+PetscLogEvent pylith::topology::_FieldQuery::Events::queryDBLabel;
+PetscLogEvent pylith::topology::_FieldQuery::Events::openDB;
 
 // ------------------------------------------------------------------------------------------------
 const PylithReal pylith::topology::FieldQuery::SCALE_TOLERANCE = 25.0;
@@ -165,7 +165,7 @@ void
 pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
                                      const PylithReal lengthScale) {
     PYLITH_METHOD_BEGIN;
-    _FieldQuery::Events::logger.eventBegin(_FieldQuery::Events::openDB);
+    pylith::petsc::EventLogger::Scope logScope(_FieldQuery::Events::openDB);
 
     // Open spatial database.
     if (db) {
@@ -211,7 +211,6 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
         _contextPtrs[index] = &_contexts[index];
     } // for
 
-    _FieldQuery::Events::logger.eventEnd(_FieldQuery::Events::openDB);
     PYLITH_METHOD_END;
 } // openDB
 
@@ -221,13 +220,12 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
 void
 pylith::topology::FieldQuery::queryDB(void) {
     PYLITH_METHOD_BEGIN;
-    _FieldQuery::Events::logger.eventBegin(_FieldQuery::Events::queryDB);
+    pylith::petsc::EventLogger::Scope logScope(_FieldQuery::Events::queryDB);
 
     PetscReal dummyTime = 0.0;
     PylithCallPetsc(DMProjectFunctionLocal(_field.getDM(), dummyTime, _functions, (void**)_contextPtrs, INSERT_ALL_VALUES,
                                            _field.getLocalVector()));
 
-    _FieldQuery::Events::logger.eventEnd(_FieldQuery::Events::queryDB);
     PYLITH_METHOD_END;
 } // queryDB
 
@@ -238,7 +236,7 @@ void
 pylith::topology::FieldQuery::queryDBLabel(const char* labelName,
                                            const PylithInt labelValue) {
     PYLITH_METHOD_BEGIN;
-    _FieldQuery::Events::logger.eventBegin(_FieldQuery::Events::queryDBLabel);
+    pylith::petsc::EventLogger::Scope logScope(_FieldQuery::Events::queryDBLabel);
 
     PetscReal dummyTime = 0.0;
 
@@ -256,7 +254,6 @@ pylith::topology::FieldQuery::queryDBLabel(const char* labelName,
                                                 numSubfields, &subfieldIndices[0], _functions, (void**)_contextPtrs,
                                                 INSERT_ALL_VALUES, _field.getLocalVector()));
 
-    _FieldQuery::Events::logger.eventEnd(_FieldQuery::Events::queryDBLabel);
     PYLITH_METHOD_END;
 } // queryDBLabel
 

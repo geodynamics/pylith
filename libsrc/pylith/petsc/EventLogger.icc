@@ -25,26 +25,24 @@ pylith::petsc::EventLogger::getClassName(void) const {
 }
 
 
-// Log event begin.
+// Scope constructor logs event begin.
 inline
-void
-pylith::petsc::EventLogger::eventBegin(const int id) {
-    PetscLogEventBegin(id, 0, 0, 0, 0);
-} // eventBegin
+pylith::petsc::EventLogger::Scope::Scope(const PetscLogEvent event) :
+    _event(event) {
+    PetscLogEventBegin(_event, 0, 0, 0, 0);
+}
 
-
-// Log event end.
+// Scope destructor logs event end.
 inline
-void
-pylith::petsc::EventLogger::eventEnd(const int id) {
-    PetscLogEventEnd(id, 0, 0, 0, 0);
-} // eventEnd
+pylith::petsc::EventLogger::Scope::~Scope(void) {
+    PetscLogEventEnd(_event, 0, 0, 0, 0);
+}
 
 
 // Log stage begin.
 inline
 void
-pylith::petsc::EventLogger::stagePush(const int id) {
+pylith::petsc::EventLogger::stagePush(const PetscLogStage id) {
     PetscLogStagePush(id);
 } // stagePush
 

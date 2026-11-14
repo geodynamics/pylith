@@ -13,9 +13,9 @@ import unittest
 from pylith.testing.TestCases import make_suite
 from pylith.petsc.EventLogger import EventLogger
 
+
 class TestEventLogger(unittest.TestCase):
-    """Unit testing of EventLogger object.
-    """
+    """Unit testing of EventLogger object."""
 
     def test_constructor(self):
         logger = EventLogger()
@@ -30,37 +30,6 @@ class TestEventLogger(unittest.TestCase):
         logger = EventLogger()
         logger.setClassName("logging A")
         logger.initialize()
-
-    def test_registerEvent(self):
-        logger = EventLogger()
-        logger.setClassName("logging A")
-        logger.initialize()
-
-        events = ["event 1", "event 2", "event 3"]
-        id = {}
-        for event in events:
-            id[event] = logger.registerEvent(event)
-        for event in events:
-            self.assertEqual(id[event], logger.getEventId(event))
-
-    def test_eventLogging(self):
-        logger = EventLogger()
-        logger.setClassName("logging A")
-        logger.initialize()
-        events = ["event 1", "event 2", "event 3"]
-        for event in events:
-            logger.registerEvent(event)
-
-        logger.eventBegin("event 2")
-        logger.eventEnd("event 2")
-
-        logger.eventBegin("event 1")
-        logger.eventEnd("event 1")
-
-        logger.eventBegin("event 3")
-        logger.eventBegin("event 1")
-        logger.eventEnd("event 1")
-        logger.eventEnd("event 3")
 
     def test_registerStage(self):
         logger = EventLogger()
@@ -101,6 +70,7 @@ def load_tests(loader, tests, pattern):
 
 if __name__ == "__main__":
     from pylith.petsc.Manager import Manager
+
     petsc = Manager()
     petsc.initialize()
 

@@ -35,8 +35,8 @@ public:
                 void init(void);
 
                 static pylith::petsc::EventLogger logger;
-                static PylithInt initialize;
-                static PylithInt interpolate;
+                static PetscLogEvent initialize;
+                static PetscLogEvent interpolate;
             };
 
         }; // _RefineOutputInterpolator
@@ -44,8 +44,8 @@ public:
 } // pylith
 
 pylith::petsc::EventLogger pylith::topology::_RefineOutputInterpolator::Events::logger;
-PylithInt pylith::topology::_RefineOutputInterpolator::Events::initialize;
-PylithInt pylith::topology::_RefineOutputInterpolator::Events::interpolate;
+PetscLogEvent pylith::topology::_RefineOutputInterpolator::Events::initialize;
+PetscLogEvent pylith::topology::_RefineOutputInterpolator::Events::interpolate;
 
 // ------------------------------------------------------------------------------------------------
 void
@@ -113,7 +113,7 @@ pylith::topology::RefineOutputInterpolator::initialize(const PetscDM& dmMesh,
                                                        const pylith::topology::FieldBase::Description& description,
                                                        const pylith::topology::FieldBase::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
-    _RefineOutputInterpolator::Events::logger.eventBegin(_RefineOutputInterpolator::Events::initialize);
+    pylith::petsc::EventLogger::Scope logScope(_RefineOutputInterpolator::Events::initialize);
 
     _levels.resize(refineLevels);
 
@@ -159,7 +159,6 @@ pylith::topology::RefineOutputInterpolator::initialize(const PetscDM& dmMesh,
     } // for
     PylithCallPetsc(DMDestroy(&dmStart));
 
-    _RefineOutputInterpolator::Events::logger.eventEnd(_RefineOutputInterpolator::Events::initialize);
     PYLITH_METHOD_END;
 } // initialize
 
@@ -170,7 +169,7 @@ void
 pylith::topology::RefineOutputInterpolator::interpolate(const PetscVec* vectorOut,
                                                         const PetscVec& vectorIn) {
     PYLITH_METHOD_BEGIN;
-    _RefineOutputInterpolator::Events::logger.eventBegin(_RefineOutputInterpolator::Events::interpolate);
+    pylith::petsc::EventLogger::Scope logScope(_RefineOutputInterpolator::Events::interpolate);
     assert(vectorOut);
 
     PetscVec vectorPrev = vectorIn;
@@ -180,7 +179,6 @@ pylith::topology::RefineOutputInterpolator::interpolate(const PetscVec* vectorOu
     } // for
     PylithCallPetsc(VecCopy(vectorPrev, *vectorOut));
 
-    _RefineOutputInterpolator::Events::logger.eventEnd(_RefineOutputInterpolator::Events::interpolate);
     PYLITH_METHOD_END;
 } // interpolate
 

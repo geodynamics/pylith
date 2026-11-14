@@ -42,6 +42,7 @@ pylith::petsc::EventLogger::initialize(void) {
     }
 
     _events.clear();
+    _stages.clear();
     PylithCallPetsc(PetscLogClassGetClassId(_className.c_str(), &_classId));
     if (_classId < 0) {
         PylithCallPetsc(PetscClassIdRegister(_className.c_str(), &_classId));
@@ -54,12 +55,12 @@ pylith::petsc::EventLogger::initialize(void) {
 
 // ----------------------------------------------------------------------
 // Register event.
-int
+PetscLogEvent
 pylith::petsc::EventLogger::registerEvent(const char* name) {
     PYLITH_METHOD_BEGIN;
 
     assert(_classId);
-    int id = 0;
+    PetscLogEvent id = 0;
     PetscErrorCode err = PetscLogEventRegister(name, _classId, &id);
     if (err) {
         PYLITH_ERROR(pylith::exceptions::PetscError,
@@ -71,29 +72,13 @@ pylith::petsc::EventLogger::registerEvent(const char* name) {
 
 
 // ----------------------------------------------------------------------
-// Get event identifier.
-int
-pylith::petsc::EventLogger::getEventId(const char* name) {
-    PYLITH_METHOD_BEGIN;
-
-    map_event_type::iterator iter = _events.find(name);
-    if (iter == _events.end()) {
-        PYLITH_ERROR(pylith::exceptions::PetscError,
-                     "Could not find logging event '" << name << "' in logging class '" << _className << "'.");
-    } // if
-
-    PYLITH_METHOD_RETURN(iter->second);
-} // getEventId
-
-
-// ----------------------------------------------------------------------
 // Register stage.
-int
+PetscLogStage
 pylith::petsc::EventLogger::registerStage(const char* name) {
     PYLITH_METHOD_BEGIN;
 
     assert(_classId);
-    int id = 0;
+    PetscLogStage id = 0;
     PetscErrorCode err = PetscLogStageRegister(name, &id);
     if (err) {
         PYLITH_ERROR(pylith::exceptions::PetscError,
@@ -107,11 +92,11 @@ pylith::petsc::EventLogger::registerStage(const char* name) {
 
 // ----------------------------------------------------------------------
 // Get stage identifier.
-int
+PetscLogStage
 pylith::petsc::EventLogger::getStageId(const char* name) {
     PYLITH_METHOD_BEGIN;
 
-    map_event_type::iterator iter = _stages.find(name);
+    map_stage_type::iterator iter = _stages.find(name);
     if (iter == _stages.end()) {
         registerStage(name);
         iter = _stages.find(name);

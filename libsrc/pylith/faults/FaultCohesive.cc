@@ -28,6 +28,7 @@
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::checkTopology()
 #include "pylith/topology/Stratum.hh" // USES Stratum
 
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
@@ -41,12 +42,48 @@ namespace pylith {
         namespace _FaultCohesive {
             static const PylithInt defaultLabelValue = 100;
             static const std::string buriedEdgeSuffix = "_edge_auto";
+
+            class Events {
+public:
+
+                static
+                void init(void);
+
+                static pylith::petsc::EventLogger logger;
+                static PetscLogEvent transformTopology;
+                static PetscLogEvent createDiagnosticField;
+                static PetscLogEvent createDerivedField;
+                static PetscLogEvent createIntegrator;
+                static PetscLogEvent createConstraints;
+            };
+
         }
     }
 }
 
 // ------------------------------------------------------------------------------------------------
 typedef pylith::feassemble::IntegratorInterface::ProjectKernels ProjectKernels;
+
+pylith::petsc::EventLogger pylith::faults::_FaultCohesive::Events::logger;
+PetscLogEvent pylith::faults::_FaultCohesive::Events::transformTopology;
+PetscLogEvent pylith::faults::_FaultCohesive::Events::createDiagnosticField;
+PetscLogEvent pylith::faults::_FaultCohesive::Events::createDerivedField;
+PetscLogEvent pylith::faults::_FaultCohesive::Events::createIntegrator;
+PetscLogEvent pylith::faults::_FaultCohesive::Events::createConstraints;
+
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::faults::_FaultCohesive::Events::init(void) {
+    logger.setClassName("FaultCohesive");
+    logger.initialize();
+    transformTopology = logger.registerEvent("PL:FaultCohesive:transformTopology");
+    createDiagnosticField = logger.registerEvent("PL:FaultCohesive:createDiagnosticField");
+    createDerivedField = logger.registerEvent("PL:FaultCohesive:createDerivedField");
+    createIntegrator = logger.registerEvent("PL:FaultCohesive:createIntegrator");
+    createConstraints = logger.registerEvent("PL:FaultCohesive:createConstraints");
+}
+
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -59,6 +96,7 @@ pylith::faults::FaultCohesive::FaultCohesive(void) :
     _surfaceLabelValue(1),
     _buriedEdgesLabelValue(1) {
     setLabelValue(_FaultCohesive::defaultLabelValue);
+    _FaultCohesive::Events::init();
 
     _refDir1[0] = 0.0;
     _refDir1[1] = 0.0;
@@ -236,6 +274,7 @@ pylith::faults::FaultCohesive::setRefDir2(const double vec[3]) {
 pylith::topology::Mesh*
 pylith::faults::FaultCohesive::transformTopology(pylith::topology::Mesh* const mesh) {
     PYLITH_METHOD_BEGIN;
+    pylith::petsc::EventLogger::Scope logScope(_FaultCohesive::Events::transformTopology);
 
     assert(mesh);
     assert(_surfaceLabelName.length() > 0);
@@ -330,6 +369,7 @@ pylith::faults::FaultCohesive::createDiagnosticField(const pylith::topology::Fie
                                                      const pylith::topology::Mesh& physicsMesh) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createDiagnosticField(solution="<<solution.getLabel()<<", physicsMesh=)"<<typeid(physicsMesh).name()<<")");
+    pylith::petsc::EventLogger::Scope logScope(_FaultCohesive::Events::createDiagnosticField);
 
     assert(_scales);
 
@@ -372,6 +412,7 @@ pylith::faults::FaultCohesive::createDerivedField(const pylith::topology::Field&
                                                   const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createDerivedField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
+    pylith::petsc::EventLogger::Scope logScope(_FaultCohesive::Events::createDerivedField);
 
     assert(_scales);
 
@@ -421,6 +462,7 @@ pylith::faults::FaultCohesive::createIntegrator(const pylith::topology::Field& s
                                                 const std::vector<pylith::materials::Material*>& materials) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow_detail3, "Creating integrator for " << getLabelName() << "("<<getLabelValue()<<").");
+    pylith::petsc::EventLogger::Scope logScope(_FaultCohesive::Events::createIntegrator);
 
     pylith::feassemble::IntegratorInterface* integrator = new pylith::feassemble::IntegratorInterface(this);assert(integrator);
     integrator->setLabelName(getCohesiveLabelName());
@@ -447,6 +489,7 @@ std::vector<pylith::feassemble::Constraint*>
 pylith::faults::FaultCohesive::createConstraints(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createConstraints(solution="<<solution.getLabel()<<")");
+    pylith::petsc::EventLogger::Scope logScope(_FaultCohesive::Events::createConstraints);
 
     PetscDM dm = solution.getDM();
     const std::string buriedEdgeLabelNameAuto = _surfaceLabelName + _FaultCohesive::buriedEdgeSuffix;
@@ -517,6 +560,7 @@ pylith::faults::FaultCohesive::createConstraints(const pylith::topology::Field& 
     constraintArray.resize(1);
     constraintArray[0] = constraint;
     PYLITH_METHOD_RETURN(constraintArray);
+
 } // createConstraints
 
 

@@ -16,6 +16,8 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
   * Added optional use of cpptrace for getting the full C++ stacktrace.
 * **Fixed**
   * Updated full-scale tests to use unittest default loader instead of deprecated makeSuite().
+* **Developer Changes**
+  * Refactored EventLogger to allow single line logging of scope.
 
 ## Version 5.0.2 (2026-08-17)
 

@@ -17,6 +17,7 @@
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 #include "catch2/catch_test_macros.hpp"
+#include <stdexcept> // USES std::runtime_error
 
 // ------------------------------------------------------------------------------------------------
 namespace pylith {
@@ -45,13 +46,9 @@ public:
     static
     void testRegisterEvent(void);
 
-    /// Test getEventId().
+    /// Test EventLogger::Scope.
     static
-    void testGetEventId(void);
-
-    /// Test eventBegin() and eventEnd().
-    static
-    void testEventLogging(void);
+    void testEventScope(void);
 
     /// Test registerStage().
     static
@@ -80,11 +77,8 @@ TEST_CASE("TestEventLogger::testInitialize", "[TestEventLogger]") {
 TEST_CASE("TestEventLogger::testRegisterEvent", "[TestEventLogger]") {
     pylith::petsc::TestEventLogger::testRegisterEvent();
 }
-TEST_CASE("TestEventLogger::testGetEventId", "[TestEventLogger]") {
-    pylith::petsc::TestEventLogger::testGetEventId();
-}
-TEST_CASE("TestEventLogger::testEventLogging", "[TestEventLogger]") {
-    pylith::petsc::TestEventLogger::testEventLogging();
+TEST_CASE("TestEventLogger::testEventScope", "[TestEventLogger]") {
+    pylith::petsc::TestEventLogger::testEventScope();
 }
 TEST_CASE("TestEventLogger::testRegisterStage", "[TestEventLogger]") {
     pylith::petsc::TestEventLogger::testRegisterStage();
@@ -153,7 +147,7 @@ pylith::petsc::TestEventLogger::testRegisterEvent(void) {
 
     const int numEvents = 3;
     const char* events[numEvents] = { "event A", "event B", "event C" };
-    int ids[numEvents];
+    PetscLogEvent ids[numEvents];
 
     for (int i = 0; i < numEvents; ++i) {
         ids[i] = logger.registerEvent(events[i]);
@@ -170,72 +164,36 @@ pylith::petsc::TestEventLogger::testRegisterEvent(void) {
 
 
 // ------------------------------------------------------------------------------------------------
-// Test getEventId().
+// Test EventLogger::Scope.
 void
-pylith::petsc::TestEventLogger::testGetEventId(void) {
+pylith::petsc::TestEventLogger::testEventScope(void) {
     PYLITH_METHOD_BEGIN;
 
     EventLogger logger;
     logger.setClassName("my class");
     logger.initialize();
+    const PetscLogEvent eventA = logger.registerEvent("scope event A");
+    const PetscLogEvent eventB = logger.registerEvent("scope event B");
 
-    const int numEvents = 3;
-    const char* events[numEvents] = { "event A", "event B", "event C" };
-
-    for (int i = 0; i < numEvents; ++i) {
-        logger.registerEvent(events[i]);
+    { // Nested scopes.
+        EventLogger::Scope scopeA(eventA);
+        EventLogger::Scope scopeB(eventB);
     }
 
-    const int order[numEvents] = { 1, 0, 2 };
-    int ids[numEvents];
-    for (int i = 0; i < numEvents; ++i) {
-        ids[order[i]] = logger.getEventId(events[order[i]]);
-    }
+    try { // Scope ends event when an exception is thrown.
+        EventLogger::Scope scopeA(eventA);
+        throw std::runtime_error("test");
+    } catch (const std::runtime_error&) {}
 
-    int i = 0;
-    for (EventLogger::map_event_type::iterator e_iter = logger._events.begin(); e_iter != logger._events.end(); ++e_iter, ++i) {
-        CHECK(e_iter->second == ids[i]);
-    }
+    // Scope ends event on early return.
+    const auto earlyReturn = [&](void) {
+                                 EventLogger::Scope scopeB(eventB);
+                                 return;
+                             };
+    earlyReturn();
 
     PYLITH_METHOD_END;
-} // testGetEventId
-
-
-// ------------------------------------------------------------------------------------------------
-// Test eventBegin() and eventEnd().
-void
-pylith::petsc::TestEventLogger::testEventLogging(void) {
-    PYLITH_METHOD_BEGIN;
-
-    EventLogger logger;
-    logger.setClassName("my class");
-    logger.initialize();
-
-    const int numEvents = 3;
-    const char* events[numEvents] = { "event A", "event B", "event C" };
-    int ids[numEvents];
-
-    for (int i = 0; i < numEvents; ++i) {
-        ids[i] = logger.registerEvent(events[i]);
-    }
-
-    int event = ids[1];
-    logger.eventBegin(event);
-    logger.eventEnd(event);
-
-    event = ids[0];
-    logger.eventBegin(event);
-    logger.eventEnd(event);
-
-    event = ids[2];
-    logger.eventBegin(event);
-    int event2 = ids[0];
-    logger.eventBegin(event2);
-    logger.eventEnd(event2);
-    logger.eventEnd(event);
-
-    PYLITH_METHOD_END;
-} // testEventLogging
+} // testEventScope
 
 
 // ------------------------------------------------------------------------------------------------
@@ -250,14 +208,14 @@ pylith::petsc::TestEventLogger::testRegisterStage(void) {
 
     const int numStages = 3;
     const char* stages[numStages] = { "stage A1", "stage B1", "stage C1" };
-    int ids[numStages];
+    PetscLogStage ids[numStages];
 
     for (int i = 0; i < numStages; ++i) {
         ids[i] = logger.registerStage(stages[i]);
     }
 
     int i = 0;
-    for (EventLogger::map_event_type::iterator s_iter = logger._stages.begin(); s_iter != logger._stages.end(); ++s_iter, ++i) {
+    for (EventLogger::map_stage_type::iterator s_iter = logger._stages.begin(); s_iter != logger._stages.end(); ++s_iter, ++i) {
         CHECK(std::string(stages[i]) == s_iter->first);
         CHECK(ids[i] == s_iter->second);
     } // for
@@ -284,13 +242,13 @@ pylith::petsc::TestEventLogger::testGetStageId(void) {
     }
 
     const int order[numStages] = { 1, 0, 2 };
-    int ids[numStages];
+    PetscLogStage ids[numStages];
     for (int i = 0; i < numStages; ++i) {
         ids[order[i]] = logger.getStageId(stages[order[i]]);
     }
 
     int i = 0;
-    for (EventLogger::map_event_type::iterator s_iter = logger._stages.begin(); s_iter != logger._stages.end(); ++s_iter, ++i) {
+    for (EventLogger::map_stage_type::iterator s_iter = logger._stages.begin(); s_iter != logger._stages.end(); ++s_iter, ++i) {
         CHECK(s_iter->second == ids[i]);
     }
 
@@ -313,7 +271,7 @@ pylith::petsc::TestEventLogger::testStageLogging(void) {
 
     const int numStages = 3;
     const char* stages[numStages] = { "stage A3", "stage B3", "stage C3" };
-    int ids[numStages];
+    PetscLogStage ids[numStages];
 
     for (int i = 0; i < numStages; ++i) {
         ids[i] = logger.registerStage(stages[i]);

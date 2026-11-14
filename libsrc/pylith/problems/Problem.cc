@@ -80,28 +80,28 @@ public:
                 void init(void);
 
                 static pylith::petsc::EventLogger logger;
-                static PylithInt setSolution;
-                static PylithInt preinitialize;
-                static PylithInt verifyConfiguration;
-                static PylithInt initialize;
-                static PylithInt checkMaterials;
-                static PylithInt createIntegrators;
-                static PylithInt createConstraints;
-                static PylithInt setupSolution;
+                static PetscLogEvent setSolution;
+                static PetscLogEvent preinitialize;
+                static PetscLogEvent verifyConfiguration;
+                static PetscLogEvent initialize;
+                static PetscLogEvent checkMaterials;
+                static PetscLogEvent createIntegrators;
+                static PetscLogEvent createConstraints;
+                static PetscLogEvent setupSolution;
             };
 
         };
     }
 }
 pylith::petsc::EventLogger pylith::problems::_Problem::Events::logger;
-PylithInt pylith::problems::_Problem::Events::setSolution;
-PylithInt pylith::problems::_Problem::Events::preinitialize;
-PylithInt pylith::problems::_Problem::Events::verifyConfiguration;
-PylithInt pylith::problems::_Problem::Events::initialize;
-PylithInt pylith::problems::_Problem::Events::checkMaterials;
-PylithInt pylith::problems::_Problem::Events::createIntegrators;
-PylithInt pylith::problems::_Problem::Events::createConstraints;
-PylithInt pylith::problems::_Problem::Events::setupSolution;
+PetscLogEvent pylith::problems::_Problem::Events::setSolution;
+PetscLogEvent pylith::problems::_Problem::Events::preinitialize;
+PetscLogEvent pylith::problems::_Problem::Events::verifyConfiguration;
+PetscLogEvent pylith::problems::_Problem::Events::initialize;
+PetscLogEvent pylith::problems::_Problem::Events::checkMaterials;
+PetscLogEvent pylith::problems::_Problem::Events::createIntegrators;
+PetscLogEvent pylith::problems::_Problem::Events::createConstraints;
+PetscLogEvent pylith::problems::_Problem::Events::setupSolution;
 
 // ------------------------------------------------------------------------------------------------
 void
@@ -284,12 +284,11 @@ pylith::problems::Problem::removeObserver(pylith::problems::ObserverSoln* observ
 void
 pylith::problems::Problem::setSolution(pylith::topology::Field* field) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Setting solution.");
-    _Problem::Events::logger.eventBegin(_Problem::Events::setSolution);
+    pylith::petsc::EventLogger::Scope logScope(_Problem::Events::setSolution);
 
     assert(_integrationData);
     _integrationData->setField(pylith::feassemble::IntegrationData::solution, field);
 
-    _Problem::Events::logger.eventEnd(_Problem::Events::setSolution);
 } // setSolution
 
 
@@ -410,7 +409,7 @@ void
 pylith::problems::Problem::preinitialize(const pylith::topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Preinitializing problem.");
-    _Problem::Events::logger.eventBegin(_Problem::Events::preinitialize);
+    pylith::petsc::EventLogger::Scope logScope(_Problem::Events::preinitialize);
 
     assert(_scales);
 
@@ -436,7 +435,6 @@ pylith::problems::Problem::preinitialize(const pylith::topology::Mesh& mesh) {
         _bc[i]->setFormulation(_formulation);
     } // for
 
-    _Problem::Events::logger.eventEnd(_Problem::Events::preinitialize);
     PYLITH_METHOD_END;
 } // preinitialize
 
@@ -447,7 +445,7 @@ void
 pylith::problems::Problem::verifyConfiguration(void) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Verifying configuration.");
-    _Problem::Events::logger.eventBegin(_Problem::Events::verifyConfiguration);
+    pylith::petsc::EventLogger::Scope logScope(_Problem::Events::verifyConfiguration);
 
     assert(_integrationData);
     const pylith::topology::Field* solution = _integrationData->getField("solution");
@@ -479,7 +477,6 @@ pylith::problems::Problem::verifyConfiguration(void) const {
     assert(_observers);
     _observers->verifyObservers(*solution);
 
-    _Problem::Events::logger.eventEnd(_Problem::Events::verifyConfiguration);
     PYLITH_METHOD_END;
 } // verifyConfiguration
 
@@ -490,7 +487,7 @@ void
 pylith::problems::Problem::initialize(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Initializing problem.");
-    _Problem::Events::logger.eventBegin(_Problem::Events::initialize);
+    pylith::petsc::EventLogger::Scope logScope(_Problem::Events::initialize);
 
     assert(_integrationData);
     pylith::topology::Field* solution = _integrationData->getField("solution");
@@ -538,7 +535,6 @@ pylith::problems::Problem::initialize(void) {
         solution->view("Solution field", pylith::topology::Field::VIEW_LAYOUT);
     } // if
 
-    _Problem::Events::logger.eventEnd(_Problem::Events::initialize);
     PYLITH_METHOD_END;
 } // initialize
 
@@ -549,7 +545,7 @@ void
 pylith::problems::Problem::_checkMaterialLabels(void) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Checking material labels.");
-    _Problem::Events::logger.eventBegin(_Problem::Events::checkMaterials);
+    pylith::petsc::EventLogger::Scope logScope(_Problem::Events::checkMaterials);
 
     const size_t numMaterials = _materials.size();
     const size_t numInterfaces = _interfaces.size();
@@ -570,7 +566,6 @@ pylith::problems::Problem::_checkMaterialLabels(void) const {
     assert(solution);
     pylith::topology::MeshOps::checkMaterialLabels(solution->getMesh(), labelValues);
 
-    _Problem::Events::logger.eventEnd(_Problem::Events::checkMaterials);
     PYLITH_METHOD_END;
 } // _checkMaterialLabels
 
@@ -581,7 +576,7 @@ void
 pylith::problems::Problem::_createIntegrators(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Creating integrators.");
-    _Problem::Events::logger.eventBegin(_Problem::Events::createIntegrators);
+    pylith::petsc::EventLogger::Scope logScope(_Problem::Events::createIntegrators);
 
     const size_t numMaterials = _materials.size();
     const size_t numInterfaces = _interfaces.size();
@@ -619,7 +614,6 @@ pylith::problems::Problem::_createIntegrators(void) {
 
     _integrators.resize(count);
 
-    _Problem::Events::logger.eventEnd(_Problem::Events::createIntegrators);
     PYLITH_METHOD_END;
 } // _createIntegrators
 
@@ -630,7 +624,7 @@ void
 pylith::problems::Problem::_createConstraints(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Creating constraints.");
-    _Problem::Events::logger.eventBegin(_Problem::Events::createConstraints);
+    pylith::petsc::EventLogger::Scope logScope(_Problem::Events::createConstraints);
 
     const size_t numMaterials = _materials.size();
     const size_t numInterfaces = _interfaces.size();
@@ -663,7 +657,6 @@ pylith::problems::Problem::_createConstraints(void) {
 
     } // for
 
-    _Problem::Events::logger.eventEnd(_Problem::Events::createConstraints);
     PYLITH_METHOD_END;
 } // _createConstraints
 
@@ -674,7 +667,7 @@ void
 pylith::problems::Problem::_setupSolution(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Setting up solution field.");
-    _Problem::Events::logger.eventBegin(_Problem::Events::createConstraints);
+    pylith::petsc::EventLogger::Scope logScope(_Problem::Events::setupSolution);
 
     assert(_integrationData);
     pylith::topology::Field* solution = _integrationData->getField("solution");
@@ -708,7 +701,6 @@ pylith::problems::Problem::_setupSolution(void) {
         } // if
     } // for
 
-    _Problem::Events::logger.eventEnd(_Problem::Events::setupSolution);
     PYLITH_METHOD_END;
 } // _setupSolution
 

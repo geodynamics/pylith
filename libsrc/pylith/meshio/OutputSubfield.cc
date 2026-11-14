@@ -39,12 +39,12 @@ public:
                 void init(void);
 
                 static pylith::petsc::EventLogger logger;
-                static PylithInt create;
-                static PylithInt createBasisOrder;
-                static PylithInt setLabel;
-                static PylithInt project;
-                static PylithInt projectWithLabel;
-                static PylithInt extractSubfield;
+                static PetscLogEvent create;
+                static PetscLogEvent createBasisOrder;
+                static PetscLogEvent setLabel;
+                static PetscLogEvent project;
+                static PetscLogEvent projectWithLabel;
+                static PetscLogEvent extractSubfield;
             };
 
         }; // _OutputSubfield
@@ -52,12 +52,12 @@ public:
 } // pylith
 
 pylith::petsc::EventLogger pylith::meshio::_OutputSubfield::Events::logger;
-PylithInt pylith::meshio::_OutputSubfield::Events::create;
-PylithInt pylith::meshio::_OutputSubfield::Events::createBasisOrder;
-PylithInt pylith::meshio::_OutputSubfield::Events::setLabel;
-PylithInt pylith::meshio::_OutputSubfield::Events::project;
-PylithInt pylith::meshio::_OutputSubfield::Events::projectWithLabel;
-PylithInt pylith::meshio::_OutputSubfield::Events::extractSubfield;
+PetscLogEvent pylith::meshio::_OutputSubfield::Events::create;
+PetscLogEvent pylith::meshio::_OutputSubfield::Events::createBasisOrder;
+PetscLogEvent pylith::meshio::_OutputSubfield::Events::setLabel;
+PetscLogEvent pylith::meshio::_OutputSubfield::Events::project;
+PetscLogEvent pylith::meshio::_OutputSubfield::Events::projectWithLabel;
+PetscLogEvent pylith::meshio::_OutputSubfield::Events::extractSubfield;
 
 // ------------------------------------------------------------------------------------------------
 void
@@ -122,7 +122,7 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
                                        const int basisOrder,
                                        const int refineLevels) {
     PYLITH_METHOD_BEGIN;
-    // _OutputSubfield::Events::logger.eventBegin(_OutputSubfield::Events::create);
+    pylith::petsc::EventLogger::Scope logScope(_OutputSubfield::Events::create);
 
     OutputSubfield* subfield = new OutputSubfield();assert(subfield);
 
@@ -181,7 +181,6 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
         PylithCallPetsc(PetscObjectReference((PetscObject)subfield->_outputVector));
     } // if/else
 
-    // _OutputSubfield::Events::logger.eventEnd(_OutputSubfield::Events::create);
     PYLITH_METHOD_RETURN(subfield);
 }
 
@@ -193,7 +192,7 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
                                        const pylith::topology::Mesh& mesh,
                                        const char* name) {
     PYLITH_METHOD_BEGIN;
-    _OutputSubfield::Events::logger.eventBegin(_OutputSubfield::Events::createBasisOrder);
+    pylith::petsc::EventLogger::Scope logScope(_OutputSubfield::Events::createBasisOrder);
 
     OutputSubfield* subfield = new OutputSubfield();assert(subfield);
 
@@ -229,7 +228,6 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
     subfield->_outputVector = subfield->_projectVector;
     PylithCallPetsc(PetscObjectReference((PetscObject) subfield->_outputVector));
 
-    _OutputSubfield::Events::logger.eventEnd(_OutputSubfield::Events::createBasisOrder);
     PYLITH_METHOD_RETURN(subfield);
 }
 
@@ -240,7 +238,7 @@ void
 pylith::meshio::OutputSubfield::setLabel(const char* name,
                                          const int value) {
     PYLITH_METHOD_BEGIN;
-    _OutputSubfield::Events::logger.eventBegin(_OutputSubfield::Events::setLabel);
+    pylith::petsc::EventLogger::Scope logScope(_OutputSubfield::Events::setLabel);
 
     if (_label) {
         PYLITH_METHOD_END;
@@ -250,7 +248,6 @@ pylith::meshio::OutputSubfield::setLabel(const char* name,
 
     _labelValue = value;
 
-    _OutputSubfield::Events::logger.eventEnd(_OutputSubfield::Events::setLabel);
     PYLITH_METHOD_END;
 }
 
@@ -292,7 +289,7 @@ pylith::meshio::OutputSubfield::getOutputDM(void) const {
 void
 pylith::meshio::OutputSubfield::project(const PetscVec& fieldVector) {
     PYLITH_METHOD_BEGIN;
-    _OutputSubfield::Events::logger.eventBegin(_OutputSubfield::Events::project);
+    pylith::petsc::EventLogger::Scope logScope(_OutputSubfield::Events::project);
     assert(fieldVector);
     assert(_projectVector);
     assert(_outputVector);
@@ -306,7 +303,6 @@ pylith::meshio::OutputSubfield::project(const PetscVec& fieldVector) {
     } // if
     PylithCallPetsc(VecScale(_outputVector, _description.scale));
 
-    _OutputSubfield::Events::logger.eventEnd(_OutputSubfield::Events::project);
     PYLITH_METHOD_END;
 }
 
@@ -316,7 +312,7 @@ pylith::meshio::OutputSubfield::project(const PetscVec& fieldVector) {
 void
 pylith::meshio::OutputSubfield::projectWithLabel(const PetscVec& fieldVector) {
     PYLITH_METHOD_BEGIN;
-    _OutputSubfield::Events::logger.eventBegin(_OutputSubfield::Events::projectWithLabel);
+    pylith::petsc::EventLogger::Scope logScope(_OutputSubfield::Events::projectWithLabel);
     assert(fieldVector);
     assert(_projectVector);
     assert(_outputVector);
@@ -331,7 +327,6 @@ pylith::meshio::OutputSubfield::projectWithLabel(const PetscVec& fieldVector) {
     } // if
     PylithCallPetsc(VecScale(_outputVector, _description.scale));
 
-    _OutputSubfield::Events::logger.eventEnd(_OutputSubfield::Events::projectWithLabel);
     PYLITH_METHOD_END;
 }
 
@@ -342,7 +337,7 @@ void
 pylith::meshio::OutputSubfield::extractSubfield(const pylith::topology::Field& field,
                                                 const PetscInt subfieldIndex) {
     PYLITH_METHOD_BEGIN;
-    _OutputSubfield::Events::logger.eventBegin(_OutputSubfield::Events::extractSubfield);
+    pylith::petsc::EventLogger::Scope logScope(_OutputSubfield::Events::extractSubfield);
 
     PetscSection subfieldSection = NULL;
     PetscInt storageSize = 0;
@@ -361,7 +356,6 @@ pylith::meshio::OutputSubfield::extractSubfield(const pylith::topology::Field& f
     PylithCallPetsc(VecScale(subfieldVector, _description.scale));
     PylithCallPetsc(ISDestroy(&subfieldIS));
 
-    _OutputSubfield::Events::logger.eventEnd(_OutputSubfield::Events::extractSubfield);
     PYLITH_METHOD_END;
 } // extractSubfield
 

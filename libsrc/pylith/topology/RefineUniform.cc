@@ -55,10 +55,10 @@ public:
                 void init(void);
 
                 static pylith::petsc::EventLogger logger;
-                static PylithInt refine;
-                static PylithInt refineFixFaceLabels;
-                static PylithInt refineFixCellsLabel;
-                static PylithInt refineCheckTopology;
+                static PetscLogEvent refine;
+                static PetscLogEvent refineFixFaceLabels;
+                static PetscLogEvent refineFixCellsLabel;
+                static PetscLogEvent refineCheckTopology;
             };
 
         }; // _RefineUniform
@@ -66,10 +66,10 @@ public:
 } // pylith
 
 pylith::petsc::EventLogger pylith::topology::_RefineUniform::Events::logger;
-PylithInt pylith::topology::_RefineUniform::Events::refine;
-PylithInt pylith::topology::_RefineUniform::Events::refineFixFaceLabels;
-PylithInt pylith::topology::_RefineUniform::Events::refineFixCellsLabel;
-PylithInt pylith::topology::_RefineUniform::Events::refineCheckTopology;
+PetscLogEvent pylith::topology::_RefineUniform::Events::refine;
+PetscLogEvent pylith::topology::_RefineUniform::Events::refineFixFaceLabels;
+PetscLogEvent pylith::topology::_RefineUniform::Events::refineFixCellsLabel;
+PetscLogEvent pylith::topology::_RefineUniform::Events::refineCheckTopology;
 
 // ------------------------------------------------------------------------------------------------
 void
@@ -125,7 +125,7 @@ pylith::topology::RefineUniform::getNumLevels(void) const {
 pylith::topology::Mesh*
 pylith::topology::RefineUniform::refine(const pylith::topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
-    _RefineUniform::Events::logger.eventBegin(_RefineUniform::Events::refine);
+    pylith::petsc::EventLogger::Scope logScope(_RefineUniform::Events::refine);
 
     PetscDM dmOrig = mesh.getDM();assert(dmOrig);
 
@@ -165,13 +165,13 @@ pylith::topology::RefineUniform::refine(const pylith::topology::Mesh& mesh) {
     pylith::meshio::MeshBuilder::getFaceGroupNames(&faceLabelNames, mesh);
     _RefineUniform::cleanFaceLabels(meshNew, faceLabelNames);
 
-    _RefineUniform::Events::logger.eventBegin(_RefineUniform::Events::refineCheckTopology);
-    pylith::topology::MeshOps::checkTopology(*meshNew);
-    _RefineUniform::Events::logger.eventEnd(_RefineUniform::Events::refineCheckTopology);
+    {
+        pylith::petsc::EventLogger::Scope logScopeSub(_RefineUniform::Events::refineCheckTopology);
+        pylith::topology::MeshOps::checkTopology(*meshNew);
+    }
 
     // meshNew->view("REFINED_MESH", "::ascii_info_detail");
 
-    _RefineUniform::Events::logger.eventEnd(_RefineUniform::Events::refine);
     PYLITH_METHOD_RETURN(meshNew);
 } // refine
 
@@ -181,7 +181,7 @@ void
 pylith::topology::_RefineUniform::cleanFaceLabels(pylith::topology::Mesh* const mesh,
                                                   const pylith::string_vector& faceGroupNames) {
     PYLITH_METHOD_BEGIN;
-    _RefineUniform::Events::logger.eventBegin(_RefineUniform::Events::refineFixFaceLabels);
+    pylith::petsc::EventLogger::Scope logScope(_RefineUniform::Events::refineFixFaceLabels);
     assert(mesh);
 
     const PetscDM dmMesh = mesh->getDM();assert(dmMesh);
@@ -211,7 +211,6 @@ pylith::topology::_RefineUniform::cleanFaceLabels(pylith::topology::Mesh* const 
         PylithCallPetsc(DMLabelDestroyIndex(dmLabel));
     } // for
 
-    _RefineUniform::Events::logger.eventEnd(_RefineUniform::Events::refineFixFaceLabels);
     PYLITH_METHOD_END;
 } // cleanFaceLabels
 
@@ -220,7 +219,7 @@ pylith::topology::_RefineUniform::cleanFaceLabels(pylith::topology::Mesh* const 
 void
 pylith::topology::_RefineUniform::cleanCellsLabel(pylith::topology::Mesh* mesh) {
     PYLITH_METHOD_BEGIN;
-    _RefineUniform::Events::logger.eventBegin(_RefineUniform::Events::refineFixCellsLabel);
+    pylith::petsc::EventLogger::Scope logScope(_RefineUniform::Events::refineFixCellsLabel);
     assert(mesh);
 
     const PetscDM dmMesh = mesh->getDM();
@@ -256,7 +255,6 @@ pylith::topology::_RefineUniform::cleanCellsLabel(pylith::topology::Mesh* mesh) 
     PylithCallPetsc(ISRestoreIndices(valuesIS, &values));
     PylithCallPetsc(ISDestroy(&valuesIS));
 
-    _RefineUniform::Events::logger.eventEnd(_RefineUniform::Events::refineFixCellsLabel);
     PYLITH_METHOD_END;
 } // cleanCellsLabel
 
