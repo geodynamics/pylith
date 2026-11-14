@@ -17,11 +17,46 @@
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
+
+
+namespace pylith {
+    namespace initializers {
+        namespace _Initializer {
+            class Events {
+public:
+
+                static
+                void init(void);
+
+                static pylith::petsc::EventLogger logger;
+                static PylithInt runPhases;
+            };
+
+        }
+    }
+}
+
+
+// ------------------------------------------------------------------------------------------------
+pylith::petsc::EventLogger pylith::initializers::_Initializer::Events::logger;
+PylithInt pylith::initializers::_Initializer::Events::runPhases;
+
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::initializers::_Initializer::Events::init(void) {
+    logger.setClassName("Initializer");
+    logger.initialize();
+    runPhases = logger.registerEvent("PL:Initializer:runPhases");
+}
 
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor
-pylith::initializers::Initializer::Initializer(void) {}
+pylith::initializers::Initializer::Initializer(void) {
+    _Initializer::Events::init();
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -64,6 +99,7 @@ pylith::topology::Mesh*
 pylith::initializers::Initializer::runPhases(const pylith::problems::Problem& problem) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Running mesh initialization.");
+    _Initializer::Events::logger.eventBegin(_Initializer::Events::runPhases);
 
     pylith::topology::Mesh* meshNew = nullptr;
     pylith::topology::Mesh* meshPhase = nullptr;
@@ -84,6 +120,7 @@ pylith::initializers::Initializer::runPhases(const pylith::problems::Problem& pr
     } // if
     pylith::topology::MeshOps::checkTopology(*meshNew);
 
+    _Initializer::Events::logger.eventEnd(_Initializer::Events::runPhases);
     PYLITH_METHOD_RETURN(meshNew);
 } // runPhases
 
