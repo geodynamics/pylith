@@ -41,12 +41,8 @@ public:
                 void init(void);
 
                 static pylith::petsc::EventLogger logger;
-                static PylithInt initialize;
-                static PylithInt poststep;
-                static PylithInt setState;
-                static PylithInt updateStateVars;
-                static PylithInt computeDiagnosticField;
-                static PylithInt computeDerivedField;
+                static PetscLogEvent initialize;
+                static PetscLogEvent poststep;
             };
 
         }; // _Integrator
@@ -54,8 +50,8 @@ public:
 } // pylith
 
 pylith::petsc::EventLogger pylith::feassemble::_Integrator::Events::logger;
-PylithInt pylith::feassemble::_Integrator::Events::initialize;
-PylithInt pylith::feassemble::_Integrator::Events::poststep;
+PetscLogEvent pylith::feassemble::_Integrator::Events::initialize;
+PetscLogEvent pylith::feassemble::_Integrator::Events::poststep;
 
 // ------------------------------------------------------------------------------------------------
 void
@@ -203,7 +199,7 @@ void
 pylith::feassemble::Integrator::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow, "initialize(solution="<<solution.getLabel()<<")");
-    _Integrator::Events::logger.eventBegin(_Integrator::Events::initialize);
+    pylith::petsc::EventLogger::Scope logScope(_Integrator::Events::initialize);
 
     const pylith::topology::Mesh& physicsDomainMesh = getPhysicsDomainMesh();
     delete _auxiliaryField;_auxiliaryField = _physics->createAuxiliaryField(solution, physicsDomainMesh);
@@ -221,7 +217,6 @@ pylith::feassemble::Integrator::initialize(const pylith::topology::Field& soluti
 
     delete _derivedField;_derivedField = _physics->createDerivedField(solution, physicsDomainMesh);
 
-    _Integrator::Events::logger.eventEnd(_Integrator::Events::initialize);
     PYLITH_METHOD_END;
 } // initialize
 
@@ -232,6 +227,8 @@ void
 pylith::feassemble::Integrator::setState(const PylithReal t) {
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow, "setState(t="<<t<<") empty method");
+
+    // Default is to do nothing.
 
     PYLITH_METHOD_END;
 } // setState
@@ -247,13 +244,12 @@ pylith::feassemble::Integrator::poststep(const PylithReal t,
                                          const pylith::problems::Observer::NotificationType notification) {
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow, "poststep(t="<<t<<", dt="<<dt<<")");
-    _Integrator::Events::logger.eventBegin(_Integrator::Events::poststep);
+    pylith::petsc::EventLogger::Scope logScope(_Integrator::Events::poststep);
 
     _updateStateVars(t, dt, solution);
     _computeDerivedField(t, dt, solution);
     notifyObservers(t, tindex, solution, notification);
 
-    _Integrator::Events::logger.eventEnd(_Integrator::Events::poststep);
     PYLITH_METHOD_END;
 } // poststep
 

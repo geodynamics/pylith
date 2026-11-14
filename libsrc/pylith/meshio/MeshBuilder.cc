@@ -72,9 +72,9 @@ public:
                 void init(void);
 
                 static pylith::petsc::EventLogger logger;
-                static PylithInt buildMesh;
-                static PylithInt setGroup;
-                static PylithInt setGroupAddPoints;
+                static PetscLogEvent buildMesh;
+                static PetscLogEvent setGroup;
+                static PetscLogEvent setGroupAddPoints;
 
                 static bool isInitialized;
             };
@@ -82,9 +82,9 @@ public:
     }
 }
 pylith::petsc::EventLogger pylith::meshio::_MeshBuilder::Events::logger;
-PylithInt pylith::meshio::_MeshBuilder::Events::buildMesh;
-PylithInt pylith::meshio::_MeshBuilder::Events::setGroup;
-PylithInt pylith::meshio::_MeshBuilder::Events::setGroupAddPoints;
+PetscLogEvent pylith::meshio::_MeshBuilder::Events::buildMesh;
+PetscLogEvent pylith::meshio::_MeshBuilder::Events::setGroup;
+PetscLogEvent pylith::meshio::_MeshBuilder::Events::setGroupAddPoints;
 bool pylith::meshio::_MeshBuilder::Events::isInitialized = false;
 
 void
@@ -111,7 +111,7 @@ pylith::meshio::MeshBuilder::buildMesh(pylith::topology::Mesh* mesh,
                                        const bool isParallel) {
     PYLITH_METHOD_BEGIN;
     _MeshBuilder::Events::init();
-    _MeshBuilder::Events::logger.eventBegin(_MeshBuilder::Events::buildMesh);
+    pylith::petsc::EventLogger::Scope logScope(_MeshBuilder::Events::buildMesh);
 
     assert(mesh);
     MPI_Comm comm = mesh->getComm();
@@ -159,7 +159,6 @@ pylith::meshio::MeshBuilder::buildMesh(pylith::topology::Mesh* mesh,
     PylithCallPetsc(DMSetFromOptions(dmMesh));
     mesh->setDM(dmMesh, "domain");
 
-    _MeshBuilder::Events::logger.eventEnd(_MeshBuilder::Events::buildMesh);
     PYLITH_METHOD_END;
 } // buildMesh
 
@@ -204,7 +203,7 @@ pylith::meshio::MeshBuilder::setVertexGroup(pylith::topology::Mesh* mesh,
                                             const int labelValue) {
     PYLITH_METHOD_BEGIN;
     _MeshBuilder::Events::init();
-    _MeshBuilder::Events::logger.eventBegin(_MeshBuilder::Events::setGroup);
+    pylith::petsc::EventLogger::Scope logScope(_MeshBuilder::Events::setGroup);
     assert(mesh);
 
     PetscDM dmMesh = mesh->getDM();assert(dmMesh);
@@ -251,7 +250,6 @@ pylith::meshio::MeshBuilder::setVertexGroup(pylith::topology::Mesh* mesh,
         PylithCallPetsc(DMPlexRestoreTransitiveClosure(dmMesh, vertex, PETSC_FALSE, &starSize, &star));
     } // for
 
-    _MeshBuilder::Events::logger.eventEnd(_MeshBuilder::Events::setGroup);
     PYLITH_METHOD_END;
 } // setVertexGroup
 

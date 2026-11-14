@@ -50,11 +50,11 @@ public:
                 void init(void);
 
                 static pylith::petsc::EventLogger logger;
-                static PylithInt transformTopology;
-                static PylithInt createDiagnosticField;
-                static PylithInt createDerivedField;
-                static PylithInt createIntegrator;
-                static PylithInt createConstraints;
+                static PetscLogEvent transformTopology;
+                static PetscLogEvent createDiagnosticField;
+                static PetscLogEvent createDerivedField;
+                static PetscLogEvent createIntegrator;
+                static PetscLogEvent createConstraints;
             };
 
         }
@@ -65,11 +65,11 @@ public:
 typedef pylith::feassemble::IntegratorInterface::ProjectKernels ProjectKernels;
 
 pylith::petsc::EventLogger pylith::faults::_FaultCohesive::Events::logger;
-PylithInt pylith::faults::_FaultCohesive::Events::transformTopology;
-PylithInt pylith::faults::_FaultCohesive::Events::createDiagnosticField;
-PylithInt pylith::faults::_FaultCohesive::Events::createDerivedField;
-PylithInt pylith::faults::_FaultCohesive::Events::createIntegrator;
-PylithInt pylith::faults::_FaultCohesive::Events::createConstraints;
+PetscLogEvent pylith::faults::_FaultCohesive::Events::transformTopology;
+PetscLogEvent pylith::faults::_FaultCohesive::Events::createDiagnosticField;
+PetscLogEvent pylith::faults::_FaultCohesive::Events::createDerivedField;
+PetscLogEvent pylith::faults::_FaultCohesive::Events::createIntegrator;
+PetscLogEvent pylith::faults::_FaultCohesive::Events::createConstraints;
 
 
 // ------------------------------------------------------------------------------------------------
@@ -274,7 +274,7 @@ pylith::faults::FaultCohesive::setRefDir2(const double vec[3]) {
 pylith::topology::Mesh*
 pylith::faults::FaultCohesive::transformTopology(pylith::topology::Mesh* const mesh) {
     PYLITH_METHOD_BEGIN;
-    _FaultCohesive::Events::logger.eventBegin(_FaultCohesive::Events::transformTopology);
+    pylith::petsc::EventLogger::Scope logScope(_FaultCohesive::Events::transformTopology);
 
     assert(mesh);
     assert(_surfaceLabelName.length() > 0);
@@ -358,7 +358,6 @@ pylith::faults::FaultCohesive::transformTopology(pylith::topology::Mesh* const m
                                                                                                        << err.what());
     } // try/catch
 
-    _FaultCohesive::Events::logger.eventEnd(_FaultCohesive::Events::transformTopology);
     PYLITH_METHOD_RETURN(meshNew);
 } // transformTopology
 
@@ -370,7 +369,7 @@ pylith::faults::FaultCohesive::createDiagnosticField(const pylith::topology::Fie
                                                      const pylith::topology::Mesh& physicsMesh) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createDiagnosticField(solution="<<solution.getLabel()<<", physicsMesh=)"<<typeid(physicsMesh).name()<<")");
-    _FaultCohesive::Events::logger.eventBegin(_FaultCohesive::Events::createDiagnosticField);
+    pylith::petsc::EventLogger::Scope logScope(_FaultCohesive::Events::createDiagnosticField);
 
     assert(_scales);
 
@@ -402,7 +401,6 @@ pylith::faults::FaultCohesive::createDiagnosticField(const pylith::topology::Fie
     diagnosticField->allocate();
     diagnosticField->createOutputVector();
 
-    _FaultCohesive::Events::logger.eventEnd(_FaultCohesive::Events::createDiagnosticField);
     PYLITH_METHOD_RETURN(diagnosticField);
 } // createDiagnosticField
 
@@ -414,7 +412,7 @@ pylith::faults::FaultCohesive::createDerivedField(const pylith::topology::Field&
                                                   const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createDerivedField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
-    _FaultCohesive::Events::logger.eventBegin(_FaultCohesive::Events::createDerivedField);
+    pylith::petsc::EventLogger::Scope logScope(_FaultCohesive::Events::createDerivedField);
 
     assert(_scales);
 
@@ -453,7 +451,6 @@ pylith::faults::FaultCohesive::createDerivedField(const pylith::topology::Field&
     derivedField->allocate();
     derivedField->createOutputVector();
 
-    _FaultCohesive::Events::logger.eventEnd(_FaultCohesive::Events::createDerivedField);
     PYLITH_METHOD_RETURN(derivedField);
 } // createDerivedField
 
@@ -465,7 +462,7 @@ pylith::faults::FaultCohesive::createIntegrator(const pylith::topology::Field& s
                                                 const std::vector<pylith::materials::Material*>& materials) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow_detail3, "Creating integrator for " << getLabelName() << "("<<getLabelValue()<<").");
-    _FaultCohesive::Events::logger.eventBegin(_FaultCohesive::Events::createIntegrator);
+    pylith::petsc::EventLogger::Scope logScope(_FaultCohesive::Events::createIntegrator);
 
     pylith::feassemble::IntegratorInterface* integrator = new pylith::feassemble::IntegratorInterface(this);assert(integrator);
     integrator->setLabelName(getCohesiveLabelName());
@@ -482,7 +479,6 @@ pylith::faults::FaultCohesive::createIntegrator(const pylith::topology::Field& s
     _setKernelsDiagnosticField(integrator, solution);
     _setKernelsDerivedField(integrator, solution);
 
-    _FaultCohesive::Events::logger.eventEnd(_FaultCohesive::Events::createIntegrator);
     PYLITH_METHOD_RETURN(integrator);
 } // createIntegrator
 
@@ -493,7 +489,7 @@ std::vector<pylith::feassemble::Constraint*>
 pylith::faults::FaultCohesive::createConstraints(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createConstraints(solution="<<solution.getLabel()<<")");
-    _FaultCohesive::Events::logger.eventBegin(_FaultCohesive::Events::createConstraints);
+    pylith::petsc::EventLogger::Scope logScope(_FaultCohesive::Events::createConstraints);
 
     PetscDM dm = solution.getDM();
     const std::string buriedEdgeLabelNameAuto = _surfaceLabelName + _FaultCohesive::buriedEdgeSuffix;
@@ -565,7 +561,6 @@ pylith::faults::FaultCohesive::createConstraints(const pylith::topology::Field& 
     constraintArray[0] = constraint;
     PYLITH_METHOD_RETURN(constraintArray);
 
-    _FaultCohesive::Events::logger.eventEnd(_FaultCohesive::Events::createConstraints);
 } // createConstraints
 
 

@@ -40,15 +40,15 @@ public:
                 void init(void);
 
                 static pylith::petsc::EventLogger logger;
-                static PylithInt createSubdomainMesh;
-                static PylithInt createLowerDimMesh;
-                static PylithInt createFromPoints;
-                static PylithInt nondimensionalize;
-                static PylithInt checkTopology;
-                static PylithInt checkTopologyGeometry;
-                static PylithInt checkTopologySymmetry;
-                static PylithInt checkTopologySkeleton;
-                static PylithInt checkMaterialLabels;
+                static PetscLogEvent createSubdomainMesh;
+                static PetscLogEvent createLowerDimMesh;
+                static PetscLogEvent createFromPoints;
+                static PetscLogEvent nondimensionalize;
+                static PetscLogEvent checkTopology;
+                static PetscLogEvent checkTopologyGeometry;
+                static PetscLogEvent checkTopologySymmetry;
+                static PetscLogEvent checkTopologySkeleton;
+                static PetscLogEvent checkMaterialLabels;
 
                 static bool isInitialized;
             };
@@ -68,15 +68,15 @@ public:
 
 }
 pylith::petsc::EventLogger pylith::topology::_MeshOps::Events::logger;
-PylithInt pylith::topology::_MeshOps::Events::createSubdomainMesh;
-PylithInt pylith::topology::_MeshOps::Events::createLowerDimMesh;
-PylithInt pylith::topology::_MeshOps::Events::createFromPoints;
-PylithInt pylith::topology::_MeshOps::Events::nondimensionalize;
-PylithInt pylith::topology::_MeshOps::Events::checkTopology;
-PylithInt pylith::topology::_MeshOps::Events::checkTopologyGeometry;
-PylithInt pylith::topology::_MeshOps::Events::checkTopologySymmetry;
-PylithInt pylith::topology::_MeshOps::Events::checkTopologySkeleton;
-PylithInt pylith::topology::_MeshOps::Events::checkMaterialLabels;
+PetscLogEvent pylith::topology::_MeshOps::Events::createSubdomainMesh;
+PetscLogEvent pylith::topology::_MeshOps::Events::createLowerDimMesh;
+PetscLogEvent pylith::topology::_MeshOps::Events::createFromPoints;
+PetscLogEvent pylith::topology::_MeshOps::Events::nondimensionalize;
+PetscLogEvent pylith::topology::_MeshOps::Events::checkTopology;
+PetscLogEvent pylith::topology::_MeshOps::Events::checkTopologyGeometry;
+PetscLogEvent pylith::topology::_MeshOps::Events::checkTopologySymmetry;
+PetscLogEvent pylith::topology::_MeshOps::Events::checkTopologySkeleton;
+PetscLogEvent pylith::topology::_MeshOps::Events::checkMaterialLabels;
 bool pylith::topology::_MeshOps::Events::isInitialized = false;
 
 void
@@ -110,7 +110,7 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
                                                const char* componentName) {
     PYLITH_METHOD_BEGIN;
     _MeshOps::Events::init();
-    _MeshOps::Events::logger.eventBegin(_MeshOps::Events::createSubdomainMesh);
+    pylith::petsc::EventLogger::Scope logScope(_MeshOps::Events::createSubdomainMesh);
 
     assert(labelName);
 
@@ -163,7 +163,6 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
 
     submesh->setDM(dmSubdomain, componentName);
 
-    _MeshOps::Events::logger.eventEnd(_MeshOps::Events::createSubdomainMesh);
     PYLITH_METHOD_RETURN(submesh);
 } // createSubdomainMesh
 
@@ -177,7 +176,7 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
                                               const char* componentName) {
     PYLITH_METHOD_BEGIN;
     _MeshOps::Events::init();
-    _MeshOps::Events::logger.eventBegin(_MeshOps::Events::createLowerDimMesh);
+    pylith::petsc::EventLogger::Scope logScope(_MeshOps::Events::createLowerDimMesh);
     assert(labelName);
 
     if (mesh.getDimension() < 1) {
@@ -278,7 +277,6 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
     // Check topology
     MeshOps::checkTopology(*submesh);
 
-    _MeshOps::Events::logger.eventEnd(_MeshOps::Events::createLowerDimMesh);
     PYLITH_METHOD_RETURN(submesh);
 } // createLowerDimMesh
 
@@ -294,7 +292,7 @@ pylith::topology::MeshOps::createFromPoints(const PylithReal* points,
                                             const char* componentName) {
     PYLITH_METHOD_BEGIN;
     _MeshOps::Events::init();
-    _MeshOps::Events::logger.eventBegin(_MeshOps::Events::createFromPoints);
+    pylith::petsc::EventLogger::Scope logScope(_MeshOps::Events::createFromPoints);
     assert(cs);
 
     const int meshDim = 0;
@@ -333,7 +331,6 @@ pylith::topology::MeshOps::createFromPoints(const PylithReal* points,
 
     PylithCallPetsc(DMPlexSetScale(mesh->getDM(), PETSC_UNIT_LENGTH, lengthScale));
 
-    _MeshOps::Events::logger.eventEnd(_MeshOps::Events::createFromPoints);
     PYLITH_METHOD_RETURN(mesh);
 } // createFromPoints
 
@@ -345,7 +342,7 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
                                              const pylith::scales::Scales& scales) {
     PYLITH_METHOD_BEGIN;
     _MeshOps::Events::init();
-    _MeshOps::Events::logger.eventBegin(_MeshOps::Events::nondimensionalize);
+    pylith::petsc::EventLogger::Scope logScope(_MeshOps::Events::nondimensionalize);
 
     assert(mesh);
 
@@ -370,7 +367,6 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
         } // if/else
     } // if
 
-    _MeshOps::Events::logger.eventEnd(_MeshOps::Events::nondimensionalize);
     PYLITH_METHOD_END;
 } // nondimensionalize
 
@@ -581,7 +577,7 @@ void
 pylith::topology::MeshOps::checkTopology(const Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
     _MeshOps::Events::init();
-    _MeshOps::Events::logger.eventBegin(_MeshOps::Events::checkTopology);
+    pylith::petsc::EventLogger::Scope logScope(_MeshOps::Events::checkTopology);
 
     PetscDM dmMesh = mesh.getDM();assert(dmMesh);
 
@@ -591,18 +587,21 @@ pylith::topology::MeshOps::checkTopology(const Mesh& mesh) {
 
     PylithCallPetsc(DMViewFromOptions(dmMesh, NULL, "-pylith_checktopo_dm_view"));
 
-    _MeshOps::Events::logger.eventBegin(_MeshOps::Events::checkTopologyGeometry);
-    PylithCallPetsc(DMPlexCheckGeometry(dmMesh));
-    _MeshOps::Events::logger.eventEnd(_MeshOps::Events::checkTopologyGeometry);
+    {
+        pylith::petsc::EventLogger::Scope logScopeSub(_MeshOps::Events::checkTopologyGeometry);
+        PylithCallPetsc(DMPlexCheckGeometry(dmMesh));
+    }
 
-    _MeshOps::Events::logger.eventBegin(_MeshOps::Events::checkTopologySymmetry);
-    PylithCallPetsc(DMPlexCheckSymmetry(dmMesh));
-    _MeshOps::Events::logger.eventEnd(_MeshOps::Events::checkTopologySymmetry);
+    {
+        pylith::petsc::EventLogger::Scope logScopeSub(_MeshOps::Events::checkTopologySymmetry);
+        PylithCallPetsc(DMPlexCheckSymmetry(dmMesh));
+    }
 
-    _MeshOps::Events::logger.eventBegin(_MeshOps::Events::checkTopologySkeleton);
-    PylithCallPetsc(DMPlexCheckSkeleton(dmMesh, cellHeight));
-    PylithCallPetsc(DMPlexCheckOrphanVertices(dmMesh));
-    _MeshOps::Events::logger.eventEnd(_MeshOps::Events::checkTopologySkeleton);
+    {
+        pylith::petsc::EventLogger::Scope logScopeSub(_MeshOps::Events::checkTopologySkeleton);
+        PylithCallPetsc(DMPlexCheckSkeleton(dmMesh, cellHeight));
+        PylithCallPetsc(DMPlexCheckOrphanVertices(dmMesh));
+    }
 
     /* Other check functions that we are not using:
      *
@@ -611,7 +610,6 @@ pylith::topology::MeshOps::checkTopology(const Mesh& mesh) {
      * DMPlexCheckInterfaceCones() - very slow
      */
 
-    _MeshOps::Events::logger.eventEnd(_MeshOps::Events::checkTopology);
     PYLITH_METHOD_END;
 } // checkTopology
 
@@ -762,7 +760,7 @@ pylith::topology::MeshOps::checkMaterialLabels(const pylith::topology::Mesh& mes
                                                pylith::int_array& labelValues) {
     PYLITH_METHOD_BEGIN;
     _MeshOps::Events::init();
-    _MeshOps::Events::logger.eventBegin(_MeshOps::Events::checkMaterialLabels);
+    pylith::petsc::EventLogger::Scope logScope(_MeshOps::Events::checkMaterialLabels);
 
     // Create map with indices for each material
     const size_t numIds = labelValues.size();
@@ -823,7 +821,6 @@ pylith::topology::MeshOps::checkMaterialLabels(const pylith::topology::Mesh& mes
         } // if
     } // for
 
-    _MeshOps::Events::logger.eventEnd(_MeshOps::Events::checkMaterialLabels);
     PYLITH_METHOD_END;
 } // checkMaterialIds
 

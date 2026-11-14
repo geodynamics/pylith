@@ -54,32 +54,32 @@ public:
                 void init(void);
 
                 static pylith::petsc::EventLogger logger;
-                static PylithInt verifyConfiguration;
-                static PylithInt initialize;
-                static PylithInt solve;
-                static PylithInt poststep;
-                static PylithInt setSolutionLocal;
-                static PylithInt computeRHSResidual;
-                static PylithInt computeLHSResidual;
-                static PylithInt computeLHSJacobian;
-                static PylithInt computeLHSJacobianLumpedInv;
-                static PylithInt setState;
+                static PetscLogEvent verifyConfiguration;
+                static PetscLogEvent initialize;
+                static PetscLogEvent solve;
+                static PetscLogEvent poststep;
+                static PetscLogEvent setSolutionLocal;
+                static PetscLogEvent computeRHSResidual;
+                static PetscLogEvent computeLHSResidual;
+                static PetscLogEvent computeLHSJacobian;
+                static PetscLogEvent computeLHSJacobianLumpedInv;
+                static PetscLogEvent setState;
             };
 
         };
         const char* _TimeDependent::pyreComponent = "timedependent";
 
         pylith::petsc::EventLogger _TimeDependent::Events::logger;
-        PylithInt _TimeDependent::Events::verifyConfiguration;
-        PylithInt _TimeDependent::Events::initialize;
-        PylithInt _TimeDependent::Events::solve;
-        PylithInt _TimeDependent::Events::poststep;
-        PylithInt _TimeDependent::Events::setSolutionLocal;
-        PylithInt _TimeDependent::Events::computeRHSResidual;
-        PylithInt _TimeDependent::Events::computeLHSResidual;
-        PylithInt _TimeDependent::Events::computeLHSJacobian;
-        PylithInt _TimeDependent::Events::computeLHSJacobianLumpedInv;
-        PylithInt _TimeDependent::Events::setState;
+        PetscLogEvent _TimeDependent::Events::verifyConfiguration;
+        PetscLogEvent _TimeDependent::Events::initialize;
+        PetscLogEvent _TimeDependent::Events::solve;
+        PetscLogEvent _TimeDependent::Events::poststep;
+        PetscLogEvent _TimeDependent::Events::setSolutionLocal;
+        PetscLogEvent _TimeDependent::Events::computeRHSResidual;
+        PetscLogEvent _TimeDependent::Events::computeLHSResidual;
+        PetscLogEvent _TimeDependent::Events::computeLHSJacobian;
+        PetscLogEvent _TimeDependent::Events::computeLHSJacobianLumpedInv;
+        PetscLogEvent _TimeDependent::Events::setState;
     } // problems
 } // pylith
 
@@ -317,7 +317,7 @@ void
 pylith::problems::TimeDependent::verifyConfiguration(void) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow, "Verifying problem configuration.");
-    _TimeDependent::Events::logger.eventBegin(_TimeDependent::Events::verifyConfiguration);
+    pylith::petsc::EventLogger::Scope logScope(_TimeDependent::Events::verifyConfiguration);
 
     Problem::verifyConfiguration();
 
@@ -332,7 +332,6 @@ pylith::problems::TimeDependent::verifyConfiguration(void) const {
         _ic[i]->verifyConfiguration(*solution);
     } // for
 
-    _TimeDependent::Events::logger.eventEnd(_TimeDependent::Events::verifyConfiguration);
     PYLITH_METHOD_END;
 } // verifyConfiguration
 
@@ -343,7 +342,7 @@ void
 pylith::problems::TimeDependent::initialize(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow, "Initializing problem.");
-    _TimeDependent::Events::logger.eventBegin(_TimeDependent::Events::initialize);
+    pylith::petsc::EventLogger::Scope logScope(_TimeDependent::Events::initialize);
 
     Problem::initialize();
 
@@ -464,7 +463,6 @@ pylith::problems::TimeDependent::initialize(void) {
         _monitor->open();
     } // if
 
-    _TimeDependent::Events::logger.eventEnd(_TimeDependent::Events::initialize);
     PYLITH_METHOD_END;
 } // initialize
 
@@ -475,11 +473,10 @@ void
 pylith::problems::TimeDependent::solve(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow, "Solving equations.");
-    _TimeDependent::Events::logger.eventBegin(_TimeDependent::Events::solve);
+    pylith::petsc::EventLogger::Scope logScope(_TimeDependent::Events::solve);
 
     PylithCallPetsc(TSSolve(_ts, NULL));
 
-    _TimeDependent::Events::logger.eventEnd(_TimeDependent::Events::solve);
     PYLITH_METHOD_END;
 } // solve
 
@@ -490,7 +487,7 @@ void
 pylith::problems::TimeDependent::poststep(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Finishing advancing time step.");
-    _TimeDependent::Events::logger.eventBegin(_TimeDependent::Events::poststep);
+    pylith::petsc::EventLogger::Scope logScope(_TimeDependent::Events::poststep);
 
     // Get current solution. After first time step, t==dt, and tindex==1.
     PylithReal t = 0.0, dt = 0.0;
@@ -530,7 +527,6 @@ pylith::problems::TimeDependent::poststep(void) {
         _monitor->update(t*timeScale, _startTime, _endTime);
     } // if
 
-    _TimeDependent::Events::logger.eventEnd(_TimeDependent::Events::poststep);
     PYLITH_METHOD_END;
 } // poststep
 
@@ -543,7 +539,7 @@ pylith::problems::TimeDependent::setSolutionLocal(const PylithReal t,
                                                   PetscVec solutionDotVec) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "t="<<t);
-    _TimeDependent::Events::logger.eventBegin(_TimeDependent::Events::setSolutionLocal);
+    pylith::petsc::EventLogger::Scope logScope(_TimeDependent::Events::setSolutionLocal);
     assert(_integrationData);
 
     // Update PyLith view of the solution and its time derivative.
@@ -561,7 +557,6 @@ pylith::problems::TimeDependent::setSolutionLocal(const PylithReal t,
         _constraints[i]->setSolution(_integrationData);
     } // for
 
-    _TimeDependent::Events::logger.eventEnd(_TimeDependent::Events::setSolutionLocal);
     PYLITH_METHOD_END;
 } // setSolutionLocal
 
@@ -575,7 +570,7 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscVec residualVec,
                                                     PetscVec solutionVec) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "t="<<t<<", dt="<<dt);
-    _TimeDependent::Events::logger.eventBegin(_TimeDependent::Events::computeRHSResidual);
+    pylith::petsc::EventLogger::Scope logScope(_TimeDependent::Events::computeRHSResidual);
 
     assert(residualVec);
     assert(solutionVec);
@@ -623,7 +618,6 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscVec residualVec,
         VecView(residualVec, PETSC_VIEWER_STDOUT_SELF);
     } // if
 
-    _TimeDependent::Events::logger.eventEnd(_TimeDependent::Events::computeRHSResidual);
     PYLITH_METHOD_END;
 } // computeRHSResidual
 
@@ -638,7 +632,7 @@ pylith::problems::TimeDependent::computeLHSResidual(PetscVec residualVec,
                                                     PetscVec solutionDotVec) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "t = "<<t<<", dt = "<<dt);
-    _TimeDependent::Events::logger.eventBegin(_TimeDependent::Events::computeLHSResidual);
+    pylith::petsc::EventLogger::Scope logScope(_TimeDependent::Events::computeLHSResidual);
 
     assert(residualVec);
     assert(solutionVec);
@@ -674,7 +668,6 @@ pylith::problems::TimeDependent::computeLHSResidual(PetscVec residualVec,
         VecView(residualVec, PETSC_VIEWER_STDOUT_WORLD);
     } // if
 
-    _TimeDependent::Events::logger.eventEnd(_TimeDependent::Events::computeLHSResidual);
     PYLITH_METHOD_END;
 } // computeLHSResidual
 
@@ -691,7 +684,7 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscMat jacobianMat,
                                                     PetscVec solutionDotVec) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "t = "<<t<<", dt = "<<dt<<", s_tshift = "<<s_tshift);
-    _TimeDependent::Events::logger.eventBegin(_TimeDependent::Events::computeLHSJacobian);
+    pylith::petsc::EventLogger::Scope logScope(_TimeDependent::Events::computeLHSJacobian);
 
     assert(jacobianMat);
     assert(precondMat);
@@ -742,7 +735,6 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscMat jacobianMat,
     PylithCallPetsc(MatAssemblyBegin(precondMat, MAT_FINAL_ASSEMBLY));
     PylithCallPetsc(MatAssemblyEnd(precondMat, MAT_FINAL_ASSEMBLY));
 
-    _TimeDependent::Events::logger.eventEnd(_TimeDependent::Events::computeLHSJacobian);
     PYLITH_METHOD_END;
 } // computeLHSJacobian
 
@@ -756,7 +748,7 @@ pylith::problems::TimeDependent::computeLHSJacobianLumpedInv(const PylithReal t,
                                                              PetscVec solutionVec) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "t = "<<t<<", dt = "<<dt<<", s_tshift = "<<s_tshift);
-    _TimeDependent::Events::logger.eventBegin(_TimeDependent::Events::computeLHSJacobianLumpedInv);
+    pylith::petsc::EventLogger::Scope logScope(_TimeDependent::Events::computeLHSJacobianLumpedInv);
 
     assert(solutionVec);
     assert(s_tshift > 0);
@@ -799,7 +791,6 @@ pylith::problems::TimeDependent::computeLHSJacobianLumpedInv(const PylithReal t,
 
     _integrationData->setScalar(pylith::feassemble::IntegrationData::dt_lumped_jacobian_inverse, dt);
 
-    _TimeDependent::Events::logger.eventEnd(_TimeDependent::Events::computeLHSJacobianLumpedInv);
     PYLITH_METHOD_END;
 } // computeLHSJacobianLumpedInv
 
@@ -938,7 +929,7 @@ void
 pylith::problems::TimeDependent::_setState(const PylithReal t) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "t = "<<t);
-    _TimeDependent::Events::logger.eventBegin(_TimeDependent::Events::setState);
+    pylith::petsc::EventLogger::Scope logScope(_TimeDependent::Events::setState);
 
     // Update constraint values to current time, t.
     const size_t numConstraints = _constraints.size();
@@ -952,7 +943,6 @@ pylith::problems::TimeDependent::_setState(const PylithReal t) {
         _integrators[i]->setState(t);
     } // for
 
-    _TimeDependent::Events::logger.eventEnd(_TimeDependent::Events::setState);
     PYLITH_METHOD_END;
 } // _setState
 

@@ -129,15 +129,15 @@ public:
                 void init(void);
 
                 static pylith::petsc::EventLogger logger;
-                static PylithInt initialize;
-                static PylithInt computeRHSResidual;
-                static PylithInt computeLHSResidual;
-                static PylithInt computeLHSJacobian;
-                static PylithInt computeLHSJacobianLumpedInv;
-                static PylithInt computeResidual;
-                static PylithInt computeJacobian;
-                static PylithInt computeDiagnosticField;
-                static PylithInt computeDerivedField;
+                static PetscLogEvent initialize;
+                static PetscLogEvent computeRHSResidual;
+                static PetscLogEvent computeLHSResidual;
+                static PetscLogEvent computeLHSJacobian;
+                static PetscLogEvent computeLHSJacobianLumpedInv;
+                static PetscLogEvent computeResidual;
+                static PetscLogEvent computeJacobian;
+                static PetscLogEvent computeDiagnosticField;
+                static PetscLogEvent computeDerivedField;
             };
         }; // _IntegratorInterface
         const char* _IntegratorInterface::genericComponent = "integratorinterface";
@@ -151,15 +151,15 @@ public:
 
 // ------------------------------------------------------------------------------------------------
 pylith::petsc::EventLogger pylith::feassemble::_IntegratorInterface::Events::logger;
-PylithInt pylith::feassemble::_IntegratorInterface::Events::initialize;
-PylithInt pylith::feassemble::_IntegratorInterface::Events::computeRHSResidual;
-PylithInt pylith::feassemble::_IntegratorInterface::Events::computeLHSResidual;
-PylithInt pylith::feassemble::_IntegratorInterface::Events::computeLHSJacobian;
-PylithInt pylith::feassemble::_IntegratorInterface::Events::computeLHSJacobianLumpedInv;
-PylithInt pylith::feassemble::_IntegratorInterface::Events::computeResidual;
-PylithInt pylith::feassemble::_IntegratorInterface::Events::computeJacobian;
-PylithInt pylith::feassemble::_IntegratorInterface::Events::computeDiagnosticField;
-PylithInt pylith::feassemble::_IntegratorInterface::Events::computeDerivedField;
+PetscLogEvent pylith::feassemble::_IntegratorInterface::Events::initialize;
+PetscLogEvent pylith::feassemble::_IntegratorInterface::Events::computeRHSResidual;
+PetscLogEvent pylith::feassemble::_IntegratorInterface::Events::computeLHSResidual;
+PetscLogEvent pylith::feassemble::_IntegratorInterface::Events::computeLHSJacobian;
+PetscLogEvent pylith::feassemble::_IntegratorInterface::Events::computeLHSJacobianLumpedInv;
+PetscLogEvent pylith::feassemble::_IntegratorInterface::Events::computeResidual;
+PetscLogEvent pylith::feassemble::_IntegratorInterface::Events::computeJacobian;
+PetscLogEvent pylith::feassemble::_IntegratorInterface::Events::computeDiagnosticField;
+PetscLogEvent pylith::feassemble::_IntegratorInterface::Events::computeDerivedField;
 
 
 // ------------------------------------------------------------------------------------------------
@@ -490,7 +490,7 @@ void
 pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" initialize(solution="<<solution.getLabel()<<")");
-    _IntegratorInterface::Events::logger.eventBegin(_IntegratorInterface::Events::initialize);
+    pylith::petsc::EventLogger::Scope logScope(_IntegratorInterface::Events::initialize);
 
     delete _interfaceMesh;_interfaceMesh = new pylith::topology::Mesh();assert(_interfaceMesh);
     pylith::faults::TopologyOps::createFaultFromCohesiveCells(_interfaceMesh, solution.getMesh(), _labelName.c_str(), _labelValue, _surfaceLabelName.c_str());
@@ -518,7 +518,6 @@ pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Fiel
         } // for
     } // for
 
-    _IntegratorInterface::Events::logger.eventEnd(_IntegratorInterface::Events::initialize);
     PYLITH_METHOD_END;
 } // initialize
 
@@ -556,11 +555,10 @@ pylith::feassemble::IntegratorInterface::computeRHSResidual(pylith::topology::Fi
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" computeRHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
     if (!_hasRHSResidual) { PYLITH_METHOD_END;}
-    _IntegratorInterface::Events::logger.eventBegin(_IntegratorInterface::Events::computeRHSResidual);
+    pylith::petsc::EventLogger::Scope logScope(_IntegratorInterface::Events::computeRHSResidual);
 
     _IntegratorInterface::computeResidual(residual, this, pylith::feassemble::Integrator::RHS, integrationData);
 
-    _IntegratorInterface::Events::logger.eventBegin(_IntegratorInterface::Events::computeRHSResidual);
     PYLITH_METHOD_END;
 } // computeRHSResidual
 
@@ -573,7 +571,7 @@ pylith::feassemble::IntegratorInterface::computeLHSResidual(pylith::topology::Fi
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" computeLHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
     if (!_hasLHSResidual) { PYLITH_METHOD_END;}
-    _IntegratorInterface::Events::logger.eventBegin(_IntegratorInterface::Events::computeLHSResidual);
+    pylith::petsc::EventLogger::Scope logScope(_IntegratorInterface::Events::computeLHSResidual);
 
     if (_hasLHSResidual) {
         const pylith::feassemble::Integrator::EquationPart equationPart = pylith::feassemble::Integrator::LHS;
@@ -608,7 +606,6 @@ pylith::feassemble::IntegratorInterface::computeLHSResidual(pylith::topology::Fi
         _IntegratorInterface::computeResidual(residual, this, equationPart, integrationData);
     } // if
 
-    _IntegratorInterface::Events::logger.eventEnd(_IntegratorInterface::Events::computeLHSResidual);
     PYLITH_METHOD_END;
 } // computeLHSResidual
 
@@ -621,7 +618,7 @@ pylith::feassemble::IntegratorInterface::computeLHSJacobian(PetscMat jacobianMat
                                                             const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", integrationData="<<integrationData.str()<<")");
-    _IntegratorInterface::Events::logger.eventBegin(_IntegratorInterface::Events::computeLHSJacobian);
+    pylith::petsc::EventLogger::Scope logScope(_IntegratorInterface::Events::computeLHSJacobian);
 
     _needNewLHSJacobian = false;
 
@@ -635,7 +632,6 @@ pylith::feassemble::IntegratorInterface::computeLHSJacobian(PetscMat jacobianMat
         _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, equationPart, integrationData);
     } // if
 
-    _IntegratorInterface::Events::logger.eventEnd(_IntegratorInterface::Events::computeLHSJacobian);
     PYLITH_METHOD_END;
 } // computeLHSJacobian
 
@@ -647,12 +643,11 @@ pylith::feassemble::IntegratorInterface::computeLHSJacobianLumpedInv(pylith::top
                                                                      const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", integrationData="<<integrationData.str()<<") empty method");
-    _IntegratorInterface::Events::logger.eventBegin(_IntegratorInterface::Events::computeLHSJacobianLumpedInv);
+    pylith::petsc::EventLogger::Scope logScope(_IntegratorInterface::Events::computeLHSJacobianLumpedInv);
 
     _needNewLHSJacobianLumped = false;
     // No implementation needed for interface.
 
-    _IntegratorInterface::Events::logger.eventEnd(_IntegratorInterface::Events::computeLHSJacobianLumpedInv);
     PYLITH_METHOD_END;
 } // computeLHSJacobianLumpedInv
 
@@ -666,7 +661,7 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
                                                           const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow_detail5, "Computing residual.");
-    _IntegratorInterface::Events::logger.eventBegin(_IntegratorInterface::Events::computeResidual);
+    pylith::petsc::EventLogger::Scope logScope(_IntegratorInterface::Events::computeResidual);
     assert(integrator);
     assert(residual);
 
@@ -717,7 +712,6 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
         PylithCallPetsc(ISDestroy(&patchCellsIS));
     } // for
 
-    _IntegratorInterface::Events::logger.eventEnd(_IntegratorInterface::Events::computeResidual);
     PYLITH_METHOD_END;
 } // computeResidual
 
@@ -732,7 +726,7 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
                                                           const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow_detail5, "Computing Jacobian.");
-    _IntegratorInterface::Events::logger.eventBegin(_IntegratorInterface::Events::computeJacobian);
+    pylith::petsc::EventLogger::Scope logScope(_IntegratorInterface::Events::computeJacobian);
     typedef InterfacePatches::keysmap_t keysmap_t;
 
     assert(jacobianMat);
@@ -780,7 +774,6 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
         PylithCallPetsc(ISDestroy(&patchCellsIS));
     } // for
 
-    _IntegratorInterface::Events::logger.eventEnd(_IntegratorInterface::Events::computeJacobian);
     PYLITH_METHOD_END;
 } // computeJacobian
 
@@ -813,7 +806,7 @@ pylith::feassemble::IntegratorInterface::_computeDiagnosticField(void) {
     if (!_diagnosticField || !_auxiliaryField) {
         PYLITH_METHOD_END;
     } // if
-    _IntegratorInterface::Events::logger.eventBegin(_IntegratorInterface::Events::computeDiagnosticField);
+    pylith::petsc::EventLogger::Scope logScope(_IntegratorInterface::Events::computeDiagnosticField);
 
     assert(_auxiliaryField);
     assert(_diagnosticField);
@@ -842,7 +835,6 @@ pylith::feassemble::IntegratorInterface::_computeDiagnosticField(void) {
         _diagnosticField->view("Diagnostic field");
     } // if
 
-    _IntegratorInterface::Events::logger.eventEnd(_IntegratorInterface::Events::computeDiagnosticField);
     PYLITH_METHOD_END;
 } // _computeDiagnosticField
 
@@ -858,7 +850,7 @@ pylith::feassemble::IntegratorInterface::_computeDerivedField(const PylithReal t
     if (!_derivedField) {
         PYLITH_METHOD_END;
     } // if
-    _IntegratorInterface::Events::logger.eventBegin(_IntegratorInterface::Events::computeDerivedField);
+    pylith::petsc::EventLogger::Scope logScope(_IntegratorInterface::Events::computeDerivedField);
 
     assert(_derivedField);
     _setKernelConstants(solution, dt);
@@ -889,7 +881,6 @@ pylith::feassemble::IntegratorInterface::_computeDerivedField(const PylithReal t
         _derivedField->view("Derived field");
     } // if
 
-    _IntegratorInterface::Events::logger.eventEnd(_IntegratorInterface::Events::computeDerivedField);
     PYLITH_METHOD_END;
 } // _computeDerivedField
 

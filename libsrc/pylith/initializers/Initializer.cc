@@ -30,7 +30,7 @@ public:
                 void init(void);
 
                 static pylith::petsc::EventLogger logger;
-                static PylithInt runPhases;
+                static PetscLogEvent runPhases;
             };
 
         }
@@ -40,7 +40,7 @@ public:
 
 // ------------------------------------------------------------------------------------------------
 pylith::petsc::EventLogger pylith::initializers::_Initializer::Events::logger;
-PylithInt pylith::initializers::_Initializer::Events::runPhases;
+PetscLogEvent pylith::initializers::_Initializer::Events::runPhases;
 
 
 // ------------------------------------------------------------------------------------------------
@@ -99,7 +99,7 @@ pylith::topology::Mesh*
 pylith::initializers::Initializer::runPhases(const pylith::problems::Problem& problem) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Running mesh initialization.");
-    _Initializer::Events::logger.eventBegin(_Initializer::Events::runPhases);
+    pylith::petsc::EventLogger::Scope logScope(_Initializer::Events::runPhases);
 
     pylith::topology::Mesh* meshNew = nullptr;
     pylith::topology::Mesh* meshPhase = nullptr;
@@ -120,7 +120,6 @@ pylith::initializers::Initializer::runPhases(const pylith::problems::Problem& pr
     } // if
     pylith::topology::MeshOps::checkTopology(*meshNew);
 
-    _Initializer::Events::logger.eventEnd(_Initializer::Events::runPhases);
     PYLITH_METHOD_RETURN(meshNew);
 } // runPhases
 

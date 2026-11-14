@@ -51,25 +51,6 @@ public:
              */
             int registerEvent(const char* name);
 
-            /** Get event identifier.
-             *
-             * @param name Name of event.
-             * @returns Event identifier.
-             */
-            int getEventId(const char* name);
-
-            /** Log event begin.
-             *
-             * @param id Event identifier.
-             */
-            void eventBegin(const int id);
-
-            /** Log event end.
-             *
-             * @param id Event identifier.
-             */
-            void eventEnd(const int id);
-
             /** Register stage.
              *
              * @prerequisite Must call initialize() before registerStage().

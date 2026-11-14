@@ -42,12 +42,12 @@ public:
                 void init(void);
 
                 static pylith::petsc::EventLogger logger;
-                static PylithInt verifyConfiguration;
-                static PylithInt update;
-                static PylithInt writeInfo;
-                static PylithInt open;
-                static PylithInt openDataStep;
-                static PylithInt writeDataStep;
+                static PetscLogEvent verifyConfiguration;
+                static PetscLogEvent update;
+                static PetscLogEvent writeInfo;
+                static PetscLogEvent open;
+                static PetscLogEvent openDataStep;
+                static PetscLogEvent writeDataStep;
             };
 
         }; // _OutputPhysics
@@ -55,12 +55,12 @@ public:
 } // pylith
 
 pylith::petsc::EventLogger pylith::meshio::_OutputPhysics::Events::logger;
-PylithInt pylith::meshio::_OutputPhysics::Events::verifyConfiguration;
-PylithInt pylith::meshio::_OutputPhysics::Events::update;
-PylithInt pylith::meshio::_OutputPhysics::Events::writeInfo;
-PylithInt pylith::meshio::_OutputPhysics::Events::open;
-PylithInt pylith::meshio::_OutputPhysics::Events::openDataStep;
-PylithInt pylith::meshio::_OutputPhysics::Events::writeDataStep;
+PetscLogEvent pylith::meshio::_OutputPhysics::Events::verifyConfiguration;
+PetscLogEvent pylith::meshio::_OutputPhysics::Events::update;
+PetscLogEvent pylith::meshio::_OutputPhysics::Events::writeInfo;
+PetscLogEvent pylith::meshio::_OutputPhysics::Events::open;
+PetscLogEvent pylith::meshio::_OutputPhysics::Events::openDataStep;
+PetscLogEvent pylith::meshio::_OutputPhysics::Events::writeDataStep;
 
 // ------------------------------------------------------------------------------------------------
 void
@@ -175,7 +175,7 @@ void
 pylith::meshio::OutputPhysics::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputPhysics::verifyConfiguration(solution="<<solution.getLabel()<<")");
-    _OutputPhysics::Events::logger.eventBegin(_OutputPhysics::Events::verifyConfiguration);
+    pylith::petsc::EventLogger::Scope logScope(_OutputPhysics::Events::verifyConfiguration);
 
     assert(_physics);
     const pylith::topology::Field* auxiliaryField = _physics->getAuxiliaryField();
@@ -217,7 +217,6 @@ pylith::meshio::OutputPhysics::verifyConfiguration(const pylith::topology::Field
         } // for
     } // if
 
-    _OutputPhysics::Events::logger.eventEnd(_OutputPhysics::Events::verifyConfiguration);
     PYLITH_METHOD_END;
 } // verifyConfiguration
 
@@ -230,7 +229,7 @@ pylith::meshio::OutputPhysics::update(const PylithReal t,
                                       const pylith::topology::Field& solution,
                                       const NotificationType notification) {
     PYLITH_METHOD_BEGIN;
-    _OutputPhysics::Events::logger.eventBegin(_OutputPhysics::Events::update);
+    pylith::petsc::EventLogger::Scope logScope(_OutputPhysics::Events::update);
 
     switch (notification) {
     case DIAGNOSTIC: {
@@ -248,7 +247,6 @@ pylith::meshio::OutputPhysics::update(const PylithReal t,
         PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unknown notification for updating observers.");
     } // if/else
 
-    _OutputPhysics::Events::logger.eventEnd(_OutputPhysics::Events::update);
     PYLITH_METHOD_END;
 } // update
 
@@ -259,7 +257,7 @@ void
 pylith::meshio::OutputPhysics::_writeInfo(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputPhysics::_writeInfo()");
-    _OutputPhysics::Events::logger.eventBegin(_OutputPhysics::Events::writeInfo);
+    pylith::petsc::EventLogger::Scope logScope(_OutputPhysics::Events::writeInfo);
 
     if (!_physics) { PYLITH_METHOD_END;}
 
@@ -305,7 +303,6 @@ pylith::meshio::OutputPhysics::_writeInfo(void) {
     _closeDataStep();
     _close();
 
-    _OutputPhysics::Events::logger.eventEnd(_OutputPhysics::Events::writeInfo);
     PYLITH_METHOD_END;
 } // _writeInfo
 
@@ -317,7 +314,7 @@ pylith::meshio::OutputPhysics::_open(const pylith::topology::Mesh& mesh,
                                      const bool isInfo) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputPhysics::open(mesh="<<typeid(mesh).name()<<", isInfo="<<isInfo<<")");
-    _OutputPhysics::Events::logger.eventBegin(_OutputPhysics::Events::open);
+    pylith::petsc::EventLogger::Scope logScope(_OutputPhysics::Events::open);
 
     if (!_writer) {
         PYLITH_COMPONENT_ERROR(pylith::exceptions::InternalLogicError, "Writer for physics output not set.");
@@ -330,7 +327,6 @@ pylith::meshio::OutputPhysics::_open(const pylith::topology::Mesh& mesh,
     _writer->setTimeScale(_timeScale);
     _writer->open(mesh, isInfo);
 
-    _OutputPhysics::Events::logger.eventEnd(_OutputPhysics::Events::open);
     PYLITH_METHOD_END;
 } // _open
 
@@ -356,7 +352,7 @@ pylith::meshio::OutputPhysics::_openDataStep(const PylithReal t,
                                              const pylith::topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputPhysics::_openDataStep(t="<<t<<", mesh="<<typeid(mesh).name()<<")");
-    _OutputPhysics::Events::logger.eventBegin(_OutputPhysics::Events::openDataStep);
+    pylith::petsc::EventLogger::Scope logScope(_OutputPhysics::Events::openDataStep);
 
     assert(_writer);
     if (!_writer->isOpen()) {
@@ -365,7 +361,6 @@ pylith::meshio::OutputPhysics::_openDataStep(const PylithReal t,
     } // if
     _writer->openTimeStep(t, mesh);
 
-    _OutputPhysics::Events::logger.eventEnd(_OutputPhysics::Events::openDataStep);
     PYLITH_METHOD_END;
 } // _openDataStep
 
@@ -388,7 +383,7 @@ pylith::meshio::OutputPhysics::_writeDataStep(const PylithReal t,
                                               const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputPhysics::_writeDataStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
-    _OutputPhysics::Events::logger.eventBegin(_OutputPhysics::Events::writeDataStep);
+    pylith::petsc::EventLogger::Scope logScope(_OutputPhysics::Events::writeDataStep);
 
     assert(_physics);
     const pylith::topology::Field* auxiliaryField = _physics->getAuxiliaryField();
@@ -437,7 +432,6 @@ pylith::meshio::OutputPhysics::_writeDataStep(const PylithReal t,
     } // for
     _closeDataStep();
 
-    _OutputPhysics::Events::logger.eventEnd(_OutputPhysics::Events::writeDataStep);
     PYLITH_METHOD_END;
 } // _writeDataStep
 
