@@ -15,6 +15,7 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
   * Implemented C++ exceptions specific to PyLith.
   * Added optional use of cpptrace for getting the full C++ stacktrace.
 * **Fixed**
+  * Fixed bottleneck in RefineUniform associated with clearing label values.
   * Updated full-scale tests to use unittest default loader instead of deprecated makeSuite().
 * **Developer Changes**
   * Refactored EventLogger to allow single line logging of scope.
