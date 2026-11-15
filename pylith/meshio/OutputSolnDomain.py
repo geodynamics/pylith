@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -22,8 +21,8 @@ class OutputSolnDomain(OutputSoln, ModuleOutputSolnDomain):
 
     Implements `OutputSoln`.
     """
-    DOC_CONFIG = {
-        "cfg": """
+
+    DOC_CONFIG = {"cfg": """
             [observer]
             data_fields = [displacement]
 
@@ -39,38 +38,33 @@ class OutputSolnDomain(OutputSoln, ModuleOutputSolnDomain):
             # Refining the output mesh is useful with a basis order of 2 or greater in the solution.
             output_basis_order = 1
             refine_levels = 3
-        """
-    }
+        """}
 
     def __init__(self, name="outputsolndomain"):
-        """Constructor.
-        """
+        """Constructor."""
         OutputSoln.__init__(self, name)
 
     def preinitialize(self, problem):
-        """Do minimal initialization.
-        """
+        """Do minimal initialization."""
         OutputSoln.preinitialize(self, problem)
 
         identifier = self.aliases[-1]
         self.writer.setFilename(problem.defaults.outputDir, problem.defaults.simName, identifier)
 
     def _configure(self):
-        """Set members using inventory.
-        """
+        """Set members using inventory."""
         OutputSoln._configure(self)
 
     def _createModuleObj(self):
-        """Create handle to C++ object.
-        """
+        """Create handle to C++ object."""
         ModuleOutputSolnDomain.__init__(self)
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
+
 def observer():
-    """Factory associated with OutputSolnDomain.
-    """
+    """Factory associated with OutputSolnDomain."""
     return OutputSolnDomain()
 
 

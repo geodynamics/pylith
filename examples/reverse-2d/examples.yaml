@@ -1,3 +1,11 @@
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
 commands:
   - ./generate_gmsh.py --write
   - pylith step01a_gravity.cfg
@@ -18,3 +26,5 @@ commands:
   - pylith step08_twofaults_powerlaw.cfg
   - pylith step08_twofaults_powerlaw.cfg step08b_twofaults_powerlaw.cfg
   - ./plot_compare.py --step=8 --no-gui
+
+# End of file

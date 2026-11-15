@@ -2,8 +2,7 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
+// Copyright (c) 2010-2026 All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
@@ -15,10 +14,9 @@
 
 namespace pylith {
     namespace materials {
-        class IsotropicLinearPoroelasticity: public pylith::materials::RheologyPoroelasticity {
+        class IsotropicLinearPoroelasticity : public pylith::materials::RheologyPoroelasticity {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             /// Default constructor.
             IsotropicLinearPoroelasticity(void);
 
@@ -163,22 +161,24 @@ public:
              * @param[inout] kernels Array of kernels for updating state variables.
              * @param[in] coordsys Coordinate system.
              */
-            void addKernelsUpdateStateVarsImplicit(std::vector < pylith::feassemble::IntegratorDomain::ProjectKernels > * kernels,
-                                                   const spatialdata::geocoords::CoordSys* coordsys,
-                                                   const bool _useStateVars) const;
+            void addKernelsUpdateStateVarsImplicit(
+                std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
+                const spatialdata::geocoords::CoordSys* coordsys,
+                const bool _useStateVars) const;
 
             /** Add kernels for updating state variables, explicit.
              *
              * @param[inout] kernels Array of kernels for updating state variables.
              * @param[in] coordsys Coordinate system.
              */
-            void addKernelsUpdateStateVarsExplicit(std::vector < pylith::feassemble::IntegratorDomain::ProjectKernels > * kernels,
-                                                   const spatialdata::geocoords::CoordSys* coordsys,
-                                                   const bool _useStateVars) const;
+            void addKernelsUpdateStateVarsExplicit(
+                std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
+                const spatialdata::geocoords::CoordSys* coordsys,
+                const bool _useStateVars) const;
 
-        };      // class IsotropicLinearPoroelasticity
+        }; // class IsotropicLinearPoroelasticity
 
-    } // materials
-} // pylith
+    } // namespace materials
+} // namespace pylith
 
 // End of file

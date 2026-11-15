@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -23,8 +22,8 @@ class InitialConditionPatch(InitialCondition, ModuleInitialCondition):
 
     Implements `InitialCondition`.
     """
-    DOC_CONFIG = {
-        "cfg": """
+
+    DOC_CONFIG = {"cfg": """
             # Create separate initial conditions for two materials.
             # This is often useful if the materials have different properties.
             [pylithapp.problem]
@@ -43,14 +42,13 @@ class InitialConditionPatch(InitialCondition, ModuleInitialCondition):
             db = spatialdata.spatialdb.SimpleGridDB
             db.description = Initial conditions over material 2
             db.filename = shearmat2_ic.spatialdb
-        """
-    }
+        """}
 
     import pythia.pyre.inventory
     from spatialdata.spatialdb.SimpleDB import SimpleDB
 
     labelName = pythia.pyre.inventory.str("label", default="material-id")
-    labelName.meta['tip'] = "Name of label for patch."
+    labelName.meta["tip"] = "Name of label for patch."
 
     labelValue = pythia.pyre.inventory.int("label_value", default=1)
     labelValue.meta["tip"] = "Value of label associated with initial condition patch, usually the material label value."
@@ -59,34 +57,30 @@ class InitialConditionPatch(InitialCondition, ModuleInitialCondition):
     db.meta["tip"] = "Spatial database with values for initial condition."
 
     def __init__(self, name="initialconditionspatch"):
-        """Constructor.
-        """
+        """Constructor."""
         InitialCondition.__init__(self, name)
 
     def preinitialize(self, problem):
-        """Setup initial conditions.
-        """
+        """Setup initial conditions."""
         InitialCondition.preinitialize(self, problem)
         ModuleInitialCondition.setLabelName(self, self.labelName)
         ModuleInitialCondition.setLabelValue(self, self.labelValue)
         ModuleInitialCondition.setDB(self, self.db)
 
     def _configure(self):
-        """Setup members using inventory.
-        """
+        """Setup members using inventory."""
         InitialCondition._configure(self)
 
     def _createModuleObj(self):
-        """Call constructor for module object for access to C++ object.
-        """
+        """Call constructor for module object for access to C++ object."""
         ModuleInitialCondition.__init__(self)
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
+
 def initial_conditions():
-    """Factory associated with InitialConditionPatch.
-    """
+    """Factory associated with InitialConditionPatch."""
     return InitialConditionPatch()
 
 

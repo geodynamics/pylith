@@ -1,4 +1,12 @@
 #!/usr/bin/env nemesis
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
 """Python application to create synthetic data from PyLith points output.
 This script is meant to be used with example step07. It reads the
 slow slip displacements at synthetic cGNSS stations from example
@@ -15,9 +23,7 @@ time_step = -1  # final time step
 point_input_file = pathlib.Path("output") / "step06_slowslip-cgnss_stations.h5"
 output_file = "cgnss_synthetic_displacement.txt"
 
-output_header = ",".join(
-    ["Station", "X", "Y", "Z", "UEast", "UNorth", "UUp", "SigEast", "SigNorth", "SigUp"]
-)
+output_header = ",".join(["Station", "X", "Y", "Z", "UEast", "UNorth", "UUp", "SigEast", "SigNorth", "SigUp"])
 output_format = ",".join(["%s"] + 9 * ["%g"]) + "\n"
 
 # We assume data uncertainties of 0.5 mm horizontal and 1 mm vertical.
@@ -55,3 +61,6 @@ with open(output_file, "w", encoding="utf-8") as fout:
             sigma_up,
         )
         fout.write(outLine)
+
+
+# End of file

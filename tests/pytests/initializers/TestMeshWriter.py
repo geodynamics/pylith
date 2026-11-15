@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -11,12 +10,12 @@
 import unittest
 
 from pylith.testing.TestCases import TestComponent, make_suite
-from pylith.initializers.MeshWriter import (MeshWriter, initialize_phase)
+from pylith.initializers.MeshWriter import MeshWriter, initialize_phase
 
 
 class TestMeshWriter(TestComponent):
-    """Unit testing of MeshWriter object.
-    """
+    """Unit testing of MeshWriter object."""
+
     _class = MeshWriter
     _factory = initialize_phase
 

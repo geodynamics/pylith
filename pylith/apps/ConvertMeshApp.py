@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -21,9 +20,7 @@ class ConvertMeshApp(Application):
 
     from pylith.initializers.Convert import Initializer
 
-    meshInitializer = pythia.pyre.inventory.facility(
-        "mesh_initializer", family="mesh_initializer", factory=Initializer
-    )
+    meshInitializer = pythia.pyre.inventory.facility("mesh_initializer", family="mesh_initializer", factory=Initializer)
     meshInitializer.meta["tip"] = "Mesh initializer."
 
     def __init__(self, name="convertmeshapp"):

@@ -2,13 +2,13 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
 from pylith.petsc.Application import Application
+
 
 class PyLithApp(Application):
     """Python PyLithApp application."""
@@ -16,37 +16,32 @@ class PyLithApp(Application):
     import pythia.pyre.inventory
 
     pdbOn = pythia.pyre.inventory.bool("start_python_debugger", default=False)
-    pdbOn.meta['tip'] = "Start python debugger at beginning of main()."
+    pdbOn.meta["tip"] = "Start python debugger at beginning of main()."
 
-    typos = pythia.pyre.inventory.str("typos", default="pedantic",
-                                      validator=pythia.pyre.inventory.choice(['relaxed', 'strict', 'pedantic']))
-    typos.meta['tip'] = "Specifies the handling of unknown properties and facilities"
+    typos = pythia.pyre.inventory.str(
+        "typos", default="pedantic", validator=pythia.pyre.inventory.choice(["relaxed", "strict", "pedantic"])
+    )
+    typos.meta["tip"] = "Specifies the handling of unknown properties and facilities"
 
     showAppFlow = pythia.pyre.inventory.bool("show_application_flow", default=True)
-    showAppFlow.meta['tip'] = "Show application flow (application-flow journal)"
+    showAppFlow.meta["tip"] = "Show application flow (application-flow journal)"
 
     initializeOnly = pythia.pyre.inventory.bool("initialize_only", default=False)
     initializeOnly.meta["tip"] = "Stop simulation after initializing problem."
 
     from pylith.utils.SimulationMetadata import SimulationMetadata
 
-    metadata = pythia.pyre.inventory.facility(
-        "metadata", family="simulation_metadata", factory=SimulationMetadata
-    )
+    metadata = pythia.pyre.inventory.facility("metadata", family="simulation_metadata", factory=SimulationMetadata)
     metadata.meta["tip"] = "Simulation metadata."
 
     from pylith.utils.DumpParametersJson import DumpParametersJson
 
-    parameters = pythia.pyre.inventory.facility(
-        "dump_parameters", family="dump_parameters", factory=DumpParametersJson
-    )
+    parameters = pythia.pyre.inventory.facility("dump_parameters", family="dump_parameters", factory=DumpParametersJson)
     parameters.meta["tip"] = "Dump parameters used and version information to file."
 
     from pylith.problems.TimeDependent import TimeDependent
 
-    problem = pythia.pyre.inventory.facility(
-        "problem", family="problem", factory=TimeDependent
-    )
+    problem = pythia.pyre.inventory.facility("problem", family="problem", factory=TimeDependent)
     problem.meta["tip"] = "Boundary value problem to solve."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -57,10 +52,10 @@ class PyLithApp(Application):
         self._loggingPrefix = "PL.PyLithApp."
 
     def main(self, *args, **kwds):
-        """Run the application.
-        """
+        """Run the application."""
         if self.pdbOn:
             import pdb
+
             pdb.set_trace()
         if self.showAppFlow:
             self._flow.activate()
@@ -115,6 +110,7 @@ class PyLithApp(Application):
             msg += citation + "\n"
 
         from pythia.journal.diagnostics import info
+
         channel = info("about")
         channel.activate()
         channel.log(msg)
@@ -204,6 +200,7 @@ class PyLithApp(Application):
         )
         if self.inventory.usage:
             from pythia.journal.diagnostics import info
+
             channel = info("about")
             channel.activate()
             channel.log(msg)

@@ -2,8 +2,7 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
+// Copyright (c) 2010-2026 All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
@@ -14,21 +13,17 @@
 
 namespace pylith {
     namespace bc {
-        class Neumann:
-        public pylith::feassemble::IntegratorBoundary {
+        class Neumann : public pylith::feassemble::IntegratorBoundary {
             // PUBLIC METHODS /////////////////////////////////////////////////
-public:
-
+          public:
             /// Default constructor.
             Neumann(void);
 
             /// Destructor.
-            virtual
-            ~Neumann(void);
+            virtual ~Neumann(void);
 
             /// Deallocate PETSc and local data structures.
-            virtual
-            void deallocate(void);
+            virtual void deallocate(void);
 
             /** Name of scale associated with Neumann boundary
              * condition (e.g., 'pressure' for elasticity).
@@ -45,7 +40,7 @@ public:
 
         }; // class Neumann
 
-    } // bc
-} // pylith
+    } // namespace bc
+} // namespace pylith
 
 // End of file

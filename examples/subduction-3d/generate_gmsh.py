@@ -1,4 +1,12 @@
 #!/usr/bin/env nemesis
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
 
 import math
 import gzip
@@ -77,9 +85,7 @@ class App(GenerateMesh):
         tags, _ = gmsh.model.occ.fragment(topography_surface, [(3, domain_box)])
         domain_tag = tags[0]
         if self.debug:
-            print(
-                f"Fragment domain with topography, tags={tags}. Setting domain={domain_tag}, deleting={tags[1:]}"
-            )
+            print(f"Fragment domain with topography, tags={tags}. Setting domain={domain_tag}, deleting={tags[1:]}")
         gmsh.model.occ.remove(tags[1:], recursive=True)
 
         # Fragment the bounding box with the slab to get the main volume and the slab volume inside the bounding box
@@ -177,24 +183,12 @@ class App(GenerateMesh):
             material.create_physical_group()
 
         face_groups = (
-            BoundaryGroup(
-                name="boundary_south", tag=10, dim=2, entities=self.surface_south
-            ),
-            BoundaryGroup(
-                name="boundary_east", tag=11, dim=2, entities=self.surface_east
-            ),
-            BoundaryGroup(
-                name="boundary_north", tag=12, dim=2, entities=self.surface_north
-            ),
-            BoundaryGroup(
-                name="boundary_west", tag=13, dim=2, entities=self.surface_west
-            ),
-            BoundaryGroup(
-                name="boundary_bottom", tag=14, dim=2, entities=self.surface_bottom
-            ),
-            BoundaryGroup(
-                name="boundary_top", tag=15, dim=2, entities=self.surface_top
-            ),
+            BoundaryGroup(name="boundary_south", tag=10, dim=2, entities=self.surface_south),
+            BoundaryGroup(name="boundary_east", tag=11, dim=2, entities=self.surface_east),
+            BoundaryGroup(name="boundary_north", tag=12, dim=2, entities=self.surface_north),
+            BoundaryGroup(name="boundary_west", tag=13, dim=2, entities=self.surface_west),
+            BoundaryGroup(name="boundary_bottom", tag=14, dim=2, entities=self.surface_bottom),
+            BoundaryGroup(name="boundary_top", tag=15, dim=2, entities=self.surface_top),
             BoundaryGroup(
                 name="boundary_west_noslab",
                 tag=16,
@@ -226,15 +220,9 @@ class App(GenerateMesh):
                 entities=self.surface_north_no_slab_splay,
             ),
             BoundaryGroup(name="fault_slabtop", tag=30, dim=2, entities=self.slab_top),
-            BoundaryGroup(
-                name="fault_slabbot", tag=31, dim=2, entities=self.slab_bottom
-            ),
-            BoundaryGroup(
-                name="fault_slabtop_patch", tag=32, dim=2, entities=self.slab_top_patch
-            ),
-            BoundaryGroup(
-                name="fault_splay", tag=33, dim=2, entities=self.surface_splay
-            ),
+            BoundaryGroup(name="fault_slabbot", tag=31, dim=2, entities=self.slab_bottom),
+            BoundaryGroup(name="fault_slabtop_patch", tag=32, dim=2, entities=self.slab_top_patch),
+            BoundaryGroup(name="fault_splay", tag=33, dim=2, entities=self.surface_splay),
         )
         for group in face_groups:
             group.create_physical_group()
@@ -250,9 +238,7 @@ class App(GenerateMesh):
         gmsh.model.mesh.field.setNumbers(field_distance, "SurfacesList", self.slab_top)
 
         field_size = gmsh.model.mesh.field.add("MathEval")
-        math_exp = GenerateMesh.get_math_progression(
-            field_distance, min_dx=self.DX_MIN, bias=self.DX_BIAS
-        )
+        math_exp = GenerateMesh.get_math_progression(field_distance, min_dx=self.DX_MIN, bias=self.DX_BIAS)
         gmsh.model.mesh.field.setString(field_size, "F", math_exp)
         gmsh.model.mesh.field.setAsBackgroundMesh(field_size)
 
@@ -278,9 +264,7 @@ class App(GenerateMesh):
             coordsys.geoToMesh(points)
             wire = self._create_wire(points)
             wires.append(wire)
-        topography_surface = gmsh.model.occ.add_thru_sections(
-            wires, makeSolid=False, makeRuled=False, maxDegree=2
-        )
+        topography_surface = gmsh.model.occ.add_thru_sections(wires, makeSolid=False, makeRuled=False, maxDegree=2)
         gmsh.model.occ.remove([(1, wire) for wire in wires], recursive=True)
         return topography_surface
 
@@ -293,9 +277,7 @@ class App(GenerateMesh):
 
         # Extend the slab to the topography
         contours_up_dip = self._create_extended_contours(contours)
-        contours_all = dict(
-            sorted((contours_up_dip | contours).items())
-        )  # merge dicts and sort
+        contours_all = dict(sorted((contours_up_dip | contours).items()))  # merge dicts and sort
 
         # Generate the top surface of the slab
         all_points_on_grid = []
@@ -354,8 +336,8 @@ class App(GenerateMesh):
         return contours
 
     def _calculate_local_strike(self, contour):
-        """Calculate local strike along contour.
-        """
+        """Calculate local strike along contour."""
+
         def _smooth_values(values):
             window_size = values.shape[0] // 3
             window = numpy.ones(window_size) / window_size
@@ -365,9 +347,7 @@ class App(GenerateMesh):
             values_smoothed = numpy.convolve(values_padded, window, mode="valid")
             return values_smoothed[0:-1]
 
-        contour_smooth = numpy.stack(
-            (_smooth_values(contour[:, 0]), _smooth_values(contour[:, 1]))
-        ).T
+        contour_smooth = numpy.stack((_smooth_values(contour[:, 0]), _smooth_values(contour[:, 1]))).T
 
         sx = contour_smooth[:-1, 0] - contour_smooth[1:, 0]
         sy = contour_smooth[:-1, 1] - contour_smooth[1:, 1]
@@ -420,9 +400,7 @@ class App(GenerateMesh):
         dx = self.SLAB_THICKNESS * surface_normal[0]
         dy = self.SLAB_THICKNESS * surface_normal[1]
         dz = self.SLAB_THICKNESS * surface_normal[2]
-        tags = gmsh.model.occ.extrude(
-            [(2, top_surface)], dx=dx, dy=dy, dz=dz, recombine=True
-        )
+        tags = gmsh.model.occ.extrude([(2, top_surface)], dx=dx, dy=dy, dz=dz, recombine=True)
         slab_volume = tags[1]
         return slab_volume
 
@@ -464,8 +442,7 @@ class App(GenerateMesh):
         surface = self._add_xy_plane_surface_at_point(
             -self.DOMAIN_X / 2 - 50 * self.KM,
             -self.DOMAIN_Y / 2 - 50 * self.KM,
-            -1 * self.KM
-            - self.CRUST_DEPTH,  # Crust side of the bounding box about is approximately -1km below 0
+            -1 * self.KM - self.CRUST_DEPTH,  # Crust side of the bounding box about is approximately -1km below 0
             self.DOMAIN_X + 100 * self.KM,
             self.DOMAIN_Y + 100 * self.KM,
         )
@@ -505,3 +482,6 @@ class App(GenerateMesh):
 # If script is called from the command line, run the application.
 if __name__ == "__main__":
     App().main()
+
+
+# End of file

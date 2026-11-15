@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -11,7 +10,6 @@
 #
 
 import numpy
-
 
 # Physical properties
 p_solid_density = 2500.0
@@ -99,7 +97,7 @@ class AnalyticalSoln(object):
 
     def displacement(self, locs):
         """Compute displacement field at locations."""
-        (npts, _) = locs.shape
+        npts, _ = locs.shape
 
         p_mu = p_shear_modulus
         p_lambda = p_drained_bulk_modulus - 2.0 / 3.0 * p_shear_modulus
@@ -114,14 +112,14 @@ class AnalyticalSoln(object):
         return disp
 
     def displacement_zero(self, locs):
-        (npts, _) = locs.shape
+        npts, _ = locs.shape
 
         disp = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
         return disp
 
     def pressure(self, locs):
         """Compute pressure field at locations."""
-        (npts, _) = locs.shape
+        npts, _ = locs.shape
 
         x = locs[:, 0]
 
@@ -131,7 +129,7 @@ class AnalyticalSoln(object):
 
     def trace_strain(self, locs):
         """Compute trace_strain field at locations."""
-        (npts, _) = locs.shape
+        npts, _ = locs.shape
 
         x = locs[:, 0]
         p_alpha = p_biot_coefficient
@@ -143,70 +141,65 @@ class AnalyticalSoln(object):
 
     def solid_density(self, locs):
         """Compute solid density field at locations."""
-        (npts, _) = locs.shape
+        npts, _ = locs.shape
         density = p_solid_density * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return density
 
     def fluid_density(self, locs):
         """Compute fluid density field at locations."""
-        (npts, _) = locs.shape
+        npts, _ = locs.shape
         density = p_fluid_density * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return density
 
     def fluid_viscosity(self, locs):
         """Compute fluid viscosity field at locations."""
-        (npts, _) = locs.shape
+        npts, _ = locs.shape
         viscosity = p_fluid_viscosity * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return viscosity
 
     def shear_modulus(self, locs):
         """Compute shear modulus field at locations."""
-        (npts, _) = locs.shape
+        npts, _ = locs.shape
         shear_modulus = p_shear_modulus * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return shear_modulus
 
     def drained_bulk_modulus(self, locs):
         """Compute drained bulk modulus field at locations."""
-        (npts, _) = locs.shape
-        bulk_modulus = p_drained_bulk_modulus * numpy.ones(
-            (1, npts, 1), dtype=numpy.float64
-        )
+        npts, _ = locs.shape
+        bulk_modulus = p_drained_bulk_modulus * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return bulk_modulus
 
     def biot_coefficient(self, locs):
         """Compute Biot coefficient field at locations."""
-        (npts, _) = locs.shape
+        npts, _ = locs.shape
         biot_coeff = p_biot_coefficient * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return biot_coeff
 
     def biot_modulus(self, locs):
         """Compute Biot modulus field at locations."""
-        (npts, _) = locs.shape
+        npts, _ = locs.shape
         p_solid_bulk_modulus = p_drained_bulk_modulus / (1.0 - p_biot_coefficient)
         p_biot_modulus = 1.0 / (
-            p_porosity / p_fluid_bulk_modulus
-            + (p_biot_coefficient - p_porosity) / p_solid_bulk_modulus
+            p_porosity / p_fluid_bulk_modulus + (p_biot_coefficient - p_porosity) / p_solid_bulk_modulus
         )
         modulus = p_biot_modulus * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return modulus
 
     def isotropic_permeability(self, locs):
         """Compute permeability field at locations."""
-        (npts, _) = locs.shape
-        permeability = p_isotropic_permeability * numpy.ones(
-            (1, npts, 1), dtype=numpy.float64
-        )
+        npts, _ = locs.shape
+        permeability = p_isotropic_permeability * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return permeability
 
     def porosity(self, locs):
         """Compute porosity field at locations."""
-        (npts, _) = locs.shape
+        npts, _ = locs.shape
         value = p_porosity * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return value
 
     def strain(self, locs):
         """Compute strain field at locations."""
-        (npts, _) = locs.shape
+        npts, _ = locs.shape
 
         x = locs[:, 0]
         p_alpha = p_biot_coefficient
@@ -221,7 +214,7 @@ class AnalyticalSoln(object):
 
     def stress(self, locs):
         """Compute stress field at locations."""
-        (npts, _) = locs.shape
+        npts, _ = locs.shape
 
         x = locs[:, 0]
         p_alpha = p_biot_coefficient
@@ -239,21 +232,17 @@ class AnalyticalSoln(object):
 
     def slip(self, locs):
         """Compute slip field."""
-        (npts, _) = locs.shape
+        npts, _ = locs.shape
         slip = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
         return slip
 
     def traction_change(self, locs):
         """Compute change in traction on faults."""
-        (npts, _) = locs.shape
+        npts, _ = locs.shape
 
         x = locs[:, 0]
         p_alpha = p_biot_coefficient
-        exx = (
-            1.0
-            / (p_lambda + 2 * p_mu)
-            * (0.5 * s0 + p_alpha * p0 * (1.0 - x / domain_x))
-        )
+        exx = 1.0 / (p_lambda + 2 * p_mu) * (0.5 * s0 + p_alpha * p0 * (1.0 - x / domain_x))
         syy = p_lambda * exx - p_alpha * p0 * (1.0 - x / domain_x)
         offset = p_alpha * p0 * 1000 / domain_x
 
@@ -263,7 +252,7 @@ class AnalyticalSoln(object):
 
     def orientation_dir(self, vector):
         def fn_dir(locs):
-            (npts, _) = locs.shape
+            npts, _ = locs.shape
             values = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
             for d in range(self.SPACE_DIM):
                 values[:, :, d] = vector[d]

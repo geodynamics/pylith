@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -19,13 +18,11 @@ class SubfieldPressure(SolutionSubfield):
     Implements `SolutionSubfield`.
     """
 
-    DOC_CONFIG = {
-        "cfg": """
+    DOC_CONFIG = {"cfg": """
         [pylithapp.problems.solution.subfields.pressure]
         alias = pressure
         basis_order = 1
-        """
-    }
+        """}
 
     fieldName = "pressure"
 

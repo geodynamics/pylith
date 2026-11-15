@@ -2,8 +2,7 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
+// Copyright (c) 2010-2026 All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
@@ -16,10 +15,9 @@
 
 namespace pylith {
     namespace meshio {
-        class pylith::meshio::OutputTrigger: public pylith::utils::PyreComponent {
+        class pylith::meshio::OutputTrigger : public pylith::utils::PyreComponent {
             // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+          public:
             /// Constructor
             OutputTrigger(void);
 
@@ -38,13 +36,12 @@ public:
              * @param[in] tindex Inxex of current time step.
              * @returns True if output should be written at time t, false otherwise.
              */
-            virtual
-            bool shouldWrite(const PylithReal t,
-                             const PylithInt tindex) = 0;
+            virtual bool shouldWrite(const PylithReal t,
+                                     const PylithInt tindex) = 0;
 
         }; // OutputTrigger
 
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // End of file

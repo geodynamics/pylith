@@ -2,17 +2,17 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 """Module for plotting mesh and mesh quality from PyLith output."""
 
+
 class PlotMesh:
     TIME_DEPENDENT = False
 
-    def __init__(self, plotter, data, interactive: bool=True):
+    def __init__(self, plotter, data, interactive: bool = True):
         self.plotter = plotter
         self.data = data
         self.interactive = interactive
@@ -75,5 +75,14 @@ def add_args(parser):
         "volume",
         "warpage",
     )
-    parser.add_argument("--mesh-quality", action="store", help="Show mesh quality metric.", dest="quality_metric", choices=QUALITY_METRICS)
+    parser.add_argument(
+        "--mesh-quality",
+        action="store",
+        help="Show mesh quality metric.",
+        dest="quality_metric",
+        choices=QUALITY_METRICS,
+    )
     parser.set_defaults(func=cli)
+
+
+# End of file

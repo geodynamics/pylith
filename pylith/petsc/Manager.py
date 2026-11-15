@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -16,24 +15,22 @@ class Manager(PropertyList):
     """
     Manage PETSc options.
     """
-    DOC_CONFIG = {
-        "cfg": """
+
+    DOC_CONFIG = {"cfg": """
             [pylithapp.petsc]
             ksp_converged_reason = true
             snes_converged_reason = true
             snes_linesearch_monitor = true
-        """
-    }
+        """}
 
     def __init__(self, name="petsc"):
-        """Constructor.
-        """
+        """Constructor."""
         PropertyList.__init__(self, name)
 
     def initialize(self):
-        """Initialize PETSc.
-        """
+        """Initialize PETSc."""
         import sys
+
         args = [sys.executable]
         options = self._getOptions()
         if len(options) > 0:
@@ -42,8 +39,7 @@ class Manager(PropertyList):
         ModuleApplication.initialize(args)
 
     def finalize(self):
-        """Finalize PETSc.
-        """
+        """Finalize PETSc."""
         ModuleApplication.finalize()
 
     def showOptions(self):
@@ -61,17 +57,17 @@ class Manager(PropertyList):
                 self._flow.log("\n".join(msg))
 
     def _getOptions(self):
-        """Cleanup options for PETSc.
-        """
+        """Cleanup options for PETSc."""
         args = []
         for iname, descriptor in self.items:
-            args.append('-' + iname)
-            if descriptor.value != 'true':
+            args.append("-" + iname)
+            if descriptor.value != "true":
                 args.append(descriptor.value)
         return args
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
+
 
 def property_list():
     """

@@ -2,8 +2,7 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
+// Copyright (c) 2010-2026 All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
@@ -30,8 +29,8 @@
 namespace contrib {
     namespace friction {
         class ViscousFriction;
-    } // friction
-} // pylith
+    } // namespace friction
+} // namespace contrib
 
 // ViscousFriction -------------------------------------------------------
 class contrib::friction::ViscousFriction : public pylith::friction::FrictionModel { // class ViscousFriction
@@ -43,8 +42,7 @@ class contrib::friction::ViscousFriction : public pylith::friction::FrictionMode
     // --------------------------------------------------------------------
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     ViscousFriction(void);
 
@@ -52,8 +50,7 @@ public:
     ~ViscousFriction(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////
-protected:
-
+  protected:
     /// These methods should be implemented by every constitutive model.
 
     /** Compute properties from values in spatial database.
@@ -180,8 +177,7 @@ protected:
                           const int numProperties);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
-private:
-
+  private:
     // --------------------------------------------------------------------
     // We use these constants for consistent access into the arrays of
     // physical properties and state variables.
@@ -198,8 +194,7 @@ private:
     static const int db_slipRate;
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
-private:
-
+  private:
     ViscousFriction(const ViscousFriction&); ///< Not implemented.
     const ViscousFriction& operator=(const ViscousFriction&); ///< Not implemented
 

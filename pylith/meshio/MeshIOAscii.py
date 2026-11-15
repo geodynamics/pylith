@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -24,26 +23,25 @@ class MeshIOAscii(MeshIOObj, ModuleMeshIOAscii):
 
     Implements `MeshIOObj`.
     """
-    DOC_CONFIG = {
-        "cfg": """
+
+    DOC_CONFIG = {"cfg": """
             [pylithapp.problem.mesh_initializer.phases.read_mesh.reader]
             filename = mesh_quad.txt
             coordsys.space_dim = 2
-        """
-    }
+        """}
 
     import pythia.pyre.inventory
 
     filename = pythia.pyre.inventory.str("filename", default="")
-    filename.meta['tip'] = "Name of mesh file"
+    filename.meta["tip"] = "Name of mesh file"
 
     from spatialdata.geocoords.CSCart import CSCart
+
     coordsys = pythia.pyre.inventory.facility("coordsys", family="coordsys", factory=CSCart)
-    coordsys.meta['tip'] = "Coordinate system associated with mesh."
+    coordsys.meta["tip"] = "Coordinate system associated with mesh."
 
     def __init__(self, mode=MeshIOObj.READ, name="meshioascii"):
-        """Constructor.
-        """
+        """Constructor."""
         MeshIOObj.__init__(self, mode, name)
 
     def preinitialize(self):
@@ -53,13 +51,11 @@ class MeshIOAscii(MeshIOObj, ModuleMeshIOAscii):
         ModuleMeshIOAscii.setCoordSys(self, self.coordsys)
 
     def _configure(self):
-        """Set members using inventory.
-        """
+        """Set members using inventory."""
         MeshIOObj._configure(self)
 
     def _createModuleObj(self):
-        """Create C++ MeshIOAscii object.
-        """
+        """Create C++ MeshIOAscii object."""
         ModuleMeshIOAscii.__init__(self)
 
     def _validate(self, context):
@@ -68,17 +64,17 @@ class MeshIOAscii(MeshIOObj, ModuleMeshIOAscii):
         if self.mode == self.READ and not pathlib.Path(self.filename).is_file():
             context.error(IOError(f"ASCII input mesh '{self.filename}' not found."))
 
+
 # FACTORIES ////////////////////////////////////////////////////////////
 
+
 def mesh_input():
-    """Factory associated with MeshIOAscii.
-    """
+    """Factory associated with MeshIOAscii."""
     return MeshIOAscii(mode=MeshIOAscii.READ)
 
 
 def mesh_output():
-    """Factory associated with MeshIOAscii.
-    """
+    """Factory associated with MeshIOAscii."""
     return MeshIOAscii(mode=MeshIOAscii.WRITE)
 
 

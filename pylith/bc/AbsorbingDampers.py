@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -18,6 +17,7 @@ class AbsorbingDampers(BoundaryCondition, ModuleAbsorbingDampers):
 
     Implements `BoundaryCondition`.
     """
+
     DOC_CONFIG = {
         "cfg": """
             [bc]
@@ -38,41 +38,38 @@ class AbsorbingDampers(BoundaryCondition, ModuleAbsorbingDampers):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="absorbingdampers"):
-        """Constructor.
-        """
+        """Constructor."""
         BoundaryCondition.__init__(self, name)
         return
 
     def _defaults(self):
         from .AuxSubfieldsAbsorbingDampers import AuxSubfieldsAbsorbingDampers
+
         self.auxiliarySubfields = AuxSubfieldsAbsorbingDampers("auxiliary_subfields")
 
     def preinitialize(self, problem):
-        """Do pre-initialization setup.
-        """
+        """Do pre-initialization setup."""
         BoundaryCondition.preinitialize(self, problem)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """Setup members using inventory.
-        """
+        """Setup members using inventory."""
         BoundaryCondition._configure(self)
         return
 
     def _createModuleObj(self):
-        """Create handle to corresponding C++ object.
-        """
+        """Create handle to corresponding C++ object."""
         ModuleAbsorbingDampers.__init__(self)
         return
 
 
 # Factories
 
+
 def boundary_condition():
-    """Factory associated with AbsorbingDampers.
-    """
+    """Factory associated with AbsorbingDampers."""
     return AbsorbingDampers()
 
 

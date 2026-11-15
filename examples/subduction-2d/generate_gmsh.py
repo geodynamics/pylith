@@ -1,4 +1,12 @@
 #!/usr/bin/env nemesis
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
 """Generate a tri or quad mesh of a subduction zone vertical profile using Gmsh, making
 use of the built-in geometry engine.
 
@@ -13,80 +21,81 @@ and a latitude of 38.0 degrees (WGS84).
 
 Run `generate_gmsh.py --help` to see the command line options.
 """
+
 import gmsh
-from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup, GenerateMesh, group_exclude)
+from pylith.meshio.gmsh_utils import BoundaryGroup, MaterialGroup, GenerateMesh, group_exclude
+
 
 class App(GenerateMesh):
     """
     Application for generating the mesh.
     """
-    KM = 1.0e+3
-    X_WEST = -600.0*KM
-    X_EAST = 600.0*KM
-    Y_BOT = -600.0*KM
-    Y_MOHO = -40.0*KM
 
-    DX_FAULT = 5.0*KM
+    KM = 1.0e3
+    X_WEST = -600.0 * KM
+    X_EAST = 600.0 * KM
+    Y_BOT = -600.0 * KM
+    Y_MOHO = -40.0 * KM
+
+    DX_FAULT = 5.0 * KM
     DX_BIAS = 1.07
 
     # Topography/bathymetry extracted manually from Google Earth
     TOPO_POINTS = (
-        (   X_WEST, -2000.0),
-        (-439.1e+3, -300.0),
-        (-351.2e+3, -800.0),
-        (-263.4e+3,     0.0),
-        (-175.6e+3,   400.0),
-        ( -87.7e+3,     0.0),
-        (   0.0e+3,  -400.0),
-        (  87.7e+3, -3000.0),
-        ( 165.6e+3, -6000.0),
-        ( 263.4e+3, -5400.0),
-        ( 351.2e+3, -5400.0),
-        ( 439.1e+3, -5400.0),
-        (   X_EAST, -5700.0),
+        (X_WEST, -2000.0),
+        (-439.1e3, -300.0),
+        (-351.2e3, -800.0),
+        (-263.4e3, 0.0),
+        (-175.6e3, 400.0),
+        (-87.7e3, 0.0),
+        (0.0e3, -400.0),
+        (87.7e3, -3000.0),
+        (165.6e3, -6000.0),
+        (263.4e3, -5400.0),
+        (351.2e3, -5400.0),
+        (439.1e3, -5400.0),
+        (X_EAST, -5700.0),
     )
     TOPO_WEST = 0
     TOPO_TRENCH = 8
-    TOPO_EAST = len(TOPO_POINTS)-1
+    TOPO_EAST = len(TOPO_POINTS) - 1
 
-    # Top of slab from Slab 1.0 (Hayes et al., 2012, https://doi.org/10.1029/2011JB008524) 
+    # Top of slab from Slab 1.0 (Hayes et al., 2012, https://doi.org/10.1029/2011JB008524)
     SLABTOP_POINTS = (
-        (-422.4e+3, -240.00e+3),
-        (-331.0e+3, -180.00e+3),
-        (-261.6e+3, -140.00e+3),
-        (-223.9e+3, -120.00e+3),
-        (-182.6e+3, -100.00e+3),
-        (-134.3e+3,  -80.00e+3),
-        ( -84.5e+3,  -63.00e+3),
-        ( -74.6e+3,  -60.00e+3),
-        (  -7.9e+3,     Y_MOHO),
-        (  71.1e+3,  -20.00e+3),
-        ( 160.5e+3,   -7.50e+3),
+        (-422.4e3, -240.00e3),
+        (-331.0e3, -180.00e3),
+        (-261.6e3, -140.00e3),
+        (-223.9e3, -120.00e3),
+        (-182.6e3, -100.00e3),
+        (-134.3e3, -80.00e3),
+        (-84.5e3, -63.00e3),
+        (-74.6e3, -60.00e3),
+        (-7.9e3, Y_MOHO),
+        (71.1e3, -20.00e3),
+        (160.5e3, -7.50e3),
     )
     SLABTOP_WEST = 0
     SLABTOP_COSEISMIC = 6
     SLABTOP_MOHO = 8
-    SLABTOP_EAST = len(SLABTOP_POINTS)-1
+    SLABTOP_EAST = len(SLABTOP_POINTS) - 1
 
     SLABBOT_ADD = (
-        (175.6e+3, Y_MOHO),
-        (  X_EAST, Y_MOHO),
+        (175.6e3, Y_MOHO),
+        (X_EAST, Y_MOHO),
     )
 
     def __init__(self):
-        """Constructor.
-        """
+        """Constructor."""
         # Set the cell choices available through command line options
         # with the default cell type `tri` matching the PyLith parameter files.
         self.cell_choices = {
             "default": "tri",
             "choices": ["tri"],
-            }
+        }
         self.filename = "mesh_tri.msh"
 
     def create_geometry(self):
-        """Create geometry.
-        """
+        """Create geometry."""
         # Create curve for topography/bathymetry
         pts_topo = []
         for x, y in self.TOPO_POINTS:
@@ -96,7 +105,7 @@ class App(GenerateMesh):
         p_topo_west = pts_topo[self.TOPO_WEST]
         p_topo_east = pts_topo[self.TOPO_EAST]
         p_topo_trench = pts_topo[self.TOPO_TRENCH]
-        
+
         # Create b-spline curve for the top of the slab
         pts_slabtop = []
         for x, y in self.SLABTOP_POINTS:
@@ -112,9 +121,9 @@ class App(GenerateMesh):
         # We translate points to the east. A better approach would be to
         # move points normal to the slab to preserve uniform thickness.
         pts_slabbot = []
-        offset = 120.0e+3
+        offset = 120.0e3
         for x, y in self.SLABTOP_POINTS[0:8]:
-            pt = gmsh.model.geo.add_point(x+offset, y, 0.0)
+            pt = gmsh.model.geo.add_point(x + offset, y, 0.0)
             pts_slabbot.append(pt)
         for x, y in self.SLABBOT_ADD:
             pt = gmsh.model.geo.add_point(x, y, 0.0)
@@ -125,7 +134,6 @@ class App(GenerateMesh):
 
         # Create curve for bottom edge of slab
         c_slab_end = gmsh.model.geo.add_polyline([self.p_slabtop_west, self.p_slabbot_west])
-
 
         # Create top of mantle
         p_moho_west = gmsh.model.geo.add_point(self.X_WEST, self.Y_MOHO, 0.0)
@@ -159,40 +167,44 @@ class App(GenerateMesh):
         self.c_east_crust = curves[1]
 
         # Create surfaces from bounding curves
-        loop = gmsh.model.geo.add_curve_loop([
-            -self.c_west_crust,
-            self.c_conmoho,
-            self.c_slabtop_crust,
-            -self.c_topo_west,
-            ])
+        loop = gmsh.model.geo.add_curve_loop(
+            [
+                -self.c_west_crust,
+                self.c_conmoho,
+                self.c_slabtop_crust,
+                -self.c_topo_west,
+            ]
+        )
         self.s_concrust = gmsh.model.geo.add_plane_surface([loop])
 
-        loop = gmsh.model.geo.add_curve_loop([
-            c_slab_end,
-            self.c_slabbot,
-            self.c_east_crust,
-            -self.c_topo_east,
-            -self.c_slabtop_crust,
-            -self.c_slabtop_mantle_upper,
-            -self.c_slabtop_mantle_lower,
-            ])
+        loop = gmsh.model.geo.add_curve_loop(
+            [
+                c_slab_end,
+                self.c_slabbot,
+                self.c_east_crust,
+                -self.c_topo_east,
+                -self.c_slabtop_crust,
+                -self.c_slabtop_mantle_upper,
+                -self.c_slabtop_mantle_lower,
+            ]
+        )
         self.s_oceancrust = gmsh.model.geo.add_plane_surface([loop])
 
-        loop = gmsh.model.geo.add_curve_loop([
-            -self.c_west_mantle,
-            self.c_bot,
-            self.c_east_mantle,
-            -self.c_slabbot,
-            -c_slab_end,
-            self.c_slabtop_mantle_lower,
-            self.c_slabtop_mantle_upper,
-            -self.c_conmoho,
-            ])
+        loop = gmsh.model.geo.add_curve_loop(
+            [
+                -self.c_west_mantle,
+                self.c_bot,
+                self.c_east_mantle,
+                -self.c_slabbot,
+                -c_slab_end,
+                self.c_slabtop_mantle_lower,
+                self.c_slabtop_mantle_upper,
+                -self.c_conmoho,
+            ]
+        )
         self.s_mantle = gmsh.model.geo.add_plane_surface([loop])
 
-
         gmsh.model.geo.synchronize()
-
 
     def mark(self):
         """Mark geometry for materials, boundary conditions, faults, etc.
@@ -215,8 +227,15 @@ class App(GenerateMesh):
             BoundaryGroup(name="boundary_east_crust", tag=12, dim=1, entities=[self.c_east_crust]),
             BoundaryGroup(name="boundary_east_mantle_tmp", tag=113, dim=1, entities=[self.c_east_mantle]),
             BoundaryGroup(name="boundary_bot", tag=14, dim=1, entities=[self.c_bot]),
-            BoundaryGroup(name="fault_coseismic", tag=20, dim=1, entities=[self.c_slabtop_mantle_upper, self.c_slabtop_crust]),
-            BoundaryGroup(name="fault_slabtop", tag=21, dim=1, entities=[self.c_slabtop_mantle_lower, self.c_slabtop_mantle_upper, self.c_slabtop_crust]),
+            BoundaryGroup(
+                name="fault_coseismic", tag=20, dim=1, entities=[self.c_slabtop_mantle_upper, self.c_slabtop_crust]
+            ),
+            BoundaryGroup(
+                name="fault_slabtop",
+                tag=21,
+                dim=1,
+                entities=[self.c_slabtop_mantle_lower, self.c_slabtop_mantle_upper, self.c_slabtop_crust],
+            ),
             BoundaryGroup(name="fault_slabbot", tag=22, dim=1, entities=[self.c_slabbot]),
         )
         for group in face_groups:
@@ -224,8 +243,7 @@ class App(GenerateMesh):
         group_exclude("boundary_east_mantle_tmp", "fault_slabbot", new_name="boundary_east_mantle", new_tag=13)
 
     def generate_mesh(self, cell):
-        """Generate the mesh.
-        """
+        """Generate the mesh."""
         # Set discretization size with geometric progression from distance to the fault.
         # We turn off the default sizing methods.
         gmsh.option.set_number("Mesh.MeshSizeFromPoints", 0)
@@ -234,12 +252,14 @@ class App(GenerateMesh):
 
         # First, we setup a field `field_distance` with the distance from the fault.
         fault_distance = gmsh.model.mesh.field.add("Distance")
-        gmsh.model.mesh.field.setNumbers(fault_distance, "CurvesList", [self.c_slabtop_mantle_upper, self.c_slabtop_crust])
+        gmsh.model.mesh.field.setNumbers(
+            fault_distance, "CurvesList", [self.c_slabtop_mantle_upper, self.c_slabtop_crust]
+        )
 
         # Second, we setup a field `field_size`, which is the mathematical expression
         # for the cell size as a function of the cell size on the fault, the distance from
         # the fault (as given by `field_size`, and the bias factor.
-        # The `GenerateMesh` class includes a special function `get_math_progression` 
+        # The `GenerateMesh` class includes a special function `get_math_progression`
         # for creating the string with the mathematical function.
         field_size = gmsh.model.mesh.field.add("MathEval")
         math_exp = GenerateMesh.get_math_progression(fault_distance, min_dx=self.DX_FAULT, bias=self.DX_BIAS)

@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -26,8 +25,7 @@ class Initializer(Component, ModuleInitializer):
     Manager for reading and setting up a finite-element mesh.
     """
 
-    DOC_CONFIG = {
-        "cfg": """
+    DOC_CONFIG = {"cfg": """
             [pylithapp.mesh_initializer]
             phases = pylith.initializers.Serial
             
@@ -38,15 +36,12 @@ class Initializer(Component, ModuleInitializer):
             distribute_mesh = pylith.initializers.MeshDistributor
             insert_interfaces = pylith.initializers.InsertInterfaces
             refine_mesh = pylith.initializers.MeshRefiner
-        """
-    }
+        """}
 
     import pythia.pyre.inventory
     from .Serial import Serial
 
-    phases = pythia.pyre.inventory.facilityArray(
-        "phases", itemFactory=phaseFactory, factory=Serial
-    )
+    phases = pythia.pyre.inventory.facilityArray("phases", itemFactory=phaseFactory, factory=Serial)
     phases.meta["tip"] = "Phases for mesh initialization."
 
     def __init__(self, name="mesh_initializer"):

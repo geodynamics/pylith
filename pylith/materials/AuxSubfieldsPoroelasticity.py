@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -18,8 +17,8 @@ class AuxSubfieldsPoroelasticity(Component):
     Setting the parameters for a subfield does not turn on its use.
     The [`Poroelasticity` Component](Poroelasticity.md) has flags for including or excluding terms in the poroelasticity equation.
     """
-    DOC_CONFIG = {
-        "cfg": """
+
+    DOC_CONFIG = {"cfg": """
             [pylithapp.problem.materials.mat_poroelastic.auxiliary_fields]
             porosity.basis_order = 1
             solid_density.basis_order = 1
@@ -28,8 +27,7 @@ class AuxSubfieldsPoroelasticity(Component):
             body_force.basis_order = 1
             source_density.basis_order = 1
             gravitational_acceleration.basis_order = 0
-        """
-    }
+        """}
     """Python container for poroelasticity equation subfields.
 
     FACTORY: auxiliary_subfields
@@ -40,29 +38,30 @@ class AuxSubfieldsPoroelasticity(Component):
     from pylith.topology.Subfield import Subfield
 
     porosity = pythia.pyre.inventory.facility("porosity", family="auxiliary_subfield", factory=Subfield)
-    porosity.meta['tip'] = "Porosity subfield."
+    porosity.meta["tip"] = "Porosity subfield."
 
     solidDensity = pythia.pyre.inventory.facility("solid_density", family="auxiliary_subfield", factory=Subfield)
-    solidDensity.meta['tip'] = "Solid density subfield."
+    solidDensity.meta["tip"] = "Solid density subfield."
 
     fluidDensity = pythia.pyre.inventory.facility("fluid_density", family="auxiliary_subfield", factory=Subfield)
-    fluidDensity.meta['tip'] = "Fluid density subfield."
+    fluidDensity.meta["tip"] = "Fluid density subfield."
 
     fluidViscosity = pythia.pyre.inventory.facility("fluid_viscosity", family="auxiliary_subfield", factory=Subfield)
-    fluidViscosity.meta['tip'] = "Fluid viscosity subfield."
+    fluidViscosity.meta["tip"] = "Fluid viscosity subfield."
 
     bodyForce = pythia.pyre.inventory.facility("body_force", family="auxiliary_subfield", factory=Subfield)
-    bodyForce.meta['tip'] = "Body force subfield."
+    bodyForce.meta["tip"] = "Body force subfield."
 
     sourceDensity = pythia.pyre.inventory.facility("source_density", family="auxiliary_subfield", factory=Subfield)
-    sourceDensity.meta['tip'] = "Source density subfield."    
+    sourceDensity.meta["tip"] = "Source density subfield."
 
-    gravitationalAcceleration = pythia.pyre.inventory.facility("gravitational_acceleration", family="auxiliary_subfield", factory=Subfield)
-    gravitationalAcceleration.meta['tip'] = "Gravitational acceleration subfield."
+    gravitationalAcceleration = pythia.pyre.inventory.facility(
+        "gravitational_acceleration", family="auxiliary_subfield", factory=Subfield
+    )
+    gravitationalAcceleration.meta["tip"] = "Gravitational acceleration subfield."
 
     def __init__(self, name="auxsubfieldsporoelasticity"):
-        """Constructor.
-        """
+        """Constructor."""
         Component.__init__(self, name, facility="auxiliary_subfields")
 
     def _configure(self):
@@ -71,9 +70,9 @@ class AuxSubfieldsPoroelasticity(Component):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
+
 def auxiliary_subfields():
-    """Factory associated with AuxSubfieldsPoroelasticity.
-    """
+    """Factory associated with AuxSubfieldsPoroelasticity."""
     return AuxSubfieldsPoroelasticity()
 
 

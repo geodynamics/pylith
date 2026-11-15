@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -11,12 +10,12 @@
 import unittest
 
 from pylith.testing.TestCases import TestComponent, make_suite
-from pylith.initializers.MeshReader import (MeshReader, initialize_phase)
+from pylith.initializers.MeshReader import MeshReader, initialize_phase
 
 
 class TestMeshReader(TestComponent):
-    """Unit testing of MeshReader object.
-    """
+    """Unit testing of MeshReader object."""
+
     _class = MeshReader
     _factory = initialize_phase
 

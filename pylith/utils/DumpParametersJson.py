@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -20,8 +19,8 @@ class DumpParametersJson(DumpParameters):
 
     Implements `DumpParameters`.
     """
-    DOC_CONFIG = {
-        "cfg": """
+
+    DOC_CONFIG = {"cfg": """
             [pylithapp]
             dump_parameters = pylith.utils.DumpParametersJson
 
@@ -29,30 +28,30 @@ class DumpParametersJson(DumpParameters):
             filename = output/parameters.json
             style = normal
             verbose = True
-        """
-    }
+        """}
 
     import pythia.pyre.inventory
 
     filename = pythia.pyre.inventory.str("filename", default="")
     filename.meta["tip"] = "Name of file written with parameters."
 
-    style = pythia.pyre.inventory.str("style", default="normal", validator=pythia.pyre.inventory.choice(["normal", "compact"]))
-    style.meta['tip'] = "Style of JSON file [compact, normal]."
+    style = pythia.pyre.inventory.str(
+        "style", default="normal", validator=pythia.pyre.inventory.choice(["normal", "compact"])
+    )
+    style.meta["tip"] = "Style of JSON file [compact, normal]."
 
     indent = pythia.pyre.inventory.int("indent", default=4)
-    indent.meta['tip'] = "Number of spaces to indent, use a negative number for no newlines."
+    indent.meta["tip"] = "Number of spaces to indent, use a negative number for no newlines."
 
     def __init__(self, name="dumpparametersjson"):
-        """Constructor.
-        """
+        """Constructor."""
         DumpParameters.__init__(self, name)
 
     def write(self, app, using_mpi):
-        """Write parameters to JSON file.
-        """
+        """Write parameters to JSON file."""
         if using_mpi:
             from pylith.mpi.Communicator import mpi_is_root
+
             if not mpi_is_root():
                 return
 
@@ -64,6 +63,7 @@ class DumpParametersJson(DumpParameters):
         self._createPath(filename)
         with open(filename, "w") as fout:
             import json
+
             if self.style == "compact":
                 indent = None
                 separators = (",", ":")
@@ -75,11 +75,12 @@ class DumpParametersJson(DumpParameters):
 
             json.dump(self.info, fout, indent=indent, separators=separators)
 
+
 # FACTORIES ////////////////////////////////////////////////////////////
 
+
 def dump_parameters():
-    """Factory associated with DumpParametersJson.
-    """
+    """Factory associated with DumpParametersJson."""
     return DumpParametersJson()
 
 

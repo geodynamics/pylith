@@ -3,8 +3,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -24,13 +23,11 @@ class GenerateDB(object):
     """
 
     def __init__(self):
-        """Constructor.
-        """
+        """Constructor."""
         return
 
     def run(self):
-        """Generate the database.
-        """
+        """Generate the database."""
         # Domain
         y = numpy.arange(-4000.0, 4000.1, 8000.0)
         x = numpy.zeros(y.shape)
@@ -40,68 +37,81 @@ class GenerateDB(object):
 
         from gravity_refstate_soln import AnalyticalSoln
         from gravity_refstate_soln import p_density, p_vs, p_vp
+
         soln = AnalyticalSoln()
         stress = soln.stress(xy)
         strain = soln.strain(xy)
 
         from spatialdata.geocoords.CSCart import CSCart
+
         cs = CSCart()
         cs.inventory.spaceDim = 2
         cs._configure()
         data = {
-            'points': xy,
-            'coordsys': cs,
-            'data_dim': 1,
-            'values': [
+            "points": xy,
+            "coordsys": cs,
+            "data_dim": 1,
+            "values": [
                 {
-                    'name': "density",
-                    'units': "kg/m**3",
-                    'data': p_density * numpy.ones((npts,)),
-                }, {
-                    'name': "vs",
-                    'units': "m/s",
-                    'data': p_vs * numpy.ones((npts,)),
-                }, {
-                    'name': "vp",
-                    'units': "m/s",
-                    'data': p_vp * numpy.ones((npts,)),
-                }, {
-                    'name': "reference_stress_xx",
-                    'units': "Pa",
-                    'data': numpy.ravel(stress[0, :, 0]),
-                }, {
-                    'name': "reference_stress_yy",
-                    'units': "Pa",
-                    'data': numpy.ravel(stress[0, :, 1]),
-                }, {
-                    'name': "reference_stress_zz",
-                    'units': "Pa",
-                    'data': numpy.ravel(stress[0, :, 2]),
-                }, {
-                    'name': "reference_stress_xy",
-                    'units': "Pa",
-                    'data': numpy.ravel(stress[0, :, 3]),
-                }, {
-                    'name': "reference_strain_xx",
-                    'units': "none",
-                    'data': numpy.ravel(strain[0, :, 0]),
-                }, {
-                    'name': "reference_strain_yy",
-                    'units': "none",
-                    'data': numpy.ravel(strain[0, :, 1]),
-                }, {
-                    'name': "reference_strain_zz",
-                    'units': "none",
-                    'data': numpy.ravel(strain[0, :, 2]),
-                }, {
-                    'name': "reference_strain_xy",
-                    'units': "none",
-                    'data': numpy.ravel(strain[0, :, 3]),
-                }
-            ]
+                    "name": "density",
+                    "units": "kg/m**3",
+                    "data": p_density * numpy.ones((npts,)),
+                },
+                {
+                    "name": "vs",
+                    "units": "m/s",
+                    "data": p_vs * numpy.ones((npts,)),
+                },
+                {
+                    "name": "vp",
+                    "units": "m/s",
+                    "data": p_vp * numpy.ones((npts,)),
+                },
+                {
+                    "name": "reference_stress_xx",
+                    "units": "Pa",
+                    "data": numpy.ravel(stress[0, :, 0]),
+                },
+                {
+                    "name": "reference_stress_yy",
+                    "units": "Pa",
+                    "data": numpy.ravel(stress[0, :, 1]),
+                },
+                {
+                    "name": "reference_stress_zz",
+                    "units": "Pa",
+                    "data": numpy.ravel(stress[0, :, 2]),
+                },
+                {
+                    "name": "reference_stress_xy",
+                    "units": "Pa",
+                    "data": numpy.ravel(stress[0, :, 3]),
+                },
+                {
+                    "name": "reference_strain_xx",
+                    "units": "none",
+                    "data": numpy.ravel(strain[0, :, 0]),
+                },
+                {
+                    "name": "reference_strain_yy",
+                    "units": "none",
+                    "data": numpy.ravel(strain[0, :, 1]),
+                },
+                {
+                    "name": "reference_strain_zz",
+                    "units": "none",
+                    "data": numpy.ravel(strain[0, :, 2]),
+                },
+                {
+                    "name": "reference_strain_xy",
+                    "units": "none",
+                    "data": numpy.ravel(strain[0, :, 3]),
+                },
+            ],
         }
 
         from spatialdata.spatialdb.SimpleIOAscii import createWriter
+
         io = createWriter("gravity_refstate_matfields.spatialdb")
         io.write(data)
         return

@@ -2,8 +2,7 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
+// Copyright (c) 2010-2026 All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
@@ -18,16 +17,14 @@ namespace pylith {
     namespace problems {
         class Observer {
             // PUBLIC ENUMS ///////////////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             enum NotificationType {
-                DIAGNOSTIC=0,
-                SOLUTION=1,
+                DIAGNOSTIC = 0,
+                SOLUTION = 1,
             };
 
             // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+          public:
             /// Constructor.
             Observer(void);
 
@@ -36,7 +33,7 @@ public:
 
         }; // Observer
 
-    } // problems
-} // pylith
+    } // namespace problems
+} // namespace pylith
 
 // End of file

@@ -3,8 +3,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -119,9 +118,7 @@ class FullTestCase(unittest.TestCase):
     def test_output(self):
         for check in self.checks:
             for mesh_entity in check.mesh_entities:
-                filename = check.filename.format(
-                    name=self.name, mesh_entity=mesh_entity
-                )
+                filename = check.filename.format(name=self.name, mesh_entity=mesh_entity)
                 with self.subTest(filename=filename):
                     check_data(
                         self,
@@ -143,12 +140,8 @@ class FullTestCase(unittest.TestCase):
         import argparse
 
         parser = argparse.ArgumentParser()
-        parser.add_argument(
-            "--verbose", action="store_true", dest="verbosity", default=0
-        )
-        parser.add_argument(
-            "--skip-pylith-run", action="store_false", dest="run_pylith", default=True
-        )
+        parser.add_argument("--verbose", action="store_true", dest="verbosity", default=0)
+        parser.add_argument("--skip-pylith-run", action="store_false", dest="run_pylith", default=True)
         args = parser.parse_args()
         FullTestCase.VERBOSITY = args.verbosity
         FullTestCase.RUN_PYLITH = args.run_pylith
@@ -165,9 +158,7 @@ class TestDriver(object):
 
     def run(self):
         """Run the test suite."""
-        success = (
-            unittest.TextTestRunner(verbosity=2).run(self._suite()).wasSuccessful()
-        )
+        success = unittest.TextTestRunner(verbosity=2).run(self._suite()).wasSuccessful()
 
         if not success:
             import sys
@@ -237,9 +228,7 @@ class HDF5Checker(object):
     ):
         self.testcase.assertTrue("vertex_fields" in self.h5.keys())
         fieldsH5 = self.h5["vertex_fields"].keys()
-        self.testcase.assertTrue(
-            fieldName in fieldsH5, f"Could not find field in vertex fields {fieldsH5}"
-        )
+        self.testcase.assertTrue(fieldName in fieldsH5, f"Could not find field in vertex fields {fieldsH5}")
         field = self.h5["vertex_fields/" + fieldName][:]
         if len(field.shape) == 3 and final_time_only:
             dims = field.shape
@@ -269,9 +258,7 @@ class HDF5Checker(object):
             f"Missing 'cell_fields'. Groups: {self.h5.keys()}".format,
         )
         fieldsH5 = self.h5["cell_fields"].keys()
-        self.testcase.assertTrue(
-            fieldName in fieldsH5, f"Could not find field in cell fields {fieldsH5}"
-        )
+        self.testcase.assertTrue(fieldName in fieldsH5, f"Could not find field in cell fields {fieldsH5}")
         field = self.h5["cell_fields/" + fieldName][:]
         if len(field.shape) == 3 and final_time_only:
             dims = field.shape
@@ -286,13 +273,9 @@ class HDF5Checker(object):
     def _checkField(self, fieldE, field, maskField, tolerance, scale):
         nstepsE, nptsE, ncompsE = fieldE.shape
         nsteps, npts, ncomps = field.shape
-        self.testcase.assertEqual(
-            nstepsE, nsteps, msg="Mismatch in number of time steps"
-        )
+        self.testcase.assertEqual(nstepsE, nsteps, msg="Mismatch in number of time steps")
         self.testcase.assertEqual(nptsE, npts, msg="Mismatch in number of points")
-        self.testcase.assertEqual(
-            ncompsE, ncomps, msg="Mismatch in number of components"
-        )
+        self.testcase.assertEqual(ncompsE, ncomps, msg="Mismatch in number of components")
 
         v_scale = max(scale, numpy.mean(numpy.abs(fieldE).ravel()))
         v_tolerance = v_scale * tolerance
@@ -312,34 +295,24 @@ class HDF5Checker(object):
             msg += [f"Computed values (not okay): {field[~okay]}"]
             # msg += [f"Coordinates: {pts[~okay, :]}"]
             msg += [f"Tolerance: {v_tolerance}"]
-        self.testcase.assertEqual(
-            nsteps * npts * ncomps, numpy.sum(okay), msg="\n".join(msg)
-        )
+        self.testcase.assertEqual(nsteps * npts * ncomps, numpy.sum(okay), msg="\n".join(msg))
 
 
 # -------------------------------------------------------------------------------------------------
 class HDF5SizeChecker(HDF5Checker):
 
     def checkVertexField(self, fieldName, mesh, exact_soln):
-        self.testcase.assertTrue(
-            "vertex_fields" in self.h5.keys(), "Missing `vertex_fields`."
-        )
+        self.testcase.assertTrue("vertex_fields" in self.h5.keys(), "Missing `vertex_fields`.")
         fieldsH5 = self.h5["vertex_fields"].keys()
-        self.testcase.assertTrue(
-            fieldName in fieldsH5, f"Could not find field in vertex fields {fieldsH5}"
-        )
+        self.testcase.assertTrue(fieldName in fieldsH5, f"Could not find field in vertex fields {fieldsH5}")
         dims = self.h5["vertex_fields/" + fieldName].shape
         dimsE = exact_soln.getDims(fieldName, mesh)
         self._checkDims(dimsE, dims)
 
     def checkCellField(self, fieldName, mesh, exact_soln):
-        self.testcase.assertTrue(
-            "cell_fields" in self.h5.keys(), "Missing `cell_fields`."
-        )
+        self.testcase.assertTrue("cell_fields" in self.h5.keys(), "Missing `cell_fields`.")
         fieldsH5 = self.h5["cell_fields"].keys()
-        self.testcase.assertTrue(
-            fieldName in fieldsH5, f"Could not find field in cell fields {fieldsH5}"
-        )
+        self.testcase.assertTrue(fieldName in fieldsH5, f"Could not find field in cell fields {fieldsH5}")
         dims = self.h5["cell_fields/" + fieldName].shape
         dimsE = exact_soln.getDims(fieldName, mesh)
         self._checkDims(dimsE, dims)
@@ -347,13 +320,9 @@ class HDF5SizeChecker(HDF5Checker):
     def _checkDims(self, dimsE, dims):
         nstepsE, nptsE, ncompsE = dimsE
         nsteps, npts, ncomps = dims
-        self.testcase.assertEqual(
-            nstepsE, nsteps, msg="Mismatch in number of time steps"
-        )
+        self.testcase.assertEqual(nstepsE, nsteps, msg="Mismatch in number of time steps")
         self.testcase.assertEqual(nptsE, npts, msg="Mismatch in number of points")
-        self.testcase.assertEqual(
-            ncompsE, ncomps, msg="Mismatch in number of components"
-        )
+        self.testcase.assertEqual(ncompsE, ncomps, msg="Mismatch in number of components")
 
 
 # -------------------------------------------------------------------------------------------------
@@ -433,12 +402,8 @@ def run_pylith(appName, cfgfiles=[], dbClass=None, nprocs=1):
         import multiprocessing
 
         cpuCount = multiprocessing.cpu_count()
-        mpiVersion = (
-            pylith.utils.CollectVersionInfo.CollectVersionInfo._collectVersionMPI()
-        )
-        if mpiVersion["implementation"] == "OpenMPI" and mpiVersion[
-            "standard"
-        ].startswith("3"):
+        mpiVersion = pylith.utils.CollectVersionInfo.CollectVersionInfo._collectVersionMPI()
+        if mpiVersion["implementation"] == "OpenMPI" and mpiVersion["standard"].startswith("3"):
             cpuCount /= 2  # Assume hyperthreading is turned on and OpenMPI 3 doesn't allow oversubscribing
 
         appNumProcs = min(cpuCount, nprocs)

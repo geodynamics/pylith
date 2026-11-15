@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -17,8 +16,7 @@ class Defaults(Component):
     No user-specified settings will be overwritten.
     """
 
-    DOC_CONFIG = {
-        "cfg": """
+    DOC_CONFIG = {"cfg": """
             [pylithapp.problem.petsc_defaults]
             solver = True
             parallel = False
@@ -27,8 +25,7 @@ class Defaults(Component):
             adaptive_time_stepping = False
             collective_io = True
             testing = False
-        """
-    }
+        """}
 
     import pythia.pyre.inventory
 

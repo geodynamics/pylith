@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
 """Python script to pre-process bathymetry and topography data in region around the Cascadia subduction zone
 using rasterio.
 
@@ -93,3 +101,6 @@ with netCDF4.Dataset(FILENAME_OUT, "w", format="NETCDF4") as nc:
     data_var[:, :] = data_new
     data_var.units = "meter"
     data_var.long_name = "Elevation of bedrock."
+
+
+# End of file

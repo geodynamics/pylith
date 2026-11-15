@@ -1,4 +1,12 @@
 #!/usr/bin/env nemesis
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
 """Generate a hex or tet mesh using Gmsh, making use of the OpenCascade geometry engine.
 
 We use the `gmsh_utils` module provided with PyLith. This module has helper functions
@@ -11,7 +19,8 @@ Run `generate_gmsh.py --help` to see the command line options.
 """
 
 import gmsh
-from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup, GenerateMesh)
+from pylith.meshio.gmsh_utils import BoundaryGroup, MaterialGroup, GenerateMesh
+
 
 class App(GenerateMesh):
     """
@@ -24,19 +33,19 @@ class App(GenerateMesh):
 
     Discretization size is 3km.
     """
-    DOMAIN_X = DOMAIN_Y = 12.0e+3
-    DOMAIN_Z = 9.0e+3
-    DX = 3.0e+3
+
+    DOMAIN_X = DOMAIN_Y = 12.0e3
+    DOMAIN_Z = 9.0e3
+    DX = 3.0e3
 
     def __init__(self):
-        """Constructor.
-        """
+        """Constructor."""
         # Set the cell choices available through command line options
         # with the default cell type `hex` matching the PyLith parameter files.
         self.cell_choices = {
             "default": "hex",
             "choices": ["tet", "hex"],
-            }
+        }
         self.filename = "mesh_hex.msh"
 
     def create_geometry(self):
@@ -59,12 +68,24 @@ class App(GenerateMesh):
         dx = 100.0
         bbox = gmsh.model.get_bounding_box(-1, -1)
         get_bbox_entities = gmsh.model.get_entities_in_bounding_box
-        self.s_xneg = get_bbox_entities(bbox[0]-dx, bbox[1]-dx, bbox[2]-dx, bbox[0]+dx, bbox[4]+dx, bbox[5]+dx, dim=2)
-        self.s_xpos = get_bbox_entities(bbox[3]-dx, bbox[1]-dx, bbox[2]-dx, bbox[3]+dx, bbox[4]+dx, bbox[5]+dx, dim=2)
-        self.s_yneg = get_bbox_entities(bbox[0]-dx, bbox[1]-dx, bbox[2]-dx, bbox[3]+dx, bbox[1]+dx, bbox[5]+dx, dim=2)
-        self.s_ypos = get_bbox_entities(bbox[0]-dx, bbox[4]-dx, bbox[2]-dx, bbox[3]+dx, bbox[4]+dx, bbox[5]+dx, dim=2)
-        self.s_zneg = get_bbox_entities(bbox[0]-dx, bbox[1]-dx, bbox[2]-dx, bbox[3]+dx, bbox[4]+dx, bbox[2]+dx, dim=2)
-        self.s_zpos = get_bbox_entities(bbox[0]-dx, bbox[1]-dx, bbox[5]-dx, bbox[3]+dx, bbox[4]+dx, bbox[5]+dx, dim=2)
+        self.s_xneg = get_bbox_entities(
+            bbox[0] - dx, bbox[1] - dx, bbox[2] - dx, bbox[0] + dx, bbox[4] + dx, bbox[5] + dx, dim=2
+        )
+        self.s_xpos = get_bbox_entities(
+            bbox[3] - dx, bbox[1] - dx, bbox[2] - dx, bbox[3] + dx, bbox[4] + dx, bbox[5] + dx, dim=2
+        )
+        self.s_yneg = get_bbox_entities(
+            bbox[0] - dx, bbox[1] - dx, bbox[2] - dx, bbox[3] + dx, bbox[1] + dx, bbox[5] + dx, dim=2
+        )
+        self.s_ypos = get_bbox_entities(
+            bbox[0] - dx, bbox[4] - dx, bbox[2] - dx, bbox[3] + dx, bbox[4] + dx, bbox[5] + dx, dim=2
+        )
+        self.s_zneg = get_bbox_entities(
+            bbox[0] - dx, bbox[1] - dx, bbox[2] - dx, bbox[3] + dx, bbox[4] + dx, bbox[2] + dx, dim=2
+        )
+        self.s_zpos = get_bbox_entities(
+            bbox[0] - dx, bbox[1] - dx, bbox[5] - dx, bbox[3] + dx, bbox[4] + dx, bbox[5] + dx, dim=2
+        )
 
     def mark(self):
         """Mark geometry for materials, boundary conditions, faults, etc.
@@ -74,12 +95,10 @@ class App(GenerateMesh):
         # We use the `MaterialGroup` data class and `create_material` function from `gmsh_utils`
         # to define the materials. The `MaterialGroup` constructor takes the tag of the physical
         # group to create for the material as its first argument and a list of geometry entities
-        # (surface in 2D and volume in 3D) as its second argument. The tag of the physical 
+        # (surface in 2D and volume in 3D) as its second argument. The tag of the physical
         # group corresponds to the `label_value` Pyre property for the material in the PyLith
         # settings.
-        materials = (
-            MaterialGroup(tag=1, entities=[self.v1]),
-        )
+        materials = (MaterialGroup(tag=1, entities=[self.v1]),)
         for material in materials:
             material.create_physical_group()
 
@@ -112,7 +131,7 @@ class App(GenerateMesh):
         gmsh.option.setNumber("Mesh.MeshSizeMin", self.DX)
         gmsh.option.setNumber("Mesh.MeshSizeMax", self.DX)
         if cell == "hex":
-            # A transfinite mesh with recombine set to True should result in a hex mesh. 
+            # A transfinite mesh with recombine set to True should result in a hex mesh.
             gmsh.model.mesh.set_transfinite_automatic(recombine=True)
         else:
             gmsh.option.setNumber("Mesh.Algorithm", 8)

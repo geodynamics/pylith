@@ -2,8 +2,7 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
+// Copyright (c) 2010-2026 All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
@@ -14,10 +13,9 @@
 
 namespace pylith {
     namespace bc {
-        class DirichletTimeDependent: public pylith::bc::BoundaryCondition {
+        class DirichletTimeDependent : public pylith::bc::BoundaryCondition {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             /// Default constructor.
             DirichletTimeDependent(void);
 
@@ -35,14 +33,14 @@ public:
              * @param[in] dof Array of indices for constrained degrees of freedom.
              * @param[in] size Size of array
              */
-            %apply(int* INPLACE_ARRAY1, int DIM1) {
-                (const int* flags,
-                 const int size)
-            };
+            % apply(int* INPLACE_ARRAY1,
+                    int DIM1){(const int* flags,
+                               const int size)};
             void setConstrainedDOF(const int* flags,
                                    const int size);
 
-            %clear(const int* flags, const int size);
+            % clear(const int* flags,
+                    const int size);
 
             /** Get indices of constrained degrees of freedom.
              *
@@ -116,7 +114,7 @@ public:
              * @param[in] solution Solution field.
              * @returns Constraint if applicable, otherwise NULL.
              */
-            std::vector < pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
+            std::vector<pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
 
             /** Create auxiliary field.
              *
@@ -137,8 +135,7 @@ public:
                                       const double t);
 
             // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+          protected:
             /** Get auxiliary factory associated with physics.
              *
              * @return Auxiliary factory for physics object.
@@ -150,12 +147,11 @@ protected:
              * @param[in] dt Current time step.
              */
             void _updateKernelConstants(const PylithReal dt);
-
         };
 
         // class DirichletTimeDependent
 
-    } // bc
-} // pylith
+    } // namespace bc
+} // namespace pylith
 
 // End of file

@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -23,9 +22,7 @@ class TestConvert(unittest.TestCase):
 
     def test_quad(self):
         """Check mesh."""
-        self._checkMeshHDF5(
-            "quad_small.h5", dim=2, numCells=12, numCorners=4, numVertices=17
-        )
+        self._checkMeshHDF5("quad_small.h5", dim=2, numCells=12, numCorners=4, numVertices=17)
 
     def _checkMeshHDF5(self, filename, dim, numCells, numCorners, numVertices):
         groups = (
@@ -57,9 +54,7 @@ class TestConvert(unittest.TestCase):
         self.assertEqual(numCells, cells[:].shape[0])
         self.assertEqual(numCorners, cells[:].shape[1])
 
-        coords = h5["/topologies/domain/dms/coordinateDM/vecs/coordinates/coordinates"][
-            :
-        ]
+        coords = h5["/topologies/domain/dms/coordinateDM/vecs/coordinates/coordinates"][:]
         self.assertEqual(numVertices * dim, coords.shape[0])
 
         cone_sizes = h5["/topologies/domain/topology/strata/2/cone_sizes"][:]

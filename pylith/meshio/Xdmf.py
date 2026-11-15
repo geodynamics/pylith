@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -47,10 +46,7 @@ class Xdmf(object):
         import os
 
         if not os.path.isfile(filenameH5):
-            raise IOError(
-                "Cannot create Xdmf file for HDF5 file '%s'. File not found."
-                % filenameH5
-            )
+            raise IOError("Cannot create Xdmf file for HDF5 file '%s'. File not found." % filenameH5)
         self.h5 = h5py.File(filenameH5, "r")
 
         if self._getSpaceDim() == 1:
@@ -142,10 +138,7 @@ class Xdmf(object):
             cellType = "Hexahedron"
         else:
             cellType = "Unknown"
-            print(
-                "WARNING: Unknown cell type with %d vertices and dimension %d."
-                % (numCorners, cellDim)
-            )
+            print("WARNING: Unknown cell type with %d vertices and dimension %d." % (numCorners, cellDim))
         return cellType
 
     def _getXdmfVectorFieldType(self, vectorFieldString):
@@ -159,9 +152,7 @@ class Xdmf(object):
         elif type(vectorFieldString) == numpy.bytes_:
             vectorFieldTypeName = vectorFieldString.tobytes().decode().lower()
         else:
-            raise TypeError(
-                f"Unknown type for vector field string ({type(vectorFieldString)})."
-            )
+            raise TypeError(f"Unknown type for vector field string ({type(vectorFieldString)}).")
 
         vtype = "Matrix"
         if vectorFieldTypeName == "scalar":
@@ -190,9 +181,7 @@ class Xdmf(object):
                     field.data = dataset[:]
                     field.domain = Field.groupToDomain[group]
                     if "vector_field_type" in dataset.attrs:
-                        field.vectorFieldType = self._getXdmfVectorFieldType(
-                            dataset.attrs["vector_field_type"]
-                        )
+                        field.vectorFieldType = self._getXdmfVectorFieldType(dataset.attrs["vector_field_type"])
                     else:
                         print(
                             "WARNING: Field '%s/%s' dataset missing 'vector_field_type' attribute. Guessing vector field type."
@@ -308,10 +297,7 @@ class Xdmf(object):
             self.file.write("    </DataItem>\n")
         else:
             self._close()
-            raise ValueError(
-                "Unexpected spatial dimension %d when writing domain vertices."
-                % spaceDim
-            )
+            raise ValueError("Unexpected spatial dimension %d when writing domain vertices." % spaceDim)
 
     def _closeDomain(self):
         """Close domain element."""
@@ -319,9 +305,7 @@ class Xdmf(object):
 
     def _openTimeCollection(self):
         """Create Grid element for collection of time grids."""
-        self.file.write(
-            '    <Grid Name="TimeSeries" GridType="Collection" CollectionType="Temporal">\n'
-        )
+        self.file.write('    <Grid Name="TimeSeries" GridType="Collection" CollectionType="Temporal">\n')
 
     def _closeTimeCollection(self):
         """Close Grid element for collection of time grids."""
@@ -387,19 +371,13 @@ class Xdmf(object):
                 components = ["_xx", "_yy", "_zz", "_xy", "_yz", "_xz"]
             else:
                 self._close()
-                raise ValueError(
-                    "Unexpected spatial dimension %d for field component names."
-                    % spaceDim
-                )
+                raise ValueError("Unexpected spatial dimension %d for field component names." % spaceDim)
             componentName = field.name + components[iComponent]
         elif field.vectorFieldType == "Matrix":
             componentName = field.name + "_%d" % iComponent
         else:
             self._close()
-            raise ValueError(
-                "Unexpected vector field type '%s' for field component names."
-                % field.vectorFieldType
-            )
+            raise ValueError("Unexpected vector field type '%s' for field component names." % field.vectorFieldType)
         h5Name = "/" + Field.domainToGroup[field.domain] + "/" + field.name
         if iTime is None:
             assert 2 == len(field.data.shape)
@@ -518,8 +496,7 @@ class Xdmf(object):
                 '              <DataItem Reference="XML">\n'
                 '                %(gridRef)s/Attribute[@Name="%(name)s"]/DataItem[1]/DataItem[1]\n'
                 "              </DataItem>\n"
-                "            </DataItem>\n"
-                % {"numPoints": numPoints, "name": field.name, "gridRef": gridRef}
+                "            </DataItem>\n" % {"numPoints": numPoints, "name": field.name, "gridRef": gridRef}
             )
 
             # close

@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -17,13 +16,11 @@ class NullComponent(Component):
     """
 
     def __init__(self):
-        """Constructor.
-        """
+        """Constructor."""
         Component.__init__(self, name="nullcomponent", facility="nullcomponent")
 
     def _cleanup(self):
-        """Deallocate locally managed data structures.
-        """
+        """Deallocate locally managed data structures."""
         return
 
 

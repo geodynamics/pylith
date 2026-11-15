@@ -1,4 +1,12 @@
 #!/usr/bin/env nemesis
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
 
 import subprocess
 import pymupdf
@@ -13,7 +21,7 @@ FILENAMES = (
     "step03-diagram",
 )
 
-doc = pymupdf.open("diagrams.pdf") # open a document
+doc = pymupdf.open("diagrams.pdf")  # open a document
 for i_page, page in enumerate(doc):
 
     name = FILENAMES[i_page]
@@ -22,4 +30,7 @@ for i_page, page in enumerate(doc):
     diagram.save(f"{name}.pdf")
 
     with open(f"{name}.svg", "w", encoding="utf-8") as svg_out:
-      svg_out.write(page.get_svg_image())
+        svg_out.write(page.get_svg_image())
+
+
+# End of file

@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -21,8 +20,8 @@ class SimulationMetadata(Component):
 
     When using `base` to specify other files with metadata, the other files will append to the `keywords` and `features` lists, whereas other metadata will be overwritten (the same behavior as other Pyre properties).
     """
-    DOC_CONFIG = {
-        "cfg": """
+
+    DOC_CONFIG = {"cfg": """
             [pylithapp.metadata]
             base = [pylithapp.cfg]
             description = Axial extension using Dirichlet boundary conditions.
@@ -40,9 +39,7 @@ class SimulationMetadata(Component):
             version = 1.0.0
             arguments = [step01_axialdisp.cfg]
             pylith_version = [>=3.0, <5.0]
-        """
-    }
-
+        """}
 
     import pythia.pyre.inventory
 
@@ -71,8 +68,7 @@ class SimulationMetadata(Component):
     pylith_version.meta["tip"] = "PyLith versions compatible with simulation input files."
 
     def __init__(self, name="metadata", facility="simulationmetadata"):
-        """Constructor.
-        """
+        """Constructor."""
         Component.__init__(self, name, facility)
         return
 
@@ -86,6 +82,7 @@ class SimulationMetadata(Component):
             self._validationError(context, trait, "List of PyLith version constraints required.")
 
         from pylith.utils.utils import PylithVersion
+
         version = PylithVersion.version()
         major, minor, patch = version.split(".")
         ok = True
@@ -95,11 +92,15 @@ class SimulationMetadata(Component):
                 break
         if not ok:
             trait = self.inventory.getTrait("pylith_version")
-            self._validationError(context, trait, f"Installed PyLith version {version} does not meet"
-            f" version constraints {self.pylith_version}.")
+            self._validationError(
+                context,
+                trait,
+                f"Installed PyLith version {version} does not meet" f" version constraints {self.pylith_version}.",
+            )
 
     def _validationError(self, context, trait, msg):
         from pythia.pyre.inventory.Item import Item
+
         error = ValueError(msg)
         descriptor = self.getTraitDescriptor(trait.name)
         context.error(error, items=[Item(trait, descriptor)])
@@ -107,9 +108,9 @@ class SimulationMetadata(Component):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
+
 def simulation_metadata():
-    """Factory associated with SimulationMetadata.
-    """
+    """Factory associated with SimulationMetadata."""
     return SimulationMetadata()
 
 
@@ -120,13 +121,13 @@ def fromFile(filename):
         filename (str)
             Name of file
     """
+
     def _get_properties(filename):
-        """Get metadata from file.
-        """
+        """Get metadata from file."""
         CONVERTERS = {
             "description": str,
             "keywords": string_to_list,
-           "features": string_to_list,
+            "features": string_to_list,
             "authors": string_to_list,
             "arguments": string_to_list,
             "base": string_to_list,
@@ -138,14 +139,13 @@ def fromFile(filename):
         base, ext = os.path.splitext(str(filename))
         if ext == ".cfg":
             from pythia.pyre.inventory.cfg.CodecConfig import CodecConfig
+
             reader = CodecConfig()
         else:
             raise NotImplementedError(f"Reading '{ext}' file not implemented.")
         registry = reader.open(base)
         properties = None
-        if registry and \
-            "inventory" in registry.keys() and \
-                "pylithapp" in registry["inventory"].facilities.keys():
+        if registry and "inventory" in registry.keys() and "pylithapp" in registry["inventory"].facilities.keys():
             facilities = registry["inventory"].facilities["pylithapp"].facilities
             properties = facilities["metadata"].properties if "metadata" in facilities else None
             if properties:

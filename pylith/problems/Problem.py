@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -62,17 +61,13 @@ class Problem(Component, ModuleProblem):
     import pythia.pyre.inventory
     from pylith.utils.EmptyBin import EmptyBin
 
-    defaults = pythia.pyre.inventory.facility(
-        "defaults", family="problem_defaults", factory=ProblemDefaults
-    )
+    defaults = pythia.pyre.inventory.facility("defaults", family="problem_defaults", factory=ProblemDefaults)
     defaults.meta["tip"] = "Default options for problem."
 
     formulation = pythia.pyre.inventory.str(
         "formulation",
         default="quasistatic",
-        validator=pythia.pyre.inventory.choice(
-            ["quasistatic", "dynamic", "dynamic_imex"]
-        ),
+        validator=pythia.pyre.inventory.choice(["quasistatic", "dynamic", "dynamic_imex"]),
     )
     formulation.meta["tip"] = "Formulation for equations."
 
@@ -83,48 +78,34 @@ class Problem(Component, ModuleProblem):
     )
     solverChoice.meta["tip"] = "Type of solver to use ['linear', 'nonlinear']."
 
-    petscDefaults = pythia.pyre.inventory.facility(
-        "petsc_defaults", family="petsc_defaults", factory=PetscDefaults
-    )
+    petscDefaults = pythia.pyre.inventory.facility("petsc_defaults", family="petsc_defaults", factory=PetscDefaults)
     petscDefaults.meta["tip"] = "Flags controlling which default PETSc options to use."
 
     from pylith.initializers.Initializer import Initializer
-    meshInitializer = pythia.pyre.inventory.facility(
-        "mesh_initializer", family="mesh_initializer", factory=Initializer)
+
+    meshInitializer = pythia.pyre.inventory.facility("mesh_initializer", family="mesh_initializer", factory=Initializer)
     meshInitializer.meta["tip"] = "Mesh initializer."
 
     from .Solution import Solution
 
-    solution = pythia.pyre.inventory.facility(
-        "solution", family="solution", factory=Solution
-    )
+    solution = pythia.pyre.inventory.facility("solution", family="solution", factory=Solution)
     solution.meta["tip"] = "Solution field for problem."
 
     from pylith.scales.QuasistaticElasticity import QuasistaticElasticity
 
-    scales = pythia.pyre.inventory.facility(
-        "scales", family="scales", factory=QuasistaticElasticity
-    )
+    scales = pythia.pyre.inventory.facility("scales", family="scales", factory=QuasistaticElasticity)
     scales.meta["tip"] = "Scales for nondimensionalizing boundary value problem."
 
     from pylith.materials.Homogeneous import Homogeneous
 
-    materials = pythia.pyre.inventory.facilityArray(
-        "materials", itemFactory=materialFactory, factory=Homogeneous
-    )
+    materials = pythia.pyre.inventory.facilityArray("materials", itemFactory=materialFactory, factory=Homogeneous)
     materials.meta["tip"] = "Materials in problem."
 
-    bc = pythia.pyre.inventory.facilityArray(
-        "bc", itemFactory=bcFactory, factory=EmptyBin
-    )
+    bc = pythia.pyre.inventory.facilityArray("bc", itemFactory=bcFactory, factory=EmptyBin)
     bc.meta["tip"] = "Boundary conditions."
 
-    interfaces = pythia.pyre.inventory.facilityArray(
-        "interfaces", itemFactory=faultFactory, factory=EmptyBin
-    )
-    interfaces.meta["tip"] = (
-        "Interior surfaces with constraints or constitutive models."
-    )
+    interfaces = pythia.pyre.inventory.facilityArray("interfaces", itemFactory=faultFactory, factory=EmptyBin)
+    interfaces.meta["tip"] = "Interior surfaces with constraints or constitutive models."
 
     from pylith.problems.SingleObserver import SingleSolnObserver
 
@@ -133,9 +114,7 @@ class Problem(Component, ModuleProblem):
     )
     observers.meta["tip"] = "Observers (e.g., output) for solution."
 
-    gravityField = pythia.pyre.inventory.facility(
-        "gravity_field", family="spatial_database", factory=NullComponent
-    )
+    gravityField = pythia.pyre.inventory.facility("gravity_field", family="spatial_database", factory=NullComponent)
     gravityField.meta["tip"] = "Database used for gravity field."
 
     def __init__(self, name="problem"):
@@ -168,7 +147,7 @@ class Problem(Component, ModuleProblem):
         ModuleProblem.setScales(self, self.scales)
         if not isinstance(self.gravityField, NullComponent):
             ModuleProblem.setGravityField(self, self.gravityField)
-    
+
         # Preinitialize materials
         for material in self.materials.components():
             material.preinitialize(self)
@@ -203,6 +182,7 @@ class Problem(Component, ModuleProblem):
     def verifyConfiguration(self):
         """Verify compatibility of configuration."""
         from pylith.mpi.Communicator import mpi_is_root
+
         ModuleProblem.verifyConfiguration(self)
         if mpi_is_root():
             self._printInfo()
@@ -218,6 +198,7 @@ class Problem(Component, ModuleProblem):
     def finalize(self):
         """Cleanup after running problem."""
         from pylith.mpi.Communicator import mpi_is_root
+
         if mpi_is_root():
             self._flow.log("Finalizing problem.")
         self.mesh.deallocate()

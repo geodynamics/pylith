@@ -2,8 +2,7 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
+// Copyright (c) 2010-2026 All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
@@ -325,3 +324,6 @@ TEST_CASE("BodyForce3D::HexQ2::testJacobianFiniteDiff",
           "[BodyForce3D][HexQ2][Jacobian finite difference]") {
     pylith::TestLinearElasticity(pylith::BodyForce3D::HexQ2()).testJacobianFiniteDiff();
 }
+
+
+// End of file

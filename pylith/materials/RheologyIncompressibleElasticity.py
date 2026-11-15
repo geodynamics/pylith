@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -16,17 +15,19 @@ class RheologyIncompressibleElasticity(Component, ModuleRheology):
     """
     Abstract base class for bulk rheology of incompressible elastic material.
     """
+
     import pythia.pyre.inventory
 
     from pylith.topology.Subfield import subfieldFactory
     from pylith.utils.EmptyBin import EmptyBin
 
-    auxiliarySubfields = pythia.pyre.inventory.facilityArray("auxiliary_subfields", itemFactory=subfieldFactory, factory=EmptyBin)
-    auxiliarySubfields.meta['tip'] = "Discretization information for physical properties and state variables."
+    auxiliarySubfields = pythia.pyre.inventory.facilityArray(
+        "auxiliary_subfields", itemFactory=subfieldFactory, factory=EmptyBin
+    )
+    auxiliarySubfields.meta["tip"] = "Discretization information for physical properties and state variables."
 
     def __init__(self, name="rheologyincompressibleelasticity"):
-        """Constructor.
-        """
+        """Constructor."""
         Component.__init__(self, name, facility="rheologyincompressibleelasticity")
 
     def preinitialize(self, problem):
@@ -40,12 +41,18 @@ class RheologyIncompressibleElasticity(Component, ModuleRheology):
                 quadOrder = problem.defaults.quadOrder
             else:
                 quadOrder = subfield.quadOrder
-            material.setAuxiliarySubfieldDiscretization(fieldName, subfield.basisOrder, quadOrder, subfield.dimension,
-                                                        subfield.cellBasis, subfield.feSpace, subfield.isBasisContinuous)
+            material.setAuxiliarySubfieldDiscretization(
+                fieldName,
+                subfield.basisOrder,
+                quadOrder,
+                subfield.dimension,
+                subfield.cellBasis,
+                subfield.feSpace,
+                subfield.isBasisContinuous,
+            )
 
     def _createModuleObj(self):
-        """Call constructor for module object for access to C++ object.
-        """
+        """Call constructor for module object for access to C++ object."""
         raise NotImplementedError("Implement in derived class.")
 
 

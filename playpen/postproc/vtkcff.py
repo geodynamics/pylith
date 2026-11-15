@@ -3,8 +3,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -33,8 +32,7 @@ class VtkCff(Application):
     """
 
     class Inventory(Application.Inventory):
-        """Python object for managing VtkCff facilities and properties.
-        """
+        """Python object for managing VtkCff facilities and properties."""
 
         # @class Inventory
         # Python object for managing VtkCff facilities and properties.
@@ -55,56 +53,56 @@ class VtkCff(Application):
 
         import pythia.pyre.inventory
 
-        stressRefMode = pythia.pyre.inventory.str("stress_ref_mode",
-                                           default="initial_state",
-                                           validator=pythia.pyre.inventory.choice(["constant_state",
-                                                                            "initial_state", "previous_state"]))
-        stressRefMode.meta['tip'] = "Stress state against which to compute differences."
+        stressRefMode = pythia.pyre.inventory.str(
+            "stress_ref_mode",
+            default="initial_state",
+            validator=pythia.pyre.inventory.choice(["constant_state", "initial_state", "previous_state"]),
+        )
+        stressRefMode.meta["tip"] = "Stress state against which to compute differences."
 
-        orientationMode = pythia.pyre.inventory.str("orientation_mode",
-                                             default="optimally_oriented",
-                                             validator=pythia.pyre.inventory.choice(["optimally_oriented",
-                                                                              "predefined_plane"]))
-        orientationMode.meta['tip'] = "Compute CFF on predefined plane or optimally-oriented planes."
+        orientationMode = pythia.pyre.inventory.str(
+            "orientation_mode",
+            default="optimally_oriented",
+            validator=pythia.pyre.inventory.choice(["optimally_oriented", "predefined_plane"]),
+        )
+        orientationMode.meta["tip"] = "Compute CFF on predefined plane or optimally-oriented planes."
 
-        vtkInputRoot = pythia.pyre.inventory.str("vtk_input_root",
-                                          default="stress_t0001.vtk")
-        vtkInputRoot.meta['tip'] = "Root filename for VTK input files."
+        vtkInputRoot = pythia.pyre.inventory.str("vtk_input_root", default="stress_t0001.vtk")
+        vtkInputRoot.meta["tip"] = "Root filename for VTK input files."
 
         vtkOutputRoot = pythia.pyre.inventory.str("vtk_output_root", default="output.vtk")
-        vtkOutputRoot.meta['tip'] = "Root filename for VTK output files."
+        vtkOutputRoot.meta["tip"] = "Root filename for VTK output files."
 
         vtkStressIndex = pythia.pyre.inventory.int("vtk_stress_index", default=1)
-        vtkStressIndex.meta['tip'] = "Index indicating which VTK field array contains stresses."
+        vtkStressIndex.meta["tip"] = "Index indicating which VTK field array contains stresses."
 
-        vtkStressComponentsOrder = pythia.pyre.inventory.list("vtk_stress_components_order",
-                                                       default=[0, 1, 2, 3, 4, 5])
-        vtkStressComponentsOrder.meta['tip'] = "Indices corresponding to Sxx, Syy, Szz, Sxy, Syz, Sxz."
+        vtkStressComponentsOrder = pythia.pyre.inventory.list("vtk_stress_components_order", default=[0, 1, 2, 3, 4, 5])
+        vtkStressComponentsOrder.meta["tip"] = "Indices corresponding to Sxx, Syy, Szz, Sxy, Syz, Sxz."
 
         frictionCoeff = pythia.pyre.inventory.float("friction_coeff", default=0.6)
-        frictionCoeff.meta['tip'] = "Coefficient of friction."
+        frictionCoeff.meta["tip"] = "Coefficient of friction."
 
         skemptonCoeff = pythia.pyre.inventory.float("skempton_coeff", default=0.5)
-        skemptonCoeff.meta['tip'] = "Skempton's pore pressure coefficient B."
+        skemptonCoeff.meta["tip"] = "Skempton's pore pressure coefficient B."
 
         initialStateIndex = pythia.pyre.inventory.int("initial_state_indes", default=0)
-        initialStateIndex.meta['tip'] = "Initial state time step number for initial state mode."
+        initialStateIndex.meta["tip"] = "Initial state time step number for initial state mode."
 
-        constantStateValues = pythia.pyre.inventory.list("constant_state_values",
-                                                  default=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-        constantStateValues.meta['tip'] = "Initial stress values to use with constant state mode."
+        constantStateValues = pythia.pyre.inventory.list(
+            "constant_state_values", default=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        )
+        constantStateValues.meta["tip"] = "Initial stress values to use with constant state mode."
 
-        cffPlaneNormal = pythia.pyre.inventory.list("cff_plane_normal",
-                                             default=[1.0, 0.0, 0.0])
-        cffPlaneNormal.meta['tip'] = "Plane normal for predefined CFF plane."
+        cffPlaneNormal = pythia.pyre.inventory.list("cff_plane_normal", default=[1.0, 0.0, 0.0])
+        cffPlaneNormal.meta["tip"] = "Plane normal for predefined CFF plane."
 
-        isotropicPoroelastic = pythia.pyre.inventory.bool("isotropic_poroelastic",
-                                                   default=False)
-        isotropicPoroelastic.meta['tip'] = "Use isotropic poroelastic model instead of constant apparent friction model."
+        isotropicPoroelastic = pythia.pyre.inventory.bool("isotropic_poroelastic", default=False)
+        isotropicPoroelastic.meta["tip"] = (
+            "Use isotropic poroelastic model instead of constant apparent friction model."
+        )
 
     class TooFewFilesError(IOError):
-        """Exception raised when not enough VTK input files are found.
-        """
+        """Exception raised when not enough VTK input files are found."""
 
         def __init__(self, value):
             self.value = value
@@ -136,6 +134,7 @@ class VtkCff(Application):
 
     def main(self):
         import pdb
+
         pdb.set_trace()
         self._getFileInfo()
         self._cffLoop()
@@ -144,23 +143,22 @@ class VtkCff(Application):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """Setup members using inventory.
-        """
+        """Setup members using inventory."""
         Application._configure(self)
         import pdb
+
         pdb.set_trace()
 
         # Set up info for input files
-        totalInputPath = os.path.normpath(
-            os.path.join(os.getcwd(), self.inventory.vtkInputRoot))
+        totalInputPath = os.path.normpath(os.path.join(os.getcwd(), self.inventory.vtkInputRoot))
         self.vtkInputDir = os.path.dirname(totalInputPath)
         baseInputName = os.path.basename(totalInputPath)
         baseInputNameLen = len(baseInputName)
         if baseInputName.endswith(".vtk"):
-            baseInputNameStripped = baseInputName[0:baseInputNameLen - 4]
+            baseInputNameStripped = baseInputName[0 : baseInputNameLen - 4]
         else:
             baseInputNameStripped = baseInputName
-        testFind = re.search('_t[0-9]*$', baseInputNameStripped)
+        testFind = re.search("_t[0-9]*$", baseInputNameStripped)
         if testFind != None:
             timeInd = baseInputNameStripped.rfind(testFind.group(0))
             self.vtkInputRoot = baseInputNameStripped[0:timeInd]
@@ -181,22 +179,25 @@ class VtkCff(Application):
         # Parameters
         self.frictionCoeff = self.inventory.frictionCoeff
         self.skemptonCoeff = self.inventory.skemptonCoeff
-        self.cffPlaneNormal = numpy.array([float(self.inventory.cffPlaneNormal[0]),
-                                           float(self.inventory.cffPlaneNormal[1]),
-                                           float(self.inventory.cffPlaneNormal[2]),
-                                           ], dtype=numpy.float64)
+        self.cffPlaneNormal = numpy.array(
+            [
+                float(self.inventory.cffPlaneNormal[0]),
+                float(self.inventory.cffPlaneNormal[1]),
+                float(self.inventory.cffPlaneNormal[2]),
+            ],
+            dtype=numpy.float64,
+        )
 
         # Set up info for output files
-        totalOutputPath = os.path.normpath(os.path.join(
-            os.getcwd(), self.inventory.vtkOutputRoot))
+        totalOutputPath = os.path.normpath(os.path.join(os.getcwd(), self.inventory.vtkOutputRoot))
         self.vtkOutputDir = os.path.dirname(totalOutputPath)
         baseOutputName = os.path.basename(totalOutputPath)
         baseOutputNameLen = len(baseOutputName)
         if baseOutputName.endswith(".vtk"):
-            baseOutputNameStripped = baseOutputName[0:baseOutputNameLen - 4]
+            baseOutputNameStripped = baseOutputName[0 : baseOutputNameLen - 4]
         else:
             baseOutputNameStripped = baseOutputName
-        testFind = re.search('_t[0-9]*$', baseOutputNameStripped)
+        testFind = re.search("_t[0-9]*$", baseOutputNameStripped)
         if testFind != None:
             timeInd = baseOutputNameStripped.rfind(testFind.group(0))
             self.vtkOutputRoot = baseOutputNameStripped[0:timeInd]
@@ -206,8 +207,7 @@ class VtkCff(Application):
         return
 
     def _getFileInfo(self):
-        """Find input files and set up filenames for input and output.
-        """
+        """Find input files and set up filenames for input and output."""
 
         # Create list of input files and associated times
         fileString = self.vtkInputRoot + "_t[0-9]*.vtk"
@@ -218,7 +218,7 @@ class VtkCff(Application):
         index2 = self.vtkInputList[0].rfind(".vtk")
         self.timeStampWidth = index2 - index1 - 2
         for vtkFile in self.vtkInputList:
-            timeString = vtkFile[index1 + 2:index2]
+            timeString = vtkFile[index1 + 2 : index2]
             self.vtkInputTimes.append(float(timeString))
 
         # Determine time index from which to start processing
@@ -235,8 +235,8 @@ class VtkCff(Application):
             try:
                 raise TooFewFilesError(numFilesToProcess)
             except TooFewFilesError as err:
-                print('Not enough files found for search string:  ', searchString)
-                print('Number of files found:  ', err.value)
+                print("Not enough files found for search string:  ", searchString)
+                print("Number of files found:  ", err.value)
 
         # Create output directory if it doesn't exist
         if not os.path.isdir(self.vtkOutputDir):
@@ -261,34 +261,29 @@ class VtkCff(Application):
         if self.stressRefMode == "constant_state":
             testFile = os.path.join(self.vtkInputDir, self.vtkInputList[0])
             testStress = self._readStress(testFile)
-            refStress = numpy.tile(self.constantStateValues,
-                                   (self.numStressPoints, 1))
+            refStress = numpy.tile(self.constantStateValues, (self.numStressPoints, 1))
         elif self.stressRefMode == "initial_state":
-            refFile = os.path.normpath(os.path.join(self.vtkInputDir,
-                                                    self.vtkInputList[self.initialStateIndex]))
+            refFile = os.path.normpath(os.path.join(self.vtkInputDir, self.vtkInputList[self.initialStateIndex]))
             refStress = self._readStress(refFile)
 
         # Loop over input VTK files.
         for fileInd in range(self.startIndex, self.numVtkInputFiles):
             timeStamp = self.vtkInputTimes[fileInd]
             timeStampOut = int(timeStamp)
-            timeStampOutString = repr(timeStampOut).rjust(self.timeStampWidth, '0')
+            timeStampOutString = repr(timeStampOut).rjust(self.timeStampWidth, "0")
             outputFileName = self.vtkOutputRoot + "_t" + timeStampOutString + ".vtk"
             vtkOutputFile = os.path.join(self.vtkOutputDir, outputFileName)
             if self.stressRefMode == "previous_state":
-                refFile = os.path.normpath(os.path.join(self.vtkInputDir,
-                                                        self.vtkInputList[fileInd - 1]))
+                refFile = os.path.normpath(os.path.join(self.vtkInputDir, self.vtkInputList[fileInd - 1]))
                 refStress = self._readStress(refFile)
-            newFile = os.path.normpath(os.path.join(self.vtkInputDir,
-                                                    self.vtkInputList[fileInd]))
+            newFile = os.path.normpath(os.path.join(self.vtkInputDir, self.vtkInputList[fileInd]))
             newStress = self._readStress(newFile)
             cffFunct(refStress, newStress, vtkOutputFile)
 
         return
 
     def _readStress(self, vtkFile):
-        """Function to read stresses from a file and store the info in a numpy array.
-        """
+        """Function to read stresses from a file and store the info in a numpy array."""
         from enthought.mayavi.sources.vtk_file_reader import VTKFileReader
         from enthought.tvtk.api import tvtk
 
@@ -306,14 +301,14 @@ class VtkCff(Application):
             self.cells.set_cells(self.numCells, cellArray)
             self.vertArray = data._get_points().to_array()
             self.cellType = data.get_cell_type(0)
-            (self.numVerts, self.spaceDim) = self.vertArray.shape
+            self.numVerts, self.spaceDim = self.vertArray.shape
             self.readMesh = True
 
         # Get cell fields and extract stresses
         cellData = data._get_cell_data()
         numCellDataArrays = cellData._get_number_of_arrays()
         stress = cellData.get_array(self.stressIndex).to_array()
-        (self.numStressPoints, numCols) = stress.shape
+        self.numStressPoints, numCols = stress.shape
 
         sxx = stress[:, self.stressComponentsOrder[0]]
         syy = stress[:, self.stressComponentsOrder[1]]
@@ -326,13 +321,12 @@ class VtkCff(Application):
         return stressOrdered
 
     def _princStress(self, stress):
-        """Function to compute 3D principal stresses and sort them.
-        """
-        stressMat = numpy.array([(stress[0], stress[3], stress[5]),
-                                 (stress[3], stress[1], stress[4]),
-                                 (stress[5], stress[4], stress[2])],
-                                dtype=numpy.float64)
-        (princStress, princAxes) = numpy.linalg.eigh(stressMat)
+        """Function to compute 3D principal stresses and sort them."""
+        stressMat = numpy.array(
+            [(stress[0], stress[3], stress[5]), (stress[3], stress[1], stress[4]), (stress[5], stress[4], stress[2])],
+            dtype=numpy.float64,
+        )
+        princStress, princAxes = numpy.linalg.eigh(stressMat)
         idx = princStress.argsort()
         princStressOrdered = princStress[idx]
         princAxesOrdered = princAxes[:, idx]
@@ -353,10 +347,8 @@ class VtkCff(Application):
         sinBetaSq = sinBeta * sinBeta
         cosBetaSq = cosBeta * cosBeta
         cff = numpy.empty((self.numStressPoints), dtype=numpy.float64)
-        failDir1 = numpy.empty((self.numStressPoints, self.spaceDim),
-                               dtype=numpy.float64)
-        failDir2 = numpy.empty((self.numStressPoints, self.spaceDim),
-                               dtype=numpy.float64)
+        failDir1 = numpy.empty((self.numStressPoints, self.spaceDim), dtype=numpy.float64)
+        failDir2 = numpy.empty((self.numStressPoints, self.spaceDim), dtype=numpy.float64)
         effFrictionCoeff = self.frictionCoeff * (1.0 - self.skemptonCoeff)
         presFac = -self.skemptonCoeff / 3.0
         vec1 = numpy.array([cosBeta, 0.0, sinBeta], dtype=numpy.float64)
@@ -366,36 +358,39 @@ class VtkCff(Application):
         # principal stresses, as well as the stress difference, and then
         # compute CFF.
         for point in range(self.numStressPoints):
-            totStress = newStress[point,:]
-            deltaStress = newStress[point,:] - refStress[point,:]
-            (totPrincStress, totPrincAxes) = self._princStress(totStress)
+            totStress = newStress[point, :]
+            deltaStress = newStress[point, :] - refStress[point, :]
+            totPrincStress, totPrincAxes = self._princStress(totStress)
             # Rotate stress changes into principal axis coordinate system for
             # total stress.
             deltaStressMat = numpy.array(
-                [(deltaStress[0], deltaStress[3], deltaStress[5]),
-                 (deltaStress[3], deltaStress[1], deltaStress[4]),
-                    (deltaStress[5], deltaStress[4], deltaStress[2])],
-                dtype=numpy.float64)
+                [
+                    (deltaStress[0], deltaStress[3], deltaStress[5]),
+                    (deltaStress[3], deltaStress[1], deltaStress[4]),
+                    (deltaStress[5], deltaStress[4], deltaStress[2]),
+                ],
+                dtype=numpy.float64,
+            )
             prod1 = numpy.dot(totPrincAxes, deltaStressMat)
             deltaStressRot = numpy.dot(prod1, totPrincAxes.transpose())
-            s33 = deltaStressRot[0, 0] * sinBetaSq - \
-                2.0 * deltaStressRot[0, 2] * sinCosBeta + \
-                deltaStressRot[2, 2] * cosBetaSq
-            s13 = 0.5 * (deltaStressRot[2, 2] - deltaStressRot[0, 0]) * sin2Beta + \
-                deltaStressRot[0, 2] * cos2Beta
+            s33 = (
+                deltaStressRot[0, 0] * sinBetaSq
+                - 2.0 * deltaStressRot[0, 2] * sinCosBeta
+                + deltaStressRot[2, 2] * cosBetaSq
+            )
+            s13 = 0.5 * (deltaStressRot[2, 2] - deltaStressRot[0, 0]) * sin2Beta + deltaStressRot[0, 2] * cos2Beta
             deltaNormStress = deltaStress[0] + deltaStress[1] + deltaStress[2]
             # Compute CFF depending on which model is used
             if self.isotropicPoroelastic:
-                cff[point] = s13 + self.frictionCoeff * \
-                    (s33 + presFac * deltaNormStress)
+                cff[point] = s13 + self.frictionCoeff * (s33 + presFac * deltaNormStress)
             else:
                 cff[point] = s13 + effFrictionCoeff * s33
 
             # Get failure planes by rotating vector in principal axis coordinate
             # system into global coordinate system.
             # NOTE:  make sure I'm applying the rotation the right way.
-            failDir1[point,:] = numpy.dot(totPrincAxes.transpose(), vec1)
-            failDir2[point,:] = numpy.dot(totPrincAxes.transpose(), vec2)
+            failDir1[point, :] = numpy.dot(totPrincAxes.transpose(), vec1)
+            failDir2[point, :] = numpy.dot(totPrincAxes.transpose(), vec2)
 
         # Set up mesh info for VTK file
         mesh = tvtk.UnstructuredGrid(points=self.vertArray)
@@ -418,8 +413,7 @@ class VtkCff(Application):
         return
 
     def _CffPredefined(self, refStress, newStress, vtkOutputFile):
-        """Function to compute CFF for predefined planes and output results to a file.
-        """
+        """Function to compute CFF for predefined planes and output results to a file."""
         from enthought.tvtk.api import tvtk
 
         beta = math.atan(self.frictionCoeff) / 2.0
@@ -431,10 +425,8 @@ class VtkCff(Application):
         sinBetaSq = sinBeta * sinBeta
         cosBetaSq = cosBeta * cosBeta
         cff = numpy.empty((self.numStressPoints), dtype=numpy.float64)
-        failDir1 = numpy.empty((self.numStressPoints, self.spaceDim),
-                               dtype=numpy.float64)
-        failDir2 = numpy.empty((self.numStressPoints, self.spaceDim),
-                               dtype=numpy.float64)
+        failDir1 = numpy.empty((self.numStressPoints, self.spaceDim), dtype=numpy.float64)
+        failDir2 = numpy.empty((self.numStressPoints, self.spaceDim), dtype=numpy.float64)
         effFrictionCoeff = self.frictionCoeff * (1.0 - self.skemptonCoeff)
         presFac = -self.skemptonCoeff / 3.0
         vec1 = numpy.array([cosBeta, 0.0, sinBeta], dtype=numpy.float64)
@@ -444,36 +436,39 @@ class VtkCff(Application):
         # principal stresses, as well as the stress difference, and then
         # compute CFF.
         for point in range(self.numStressPoints):
-            totStress = newStress[point,:]
-            deltaStress = newStress[point,:] - refStress[point,:]
-            (totPrincStress, totPrincAxes) = self._princStress(totStress)
+            totStress = newStress[point, :]
+            deltaStress = newStress[point, :] - refStress[point, :]
+            totPrincStress, totPrincAxes = self._princStress(totStress)
             # Rotate stress changes into principal axis coordinate system for
             # total stress.
             deltaStressMat = numpy.array(
-                [(deltaStress[0], deltaStress[3], deltaStress[5]),
-                 (deltaStress[3], deltaStress[1], deltaStress[4]),
-                    (deltaStress[5], deltaStress[4], deltaStress[2])],
-                dtype=numpy.float64)
+                [
+                    (deltaStress[0], deltaStress[3], deltaStress[5]),
+                    (deltaStress[3], deltaStress[1], deltaStress[4]),
+                    (deltaStress[5], deltaStress[4], deltaStress[2]),
+                ],
+                dtype=numpy.float64,
+            )
             prod1 = numpy.dot(totPrincAxes, deltaStressMat)
             deltaStressRot = numpy.dot(prod1, totPrincAxes.transpose())
-            s33 = deltaStressRot[0, 0] * sinBetaSq - \
-                2.0 * deltaStressRot[0, 2] * sinCosBeta + \
-                deltaStressRot[2, 2] * cosBetaSq
-            s13 = 0.5 * (deltaStressRot[2, 2] - deltaStressRot[0, 0]) * sin2Beta + \
-                deltaStressRot[0, 2] * cos2Beta
+            s33 = (
+                deltaStressRot[0, 0] * sinBetaSq
+                - 2.0 * deltaStressRot[0, 2] * sinCosBeta
+                + deltaStressRot[2, 2] * cosBetaSq
+            )
+            s13 = 0.5 * (deltaStressRot[2, 2] - deltaStressRot[0, 0]) * sin2Beta + deltaStressRot[0, 2] * cos2Beta
             deltaNormStress = deltaStress[0] + deltaStress[1] + deltaStress[2]
             # Compute CFF depending on which model is used
             if self.isotropicPoroelastic:
-                cff[point] = s13 + self.frictionCoeff * \
-                    (s33 + presFac * deltaNormStress)
+                cff[point] = s13 + self.frictionCoeff * (s33 + presFac * deltaNormStress)
             else:
                 cff[point] = s13 + effFrictionCoeff * s33
 
             # Get failure planes by rotating vector in principal axis coordinate
             # system into global coordinate system.
             # NOTE:  make sure I'm applying the rotation the right way.
-            failDir1[point,:] = numpy.dot(totPrincAxes.transpose(), vec1)
-            failDir2[point,:] = numpy.dot(totPrincAxes.transpose(), vec2)
+            failDir1[point, :] = numpy.dot(totPrincAxes.transpose(), vec1)
+            failDir2[point, :] = numpy.dot(totPrincAxes.transpose(), vec2)
 
         # Set up mesh info for VTK file
         mesh = tvtk.UnstructuredGrid(points=self.vertArray)
@@ -497,7 +492,7 @@ class VtkCff(Application):
 
 
 # ----------------------------------------------------------------------
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = VtkCff()
     app.run()
 

@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -32,7 +31,6 @@
 
 import numpy
 
-
 # Physical properties
 p_density = 2500.0
 p_vs = 3000.0
@@ -45,7 +43,7 @@ p_lambda = p_density * p_vp**2 - 2 * p_mu
 sxx = 0.0
 syy = 0.0
 szz = 0.0
-sxy = 5.0e+6
+sxy = 5.0e6
 syz = 0.0
 sxz = 0.0
 
@@ -61,8 +59,8 @@ exz = 1.0 / (2 * p_mu) * (sxz)
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
-    """Analytical solution to shear problem.
-    """
+    """Analytical solution to shear problem."""
+
     SPACE_DIM = 3
     TENSOR_SIZE = 6
 
@@ -80,7 +78,7 @@ class AnalyticalSoln(object):
                 "bc_xpos": self.bc_xpos_traction,
                 "bc_ypos": self.bc_ypos_traction,
                 "bc_zneg": self.displacement,
-            }
+            },
         }
         return
 
@@ -92,80 +90,72 @@ class AnalyticalSoln(object):
         return field
 
     def displacement(self, locs):
-        """Compute displacement field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute displacement field at locations."""
+        npts, dim = locs.shape
         disp = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        disp[0,:, 0] = exx * locs[:, 0] + exy * locs[:, 1] + exz * locs[:, 2]
-        disp[0,:, 1] = exy * locs[:, 0] + eyy * locs[:, 1] + eyz * locs[:, 2]
-        disp[0,:, 2] = exz * locs[:, 0] + eyz * locs[:, 1] + ezz * locs[:, 2]
+        disp[0, :, 0] = exx * locs[:, 0] + exy * locs[:, 1] + exz * locs[:, 2]
+        disp[0, :, 1] = exy * locs[:, 0] + eyy * locs[:, 1] + eyz * locs[:, 2]
+        disp[0, :, 2] = exz * locs[:, 0] + eyz * locs[:, 1] + ezz * locs[:, 2]
         return disp
 
     def density(self, locs):
-        """Compute density field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute density field at locations."""
+        npts, dim = locs.shape
         density = p_density * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return density
 
     def shear_modulus(self, locs):
-        """Compute shear modulus field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute shear modulus field at locations."""
+        npts, dim = locs.shape
         shear_modulus = p_mu * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return shear_modulus
 
     def bulk_modulus(self, locs):
-        """Compute bulk modulus field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute bulk modulus field at locations."""
+        npts, dim = locs.shape
         bulk_modulus = (p_lambda + 2.0 / 3.0 * p_mu) * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return bulk_modulus
 
     def strain(self, locs):
-        """Compute strain field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute strain field at locations."""
+        npts, dim = locs.shape
         strain = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        strain[0,:, 0] = exx
-        strain[0,:, 1] = eyy
-        strain[0,:, 2] = ezz
-        strain[0,:, 3] = exy
-        strain[0,:, 4] = eyz
-        strain[0,:, 5] = exz
+        strain[0, :, 0] = exx
+        strain[0, :, 1] = eyy
+        strain[0, :, 2] = ezz
+        strain[0, :, 3] = exy
+        strain[0, :, 4] = eyz
+        strain[0, :, 5] = exz
         return strain
 
     def stress(self, locs):
-        """Compute stress field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute stress field at locations."""
+        npts, dim = locs.shape
         stress = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        stress[0,:, 0] = sxx
-        stress[0,:, 1] = syy
-        stress[0,:, 2] = szz
-        stress[0,:, 3] = sxy
-        stress[0,:, 4] = syz
-        stress[0,:, 5] = sxz
+        stress[0, :, 0] = sxx
+        stress[0, :, 1] = syy
+        stress[0, :, 2] = szz
+        stress[0, :, 3] = sxy
+        stress[0, :, 4] = syz
+        stress[0, :, 5] = sxz
         return stress
 
     def bc_xpos_traction(self, locs):
-        """Compute initial traction at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute initial traction at locations."""
+        npts, dim = locs.shape
         traction = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        traction[0,:, 0] = sxy
-        traction[0,:, 1] = 0.0
-        traction[0,:, 2] = 0.0
+        traction[0, :, 0] = sxy
+        traction[0, :, 1] = 0.0
+        traction[0, :, 2] = 0.0
         return traction
 
     def bc_ypos_traction(self, locs):
-        """Compute initial traction at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute initial traction at locations."""
+        npts, dim = locs.shape
         traction = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        traction[0,:, 0] = -sxy
-        traction[0,:, 1] = 0.0
-        traction[0,:, 2] = 0.0
+        traction[0, :, 0] = -sxy
+        traction[0, :, 1] = 0.0
+        traction[0, :, 2] = 0.0
         return traction
 
 

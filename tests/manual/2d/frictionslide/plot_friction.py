@@ -1,4 +1,12 @@
 #!/usr/bin/env nemesis
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
 
 from math import exp
 import numpy
@@ -11,7 +19,7 @@ if len(sys.argv) != 2:
 
 sim = sys.argv[1]
 
-if not sim in ['weak', 'stable']:
+if not sim in ["weak", "stable"]:
     raise ValueError("Unknown sim '%s'." % sim)
 
 # ======================================================================
@@ -35,14 +43,13 @@ V0 = 1.0e-6
 def integrateStateVar(theta, v, t0):
     pts = numpy.where(t > t0)[0]
     for i in pts:
-        theta[i] = theta[i-1]*exp(-v/L*dt) + \
-            dt - 0.5*(v/L)*dt**2 + 1.0/6.0*(v/L)*dt**3
+        theta[i] = theta[i - 1] * exp(-v / L * dt) + dt - 0.5 * (v / L) * dt**2 + 1.0 / 6.0 * (v / L) * dt**3
     return
 
 
 mask1 = t < 2.0
 V1 = 1.0e-6
-theta = L/V1*numpy.ones(t.shape)
+theta = L / V1 * numpy.ones(t.shape)
 integrateStateVar(theta, V1, 0.0)
 
 mask2 = numpy.bitwise_and(t >= 2.0, t < 4.0)
@@ -65,19 +72,19 @@ mask6 = t >= 12.0
 V6 = 1.0e-6
 integrateStateVar(theta, V6, 12.0)
 
-slipRateE = mask1*V1 + mask2*V2 + mask3*V3 + mask4*V4 + mask5*V5 + mask6*V6
+slipRateE = mask1 * V1 + mask2 * V2 + mask3 * V3 + mask4 * V4 + mask5 * V5 + mask6 * V6
 stateVarE = theta
 
-muE = mu0 + a*numpy.log(slipRateE/V0) + b*numpy.log(V0*stateVarE/L)
+muE = mu0 + a * numpy.log(slipRateE / V0) + b * numpy.log(V0 * stateVarE / L)
 
 # ----------------------------------------------------------------------
 
 h5 = h5py.File("output/ratestate_%s-fault.h5" % sim, "r")
-time = h5['time'][:].ravel()
-slip = h5['vertex_fields/slip'][:]
-slipRate = h5['vertex_fields/slip_rate'][:]
-stateVar = h5['vertex_fields/state_variable'][:]
-traction = h5['vertex_fields/traction'][:]
+time = h5["time"][:].ravel()
+slip = h5["vertex_fields/slip"][:]
+slipRate = h5["vertex_fields/slip_rate"][:]
+stateVar = h5["vertex_fields/state_variable"][:]
+traction = h5["vertex_fields/traction"][:]
 h5.close()
 
 fig = pylab.Figure()
@@ -85,21 +92,21 @@ fig = pylab.Figure()
 p = 2
 
 ax = pylab.subplot(1, 4, 1)
-ax.plot(time, slip[:, p, 0], 'r--')
+ax.plot(time, slip[:, p, 0], "r--")
 
 ax = pylab.subplot(1, 4, 2)
-ax.plot(t, numpy.log10(numpy.abs(slipRateE)), 'b-',
-        time, numpy.log10(numpy.abs(slipRate[:, p, 0])), 'r--')
+ax.plot(t, numpy.log10(numpy.abs(slipRateE)), "b-", time, numpy.log10(numpy.abs(slipRate[:, p, 0])), "r--")
 ax.set_ylim(-12, 0.0)
 
 ax = pylab.subplot(1, 4, 3)
-ax.plot(t, numpy.log10(stateVarE), 'b-',
-        time, numpy.log10(stateVar[:, p, 0]), 'r--')
+ax.plot(t, numpy.log10(stateVarE), "b-", time, numpy.log10(stateVar[:, p, 0]), "r--")
 ax.set_ylim(-2.0, 6.0)
 
 ax = pylab.subplot(1, 4, 4)
-ax.plot(t, muE, 'b-',
-        time, numpy.fabs(traction[:, p, 0]/traction[:, p, 1]), 'r--')
+ax.plot(t, muE, "b-", time, numpy.fabs(traction[:, p, 0] / traction[:, p, 1]), "r--")
 
 
 pylab.show()
+
+
+# End of file

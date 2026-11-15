@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -27,8 +26,7 @@ class TimeDependent(Problem, ModuleTimeDependent):
     Implements `Problem`.
     """
 
-    DOC_CONFIG = {
-        "cfg": """
+    DOC_CONFIG = {"cfg": """
             # Set boundary conditions, faults, and materials
             bc = [boundary_xpos, boundary_xneg]
             interfaces = [san_andreas, hayward]
@@ -63,8 +61,7 @@ class TimeDependent(Problem, ModuleTimeDependent):
             [pylithapp.greensfns.petsc_defaults]
             solver = True
             monitors = True
-        """
-    }
+        """}
 
     import pythia.pyre.inventory
     from pythia.pyre.units.time import year
@@ -87,14 +84,10 @@ class TimeDependent(Problem, ModuleTimeDependent):
     )
     endTime.meta["tip"] = "End time for problem."
 
-    maxTimeSteps = pythia.pyre.inventory.int(
-        "max_timesteps", default=20000, validator=pythia.pyre.inventory.greater(0)
-    )
+    maxTimeSteps = pythia.pyre.inventory.int("max_timesteps", default=20000, validator=pythia.pyre.inventory.greater(0))
     maxTimeSteps.meta["tip"] = "Maximum number of time steps."
 
-    ic = pythia.pyre.inventory.facilityArray(
-        "ic", itemFactory=icFactory, factory=EmptyBin
-    )
+    ic = pythia.pyre.inventory.facilityArray("ic", itemFactory=icFactory, factory=EmptyBin)
     ic.meta["tip"] = "Initial conditions."
 
     shouldNotifyIC = pythia.pyre.inventory.bool("notify_observers_ic", default=False)
@@ -141,11 +134,7 @@ class TimeDependent(Problem, ModuleTimeDependent):
         """Set members using inventory."""
         Problem._configure(self)
         if self.startTime > self.endTime:
-            raise ValueError(
-                "End time {} must be later than start time {}.".format(
-                    self.startTime, self.endTime
-                )
-            )
+            raise ValueError("End time {} must be later than start time {}.".format(self.startTime, self.endTime))
 
     def _createModuleObj(self):
         """Create handle to C++ object."""

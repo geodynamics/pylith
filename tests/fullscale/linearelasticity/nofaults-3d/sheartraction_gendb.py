@@ -3,8 +3,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -23,16 +22,14 @@ class GenerateDB(object):
     """
 
     def __init__(self):
-        """Constructor.
-        """
+        """Constructor."""
         return
 
     def run(self):
-        """Generate the database.
-        """
+        """Generate the database."""
         # Domain
-        x = numpy.arange(-1.0e+4, 1.01e+4, 5.0e+3)
-        y = numpy.arange(-1.0e+4, 1.01e+4, 5.0e+3)
+        x = numpy.arange(-1.0e4, 1.01e4, 5.0e3)
+        y = numpy.arange(-1.0e4, 1.01e4, 5.0e3)
         z = numpy.array([0])
         x3, y3, z3 = numpy.meshgrid(x, y, z)
         nptsX = x.shape[0]
@@ -45,10 +42,12 @@ class GenerateDB(object):
         xyz[:, 2] = z3.ravel()
 
         from sheartraction_soln import AnalyticalSoln
+
         soln = AnalyticalSoln()
         disp = soln.displacement(xyz)
 
         from spatialdata.geocoords.CSCart import CSCart
+
         cs = CSCart()
         cs.inventory.spaceDim = 3
         cs._configure()
@@ -60,18 +59,14 @@ class GenerateDB(object):
             "coordsys": cs,
             "data_dim": 2,
             "values": [
-                {"name": "initial_amplitude_x",
-                 "units": "m",
-                 "data": numpy.ravel(disp[0, :, 0])},
-                {"name": "initial_amplitude_y",
-                 "units": "m",
-                 "data": numpy.ravel(disp[0, :, 1])},
-                {"name": "initial_amplitude_z",
-                 "units": "m",
-                 "data": numpy.ravel(disp[0, :, 2])},
-            ]}
+                {"name": "initial_amplitude_x", "units": "m", "data": numpy.ravel(disp[0, :, 0])},
+                {"name": "initial_amplitude_y", "units": "m", "data": numpy.ravel(disp[0, :, 1])},
+                {"name": "initial_amplitude_z", "units": "m", "data": numpy.ravel(disp[0, :, 2])},
+            ],
+        }
 
         from spatialdata.spatialdb.SimpleGridAscii import SimpleGridAscii
+
         io = SimpleGridAscii()
         io.inventory.filename = "sheartraction_disp.spatialdb"
         io._configure()

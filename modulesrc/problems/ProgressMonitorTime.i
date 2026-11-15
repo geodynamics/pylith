@@ -2,8 +2,7 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
+// Copyright (c) 2010-2026 All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
@@ -15,10 +14,9 @@
 
 namespace pylith {
     namespace problems {
-        class ProgressMonitorTime: public pylith::problems::ProgressMonitor {
+        class ProgressMonitorTime : public pylith::problems::ProgressMonitor {
             // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             /// Constructor
             ProgressMonitorTime(void);
 
@@ -48,8 +46,7 @@ public:
                         const double stop);
 
             // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////
-protected:
-
+          protected:
             /// Open progress monitor.
             void _open(void);
 
@@ -70,7 +67,7 @@ protected:
 
         }; // class ProgressMonitorTime
 
-    } // problems
-} // pylith
+    } // namespace problems
+} // namespace pylith
 
 // End of file

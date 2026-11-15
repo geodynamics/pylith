@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -18,6 +17,7 @@ def eqsrcFactory(name):
     """
     from pythia.pyre.inventory import facility
     from .KinSrcStep import KinSrcStep
+
     return facility(name, family="eq_kinematic_src", factory=KinSrcStep)
 
 
@@ -30,8 +30,8 @@ class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
 
     Implements `FaultCohesive`.
     """
-    DOC_CONFIG = {
-        "cfg": """
+
+    DOC_CONFIG = {"cfg": """
             # Specify prescribed slip on a fault via two earthquakes in a 2D domain.
             [pylithapp.problem.interfaces.fault]
             label = fault
@@ -61,39 +61,40 @@ class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
             db_auxiliary_field.description = Fault rupture auxiliary field spatial database
             db_auxiliary_field.values = [initiation_time, final_slip_left_lateral, final_slip_opening]
             db_auxiliary_field.data = [0.0*s, -1.0*m, 0.0*m]
-            """
-    }
+            """}
 
     import pythia.pyre.inventory
 
     from .SingleRupture import SingleRupture
+
     eqRuptures = pythia.pyre.inventory.facilityArray("eq_ruptures", itemFactory=eqsrcFactory, factory=SingleRupture)
-    eqRuptures.meta['tip'] = "Kinematic earthquake sources information."
+    eqRuptures.meta["tip"] = "Kinematic earthquake sources information."
 
     from pylith.utils.NullComponent import NullComponent
-    auxiliaryFieldDB = pythia.pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=NullComponent)
+
+    auxiliaryFieldDB = pythia.pyre.inventory.facility(
+        "db_auxiliary_field", family="spatial_database", factory=NullComponent
+    )
 
     def __init__(self, name="faultcohesivekin"):
-        """Initialize configuration.
-        """
+        """Initialize configuration."""
         FaultCohesive.__init__(self, name)
         return
 
     def preinitialize(self, problem):
-        """Do pre-initialization setup.
-        """
+        """Do pre-initialization setup."""
         FaultCohesive.preinitialize(self, problem)
 
         for eqsrc in self.eqRuptures.components():
             eqsrc.preinitialize(problem)
         ModuleFaultCohesiveKin.setEqRuptures(
-            self, self.eqRuptures.inventory.facilityNames(), self.eqRuptures.components())
+            self, self.eqRuptures.inventory.facilityNames(), self.eqRuptures.components()
+        )
 
         return
 
     def verifyConfiguration(self):
-        """Verify compatibility of configuration.
-        """
+        """Verify compatibility of configuration."""
         FaultCohesive.verifyConfiguration(self)
         ModuleFaultCohesiveKin.verifyConfiguration(self, self.mesh)
 
@@ -103,31 +104,28 @@ class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
         return
 
     def finalize(self):
-        """Cleanup.
-        """
+        """Cleanup."""
         for eqsrc in self.eqRuptures.components():
             eqsrc.finalize()
         FaultCohesive.finalize(self)
         return
 
     def _configure(self):
-        """Setup members using inventory.
-        """
+        """Setup members using inventory."""
         FaultCohesive._configure(self)
         return
 
     def _createModuleObj(self):
-        """Create handle to C++ FaultCohesiveKin.
-        """
+        """Create handle to C++ FaultCohesiveKin."""
         ModuleFaultCohesiveKin.__init__(self)
         return
 
 
 # Factories
 
+
 def fault():
-    """Factory associated with FaultCohesiveKin.
-    """
+    """Factory associated with FaultCohesiveKin."""
     return FaultCohesiveKin()
 
 

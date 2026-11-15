@@ -1,4 +1,12 @@
 #!/usr/bin/env nemesis
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
 """Generate text file with list of fake GNSS stations for Steps 4 and 5.
 
 Command line arguments control the number of stations, distance, and random distribution.
@@ -9,29 +17,26 @@ The default values will generate the `gnss_stations.txt` file that is provided.
 import argparse
 import numpy
 
+
 class App:
-    """Application for generating list of fake GNSS stations.
-    """
+    """Application for generating list of fake GNSS stations."""
 
     def __init__(self):
-        """Constructor.
-        """
+        """Constructor."""
         self.seed = 43589
         self.nstations = 200
         self.distribution = "gaussian"
-        self.max_dist = 50.0e+3
+        self.max_dist = 50.0e3
         self.filename = "gnss_stations.txt"
 
     def main(self):
-        """Main entry point for application.
-        """
+        """Main entry point for application."""
         self._parse_command_line()
         points = self.create_points()
         self.write(points)
 
     def create_points(self):
-        """Create random points for fake GNSS stations.
-        """
+        """Create random points for fake GNSS stations."""
         numpy.random.seed(self.seed)
         if self.distribution == "gaussian":
             stdev = self.max_dist / 3.0
@@ -42,7 +47,7 @@ class App:
             y = numpy.random.uniform(-self.max_dist, +self.max_dist, size=self.nstations)
         else:
             raise ValueError(f"Unknown distribution '{self.distribution}'.")
-        points = numpy.stack((x,y)).transpose()
+        points = numpy.stack((x, y)).transpose()
         return points
 
     def write(self, points):
@@ -62,11 +67,42 @@ class App:
         :returns: Command line arguments as argparse.Namespace.
         """
         parser = argparse.ArgumentParser()
-        parser.add_argument("--random-seed", action="store", dest="seed", type=int, default=self.seed, help="Number of stations")
-        parser.add_argument("--num-stations", action="store", dest="nstations", type=int, default=self.nstations, help="Number of stations")
-        parser.add_argument("--distribution", action="store", dest="distribution", type=str, default=self.distribution, choices=["gaussian", "uniform"], help="Shape of distribution perpendicular to the fault")
-        parser.add_argument("--max-dist", action="store", dest="max_dist", type=float, default=self.max_dist, help="Maximum distance for stations (3 standard deviations for gaussian distribution)")
-        parser.add_argument("--filename", action="store", dest="filename", type=str, default=self.filename, help="Filename for station list")
+        parser.add_argument(
+            "--random-seed", action="store", dest="seed", type=int, default=self.seed, help="Number of stations"
+        )
+        parser.add_argument(
+            "--num-stations",
+            action="store",
+            dest="nstations",
+            type=int,
+            default=self.nstations,
+            help="Number of stations",
+        )
+        parser.add_argument(
+            "--distribution",
+            action="store",
+            dest="distribution",
+            type=str,
+            default=self.distribution,
+            choices=["gaussian", "uniform"],
+            help="Shape of distribution perpendicular to the fault",
+        )
+        parser.add_argument(
+            "--max-dist",
+            action="store",
+            dest="max_dist",
+            type=float,
+            default=self.max_dist,
+            help="Maximum distance for stations (3 standard deviations for gaussian distribution)",
+        )
+        parser.add_argument(
+            "--filename",
+            action="store",
+            dest="filename",
+            type=str,
+            default=self.filename,
+            help="Filename for station list",
+        )
 
         args = parser.parse_args()
         self.seed = args.seed
@@ -74,6 +110,7 @@ class App:
         self.distribution = args.distribution
         self.max_dist = args.max_dist
         self.filename = args.filename
+
 
 if __name__ == "__main__":
     App().main()

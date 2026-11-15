@@ -2,8 +2,7 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
+// Copyright (c) 2010-2026 All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
@@ -14,10 +13,9 @@
 
 namespace pylith {
     namespace bc {
-        class BoundaryCondition: public pylith::problems::Physics {
+        class BoundaryCondition : public pylith::problems::Physics {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             /// Default constructor.
             BoundaryCondition(void);
 
@@ -25,8 +23,7 @@ public:
             virtual ~BoundaryCondition(void);
 
             /// Deallocate PETSc and local data structures.
-            virtual
-            void deallocate(void);
+            virtual void deallocate(void);
 
             /** Set name of solution subfield associated with boundary condition.
              *
@@ -56,8 +53,7 @@ public:
              *
              * @param[in] solution Solution field.
              */
-            virtual
-            void verifyConfiguration(const pylith::topology::Field& solution) const;
+            virtual void verifyConfiguration(const pylith::topology::Field& solution) const;
 
             /** Create diagnostic field.
              *
@@ -66,15 +62,13 @@ public:
              *
              * @returns Diagnostic field if applicable, otherwise NULL.
              */
-            virtual
-            pylith::topology::Field* createDiagnosticField(const pylith::topology::Field& solution,
-                                                           const pylith::topology::Mesh& physicsMesh);
-
+            virtual pylith::topology::Field* createDiagnosticField(const pylith::topology::Field& solution,
+                                                                   const pylith::topology::Mesh& physicsMesh);
         };
 
         // class BoundaryCondition
 
-    } // bc
-} // pylith
+    } // namespace bc
+} // namespace pylith
 
 // End of file

@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -16,13 +15,12 @@ import h5py
 
 
 def check_displacements(testcase, filename, npoints, spaceDim):
-    """Check displacements.
-    """
+    """Check displacements."""
     h5 = h5py.File(filename, "r", driver="sec2")
 
     # Check vertices
-    vertices = h5['geometry/vertices'][:]
-    (nvertices, spaceDim) = vertices.shape
+    vertices = h5["geometry/vertices"][:]
+    nvertices, spaceDim = vertices.shape
     testcase.assertEqual(npoints, nvertices)
     testcase.assertEqual(spaceDim, spaceDim)
 
@@ -31,10 +29,10 @@ def check_displacements(testcase, filename, npoints, spaceDim):
     tolerance = 1.0e-5
 
     dispE = testcase.calcDisplacementPoints(vertices)
-    disp = h5['vertex_fields/displacement'][:]
+    disp = h5["vertex_fields/displacement"][:]
 
-    (nstepsE, nverticesE, ncompsE) = dispE.shape
-    (nsteps, nvertices, ncomps) = disp.shape
+    nstepsE, nverticesE, ncompsE = dispE.shape
+    nsteps, nvertices, ncomps = disp.shape
     testcase.assertEqual(nstepsE, nsteps)
     testcase.assertEqual(nverticesE, nvertices)
     testcase.assertEqual(ncompsE, ncomps)
@@ -44,26 +42,21 @@ def check_displacements(testcase, filename, npoints, spaceDim):
             okay = numpy.zeros((nvertices,), dtype=numpy.bool)
 
             maskR = numpy.abs(dispE[istep, :, icomp]) > toleranceAbsMask
-            ratio = numpy.abs(
-                1.0 - disp[istep, maskR, icomp] / dispE[istep, maskR, icomp])
+            ratio = numpy.abs(1.0 - disp[istep, maskR, icomp] / dispE[istep, maskR, icomp])
             if len(ratio) > 0:
                 okay[maskR] = ratio < tolerance
 
             maskD = ~maskR
-            diff = numpy.abs(disp[istep, maskD, icomp] -
-                             dispE[istep, maskD, icomp])
+            diff = numpy.abs(disp[istep, maskD, icomp] - dispE[istep, maskD, icomp])
             if len(diff) > 0:
                 okay[maskD] = diff < tolerance
 
             if numpy.sum(okay) != nvertices:
-                print("Error in component %d of displacement field at time step %d." % (
-                    icomp, istep))
+                print("Error in component %d of displacement field at time step %d." % (icomp, istep))
                 print("Expected values: ", dispE[istep, :, :])
                 print("Output values: ", disp[istep, :, :])
-                print("Expected values (not okay): ",
-                      dispE[istep, ~okay, icomp])
-                print("Computed values (not okay): ",
-                      disp[istep, ~okay, icomp])
+                print("Expected values (not okay): ", dispE[istep, ~okay, icomp])
+                print("Computed values (not okay): ", disp[istep, ~okay, icomp])
                 print("Relative diff (not okay): ", diff[~okay])
                 print("Coordinates (not okay): ", vertices[~okay, :])
                 h5.close()
@@ -74,10 +67,9 @@ def check_displacements(testcase, filename, npoints, spaceDim):
 
 
 def check_stations(testcase, filename, stationsE):
-    """Check station names.
-    """
+    """Check station names."""
     h5 = h5py.File(filename, "r", driver="sec2")
-    stations = h5['stations'][:]
+    stations = h5["stations"][:]
     h5.close()
 
     nstationsE = len(stations)
@@ -88,5 +80,6 @@ def check_stations(testcase, filename, stationsE):
         testcase.assertEqual(stE, st)
 
     return
+
 
 # End of file

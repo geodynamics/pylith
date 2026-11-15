@@ -2,8 +2,7 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
+// Copyright (c) 2010-2026 All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
@@ -14,12 +13,11 @@
 
 namespace pylith {
     namespace faults {
-        class pylith::faults::FaultCohesiveImpulses: public pylith::faults::FaultCohesiveKin {
+        class pylith::faults::FaultCohesiveImpulses : public pylith::faults::FaultCohesiveKin {
             friend class TestFaultCohesiveImpulses; // unit testing
 
             // PUBLIC METHODS /////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             /// Default constructor.
             FaultCohesiveImpulses(void);
 
@@ -35,14 +33,14 @@ public:
              * @param flags Array of indices for degrees of freedom.
              * @param size Size of array
              */
-            %apply(int* INPLACE_ARRAY1, int DIM1) {
-                (const int* flags,
-                 const size_t size)
-            };
+            % apply(int* INPLACE_ARRAY1,
+                    int DIM1){(const int* flags,
+                               const size_t size)};
             void setImpulseDOF(const int* flags,
                                const size_t size);
 
-            %clear(const int* flags, const size_t size);
+            % clear(const int* flags,
+                    const size_t size);
 
             /** Set threshold for nonzero impulse amplitude.
              *
@@ -73,8 +71,7 @@ public:
                                                           const pylith::topology::Mesh& domainMesh);
 
             // PROTECTED METHODS //////////////////////////////////////////////////////////////////
-protected:
-
+          protected:
             /** Update slip subfield in auxiliary field at beginning of time step.
              *
              * @param[out] auxiliaryField Auxiliary field.
@@ -91,7 +88,7 @@ protected:
              */
             void _setKernelsResidual(pylith::feassemble::IntegratorInterface* integrator,
                                      const pylith::topology::Field& solution,
-                                     const std::vector < pylith::materials::Material* > &materials) const;
+                                     const std::vector<pylith::materials::Material*>& materials) const;
 
             /** Set kernels for Jacobian.
              *
@@ -101,11 +98,11 @@ protected:
              */
             void _setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
                                      const pylith::topology::Field& solution,
-                                     const std::vector < pylith::materials::Material* > &materials) const;
+                                     const std::vector<pylith::materials::Material*>& materials) const;
 
         }; // class FaultCohesiveImpulses
 
-    } // faults
-} // pylith
+    } // namespace faults
+} // namespace pylith
 
 // End of file

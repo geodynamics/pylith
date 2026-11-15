@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -33,6 +32,7 @@ class AuxSubfieldsTimeDependent(Component):
     :$f_2(x)$: `time_history_amplitude`
     :$t_2(x)$: `time_history_start`
     """
+
     DOC_CONFIG = {
         "cfg": """
             [time_dependent_subfields]
@@ -48,27 +48,31 @@ class AuxSubfieldsTimeDependent(Component):
 
     from pylith.topology.Subfield import Subfield
 
-    initialAmplitude = pythia.pyre.inventory.facility("initial_amplitude", family="auxiliary_subfield", factory=Subfield)
-    initialAmplitude.meta['tip'] = "Initial amplitude, f_0(x), subfield."
+    initialAmplitude = pythia.pyre.inventory.facility(
+        "initial_amplitude", family="auxiliary_subfield", factory=Subfield
+    )
+    initialAmplitude.meta["tip"] = "Initial amplitude, f_0(x), subfield."
 
     rateAmplitude = pythia.pyre.inventory.facility("rate_amplitude", family="auxiliary_subfield", factory=Subfield)
-    rateAmplitude.meta['tip'] = "Rate amplitude, dot{f}_1(x), subfield."
+    rateAmplitude.meta["tip"] = "Rate amplitude, dot{f}_1(x), subfield."
 
     rateStart = pythia.pyre.inventory.facility("rate_start_time", family="auxiliary_subfield", factory=Subfield)
-    rateStart.meta['tip'] = "Rate starting time, t_1(x), subfield."
+    rateStart.meta["tip"] = "Rate starting time, t_1(x), subfield."
 
     timeHistoryAmplitude = pythia.pyre.inventory.facility(
-        "time_history_amplitude", family="auxiliary_subfield", factory=Subfield)
-    timeHistoryAmplitude.meta['tip'] = "Time history amplitude, f_2(x), subfield."
+        "time_history_amplitude", family="auxiliary_subfield", factory=Subfield
+    )
+    timeHistoryAmplitude.meta["tip"] = "Time history amplitude, f_2(x), subfield."
 
-    timeHistoryStart = pythia.pyre.inventory.facility("time_history_start_time", family="auxiliary_subfield", factory=Subfield)
-    timeHistoryStart.meta['tip'] = "Time history starting time, t_2(x), subfield."
+    timeHistoryStart = pythia.pyre.inventory.facility(
+        "time_history_start_time", family="auxiliary_subfield", factory=Subfield
+    )
+    timeHistoryStart.meta["tip"] = "Time history starting time, t_2(x), subfield."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="auxfieldstimedependent"):
-        """Constructor.
-        """
+        """Constructor."""
         Component.__init__(self, name, facility="auxiliary_fields")
         return
 
@@ -81,9 +85,9 @@ class AuxSubfieldsTimeDependent(Component):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
+
 def auxiliary_subfields():
-    """Factory associated with AuxSubfieldsAbsorbingDampers.
-    """
+    """Factory associated with AuxSubfieldsAbsorbingDampers."""
     return AuxSubfieldsTimeDependent()
 
 

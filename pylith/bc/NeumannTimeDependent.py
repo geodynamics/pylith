@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -91,26 +90,14 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
     useTimeHistory = pythia.pyre.inventory.bool("use_time_history", default=False)
     useTimeHistory.meta["tip"] = "Use time history term in time-dependent expression."
 
-    dbTimeHistory = pythia.pyre.inventory.facility(
-        "time_history", factory=NullComponent, family="temporal_database"
-    )
-    dbTimeHistory.meta["tip"] = (
-        "Time history with normalized amplitude as a function of time."
-    )
+    dbTimeHistory = pythia.pyre.inventory.facility("time_history", factory=NullComponent, family="temporal_database")
+    dbTimeHistory.meta["tip"] = "Time history with normalized amplitude as a function of time."
 
-    refDir1 = pythia.pyre.inventory.list(
-        "ref_dir_1", default=[0.0, 0.0, 1.0], validator=validateDir
-    )
-    refDir1.meta["tip"] = (
-        "First choice for reference direction to discriminate among tangential directions in 3D."
-    )
+    refDir1 = pythia.pyre.inventory.list("ref_dir_1", default=[0.0, 0.0, 1.0], validator=validateDir)
+    refDir1.meta["tip"] = "First choice for reference direction to discriminate among tangential directions in 3D."
 
-    refDir2 = pythia.pyre.inventory.list(
-        "ref_dir_2", default=[0.0, 1.0, 0.0], validator=validateDir
-    )
-    refDir2.meta["tip"] = (
-        "Second choice for reference direction to discriminate among tangential directions in 3D."
-    )
+    refDir2 = pythia.pyre.inventory.list("ref_dir_2", default=[0.0, 1.0, 0.0], validator=validateDir)
+    refDir2.meta["tip"] = "Second choice for reference direction to discriminate among tangential directions in 3D."
 
     def __init__(self, name="neumanntimedependent"):
         """Constructor."""
@@ -137,18 +124,14 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
         return
 
     def _validate(self, context):
-        if self.inventory.useTimeHistory and isinstance(
-            self.inventory.dbTimeHistory, NullComponent
-        ):
+        if self.inventory.useTimeHistory and isinstance(self.inventory.dbTimeHistory, NullComponent):
             trait = self.inventory.getTrait("time_history")
             self._validationError(
                 context,
                 trait,
                 f"Missing time history database for time-dependent Neumann boundary condition '{self.aliases[-1]}'.",
             )
-        if not self.inventory.useTimeHistory and not isinstance(
-            self.inventory.dbTimeHistory, NullComponent
-        ):
+        if not self.inventory.useTimeHistory and not isinstance(self.inventory.dbTimeHistory, NullComponent):
             self._warning.log(
                 f"Time history for time-dependent Neumann boundary condition '{self.aliases[-1]}' not enabled. Ignoring provided time history database."
             )

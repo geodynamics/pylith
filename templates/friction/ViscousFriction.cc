@@ -2,8 +2,7 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
+// Copyright (c) 2010-2026 All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
@@ -44,9 +43,9 @@ namespace contrib {
 
             // Friction model parameters.
             const pylith::materials::Metadata::ParamDescription properties[numProperties] = {
-                { "static_coefficient", 1, pylith::topology::FieldBase::SCALAR },
-                { "reference_slip_rate", 1, pylith::topology::FieldBase::SCALAR },
-                { "cohesion", 1, pylith::topology::FieldBase::SCALAR },
+                {"static_coefficient", 1, pylith::topology::FieldBase::SCALAR},
+                {"reference_slip_rate", 1, pylith::topology::FieldBase::SCALAR},
+                {"cohesion", 1, pylith::topology::FieldBase::SCALAR},
             };
 
             // Number of state variables.
@@ -54,7 +53,7 @@ namespace contrib {
 
             // State variables.
             const pylith::materials::Metadata::ParamDescription stateVars[numStateVars] = {
-                { "slip_rate", 1, pylith::topology::FieldBase::SCALAR },
+                {"slip_rate", 1, pylith::topology::FieldBase::SCALAR},
             };
 
             // Values expected in spatial database
@@ -76,23 +75,19 @@ namespace contrib {
                 "slip-rate",
             };
 
-        } // _ViscousFriction
-    } // friction
-} // contrib
+        } // namespace _ViscousFriction
+    } // namespace friction
+} // namespace contrib
 
 // Indices of fault constitutive parameters.
 const int contrib::friction::ViscousFriction::p_coefS = 0;
-const int contrib::friction::ViscousFriction::p_v0 =
-    contrib::friction::ViscousFriction::p_coefS + 1;
-const int contrib::friction::ViscousFriction::p_cohesion =
-    contrib::friction::ViscousFriction::p_v0 + 1;
+const int contrib::friction::ViscousFriction::p_v0 = contrib::friction::ViscousFriction::p_coefS + 1;
+const int contrib::friction::ViscousFriction::p_cohesion = contrib::friction::ViscousFriction::p_v0 + 1;
 
 // Indices of database values (order must match dbProperties)
 const int contrib::friction::ViscousFriction::db_coefS = 0;
-const int contrib::friction::ViscousFriction::db_v0 =
-    contrib::friction::ViscousFriction::db_coefS + 1;
-const int contrib::friction::ViscousFriction::db_cohesion =
-    contrib::friction::ViscousFriction::db_v0 + 1;
+const int contrib::friction::ViscousFriction::db_v0 = contrib::friction::ViscousFriction::db_coefS + 1;
+const int contrib::friction::ViscousFriction::db_cohesion = contrib::friction::ViscousFriction::db_v0 + 1;
 
 // Indices of state variables.
 const int contrib::friction::ViscousFriction::s_slipRate = 0;
@@ -181,8 +176,7 @@ contrib::friction::ViscousFriction::_nondimProperties(PylithScalar* const values
     // Use the Scales::nondimensionalize() function to
     // nondimensionalize the quantities using the appropriate scale.
     values[p_v0] = _scales->nondimensionalize(values[p_v0], velocityScale);
-    values[p_cohesion] =
-        _scales->nondimensionalize(values[p_cohesion], rigidityScale);
+    values[p_cohesion] = _scales->nondimensionalize(values[p_cohesion], rigidityScale);
 } // _nondimProperties
 
 
@@ -206,8 +200,7 @@ contrib::friction::ViscousFriction::_dimProperties(PylithScalar* const values,
     // Use the Scales::dimensionalize() function to
     // dimensionalize the quantities using the appropriate scale.
     values[p_v0] = _scales->dimensionalize(values[p_v0], velocityScale);
-    values[p_cohesion] =
-        _scales->dimensionalize(values[p_cohesion], rigidityScale);
+    values[p_cohesion] = _scales->dimensionalize(values[p_cohesion], rigidityScale);
 } // _dimProperties
 
 
@@ -249,8 +242,7 @@ contrib::friction::ViscousFriction::_nondimStateVars(PylithScalar* const values,
 
     // Use the Scales::dimensionalize() function to
     // dimensionalize the quantities using the appropriate scale.
-    values[s_slipRate] =
-        _scales->nondimensionalize(values[s_slipRate], velocityScale);
+    values[s_slipRate] = _scales->nondimensionalize(values[s_slipRate], velocityScale);
 } // _nondimStateVars
 
 
@@ -272,8 +264,7 @@ contrib::friction::ViscousFriction::_dimStateVars(PylithScalar* const values,
 
     // Use the Scales::dimensionalize() function to
     // dimensionalize the quantities using the appropriate scale.
-    values[s_slipRate] =
-        _scales->dimensionalize(values[s_slipRate], velocityScale);
+    values[s_slipRate] = _scales->dimensionalize(values[s_slipRate], velocityScale);
 } // _dimStateVars
 
 

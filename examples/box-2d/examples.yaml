@@ -1,6 +1,16 @@
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
 commands:
   - pylith step01_axialdisp.cfg
   - pylith step02_sheardisp.cfg
   - pylith step03_sheardisptract.cfg
   - pylith step04_sheardispic.cfg
   - pylith step05_sheardisptractrate.cfg
+
+# End of file

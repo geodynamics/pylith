@@ -1,3 +1,11 @@
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
 name: stage-1
 
 on:
@@ -38,3 +46,5 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t pylith-docenv --build-arg BASE_IMAGE=$IMAGE_REGISTRY/testenv-ubuntu-22.04 -f docker/pylith-docenv .
+
+# End of file

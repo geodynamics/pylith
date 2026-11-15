@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -17,8 +16,7 @@ class RefineMesh(Component):
     """
 
     def __init__(self, name="refiner"):
-        """Constructor.
-        """
+        """Constructor."""
         Component.__init__(self, name, facility="refiner")
 
     def preinitialize(self):
@@ -26,8 +24,7 @@ class RefineMesh(Component):
         self._createModuleObj()
 
     def _configure(self):
-        """Set members using inventory.
-        """
+        """Set members using inventory."""
         Component._configure(self)
 
     def _createModuleObj(self):

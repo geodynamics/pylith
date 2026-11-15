@@ -3,8 +3,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -22,8 +21,7 @@ class GenerateDB(object):
     """
 
     def run(self):
-        """Generate the database.
-        """
+        """Generate the database."""
         # Domain
         x = numpy.arange(-4000.0, 4000.1, 1000.0)
         y = numpy.arange(-4000.0, 4000.1, 1000.0)
@@ -36,24 +34,27 @@ class GenerateDB(object):
         xy[:, 1] = numpy.ravel(numpy.transpose(yy))
 
         from axialdisp_soln import AnalyticalSoln
+
         soln = AnalyticalSoln()
         disp = soln.displacement(xy)
 
         from spatialdata.geocoords.CSCart import CSCart
+
         cs = CSCart()
         cs.inventory.spaceDim = 2
         cs._configure()
-        data = {'points': xy,
-                'coordsys': cs,
-                'data_dim': 2,
-                'values': [{'name': "initial_amplitude_x",
-                            'units': "m",
-                            'data': numpy.ravel(disp[0, :, 0])},
-                           {'name': "initial_amplitude_y",
-                            'units': "m",
-                            'data': numpy.ravel(disp[0, :, 1])}]}
+        data = {
+            "points": xy,
+            "coordsys": cs,
+            "data_dim": 2,
+            "values": [
+                {"name": "initial_amplitude_x", "units": "m", "data": numpy.ravel(disp[0, :, 0])},
+                {"name": "initial_amplitude_y", "units": "m", "data": numpy.ravel(disp[0, :, 1])},
+            ],
+        }
 
         from spatialdata.spatialdb.SimpleIOAscii import createWriter
+
         io = createWriter("axialdisp_bc.spatialdb")
         io.write(data)
         return

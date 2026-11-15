@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -25,14 +24,12 @@ import pylith.mpi.mpi as mpimodule
 
 
 class Communicator(object):
-    """Python MPI communicator object.
-    """
+    """Python MPI communicator object."""
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, handle):
-        """Constructor.
-        """
+        """Constructor."""
         # Transfer responsibility of memory management from module to this
         # class.
         handle.disown()
@@ -50,16 +47,14 @@ class Communicator(object):
         return
 
     def barrier(self):
-        """MPI Barrier.
-        """
+        """MPI Barrier."""
         mpimodule.barrier(self.handle)
         return
 
 
 # ----------------------------------------------------------------------
 def petsc_comm_world():
-    """Python wrapper around PETSC_COMM_WORLD.
-    """
+    """Python wrapper around PETSC_COMM_WORLD."""
     global _petsc_world
     if _petsc_world is None:
         _petsc_world = Communicator(mpimodule.petsc_comm_world())
@@ -68,8 +63,7 @@ def petsc_comm_world():
 
 # ----------------------------------------------------------------------
 def petsc_comm_self():
-    """Python wrapper around PETSC_COMM_SELF.
-    """
+    """Python wrapper around PETSC_COMM_SELF."""
     global _petsc_self
     if _petsc_self is None:
         _petsc_self = Communicator(mpimodule.petsc_comm_self())
@@ -78,8 +72,7 @@ def petsc_comm_self():
 
 # ----------------------------------------------------------------------
 def mpi_comm_world():
-    """Python wrapper around MPI_COMM_WORLD.
-    """
+    """Python wrapper around MPI_COMM_WORLD."""
     global _mpi_world
     if _mpi_world is None:
         _mpi_world = Communicator(mpimodule.mpi_comm_world())
@@ -88,8 +81,7 @@ def mpi_comm_world():
 
 # ----------------------------------------------------------------------
 def mpi_comm_self():
-    """Python wrapper around MPI_COMM_SELF.
-    """
+    """Python wrapper around MPI_COMM_SELF."""
     global _mpi_self
     if _mpi_self is None:
         _mpi_self = Communicator(mpimodule.mpi_comm_self())
@@ -98,8 +90,7 @@ def mpi_comm_self():
 
 # ----------------------------------------------------------------------
 def mpi_is_root():
-    """Returns True if root process, otherwise False.
-    """
+    """Returns True if root process, otherwise False."""
     return mpi_comm_world().rank == 0
 
 

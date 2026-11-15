@@ -2,8 +2,7 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
+// Copyright (c) 2010-2026 All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
@@ -15,10 +14,9 @@
 
 namespace pylith {
     namespace materials {
-        class IsotropicLinearGenMaxwell: public pylith::materials::RheologyElasticity {
+        class IsotropicLinearGenMaxwell : public pylith::materials::RheologyElasticity {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             /// Default constructor.
             IsotropicLinearGenMaxwell(void);
 
@@ -99,7 +97,7 @@ public:
              * @param[inout] kernels Array of kernels for updating state variables.
              * @param[in] coordsys Coordinate system.
              */
-            void addKernelsUpdateStateVars(std::vector < pylith::feassemble::IntegratorDomain::ProjectKernels > * kernels,
+            void addKernelsUpdateStateVars(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
                                            const spatialdata::geocoords::CoordSys* coordsys) const;
 
             /** Update kernel constants.
@@ -109,12 +107,11 @@ public:
              */
             void updateKernelConstants(pylith::real_array* kernelConstants,
                                        const PylithReal dt) const;
-
         };
 
         // class IsotropicLinearGenMaxwell
 
-    } // materials
-} // pylith
+    } // namespace materials
+} // namespace pylith
 
 // End of file

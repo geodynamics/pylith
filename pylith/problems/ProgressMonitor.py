@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -20,20 +19,19 @@ class ProgressMonitor(Component, ModuleProgressMonitor):
     import pythia.pyre.inventory
 
     filename = pythia.pyre.inventory.str("filename", default="")
-    filename.meta['tip'] = "Name of output file."
+    filename.meta["tip"] = "Name of output file."
 
     updatePercent = pythia.pyre.inventory.float(
-        "update_percent", default=5.0, validator=pythia.pyre.inventory.greater(0))
-    updatePercent.meta['tip'] = "Frequency of progress updates (percent)."
+        "update_percent", default=5.0, validator=pythia.pyre.inventory.greater(0)
+    )
+    updatePercent.meta["tip"] = "Frequency of progress updates (percent)."
 
     def __init__(self, name="progressmonitor"):
-        """Constructor.
-        """
+        """Constructor."""
         Component.__init__(self, name, facility="progress_monitor")
 
     def preinitialize(self, defaults):
-        """Do minimal initialization.
-        """
+        """Do minimal initialization."""
         filename = self.filename or f"{defaults.outputDir}/{defaults.simName}-progress.txt"
 
         self._createModuleObj()
@@ -42,8 +40,7 @@ class ProgressMonitor(Component, ModuleProgressMonitor):
         self._createPath()
 
     def _createPath(self):
-        """Create path for filename if it doesn't exist.
-        """
+        """Create path for filename if it doesn't exist."""
         import pathlib
         import pylith.mpi.mpi as mpi
 
@@ -52,8 +49,7 @@ class ProgressMonitor(Component, ModuleProgressMonitor):
             relpath.mkdir(exist_ok=True, parents=True)
 
     def _createModuleObj(self):
-        """Create handle to corresponding C++ object.
-        """
+        """Create handle to corresponding C++ object."""
         raise NotImplementedError("Implement in child class.")
 
 

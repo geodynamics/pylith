@@ -1,3 +1,11 @@
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
 from numpy import *
 
 p0 = array([-1.3, -1.4, -0.8], dtype=float64)
@@ -57,14 +65,14 @@ j111[:, 1] = p6 - p5
 j111[:, 2] = p6 - p2
 print("j111\n", j111)
 
-(x0, y0, z0) = p0
-(x1, y1, z1) = p1
-(x2, y2, z2) = p2
-(x3, y3, z3) = p3
-(x4, y4, z4) = p4
-(x5, y5, z5) = p5
-(x6, y6, z6) = p6
-(x7, y7, z7) = p7
+x0, y0, z0 = p0
+x1, y1, z1 = p1
+x2, y2, z2 = p2
+x3, y3, z3 = p3
+x4, y4, z4 = p4
+x5, y5, z5 = p5
+x6, y6, z6 = p6
+x7, y7, z7 = p7
 x = 0.2
 y = 0.8
 z = 0.7
@@ -97,7 +105,8 @@ j02 = x4 - x0 + f_xz * x + f_yz * y + f_xyz * x * y
 j12 = y4 - y0 + g_xz * x + g_yz * y + g_xyz * x * y
 j22 = z4 - z0 + h_xz * x + h_yz * y + h_xyz * x * y
 
-j = array([[j00, j01, j02],
-           [j10, j11, j12],
-           [j20, j21, j22]], dtype=float64)
+j = array([[j00, j01, j02], [j10, j11, j12], [j20, j21, j22]], dtype=float64)
 print("j\n", j)
+
+
+# End of file

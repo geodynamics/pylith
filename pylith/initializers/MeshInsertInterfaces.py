@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -19,12 +18,10 @@ class MeshInsertInterfaces(InitializePhase):
     Implements `InitializePhase`.
     """
 
-    DOC_CONFIG = {
-        "cfg": """
+    DOC_CONFIG = {"cfg": """
             [pylithapp.problem.mesh_initializer.phases.insert_interfaces]
             # No parameters
-        """
-    }
+        """}
 
     def __init__(self, name="mesh_insert_interfaces"):
         """Constructor."""

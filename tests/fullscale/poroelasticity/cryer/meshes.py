@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -18,12 +17,11 @@ class Tet(object):
     """
     Mesh information for tet mesh.
     """
+
     ENTITIES = {
         "domain": MeshEntity(ncells=2735, ncorners=4, nvertices=718),
-
         # Materials
         "poroelastic": MeshEntity(ncells=2735, ncorners=4, nvertices=718),
-
         # Boundaries
         "bc_shell_traction": MeshEntity(ncells=404, ncorners=3, nvertices=227),
         "bc_shell_pressure": MeshEntity(ncells=404, ncorners=3, nvertices=227),
@@ -37,12 +35,11 @@ class Hex(object):
     """
     Mesh information for hex mesh.
     """
+
     ENTITIES = {
         "domain": MeshEntity(ncells=896, ncorners=8, nvertices=1163),
-
         # Materials
         "poroelastic": MeshEntity(ncells=896, ncorners=8, nvertices=1163),
-
         # Boundaries
         "bc_shell_traction": MeshEntity(ncells=192, ncorners=4, nvertices=217),
         "bc_shell_pressure": MeshEntity(ncells=192, ncorners=4, nvertices=217),

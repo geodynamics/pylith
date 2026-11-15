@@ -1,4 +1,12 @@
 #!/usr/bin/env nemesis
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
 
 import numpy
 import h5py
@@ -10,28 +18,27 @@ stepSizes = ["dt01", "dt02", "dt05", "dt10"]
 
 # Time and stress/strain normalization information.
 uparser = parser()
-timeUnits = uparser.parse('1.0*year').value
+timeUnits = uparser.parse("1.0*year").value
 strainUnits = 1.0e-6
-stressUnits = uparser.parse('1.0*MPa').value
+stressUnits = uparser.parse("1.0*MPa").value
 
 # Line styles.
-stylePlastic = ['k-', 'ro', 'bs', 'gD']
-styleElastic = ['k--', 'r--', 'b--', 'g--']
+stylePlastic = ["k-", "ro", "bs", "gD"]
+styleElastic = ["k--", "r--", "b--", "g--"]
 
 # -----------------------------------------------------------------------------
 
 
 def computeStressInvar(fileName):
-    """Function to compute second deviatoric stress invariant.
-    """
+    """Function to compute second deviatoric stress invariant."""
 
     h5 = h5py.File(fileName, "r", driver="sec2")
-    times = h5['time'][:, 0, 0]
+    times = h5["time"][:, 0, 0]
     timeYears = times / timeUnits
     numSteps = times.shape[0]
     stressInvarMean = numpy.zeros(numSteps, dtype=numpy.float64)
 
-    stress = h5['cell_fields/stress'][:, :, :] / stressUnits
+    stress = h5["cell_fields/stress"][:, :, :] / stressUnits
     h5.close()
     pres = (stress[:, :, 0] + stress[:, :, 1] + stress[:, :, 2]) / 3.0
     s11 = stress[:, :, 0] - pres
@@ -41,8 +48,7 @@ def computeStressInvar(fileName):
     s23 = stress[:, :, 4]
     s13 = stress[:, :, 5]
 
-    stressInvar = numpy.sqrt(0.5 * (s11 * s11 + s22 * s22 + s33 * s33 +
-                                    2.0 * (s12 * s12 + s13 * s13 + s23 * s23)))
+    stressInvar = numpy.sqrt(0.5 * (s11 * s11 + s22 * s22 + s33 * s33 + 2.0 * (s12 * s12 + s13 * s13 + s23 * s23)))
 
     print("File %s:" % fileName)
     for stepNum in range(numSteps):
@@ -62,16 +68,15 @@ def computeStressInvar(fileName):
 
 
 def computeStrainInvar(fileName):
-    """Function to compute second plastic strain invariant.
-    """
+    """Function to compute second plastic strain invariant."""
 
     h5 = h5py.File(fileName, "r", driver="sec2")
-    times = h5['time'][:, 0, 0]
+    times = h5["time"][:, 0, 0]
     timeYears = times / timeUnits
     numSteps = times.shape[0]
     strainInvarMean = numpy.zeros(numSteps, dtype=numpy.float64)
 
-    plasStrain = h5['cell_fields/plastic_strain'][:, :, :] / strainUnits
+    plasStrain = h5["cell_fields/plastic_strain"][:, :, :] / strainUnits
     h5.close()
     e11 = plasStrain[:, :, 0]
     e22 = plasStrain[:, :, 1]
@@ -80,8 +85,7 @@ def computeStrainInvar(fileName):
     e23 = plasStrain[:, :, 4]
     e13 = plasStrain[:, :, 5]
 
-    strainInvar = numpy.sqrt(0.5 * (e11 * e11 + e22 * e22 + e33 * e33 +
-                                    2.0 * (e12 * e12 + e13 * e13 + e23 * e23)))
+    strainInvar = numpy.sqrt(0.5 * (e11 * e11 + e22 * e22 + e33 * e33 + 2.0 * (e12 * e12 + e13 * e13 + e23 * e23)))
 
     print("File %s:" % fileName)
     for stepNum in range(numSteps):
@@ -111,23 +115,25 @@ for istep, stepSize in enumerate(stepSizes):
 
     # Elastic
     filename = "output/elastic_%s-statevars.h5" % stepSize
-    (stressInvarElastic, timeElastic) = computeStressInvar(filename)
+    stressInvarElastic, timeElastic = computeStressInvar(filename)
 
     # Plastic
     filename = "output/plastic_%s-statevars.h5" % stepSize
-    (stressInvarPlastic, timePlastic) = computeStressInvar(filename)
-    (strainInvarPlastic, timePlastic) = computeStrainInvar(filename)
+    stressInvarPlastic, timePlastic = computeStressInvar(filename)
+    strainInvarPlastic, timePlastic = computeStrainInvar(filename)
 
     ax1.plot(timePlastic, strainInvarPlastic, stylePlastic[istep])
 
-    ax2.plot(timeElastic, stressInvarElastic, styleElastic[istep],
-             timePlastic, stressInvarPlastic, stylePlastic[istep])
+    ax2.plot(timeElastic, stressInvarElastic, styleElastic[istep], timePlastic, stressInvarPlastic, stylePlastic[istep])
 
 
-ax1.set_xlabel('Time (years)')
-ax1.set_ylabel('Plastic strain invariant (microStrain)')
+ax1.set_xlabel("Time (years)")
+ax1.set_ylabel("Plastic strain invariant (microStrain)")
 
-ax2.set_xlabel('Time (years)')
-ax2.set_ylabel('Stress invariant (MPa)')
+ax2.set_xlabel("Time (years)")
+ax2.set_ylabel("Stress invariant (MPa)")
 
 pyplot.show()
+
+
+# End of file

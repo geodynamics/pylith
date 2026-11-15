@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -15,12 +14,13 @@ from dataclasses import dataclass
 import numpy
 import pyvista
 
+
 @dataclass
 class Field:
     values: numpy.ndarray
     field_type: str
     basis_order: int
-    #units: str # Reminder for future use
+    # units: str # Reminder for future use
 
     COMPONENT = {
         "x": 0,
@@ -39,9 +39,11 @@ class Field:
         scalar_field = None
         if component_name == "magnitude":
             if self.field_type == "scalar":
-                scalar_field = numpy.abs(self.values[t_index,:,0])
+                scalar_field = numpy.abs(self.values[t_index, :, 0])
             elif self.field_type == "vector":
-                scalar_field = numpy.sqrt(self.values[t_index,:,0]**2 + self.values[t_index,:,1]**2 + self.values[t_index,:,2]**2)
+                scalar_field = numpy.sqrt(
+                    self.values[t_index, :, 0] ** 2 + self.values[t_index, :, 1] ** 2 + self.values[t_index, :, 2] ** 2
+                )
             else:
                 raise ValueError(f"Getting magnitude for vector field type {self.field_type} is not supported.")
         else:
@@ -57,14 +59,17 @@ class Field:
             if self.field_type == "scalar":
                 max_value = numpy.abs(self.values).max()
             elif self.field_type == "vector":
-                max_value = numpy.sqrt(self.values[:,:,0]**2 + self.values[:,:,1]**2 + self.values[:,:,2]**2).max()
+                max_value = numpy.sqrt(
+                    self.values[:, :, 0] ** 2 + self.values[:, :, 1] ** 2 + self.values[:, :, 2] ** 2
+                ).max()
             else:
                 max_value = numpy.abs(self.values).max()
         else:
             component = self.COMPONENT[component_name]
-            min_value = self.values[:,:,component].min()
-            max_value = self.values[:,:,component].max()
+            min_value = self.values[:, :, component].min()
+            max_value = self.values[:, :, component].max()
         return (min_value, max_value)
+
 
 @dataclass
 class Mesh:
@@ -89,12 +94,16 @@ def create_component_colormap(min_value: float, max_value: float, component_name
         lut.scalar_range = (-max_mag, +max_mag)
     return lut
 
+
 def create_colormap(dataset, field_name, component_name):
     min_value = float_info.max
     max_value = -float_info.max
     for domain in dataset:
         data_field = domain.get_field(field_name)
-        (field_min, field_max) = data_field.get_range(component_name)
+        field_min, field_max = data_field.get_range(component_name)
         min_value = min(min_value, field_min)
         max_value = max(max_value, field_max)
     return create_component_colormap(min_value, max_value, component_name)
+
+
+# End of file

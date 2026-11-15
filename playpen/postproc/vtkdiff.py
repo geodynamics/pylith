@@ -3,8 +3,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -26,8 +25,7 @@ class VtkDiff(Application):
     """
 
     class Inventory(Application.Inventory):
-        """Python object for managing VtkDiff facilities and properties.
-        """
+        """Python object for managing VtkDiff facilities and properties."""
 
         # @class Inventory
         # Python object for managing VtkDiff facilities and properties.
@@ -40,17 +38,16 @@ class VtkDiff(Application):
         import pythia.pyre.inventory
 
         vtkInputRoot = pythia.pyre.inventory.str("vtk_input_root", default="input.vtk")
-        vtkInputRoot.meta['tip'] = "Root filename for VTK input files."
+        vtkInputRoot.meta["tip"] = "Root filename for VTK input files."
 
         vtkOutputRoot = pythia.pyre.inventory.str("vtk_output_root", default="output.vtk")
-        vtkOutputRoot.meta['tip'] = "Root filename for VTK output files."
+        vtkOutputRoot.meta["tip"] = "Root filename for VTK output files."
 
         scaleFactor = pythia.pyre.inventory.float("scale_factor", default=1.0)
-        scaleFactor.meta['tip'] = "Scaling factor to apply to results."
+        scaleFactor.meta["tip"] = "Scaling factor to apply to results."
 
     class TooFewFilesError(IOError):
-        """Exception raised when not enough VTK input files are found.
-        """
+        """Exception raised when not enough VTK input files are found."""
 
         def __init__(self, value):
             self.value = value
@@ -85,23 +82,21 @@ class VtkDiff(Application):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """Setup members using inventory.
-        """
+        """Setup members using inventory."""
         Application._configure(self)
         import os
         import re
 
         # Set up info for input files
-        totalInputPath = os.path.normpath(os.path.join(os.getcwd(),
-                                                       self.inventory.vtkInputRoot))
+        totalInputPath = os.path.normpath(os.path.join(os.getcwd(), self.inventory.vtkInputRoot))
         self.vtkInputDir = os.path.dirname(totalInputPath)
         baseInputName = os.path.basename(totalInputPath)
         baseInputNameLen = len(baseInputName)
         if baseInputName.endswith(".vtk"):
-            baseInputNameStripped = baseInputName[0:baseInputNameLen - 4]
+            baseInputNameStripped = baseInputName[0 : baseInputNameLen - 4]
         else:
             baseInputNameStripped = baseInputName
-        testFind = re.search('_t[0-9]*$', baseInputNameStripped)
+        testFind = re.search("_t[0-9]*$", baseInputNameStripped)
         if testFind != None:
             timeInd = baseInputNameStripped.rfind(testFind.group(0))
             self.vtkInputRoot = baseInputNameStripped[0:timeInd]
@@ -109,16 +104,15 @@ class VtkDiff(Application):
             self.vtkInputRoot = baseInputNameStripped
 
         # Set up info for output files
-        totalOutputPath = os.path.normpath(os.path.join(
-            os.getcwd(), self.inventory.vtkOutputRoot))
+        totalOutputPath = os.path.normpath(os.path.join(os.getcwd(), self.inventory.vtkOutputRoot))
         self.vtkOutputDir = os.path.dirname(totalOutputPath)
         baseOutputName = os.path.basename(totalOutputPath)
         baseOutputNameLen = len(baseOutputName)
         if baseOutputName.endswith(".vtk"):
-            baseOutputNameStripped = baseOutputName[0:baseOutputNameLen - 4]
+            baseOutputNameStripped = baseOutputName[0 : baseOutputNameLen - 4]
         else:
             baseOutputNameStripped = baseOutputName
-        testFind = re.search('_t[0-9]*$', baseOutputNameStripped)
+        testFind = re.search("_t[0-9]*$", baseOutputNameStripped)
         if testFind != None:
             timeInd = baseOutputNameStripped.rfind(testFind.group(0))
             self.vtkOutputRoot = baseOutputNameStripped[0:timeInd]
@@ -130,8 +124,7 @@ class VtkDiff(Application):
         return
 
     def _getFileInfo(self):
-        """Find input files and set up filenames for input and output.
-        """
+        """Find input files and set up filenames for input and output."""
         import os
         import glob
 
@@ -145,13 +138,13 @@ class VtkDiff(Application):
             try:
                 raise TooFewFilesError(self.numVtkInputFiles)
             except TooFewFilesError as err:
-                print('Not enough files found for search string:  ', searchString)
-                print('Number of files found:  ', err.value)
+                print("Not enough files found for search string:  ", searchString)
+                print("Number of files found:  ", err.value)
         index1 = self.vtkInputList[0].rfind("_t")
         index2 = self.vtkInputList[0].rfind(".vtk")
         self.timeStampWidth = index2 - index1 - 2
         for vtkFile in self.vtkInputList:
-            timeString = vtkFile[index1 + 2:index2]
+            timeString = vtkFile[index1 + 2 : index2]
             self.vtkInputTimes.append(float(timeString))
 
         # Create output directory if it doesn't exist
@@ -173,14 +166,11 @@ class VtkDiff(Application):
             dt = (timeStamp2 - timeStamp1) / self.scaleFactor
             # We assume that differences correspond to midpoint of the 2 time steps.
             timeStampOut = int(0.5 * (timeStamp1 + timeStamp2))
-            timeStampOutString = repr(timeStampOut).rjust(self.timeStampWidth, '0')
-            #outputFileName = self.vtkOutputRoot + "_t" + timeStampOutString + ".vtk"
+            timeStampOutString = repr(timeStampOut).rjust(self.timeStampWidth, "0")
+            # outputFileName = self.vtkOutputRoot + "_t" + timeStampOutString + ".vtk"
             outputFileName = self.vtkOutputRoot + "_t" + timeStampOutString + ".vtu"
             vtkOutputFile = os.path.join(self.vtkOutputDir, outputFileName)
-            self._diffFiles(self.vtkInputList[fileInd],
-                            self.vtkInputList[fileInd + 1],
-                            vtkOutputFile,
-                            dt)
+            self._diffFiles(self.vtkInputList[fileInd], self.vtkInputList[fileInd + 1], vtkOutputFile, dt)
 
         return
 
@@ -209,7 +199,7 @@ class VtkDiff(Application):
             self.cells.set_cells(self.numCells, cellArray)
             self.vertArray = data1._get_points().to_array()
             self.cellType = data1.get_cell_type(0)
-            (self.numVerts, self.spaceDim) = self.vertArray.shape
+            self.numVerts, self.spaceDim = self.vertArray.shape
             self.readMesh = True
 
         # Set up mesh info for VTK file
@@ -228,12 +218,12 @@ class VtkDiff(Application):
             numVectorsUsed = 0
             for vertDataArray in range(numVertDataArrays):
                 array1 = vertData1.get_array(vertDataArray).to_array()
-                (numPoints, numCols) = array1.shape
+                numPoints, numCols = array1.shape
                 arrayName = vertData1.get_array_name(vertDataArray) + "/dt"
                 array2 = vertData2.get_array(vertDataArray).to_array()
                 arrayOut = (array2 - array1) / dt
                 # This is wrong if we have a scalar field with 3 components
-                if (numCols == 3 and numVectorsUsed == 0):
+                if numCols == 3 and numVectorsUsed == 0:
                     mesh.point_data.vectors = arrayOut
                     mesh.point_data.vectors.name = arrayName
                     numVectorsUsed += 1
@@ -257,12 +247,12 @@ class VtkDiff(Application):
             numVectorsUsed = 0
             for cellDataArray in range(numCellDataArrays):
                 array1 = cellData1.get_array(cellDataArray).to_array()
-                (numPoints, numCols) = array1.shape
+                numPoints, numCols = array1.shape
                 arrayName = cellData1.get_array_name(cellDataArray) + "/dt"
                 array2 = cellData2.get_array(cellDataArray).to_array()
                 arrayOut = (array2 - array1) / dt
                 # This is wrong if we have a scalar field with 3 components
-                if (numCols == 3 and numVectorsUsed == 0):
+                if numCols == 3 and numVectorsUsed == 0:
                     mesh.cell_data.vectors = arrayOut
                     mesh.cell_data.vectors.name = arrayName
                     numVectorsUsed += 1
@@ -275,7 +265,7 @@ class VtkDiff(Application):
                     mesh.cell_data.add_array(arrayOut)
 
         # Write results to VTK file
-        #w = tvtk.UnstructuredGridWriter(file_name=vtkFileOut, input=mesh)
+        # w = tvtk.UnstructuredGridWriter(file_name=vtkFileOut, input=mesh)
         w = tvtk.XMLDataSetWriter(file_name=vtkFileOut, input=mesh)
         w.write()
 
@@ -283,7 +273,7 @@ class VtkDiff(Application):
 
 
 # ----------------------------------------------------------------------
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = VtkDiff()
     app.run()
 

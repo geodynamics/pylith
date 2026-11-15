@@ -1,4 +1,12 @@
 #!python3
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
 """WARNING: This script only works with Python supplied with Cubit.
 
 To run this script outside the Cubit GUI, you will need to run it like:
@@ -7,6 +15,8 @@ PATH_TO_CUBIT/Cubit.app/Contents/Frameworks/Python.framework/Versions/Current/bi
 
 where you replace 'PATH_TO_CUBIT' with the absolute path.
 """
+
+
 # -------------------------------------------------------------------------------------------------
 # Utility functions. No edits should be needed.
 # -------------------------------------------------------------------------------------------------
@@ -14,19 +24,27 @@ def setup_cubit():
     """Detect if we are running outside Cubit. If so, then we parse command line arguments and setup
     Cubit."""
     import sys
+
     if not "cubit" in sys.modules:
         import argparse
         import pathlib
 
         parser = argparse.ArgumentParser()
-        parser.add_argument("--cubit-directory", action="store", dest="cubit_dir", required=True, help="Directory containing cubit executable.")
+        parser.add_argument(
+            "--cubit-directory",
+            action="store",
+            dest="cubit_dir",
+            required=True,
+            help="Directory containing cubit executable.",
+        )
         args = parser.parse_args()
 
         # Initialize cubit
         cubit_absdir = pathlib.Path(args.cubit_dir).expanduser().resolve()
         sys.path.append(str(cubit_absdir))
         import cubit
-        cubit.init(['cubit','-nojournal'])
+
+        cubit.init(["cubit", "-nojournal"])
 
 
 # -------------------------------------------------------------------------------------------------
@@ -38,21 +56,21 @@ import math
 # -100 km <= x <= +100 km
 # -100 km <= y <= 0
 km = 1000.0
-BLOCK_WIDTH = 200*km
-BLOCK_HEIGHT = 100*km
-BLOCK_LENGTH = 10*km
+BLOCK_WIDTH = 200 * km
+BLOCK_HEIGHT = 100 * km
+BLOCK_LENGTH = 10 * km
 
-FAULT_WIDTH = 60*km
+FAULT_WIDTH = 60 * km
 FAULT_DIP_ANGLE = 30.0 / 180 * math.pi
-FAULT_OFFSET = 0.5*FAULT_WIDTH*math.cos(FAULT_DIP_ANGLE)
+FAULT_OFFSET = 0.5 * FAULT_WIDTH * math.cos(FAULT_DIP_ANGLE)
 
-SPLAY_WIDTH = 15.0*km
+SPLAY_WIDTH = 15.0 * km
 SPLAY_DIP_ANGLE = 45.0 / 180.0 * math.pi
-SPLAY_OFFSET = 20*km
+SPLAY_OFFSET = 20 * km
 
 
-DX_FAULT = 5.0*km # Discretization size on fault
-DX_BIAS = 1.1 # rate of geometric increase in cell size with distance from the fault
+DX_FAULT = 5.0 * km  # Discretization size on fault
+DX_BIAS = 1.1  # rate of geometric increase in cell size with distance from the fault
 cell = "quad"
 
 
@@ -70,7 +88,7 @@ cubit.reset()
 # Create a brick and move it so fault is centered and upper surface
 # is at y=0.
 brick = cubit.brick(BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_LENGTH)
-cubit.move(brick, (-FAULT_OFFSET, -0.5*BLOCK_HEIGHT, 0))
+cubit.move(brick, (-FAULT_OFFSET, -0.5 * BLOCK_HEIGHT, 0))
 
 # Create a midsurface from front and back surfaces.
 # surface 1 name "surf_front"
@@ -87,13 +105,19 @@ cubit.cmd(f"delete volume {brick.id()}")
 # Create fault and splay surfaces
 
 # Create fault (yz plane) at x = 0.0
-cubit.cmd(f"split surface {surf_id} across location position 0 0 0 location position {-BLOCK_HEIGHT/math.tan(FAULT_DIP_ANGLE)} {-BLOCK_HEIGHT} 0")
+cubit.cmd(
+    f"split surface {surf_id} across location position 0 0 0 location position {-BLOCK_HEIGHT/math.tan(FAULT_DIP_ANGLE)} {-BLOCK_HEIGHT} 0"
+)
 
 # split curve 17 at position {-faultWidth*cosd(fault1DipAngle)} {-faultWidth*sind(faultDipAngle)} 0
-cubit.cmd(f"split curve  ( at -62990.4 -36367.5 0 ordinal 1 ordered )  at position {-FAULT_WIDTH*math.cos(FAULT_DIP_ANGLE)} {-FAULT_WIDTH*math.sin(FAULT_DIP_ANGLE)} 0")
+cubit.cmd(
+    f"split curve  ( at -62990.4 -36367.5 0 ordinal 1 ordered )  at position {-FAULT_WIDTH*math.cos(FAULT_DIP_ANGLE)} {-FAULT_WIDTH*math.sin(FAULT_DIP_ANGLE)} 0"
+)
 
 # split surface 8 across location position -{splayOffset} 0 0 location position {-BLOCK_HEIGHT/tand(splayDipAngle)} {-BLOCK_HEIGHT} 0
-cubit.cmd(f"split surface  ( at -62990.4 -36367.5 0 ordinal 1 ordered )  across location position {-SPLAY_OFFSET} 0 0 location position {-BLOCK_HEIGHT/math.tan(SPLAY_DIP_ANGLE)} {-BLOCK_HEIGHT} 0")
+cubit.cmd(
+    f"split surface  ( at -62990.4 -36367.5 0 ordinal 1 ordered )  across location position {-SPLAY_OFFSET} 0 0 location position {-BLOCK_HEIGHT/math.tan(SPLAY_DIP_ANGLE)} {-BLOCK_HEIGHT} 0"
+)
 
 
 # Name surfaces
@@ -319,7 +343,8 @@ if True:
     cubit.cmd("nodeset 13 name 'splay_end'")
 
 
-
-
 # Write mesh as ExodusII file
 cubit.cmd(f"export mesh 'mesh_{cell}.exo' dimension 2 overwrite")
+
+
+# End of file

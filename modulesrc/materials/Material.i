@@ -2,8 +2,7 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
+// Copyright (c) 2010-2026 All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
@@ -15,10 +14,9 @@
 
 namespace pylith {
     namespace materials {
-        class Material: public pylith::problems::Physics {
+        class Material : public pylith::problems::Physics {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             /** Default constructor.
              *
              * @param dimension Spatial dimension associated with material.
@@ -29,8 +27,7 @@ public:
             virtual ~Material(void);
 
             /// Deallocate PETSc and local data structures.
-            virtual
-            void deallocate(void);
+            virtual void deallocate(void);
 
             /** Set gravity field.
              *
@@ -43,8 +40,8 @@ public:
              * @param[in] solution Solution field.
              * @returns Constraint if applicable, otherwise NULL.
              */
-            virtual
-            std::vector < pylith::feassemble::Constraint* > createConstraints(const pylith::topology::Field& solution);
+            virtual std::vector<pylith::feassemble::Constraint*>
+            createConstraints(const pylith::topology::Field& solution);
 
             /** Get default PETSc solver options appropriate for material.
              *
@@ -52,13 +49,12 @@ public:
              * @param[in] hasFault True if problem has fault, False otherwise.
              * @returns PETSc solver options.
              */
-            virtual
-            pylith::petsc::Options* getSolverDefaults(const bool isParallel,
-                                                           const bool hasFault) const;
+            virtual pylith::petsc::Options* getSolverDefaults(const bool isParallel,
+                                                              const bool hasFault) const;
 
         }; // class Material
 
-    } // materials
-} // pylith
+    } // namespace materials
+} // namespace pylith
 
 // End of file

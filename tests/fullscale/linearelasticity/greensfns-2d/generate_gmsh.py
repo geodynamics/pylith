@@ -1,7 +1,16 @@
 #!/usr/bin/env nemesis
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
 
 import gmsh
-from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup, GenerateMesh)
+from pylith.meshio.gmsh_utils import BoundaryGroup, MaterialGroup, GenerateMesh
+
 
 class App(GenerateMesh):
     """
@@ -15,31 +24,31 @@ class App(GenerateMesh):
     |       |       |
     p1-----p5------p2
     """
-    DOMAIN_X = DOMAIN_Y = 8.0e+3
-    DX = 1.0e+3
+
+    DOMAIN_X = DOMAIN_Y = 8.0e3
+    DX = 1.0e3
 
     def __init__(self):
         self.cell_choices = {
             "required": True,
             "choices": ["tri", "quad"],
-            }
+        }
         self.filename = "mesh.msh"
 
     def create_geometry(self):
-        """Create geometry.
-        """
+        """Create geometry."""
         lx = self.DOMAIN_X
         ly = self.DOMAIN_Y
         x0 = -0.5 * lx
         y0 = -0.5 * ly
 
         p1 = gmsh.model.geo.add_point(x0, y0, 0.0)
-        p2 = gmsh.model.geo.add_point(x0+lx, y0, 0.0)
-        p3 = gmsh.model.geo.add_point(x0+lx, y0+ly, 0.0)
-        p4 = gmsh.model.geo.add_point(x0, y0+ly, 0.0)
+        p2 = gmsh.model.geo.add_point(x0 + lx, y0, 0.0)
+        p3 = gmsh.model.geo.add_point(x0 + lx, y0 + ly, 0.0)
+        p4 = gmsh.model.geo.add_point(x0, y0 + ly, 0.0)
 
-        p5 = gmsh.model.geo.add_point(x0+0.5*lx, y0, 0.0)
-        p6 = gmsh.model.geo.add_point(x0+0.5*lx, y0+ly, 0.0)
+        p5 = gmsh.model.geo.add_point(x0 + 0.5 * lx, y0, 0.0)
+        p6 = gmsh.model.geo.add_point(x0 + 0.5 * lx, y0 + ly, 0.0)
 
         self.l_yneg0 = gmsh.model.geo.add_line(p1, p5)
         self.l_yneg1 = gmsh.model.geo.add_line(p5, p2)
@@ -57,8 +66,7 @@ class App(GenerateMesh):
         gmsh.model.geo.synchronize()
 
     def mark(self):
-        """Mark geometry for materials, boundary conditions, faults, etc.
-        """
+        """Mark geometry for materials, boundary conditions, faults, etc."""
         materials = (
             MaterialGroup(tag=1, entities=[self.s_xneg]),
             MaterialGroup(tag=2, entities=[self.s_xpos]),
@@ -77,8 +85,7 @@ class App(GenerateMesh):
             group.create_physical_group()
 
     def generate_mesh(self, cell):
-        """Generate the mesh. Should also include optimizing the mesh quality.
-        """
+        """Generate the mesh. Should also include optimizing the mesh quality."""
         gmsh.option.setNumber("Mesh.MeshSizeMin", self.DX)
         gmsh.option.setNumber("Mesh.MeshSizeMax", self.DX)
         if cell == "quad":

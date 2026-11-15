@@ -1,3 +1,11 @@
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
 # Coordinate systems
 
 from spatialdata.geocoords.CSGeo import CSGeo
@@ -6,8 +14,7 @@ from spatialdata.geocoords.CSGeo import CSGeo
 
 
 def cs_geo():
-    """Geographic lat/lon coordinates in WGS84 datum.
-    """
+    """Geographic lat/lon coordinates in WGS84 datum."""
     cs = CSGeo()
     cs.inventory.crsString = "EPSG:4326"
     cs.inventory.spaceDim = 2
@@ -16,9 +23,7 @@ def cs_geo():
 
 
 def cs_geo3D():
-    """Geographic lat/lon/elev coordinates in WGS84 datumm.
-
-    """
+    """Geographic lat/lon/elev coordinates in WGS84 datumm."""
     cs = CSGeo()
     cs.inventory.crsString = "EPSG:4326"
     cs.inventory.spaceDim = 3
@@ -27,8 +32,7 @@ def cs_geo3D():
 
 
 def cs_mesh():
-    """Cartesian coordinates for mesh with Portland, OR, as the origin.
-    """
+    """Cartesian coordinates for mesh with Portland, OR, as the origin."""
     cs = CSGeo()
     cs.inventory.crsString = "+proj=tmerc +datum=WGS84 +lat_0=45.5231 +lon_0=-122.6765 +k=0.9996 +units=m"
     cs.inventory.spaceDim = 3
@@ -37,9 +41,9 @@ def cs_mesh():
 
 
 def geoToMesh(xyz):
-    """Convert coordinates from geographic coordinates to mesh coordinates.
-    """
+    """Convert coordinates from geographic coordinates to mesh coordinates."""
     from spatialdata.geocoords.Converter import convert
+
     convert(xyz, cs_mesh(), cs_geo3D())
     return
 

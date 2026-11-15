@@ -1,4 +1,12 @@
 #!/usr/bin/env nemesis
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
 
 import numpy
 import h5py
@@ -6,9 +14,7 @@ import coordsys
 from scipy.interpolate import griddata
 
 # Load GNSS station coordinates using NumPy
-station_data = numpy.genfromtxt(
-    "cgnss_stations_latlon.txt", dtype=None, names=True, encoding="utf-8"
-)
+station_data = numpy.genfromtxt("cgnss_stations_latlon.txt", dtype=None, names=True, encoding="utf-8")
 station_name = station_data["Site"]
 station_latitude = station_data["Latitude"]
 station_longitude = station_data["Longitude"]
@@ -48,3 +54,6 @@ numpy.savetxt(
     fmt="%s %.6f %.6f %.1f",
     header="Site Latitude Longitude Elevation (m)",
 )
+
+
+# End of file

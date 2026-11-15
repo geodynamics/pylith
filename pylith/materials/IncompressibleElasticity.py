@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -20,8 +19,8 @@ class IncompressibleElasticity(Material, ModuleIncompressibleElasticity):
 
     Implements `Material`.
     """
-    DOC_CONFIG = {
-        "cfg": """
+
+    DOC_CONFIG = {"cfg": """
             [pylithapp.problem.materials.mat_incompelastic]
             label_value = 3
             use_body_force = True
@@ -31,49 +30,49 @@ class IncompressibleElasticity(Material, ModuleIncompressibleElasticity):
             auxiliary_subfields.body_force.basis_order = 0
             derived_subfields.cauchy_stress.basis_order = 1
             derived_subfields.cauchy_strain.basis_order = 1
-        """
-    }
+        """}
 
     import pythia.pyre.inventory
 
     useBodyForce = pythia.pyre.inventory.bool("use_body_force", default=False)
-    useBodyForce.meta['tip'] = "Include body force term in elasticity equation."
+    useBodyForce.meta["tip"] = "Include body force term in elasticity equation."
 
-    rheology = pythia.pyre.inventory.facility("bulk_rheology", family="incompressible_elasticity_rheology", factory=IsotropicLinearIncompElasticity)
-    rheology.meta['tip'] = "Bulk rheology for elastic material."
+    rheology = pythia.pyre.inventory.facility(
+        "bulk_rheology", family="incompressible_elasticity_rheology", factory=IsotropicLinearIncompElasticity
+    )
+    rheology.meta["tip"] = "Bulk rheology for elastic material."
 
     def __init__(self, name="incompressibleelasticity"):
-        """Constructor.
-        """
+        """Constructor."""
         Material.__init__(self, name)
 
     def _defaults(self):
         from .AuxSubfieldsElasticity import AuxSubfieldsElasticity
+
         self.auxiliarySubfields = AuxSubfieldsElasticity("auxiliary_subfields")
 
         from .DerivedSubfieldsElasticity import DerivedSubfieldsElasticity
+
         self.derivedSubfields = DerivedSubfieldsElasticity("derived_subfields")
 
     def preinitialize(self, problem):
-        """Setup material.
-        """
+        """Setup material."""
         self.rheology.preinitialize(problem)
         Material.preinitialize(self, problem)
         self.rheology.addAuxiliarySubfields(self, problem)
         ModuleIncompressibleElasticity.useBodyForce(self, self.useBodyForce)
 
     def _createModuleObj(self):
-        """Create handle to C++ IncompressibleElasticity.
-        """
+        """Create handle to C++ IncompressibleElasticity."""
         ModuleIncompressibleElasticity.__init__(self)
         ModuleIncompressibleElasticity.setBulkRheology(self, self.rheology)  # Material sets auxiliary db in rheology.
 
 
 # Factories
 
+
 def material():
-    """Factory associated with IncompressibleElasticity.
-    """
+    """Factory associated with IncompressibleElasticity."""
     return IncompressibleElasticity()
 
 

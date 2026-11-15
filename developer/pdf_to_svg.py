@@ -1,4 +1,12 @@
 #!/usr/bin/env nemesis
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
 
 import re
 import sys
@@ -14,9 +22,7 @@ import pymupdf
 # We target only the offending paths: a <path> with no fill attribute that is a
 # direct child of a <g mask="url(#mask_...)"> group. Each such path gets
 # fill="none".
-BORDER_PATH_RE = re.compile(
-    r'(<g mask="url\(#mask_\d+\)">\s*)(<path(?![^>]*\bfill=)[^>]*?)(/>)'
-)
+BORDER_PATH_RE = re.compile(r'(<g mask="url\(#mask_\d+\)">\s*)(<path(?![^>]*\bfill=)[^>]*?)(/>)')
 
 
 def remove_box_borders(svg):
@@ -29,7 +35,7 @@ if len(sys.argv) != 2:
     sys.exit(1)
 
 filename_pdf = sys.argv[1]
-doc = pymupdf.open(filename_pdf) # open a document
+doc = pymupdf.open(filename_pdf)  # open a document
 for i_page, page in enumerate(doc):
 
     if len(doc) > 1:
@@ -39,7 +45,12 @@ for i_page, page in enumerate(doc):
         print(f"Writing {filename_single}...")
         single_pdf.save(filename_single)
 
-    filename_svg = filename_pdf.replace(".pdf", ".svg") if len(doc) == 1 else filename_pdf.replace(".pdf", f"-{i_page}.svg")
+    filename_svg = (
+        filename_pdf.replace(".pdf", ".svg") if len(doc) == 1 else filename_pdf.replace(".pdf", f"-{i_page}.svg")
+    )
     with open(filename_svg, "w", encoding="utf-8") as svg_out:
         print(f"Writing {filename_svg}...")
         svg_out.write(remove_box_borders(page.get_svg_image()))
+
+
+# End of file

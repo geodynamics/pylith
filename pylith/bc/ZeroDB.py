@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -17,8 +16,8 @@ class ZeroDB(UniformDB):
 
     Implements `SpatialDB`.
     """
-    DOC_CONFIG = {
-        "cfg": """
+
+    DOC_CONFIG = {"cfg": """
             # Zero displacement boundary condition constraining the y degree of freedom on the -y boundary.
             [pylithapp.problem.bc.bc_yneg]
             constrained_dof = [1]
@@ -27,13 +26,12 @@ class ZeroDB(UniformDB):
 
             db_auxiliary_field = pylith.bc.ZeroDB
             db_auxiliary_field.description = Dirichlet displacement boundary condition on the -y boundary
-            """
-    }
-
+            """}
 
     import pythia.pyre.inventory
 
     from pythia.pyre.units.length import m
+
     values = ["initial_amplitude", "initial_amplitude_x", "initial_amplitude_y", "initial_amplitude_z"]
     data = [0.0, 0.0, 0.0, 0.0]
 
@@ -43,16 +41,14 @@ class ZeroDB(UniformDB):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="zerodb"):
-        """Constructor.
-        """
+        """Constructor."""
         UniformDB.__init__(self, name)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """Set members based on inventory.
-        """
+        """Set members based on inventory."""
         self.inventory.values = self.values
         self.inventory.data = self.data
         UniformDB._configure(self)
@@ -61,9 +57,9 @@ class ZeroDB(UniformDB):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
+
 def spatial_database():
-    """Factory associated with ZeroDB.
-    """
+    """Factory associated with ZeroDB."""
     return ZeroDB()
 
 

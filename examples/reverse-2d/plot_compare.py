@@ -1,4 +1,12 @@
 #!/usr/bin/env nemesis
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
 """
 This script generates a plot comparing the displacement and pressure
 time histories for uniform and adaptive time stepping in Step 1.
@@ -90,9 +98,7 @@ class PlotApp:
         axes = self._setup_axes(figure, index=1)
         i_loc = self._find_loc(orig["vertices"], x=self.TARGET[0], y=self.TARGET[1])
         axes.plot(orig["time"] / year.value, orig["displacement"][:, i_loc, 1], "k-o")
-        axes.plot(
-            adapt["time"] / year.value, adapt["displacement"][:, i_loc, 1], "r--x"
-        )
+        axes.plot(adapt["time"] / year.value, adapt["displacement"][:, i_loc, 1], "r--x")
         vertex = orig["vertices"][i_loc]
         axes.set_title(f"Vertical displacement at x={vertex[0]:.0f}, y={vertex[1]:.0f}")
         axes.set_ylabel("Y displacement, m")
@@ -127,11 +133,12 @@ class PlotApp:
 
     def _find_loc(self, points, x, y):
         """Find index of target location given by x and y."""
-        dist = numpy.sqrt(
-            numpy.square(points[:, 0] - x) + numpy.square(points[:, 1] - y)
-        )
+        dist = numpy.sqrt(numpy.square(points[:, 0] - x) + numpy.square(points[:, 1] - y))
         return numpy.argmin(dist)
 
 
 if __name__ == "__main__":
     cli()
+
+
+# End of file

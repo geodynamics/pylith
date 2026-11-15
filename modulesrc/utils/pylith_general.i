@@ -2,47 +2,42 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
+// Copyright (c) 2010-2026 All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
 
 // ----------------------------------------------------------------------
 // sizeofVoidPtr
-%inline %{
-  int
-  sizeofVoidPtr(void)
-  { // sizeofVoidPtr
-    return sizeof(void*);
-  } // sizeofVoidPtr
-%} // inline
+% inline %
+    {int sizeofVoidPtr(void){// sizeofVoidPtr
+                             return sizeof(void*);
+} // sizeofVoidPtr
+%
+} // inline
 
 // ----------------------------------------------------------------------
 // sizeofPylithScalar
-%inline %{
-  int
-  sizeofPylithScalar(void)
-  { // sizeofPylithScalar
-    return sizeof(PylithScalar);
-  } // sizeofPylithScalar
-%} // inline
+% inline %
+    {int sizeofPylithScalar(void){// sizeofPylithScalar
+                                  return sizeof(PylithScalar);
+} // sizeofPylithScalar
+%
+} // inline
 
 
 // ----------------------------------------------------------------------
 // isCUDAEnabled
-%inline %{
-  bool
-  isCUDAEnabled(void)
-  { // isCUDAEnabled
+% inline % {
+    bool isCUDAEnabled(void) { // isCUDAEnabled
 #if ENABLE_CUDA
-    return true;
+        return true;
 #else
-    return false;
+        return false;
 #endif
-  } // isCUDAEnabled
-%} // inline
+    } // isCUDAEnabled
+    %
+} // inline
 
 
 // End of file
-

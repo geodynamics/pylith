@@ -1,4 +1,12 @@
 #!/usr/bin/env nemesis
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
 
 import gmsh
 from pylith.meshio.gmsh_utils import BoundaryGroup, MaterialGroup, GenerateMesh
@@ -17,10 +25,10 @@ class App(GenerateMesh):
     p1------------p2
     """
 
-    DOMAIN_X = 8.0e+3
-    DOMAIN_Y = 1.0e+3
-    DX = 0.2e+3
-    
+    DOMAIN_X = 8.0e3
+    DOMAIN_Y = 1.0e3
+    DX = 0.2e3
+
     def __init__(self):
         self.cell_choices = {
             "required": True,
@@ -45,9 +53,7 @@ class App(GenerateMesh):
         self.l_ypos = gmsh.model.geo.add_line(p3, p4)
         self.l_xneg = gmsh.model.geo.add_line(p4, p1)
 
-        c1 = gmsh.model.geo.add_curve_loop(
-            [self.l_yneg, self.l_xpos, self.l_ypos, self.l_xneg]
-        )
+        c1 = gmsh.model.geo.add_curve_loop([self.l_yneg, self.l_xpos, self.l_ypos, self.l_xneg])
         self.s_domain = gmsh.model.geo.add_plane_surface([c1])
 
         gmsh.model.geo.synchronize()
@@ -104,3 +110,6 @@ class App(GenerateMesh):
 
 if __name__ == "__main__":
     App().main()
+
+
+# End of file

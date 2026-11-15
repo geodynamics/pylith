@@ -1,4 +1,12 @@
 #!/usr/bin/env nemesis
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
 import numpy
 import pylab
 import tables
@@ -10,7 +18,7 @@ if len(sys.argv) != 3:
 cell = sys.argv[1]
 sim = sys.argv[2]
 
-if not sim in ['swave', 'pwave']:
+if not sim in ["swave", "pwave"]:
     raise ValueError("Unknown sim '%s'." % sim)
 
 
@@ -18,52 +26,39 @@ if not sim in ['swave', 'pwave']:
 
 # ----------------------------------------------------------------------
 
+
 def swave_soln():
 
     dt = 5.0e-6
     tend = 5.0e-4
-    t = numpy.arange(0.0, tend+0.5*dt, dt)
+    t = numpy.arange(0.0, tend + 0.5 * dt, dt)
 
     mask = t < 1.2956829537e-4
-    sxx = 0*t
-    syy = 0*t
-    szz = 0*t
-    sxy = mask*2.9403000000e+10*t + ~mask*3.8096965888e+6
-    syz = 0*t
-    sxz = 0*t
+    sxx = 0 * t
+    syy = 0 * t
+    szz = 0 * t
+    sxy = mask * 2.9403000000e10 * t + ~mask * 3.8096965888e6
+    syz = 0 * t
+    sxz = 0 * t
 
-    return {'t': t,
-            'sxx': sxx,
-            'syy': syy,
-            'szz': szz,
-            'sxy': sxy,
-            'syz': syz,
-            'sxz': sxz}
+    return {"t": t, "sxx": sxx, "syy": syy, "szz": szz, "sxy": sxy, "syz": syz, "sxz": sxz}
 
 
 # ----------------------------------------------------------------------
 def pwave_soln():
     dt = 5.0e-5
     tend = 5.0e-3
-    t = numpy.arange(0.0, tend+0.5*dt, dt)
+    t = numpy.arange(0.0, tend + 0.5 * dt, dt)
 
     mask = t < 1.7246213245e-3
-    sxx = mask*-8.8216171200e+10*t + ~mask * \
-        (-8.5665432299e+10*t-4.3990587021e+6)
-    syy = mask*-2.9410171200e+10*t + ~mask * \
-        (-3.0685540651e+10*t+2.1995293511e+6)
-    szz = 1.0*syy
-    sxy = 0*t
-    syz = 0*t
-    sxz = 0*t
+    sxx = mask * -8.8216171200e10 * t + ~mask * (-8.5665432299e10 * t - 4.3990587021e6)
+    syy = mask * -2.9410171200e10 * t + ~mask * (-3.0685540651e10 * t + 2.1995293511e6)
+    szz = 1.0 * syy
+    sxy = 0 * t
+    syz = 0 * t
+    sxz = 0 * t
 
-    return {'t': t,
-            'sxx': sxx,
-            'syy': syy,
-            'szz': szz,
-            'sxy': sxy,
-            'syz': syz,
-            'sxz': sxz}
+    return {"t": t, "sxx": sxx, "syy": syy, "szz": szz, "sxy": sxy, "syz": syz, "sxz": sxz}
 
 
 # ----------------------------------------------------------------------
@@ -84,16 +79,16 @@ h5.close()
 
 # Redimensionalize
 timescale = 1.0e-6
-analytic['t'] /= timescale
+analytic["t"] /= timescale
 time /= timescale
 
-stressscale = 1.0e+6
-analytic['sxx'] /= stressscale
-analytic['syy'] /= stressscale
-analytic['szz'] /= stressscale
-analytic['sxy'] /= stressscale
-analytic['syz'] /= stressscale
-analytic['sxz'] /= stressscale
+stressscale = 1.0e6
+analytic["sxx"] /= stressscale
+analytic["syy"] /= stressscale
+analytic["szz"] /= stressscale
+analytic["sxy"] /= stressscale
+analytic["syz"] /= stressscale
+analytic["sxz"] /= stressscale
 stress /= stressscale
 
 # Plot
@@ -109,12 +104,26 @@ else:
 
 # Axial components
 ax = pylab.subplot(1, 2, 1)
-ax.plot(analytic['t'], analytic['sxx'], 'k-',
-        time, stress[:, 0, 0:48:6], 'r--',
-        analytic['t'], analytic['syy'], 'k-',
-        time, stress[:, 0, 1:48:6], 'r--',
-        analytic['t'], analytic['szz'], 'k-',
-        time, stress[:, 0, 2:48:6], 'r--')
+ax.plot(
+    analytic["t"],
+    analytic["sxx"],
+    "k-",
+    time,
+    stress[:, 0, 0:48:6],
+    "r--",
+    analytic["t"],
+    analytic["syy"],
+    "k-",
+    time,
+    stress[:, 0, 1:48:6],
+    "r--",
+    analytic["t"],
+    analytic["szz"],
+    "k-",
+    time,
+    stress[:, 0, 2:48:6],
+    "r--",
+)
 ax.set_xlim(xlim)
 ax.set_ylim(ylim)
 ax.set_xlabel("Time (usec)")
@@ -122,15 +131,32 @@ ax.set_ylabel("Stress (MPa)")
 
 # Shear components
 ax = pylab.subplot(1, 2, 2)
-ax.plot(analytic['t'], analytic['sxy'], 'k-',
-        time, stress[:, 0, 3:48:6], 'r--',
-        analytic['t'], analytic['syz'], 'k-',
-        time, stress[:, 0, 4:48:6], 'r--',
-        analytic['t'], analytic['sxz'], 'k-',
-        time, stress[:, 0, 5:48:6], 'r--')
+ax.plot(
+    analytic["t"],
+    analytic["sxy"],
+    "k-",
+    time,
+    stress[:, 0, 3:48:6],
+    "r--",
+    analytic["t"],
+    analytic["syz"],
+    "k-",
+    time,
+    stress[:, 0, 4:48:6],
+    "r--",
+    analytic["t"],
+    analytic["sxz"],
+    "k-",
+    time,
+    stress[:, 0, 5:48:6],
+    "r--",
+)
 ax.set_xlim(xlim)
 ax.set_ylim(ylim)
 ax.set_xlabel("Time (usec)")
 ax.set_ylabel("Stress (MPa)")
 
 pylab.show()
+
+
+# End of file

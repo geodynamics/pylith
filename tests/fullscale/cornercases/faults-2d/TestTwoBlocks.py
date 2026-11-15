@@ -3,8 +3,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -33,19 +32,19 @@ class TestCase(FullTestCase):
             Check(
                 mesh_entities=["mat_xneg", "mat_xpos"],
                 filename="output/{name}-{mesh_entity}_info.h5",
-                cell_fields = ["density", "bulk_modulus", "shear_modulus"],
+                cell_fields=["density", "bulk_modulus", "shear_modulus"],
                 defaults=defaults,
             ),
             Check(
                 mesh_entities=["mat_xneg", "mat_xpos"],
-                vertex_fields = ["displacement"],
-                cell_fields = ["cauchy_strain"],
+                vertex_fields=["displacement"],
+                cell_fields=["cauchy_strain"],
                 defaults=defaults,
             ),
             Check(
                 mesh_entities=["mat_xneg", "mat_xpos"],
-                cell_fields = ["cauchy_stress"],
-                scale = 1.0e+6,
+                cell_fields=["cauchy_stress"],
+                scale=1.0e6,
                 defaults=defaults,
             ),
             Check(

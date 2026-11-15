@@ -2,8 +2,7 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
+// Copyright (c) 2010-2026 All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
@@ -54,14 +53,14 @@ namespace contrib {
 
             // Physical properties.
             const pylith::materials::Metadata::ParamDescription properties[numProperties] = {
-                { "density", 1, pylith::topology::FieldBase::SCALAR },
-                { "mu", 1, pylith::topology::FieldBase::SCALAR },
-                { "lambda", 1, pylith::topology::FieldBase::SCALAR },
+                {"density", 1, pylith::topology::FieldBase::SCALAR},
+                {"mu", 1, pylith::topology::FieldBase::SCALAR},
+                {"lambda", 1, pylith::topology::FieldBase::SCALAR},
             };
 
             // Values expected in spatial database
             const int numDBProperties = 3;
-            const char* dbProperties[numDBProperties] = { "density", "vs", "vp" };
+            const char* dbProperties[numDBProperties] = {"density", "vs", "vp"};
 
             // These are the state variables stored during the
             // simulation. Usually, we store only the time-dependent values
@@ -74,8 +73,8 @@ namespace contrib {
 
             /// State variables.
             const pylith::materials::Metadata::ParamDescription stateVars[numStateVars] = {
-                { "total_strain", tensorSize, pylith::topology::FieldBase::TENSOR },
-                { "stress", tensorSize, pylith::topology::FieldBase::TENSOR },
+                {"total_strain", tensorSize, pylith::topology::FieldBase::TENSOR},
+                {"stress", tensorSize, pylith::topology::FieldBase::TENSOR},
             };
 
             // We do not include a list of values expected to be in the
@@ -83,34 +82,29 @@ namespace contrib {
             // state variables are the initial stress and strain, which are
             // already provided as special spatial databases.
 
-        } // _PlaneStrainState
-    } // materials
-} // contrib
+        } // namespace _PlaneStrainState
+    } // namespace materials
+} // namespace contrib
 
 // Indices of physical properties in the properties array.
 const int contrib::materials::PlaneStrainState::p_density = 0;
 
-const int contrib::materials::PlaneStrainState::p_mu =
-    contrib::materials::PlaneStrainState::p_density + 1;
+const int contrib::materials::PlaneStrainState::p_mu = contrib::materials::PlaneStrainState::p_density + 1;
 
-const int contrib::materials::PlaneStrainState::p_lambda =
-    contrib::materials::PlaneStrainState::p_mu + 1;
+const int contrib::materials::PlaneStrainState::p_lambda = contrib::materials::PlaneStrainState::p_mu + 1;
 
 // Indices of database values (order must match dbProperties)
 const int contrib::materials::PlaneStrainState::db_density = 0;
 
-const int contrib::materials::PlaneStrainState::db_vs =
-    contrib::materials::PlaneStrainState::db_density + 1;
+const int contrib::materials::PlaneStrainState::db_vs = contrib::materials::PlaneStrainState::db_density + 1;
 
-const int contrib::materials::PlaneStrainState::db_vp =
-    contrib::materials::PlaneStrainState::db_vs + 1;
+const int contrib::materials::PlaneStrainState::db_vp = contrib::materials::PlaneStrainState::db_vs + 1;
 
 // Indices of state variables in the state variables array.
 const int contrib::materials::PlaneStrainState::s_totalStrain = 0;
 
 const int contrib::materials::PlaneStrainState::s_stress =
-    contrib::materials::PlaneStrainState::s_totalStrain +
-    contrib::materials::_PlaneStrainState::tensorSize;
+    contrib::materials::PlaneStrainState::s_totalStrain + contrib::materials::_PlaneStrainState::tensorSize;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -124,7 +118,8 @@ contrib::materials::PlaneStrainState::PlaneStrainState(void) :
                                                                    _PlaneStrainState::numDBProperties,
                                                                    _PlaneStrainState::stateVars,
                                                                    _PlaneStrainState::numStateVars,
-                                                                   0, 0)) { // constructor
+                                                                   0,
+                                                                   0)) { // constructor
 } // constructor
 
 
@@ -152,7 +147,7 @@ contrib::materials::PlaneStrainState::_dbToProperties(PylithScalar* const propVa
 
     // Check for reasonable values. If user supplied unreasonable values
     // throw an exception.
-    if ((density <= 0.0) || (vs <= 0.0) || (vp <= 0.0) ) {
+    if ((density <= 0.0) || (vs <= 0.0) || (vp <= 0.0)) {
         std::ostringstream msg;
         msg << "Spatial database returned nonpositive value for physical "
             << "properties.\n"
@@ -164,8 +159,8 @@ contrib::materials::PlaneStrainState::_dbToProperties(PylithScalar* const propVa
 
     // Compute physical properties that we store from the user-supplied
     // physical properties.
-    const PylithScalar mu = density * vs*vs;
-    const PylithScalar lambda = density * vp*vp - 2.0*mu;
+    const PylithScalar mu = density * vs * vs;
+    const PylithScalar lambda = density * vp * vp - 2.0 * mu;
 
     // Check for reasonable values. If values are unreasonable throw an
     // exception.
@@ -202,12 +197,9 @@ contrib::materials::PlaneStrainState::_nondimProperties(PylithScalar* const valu
 
     // Use the Scales::nondimensionalize() function to
     // nondimensionalize the quantities using the appropriate scale.
-    values[p_density] =
-        _scales->nondimensionalize(values[p_density], densityScale);
-    values[p_mu] =
-        _scales->nondimensionalize(values[p_mu], rigidityScale);
-    values[p_lambda] =
-        _scales->nondimensionalize(values[p_lambda], rigidityScale);
+    values[p_density] = _scales->nondimensionalize(values[p_density], densityScale);
+    values[p_mu] = _scales->nondimensionalize(values[p_mu], rigidityScale);
+    values[p_lambda] = _scales->nondimensionalize(values[p_lambda], rigidityScale);
 } // _nondimProperties
 
 
@@ -228,12 +220,9 @@ contrib::materials::PlaneStrainState::_dimProperties(PylithScalar* const values,
 
     // Use the Scales::dimensionalize() function to
     // dimensionalize the quantities using the appropriate scale.
-    values[p_density] =
-        _scales->dimensionalize(values[p_density], densityScale);
-    values[p_mu] =
-        _scales->dimensionalize(values[p_mu], rigidityScale);
-    values[p_lambda] =
-        _scales->dimensionalize(values[p_lambda], rigidityScale);
+    values[p_density] = _scales->dimensionalize(values[p_density], densityScale);
+    values[p_mu] = _scales->dimensionalize(values[p_mu], rigidityScale);
+    values[p_lambda] = _scales->dimensionalize(values[p_lambda], rigidityScale);
 } // _dimProperties
 
 
@@ -294,7 +283,7 @@ contrib::materials::PlaneStrainState::_calcStress(PylithScalar* const stress,
     const PylithScalar lambda = properties[p_lambda];
 
     // Compute a convenient constant.
-    const PylithScalar mu2 = 2.0*mu;
+    const PylithScalar mu2 = 2.0 * mu;
 
     // Compute the current strains accounting for the initial strain.
     const PylithScalar e11 = totalStrain[0] - initialStrain[0];
@@ -305,8 +294,8 @@ contrib::materials::PlaneStrainState::_calcStress(PylithScalar* const stress,
     const PylithScalar s12 = lambda * (e11 + e22);
 
     // Compute the stresses and store them in the stress array.
-    stress[0] = s12 + mu2*e11 + initialStress[0];
-    stress[1] = s12 + mu2*e22 + initialStress[1];
+    stress[0] = s12 + mu2 * e11 + initialStress[0];
+    stress[1] = s12 + mu2 * e22 + initialStress[1];
     stress[2] = mu2 * e12 + initialStress[2];
 } // _calcStress
 
@@ -377,27 +366,28 @@ contrib::materials::PlaneStrainState::stableTimeStepImplicit(const pylith::topol
 // ----------------------------------------------------------------------
 // Get stable time step for implicit time integration.
 PylithScalar
-contrib::materials::PlaneStrainState::_stableTimeStepImplicit(const PylithScalar* properties,
-                                                              const int numProperties,
-                                                              const PylithScalar* stateVars,
-                                                              const int numStateVars) const { // _stableTimeStepImplicit
-                                                                                              //  Return the stable time
-                                                                                              // step for this material
-                                                                                              // given its current
-                                                                                              // state. This function
-                                                                                              // will never be called
-                                                                                              // because we provide the
-                                                                                              // stableTimeStepImplicit()
-                                                                                              // function, but we
-                                                                                              // implement this function
-                                                                                              // to satisfy the
-                                                                                              // requirements of an
-                                                                                              // interface for an
-                                                                                              // elastic
-                                                                                              // material (which is
-                                                                                              // defined by the Material
-                                                                                              // and ElasticMaterial
-                                                                                              // objects).
+contrib::materials::PlaneStrainState::_stableTimeStepImplicit(
+    const PylithScalar* properties,
+    const int numProperties,
+    const PylithScalar* stateVars,
+    const int numStateVars) const { // _stableTimeStepImplicit
+                                    //  Return the stable time
+                                    // step for this material
+                                    // given its current
+                                    // state. This function
+                                    // will never be called
+                                    // because we provide the
+                                    // stableTimeStepImplicit()
+                                    // function, but we
+                                    // implement this function
+                                    // to satisfy the
+                                    // requirements of an
+                                    // interface for an
+                                    // elastic
+                                    // material (which is
+                                    // defined by the Material
+                                    // and ElasticMaterial
+                                    // objects).
     return pylith::PYLITH_MAXSCALAR;
 } // _stableTimeStepImplicit
 
@@ -405,11 +395,12 @@ contrib::materials::PlaneStrainState::_stableTimeStepImplicit(const PylithScalar
 // ----------------------------------------------------------------------
 // Get stable time step for explicit time integration.
 PylithScalar
-contrib::materials::PlaneStrainState::_stableTimeStepExplicit(const PylithScalar* properties,
-                                                              const int numProperties,
-                                                              const PylithScalar* stateVars,
-                                                              const int numStateVars,
-                                                              const double minCellWidth) const { // _stableTimeStepExplicit
+contrib::materials::PlaneStrainState::_stableTimeStepExplicit(
+    const PylithScalar* properties,
+    const int numProperties,
+    const PylithScalar* stateVars,
+    const int numStateVars,
+    const double minCellWidth) const { // _stableTimeStepExplicit
     assert(properties);
     assert(_numPropsQuadPt == numProperties);
 
@@ -418,7 +409,7 @@ contrib::materials::PlaneStrainState::_stableTimeStepExplicit(const PylithScalar
     const PylithScalar density = properties[p_density];
 
     assert(density > 0.0);
-    const PylithScalar vp = sqrt((lambda + 2*mu) / density);
+    const PylithScalar vp = sqrt((lambda + 2 * mu) / density);
 
     const PylithScalar dtStable = minCellWidth / vp;
     return dtStable;
@@ -455,17 +446,23 @@ contrib::materials::PlaneStrainState::_updateStateVars(PylithScalar* const state
 
     // Store the total strain in the state variable array.
     for (int iComp = 0; iComp < tensorSize; ++iComp) {
-        stateVars[s_totalStrain+iComp] = totalStrain[iComp];
+        stateVars[s_totalStrain + iComp] = totalStrain[iComp];
     }
 
     // Use the _calcStress function to compute the stresses.
     const bool computeStateVars = false; // We are computing the state vars here!
-    _calcStress(&stateVars[s_stress], tensorSize,
-                properties, numProperties,
-                stateVars, numStateVars,
-                totalStrain, strainSize,
-                initialStress, initialStressSize,
-                initialStrain, initialStrainSize,
+    _calcStress(&stateVars[s_stress],
+                tensorSize,
+                properties,
+                numProperties,
+                stateVars,
+                numStateVars,
+                totalStrain,
+                strainSize,
+                initialStress,
+                initialStressSize,
+                initialStrain,
+                initialStrainSize,
                 computeStateVars);
 } // _updateStateVars
 

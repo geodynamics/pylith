@@ -3,8 +3,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -75,20 +74,17 @@ def generate(sim, fileRoot, materials):
             {
                 "name": "density",
                 "units": "kg/m**3",
-                "data": elastic_properties[material]["density"]
-                * numpy.ones_like(stress[:, 0]),
+                "data": elastic_properties[material]["density"] * numpy.ones_like(stress[:, 0]),
             },
             {
                 "name": "vs",
                 "units": "km/s",
-                "data": elastic_properties[material]["vs"]
-                * numpy.ones_like(stress[:, 0]),
+                "data": elastic_properties[material]["vs"] * numpy.ones_like(stress[:, 0]),
             },
             {
                 "name": "vp",
                 "units": "km/s",
-                "data": elastic_properties[material]["vp"]
-                * numpy.ones_like(stress[:, 0]),
+                "data": elastic_properties[material]["vp"] * numpy.ones_like(stress[:, 0]),
             },
             {"name": "reference_stress_xx", "units": "Pa", "data": stress[:, 0]},
             {"name": "reference_stress_yy", "units": "Pa", "data": stress[:, 1]},
@@ -144,9 +140,7 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--sim", action="store", dest="sim", default="step08b_gravity_incompressible"
-    )
+    parser.add_argument("--sim", action="store", dest="sim", default="step08b_gravity_incompressible")
     parser.add_argument(
         "--file-root",
         action="store",

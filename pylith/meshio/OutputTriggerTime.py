@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -22,42 +21,39 @@ class OutputTriggerTime(OutputTrigger, ModuleOutputTriggerTime):
 
     Implements `OutputTrigger`.
     """
-    DOC_CONFIG = {
-        "cfg": """
+
+    DOC_CONFIG = {"cfg": """
             [output_trigger]
             elapsed_time = 0.9999*year
-        """
-    }
+        """}
 
     import pythia.pyre.inventory
 
     from pythia.pyre.units.time import s
-    timeSkip = pythia.pyre.inventory.dimensional("elapsed_time", default=0.0*s)
-    timeSkip.meta['tip'] = "Elapsed time between writes."
+
+    timeSkip = pythia.pyre.inventory.dimensional("elapsed_time", default=0.0 * s)
+    timeSkip.meta["tip"] = "Elapsed time between writes."
 
     def __init__(self, name="outputtriggertime"):
-        """Constructor.
-        """
+        """Constructor."""
         OutputTrigger.__init__(self, name)
 
     def preinitialize(self):
-        """Setup output trigger.
-        """
+        """Setup output trigger."""
         ModuleOutputTriggerTime.__init__(self)
         ModuleOutputTriggerTime.setIdentifier(self, self.aliases[-1])
         ModuleOutputTriggerTime.setTimeSkip(self, self.timeSkip.value)
 
     def _configure(self):
-        """Set members using inventory.
-        """
+        """Set members using inventory."""
         OutputTrigger._configure(self)
+
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
 
 def output_trigger():
-    """Factory associated with OutputTriggerTime.
-    """
+    """Factory associated with OutputTriggerTime."""
     return OutputTriggerTime()
 
 

@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -23,8 +22,8 @@ class GreensFns(Problem, ModuleGreensFns):
 
     Implements `Problem`.
     """
-    DOC_CONFIG = {
-        "cfg": """
+
+    DOC_CONFIG = {"cfg": """
             [pylithapp]
             problem = pylith.problems.GreensFns
 
@@ -59,25 +58,25 @@ class GreensFns(Problem, ModuleGreensFns):
             [pylithapp.greensfns.petsc_defaults]
             solver = True
             monitors = True
-        """
-    }
+        """}
 
     import pythia.pyre.inventory
 
     faultLabelName = pythia.pyre.inventory.str("label", default="fault")
-    faultLabelName.meta['tip'] = "Name of label identifier for fault surface on which to impose impulses."
+    faultLabelName.meta["tip"] = "Name of label identifier for fault surface on which to impose impulses."
 
     faultLabelValue = pythia.pyre.inventory.int("label_value", default=1)
-    faultLabelValue.meta['tip'] = "Value of label identifier for fault surface on which to impose impulses."
+    faultLabelValue.meta["tip"] = "Value of label identifier for fault surface on which to impose impulses."
 
     from .ProgressMonitorStep import ProgressMonitorStep
+
     progressMonitor = pythia.pyre.inventory.facility(
-        "progress_monitor", family="progress_monitor", factory=ProgressMonitorStep)
-    progressMonitor.meta['tip'] = "Simple progress monitor via text file."
+        "progress_monitor", family="progress_monitor", factory=ProgressMonitorStep
+    )
+    progressMonitor.meta["tip"] = "Simple progress monitor via text file."
 
     def __init__(self, name="greensfns"):
-        """Constructor.
-        """
+        """Constructor."""
         Problem.__init__(self, name)
 
     def preinitialize(self):
@@ -95,26 +94,23 @@ class GreensFns(Problem, ModuleGreensFns):
         ModuleGreensFns.setProgressMonitor(self, self.progressMonitor)
 
     def run(self, app):
-        """Solve time dependent problem.
-        """
+        """Solve time dependent problem."""
         ModuleGreensFns.solve(self)
 
     def _configure(self):
-        """Set members using inventory.
-        """
+        """Set members using inventory."""
         Problem._configure(self)
 
     def _createModuleObj(self):
-        """Create handle to C++ object.
-        """
+        """Create handle to C++ object."""
         ModuleGreensFns.__init__(self)
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
+
 def problem():
-    """Factory associated with GreensFns.
-    """
+    """Factory associated with GreensFns."""
     return GreensFns()
 
 

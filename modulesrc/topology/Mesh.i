@@ -2,8 +2,7 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
+// Copyright (c) 2010-2026 All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
@@ -19,8 +18,7 @@ namespace pylith {
         // Mesh -------------------------------------------------------------
         class Mesh { // Mesh
                      // PUBLIC METHODS /////////////////////////////////////////////////
-public:
-
+          public:
             /// Default constructor.
             Mesh(void);
 
@@ -36,8 +34,7 @@ public:
             ~Mesh(void);
 
             /// Deallocate PETSc and local data structures.
-            virtual
-            void deallocate(void);
+            virtual void deallocate(void);
 
             /** Create clone.
              *
@@ -86,11 +83,11 @@ public:
              *   latex in a file  :refined.tex:ascii_latex
              *   VTK vtk:refined.vtk:ascii_vtk
              */
-            void view(const char* viewOption="") const;
+            void view(const char* viewOption = "") const;
 
         }; // Mesh
 
-    } // topology
-} // pylith
+    } // namespace topology
+} // namespace pylith
 
 // End of file

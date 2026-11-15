@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -12,8 +11,9 @@ from mypylab.Figure import Figure
 import pylab
 import numpy
 import tables
-sim = 'genmaxwell_QpQs'
-problem = 'bulk'
+
+sim = "genmaxwell_QpQs"
+problem = "bulk"
 dt = 1.0
 
 # ======================================================================
@@ -24,17 +24,16 @@ vs = 3000.0
 density = 2500.0
 mu0 = density * vs**2
 k0 = density * vp**2 - 4 * mu0 / 3.0
-strain0 = numpy.array([0.0, 0.0, +1.0 / 10.0e+3, 0.0, 0.0, 0.0],
-                      dtype=numpy.float64)
+strain0 = numpy.array([0.0, 0.0, +1.0 / 10.0e3, 0.0, 0.0, 0.0], dtype=numpy.float64)
 
-if problem == 'shear':
+if problem == "shear":
     tm_shear = [25, 50, 100]
     tm_bulk = [25, 50, 100]
     ratio_shear = [0.5, 0.2, 0.0]
     ratio_shear0 = 1.0 - sum(ratio_shear)
     ratio_bulk = [0.0, 0.0, 0.0]
     ratio_bulk0 = 1.0 - sum(ratio_bulk)
-elif problem == 'bulk':
+elif problem == "bulk":
     tm_shear = [25, 50, 100]
     tm_bulk = [20, 40, 80]
     ratio_shear = [0.4, 0.1, 0.2]
@@ -45,23 +44,27 @@ elif problem == 'bulk':
 # ----------------------------------------------------------------------
 filename = "output/%s_%s-statevars.h5" % (problem, sim)
 
-h5 = tables.openFile(filename, 'r')
-stress = h5.root.cell_fields.stress[:] / 1.0e+6
-(ntimesteps, npts, tensorSize) = stress.shape
+h5 = tables.openFile(filename, "r")
+stress = h5.root.cell_fields.stress[:] / 1.0e6
+ntimesteps, npts, tensorSize = stress.shape
 h5.close()
 
 # time =  h5.root.vertex_fields.time (not yet available)
 t = numpy.arange(0, dt * ntimesteps, dt)
 # END TEMPORARY
 
-mu_t = mu0 * (ratio_shear0 +
-              ratio_shear[0] * numpy.exp(-t / tm_shear[0]) +
-              ratio_shear[1] * numpy.exp(-t / tm_shear[1]) +
-              ratio_shear[2] * numpy.exp(-t / tm_shear[2]))
-k_t = k0 * (ratio_bulk0 +
-            ratio_bulk[0] * numpy.exp(-t / tm_bulk[0]) +
-            ratio_bulk[1] * numpy.exp(-t / tm_bulk[1]) +
-            ratio_bulk[2] * numpy.exp(-t / tm_bulk[2]))
+mu_t = mu0 * (
+    ratio_shear0
+    + ratio_shear[0] * numpy.exp(-t / tm_shear[0])
+    + ratio_shear[1] * numpy.exp(-t / tm_shear[1])
+    + ratio_shear[2] * numpy.exp(-t / tm_shear[2])
+)
+k_t = k0 * (
+    ratio_bulk0
+    + ratio_bulk[0] * numpy.exp(-t / tm_bulk[0])
+    + ratio_bulk[1] * numpy.exp(-t / tm_bulk[1])
+    + ratio_bulk[2] * numpy.exp(-t / tm_bulk[2])
+)
 lambda_t = k_t - 2.0 / 3.0 * mu_t
 stressE = numpy.zeros((ntimesteps, 6), dtype=numpy.float64)
 stressE[:, 0] = lambda_t * numpy.sum(strain0[0:3]) + 2.0 * mu_t * strain0[0]
@@ -70,7 +73,7 @@ stressE[:, 2] = lambda_t * numpy.sum(strain0[0:3]) + 2.0 * mu_t * strain0[2]
 stressE[:, 3] = 2.0 * mu_t * strain0[3]
 stressE[:, 4] = 2.0 * mu_t * strain0[4]
 stressE[:, 5] = 2.0 * mu_t * strain0[5]
-stressE /= 1.0e+6
+stressE /= 1.0e6
 
 print(stress[0:2, 0, :])
 print(stress[ntimesteps - 1, 0, :])
@@ -85,8 +88,7 @@ irow = 1
 icol = 1
 
 fig = Figure(fontsize=8, color="lightbg")
-fig.open(9.0, 7.0, margins=[[0.45, 0.25, 0.1],
-                            [0.45, 0.5, 0.2]])
+fig.open(9.0, 7.0, margins=[[0.45, 0.25, 0.1], [0.45, 0.5, 0.2]])
 
 
 icomp = 0
@@ -94,9 +96,8 @@ for irow in range(1, 3):
     for icol in range(1, 4):
         ax = fig.axes(nrows, ncols, irow, icol)
 
-        ax.plot(t, stressE[:, icomp], 'r-',
-                t, stress[:, 0, icomp], 'b--')
-        #ax.plot(t, devStress[:,0,icomp])
+        ax.plot(t, stressE[:, icomp], "r-", t, stress[:, 0, icomp], "b--")
+        # ax.plot(t, devStress[:,0,icomp])
         ax.set_ylim((-2, 8))
 
         icomp += 1

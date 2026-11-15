@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -18,8 +17,8 @@ class InitialConditionDomain(InitialCondition, ModuleInitialCondition):
 
     Implements `InitialCondition`.
     """
-    DOC_CONFIG = {
-        "cfg": """
+
+    DOC_CONFIG = {"cfg": """
             # Create a single initial condition over the domain.
             [pylithapp.problem]
             ic = [domain]
@@ -29,8 +28,7 @@ class InitialConditionDomain(InitialCondition, ModuleInitialCondition):
             db = spatialdata.spatialdb.SimpleGridDB
             db.description = Initial conditions over domain
             db.filename = sheardisp_ic.spatialdb
-        """
-    }
+        """}
 
     import pythia.pyre.inventory
     from spatialdata.spatialdb.SimpleDB import SimpleDB
@@ -39,33 +37,29 @@ class InitialConditionDomain(InitialCondition, ModuleInitialCondition):
     db.meta["tip"] = "Spatial database with values for initial condition."
 
     def __init__(self, name="initialconditionsdomain"):
-        """Constructor.
-        """
+        """Constructor."""
         InitialCondition.__init__(self, name)
 
     def preinitialize(self, problem):
-        """Setup initial conditions.
-        """
+        """Setup initial conditions."""
         InitialCondition.preinitialize(self, problem)
 
         ModuleInitialCondition.setDB(self, self.db)
 
     def _configure(self):
-        """Setup members using inventory.
-        """
+        """Setup members using inventory."""
         InitialCondition._configure(self)
 
     def _createModuleObj(self):
-        """Call constructor for module object for access to C++ object.
-        """
+        """Call constructor for module object for access to C++ object."""
         ModuleInitialCondition.__init__(self)
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
+
 def initial_conditions():
-    """Factory associated with InitialConditionDomain.
-    """
+    """Factory associated with InitialConditionDomain."""
     return InitialConditionDomain()
 
 

@@ -3,8 +3,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -27,8 +26,7 @@ class Transform(Application):
     """
 
     class Inventory(Application.Inventory):
-        """Python object for managing Transform facilities and properties.
-        """
+        """Python object for managing Transform facilities and properties."""
 
         # @class Inventory
         # Python object for managing Transform facilities and properties.
@@ -61,57 +59,52 @@ class Transform(Application):
         from pythia.pyre.units.length import km
 
         dataDim = pythia.pyre.inventory.int("data_dim", default=2)
-        dataDim.meta['tip'] = "Dimension of data."
+        dataDim.meta["tip"] = "Dimension of data."
 
-        pointsFile = pythia.pyre.inventory.str(
-            "points_file", default="points.def")
-        pointsFile.meta['tip'] = "Filename of file containing point coordinates."
+        pointsFile = pythia.pyre.inventory.str("points_file", default="points.def")
+        pointsFile.meta["tip"] = "Filename of file containing point coordinates."
 
         segsFile = pythia.pyre.inventory.str("segs_file", default="segs.def")
-        segsFile.meta['tip'] = "Filename of file containing fault segments."
+        segsFile.meta["tip"] = "Filename of file containing fault segments."
 
         slipScale = pythia.pyre.inventory.float("slip_scale", default=1.0)
-        slipScale.meta['tip'] = "Scaling factor for fault slip."
+        slipScale.meta["tip"] = "Scaling factor for fault slip."
 
-        pointsSpatialDB = pythia.pyre.inventory.str("points_spatialdb",
-                                                    default="points.spatialdb")
-        pointsSpatialDB.meta['tip'] = "Filename of output spatial database."
+        pointsSpatialDB = pythia.pyre.inventory.str("points_spatialdb", default="points.spatialdb")
+        pointsSpatialDB.meta["tip"] = "Filename of output spatial database."
 
         upDir = pythia.pyre.inventory.list("up_dir", default=[0.0, 0.0, 1.0])
-        upDir.meta['tip'] = "Up direction."
+        upDir.meta["tip"] = "Up direction."
 
-        normalDir = pythia.pyre.inventory.list(
-            "normal_dir", default=[1.0, 0.0, 0.0])
-        normalDir.meta['tip'] = "General preferred normal direction."
+        normalDir = pythia.pyre.inventory.list("normal_dir", default=[1.0, 0.0, 0.0])
+        normalDir.meta["tip"] = "General preferred normal direction."
 
         dipSlip = pythia.pyre.inventory.bool("dip_slip", default=True)
-        dipSlip.meta['tip'] = "Allow dip-slip to take up non-strike-slip movement."
+        dipSlip.meta["tip"] = "Allow dip-slip to take up non-strike-slip movement."
 
-        dipCutoff = pythia.pyre.inventory.dimensional(
-            "dip_cutoff", default=75.0*deg)
-        dipCutoff.meta['tip'] = "Cutoff dip below which dip-slip is allowed."
+        dipCutoff = pythia.pyre.inventory.dimensional("dip_cutoff", default=75.0 * deg)
+        dipCutoff.meta["tip"] = "Cutoff dip below which dip-slip is allowed."
 
-        xMin = pythia.pyre.inventory.dimensional("x_min", default=-1.0e8*m)
-        xMin.meta['tip'] = "Minimum x-value for which to apply rotation."
+        xMin = pythia.pyre.inventory.dimensional("x_min", default=-1.0e8 * m)
+        xMin.meta["tip"] = "Minimum x-value for which to apply rotation."
 
-        xMax = pythia.pyre.inventory.dimensional("x_max", default=1.0e8*m)
-        xMax.meta['tip'] = "Maximum x-value for which to apply rotation."
+        xMax = pythia.pyre.inventory.dimensional("x_max", default=1.0e8 * m)
+        xMax.meta["tip"] = "Maximum x-value for which to apply rotation."
 
-        yMin = pythia.pyre.inventory.dimensional("y_min", default=-1.0e8*m)
-        yMin.meta['tip'] = "Minimum y-value for which to apply rotation."
+        yMin = pythia.pyre.inventory.dimensional("y_min", default=-1.0e8 * m)
+        yMin.meta["tip"] = "Minimum y-value for which to apply rotation."
 
-        yMax = pythia.pyre.inventory.dimensional("y_max", default=1.0e8*m)
-        yMax.meta['tip'] = "Maximum y-value for which to apply rotation."
+        yMax = pythia.pyre.inventory.dimensional("y_max", default=1.0e8 * m)
+        yMax.meta["tip"] = "Maximum y-value for which to apply rotation."
 
-        zMin = pythia.pyre.inventory.dimensional("z_min", default=-1.0e8*m)
-        zMin.meta['tip'] = "Minimum z-value for which to apply rotation."
+        zMin = pythia.pyre.inventory.dimensional("z_min", default=-1.0e8 * m)
+        zMin.meta["tip"] = "Minimum z-value for which to apply rotation."
 
-        zMax = pythia.pyre.inventory.dimensional("z_max", default=1.0e8*m)
-        zMax.meta['tip'] = "Maximum z-value for which to apply rotation."
+        zMax = pythia.pyre.inventory.dimensional("z_max", default=1.0e8 * m)
+        zMax.meta["tip"] = "Maximum z-value for which to apply rotation."
 
-        defaultValues = pythia.pyre.inventory.list("default_values",
-                                                   default=[0.0, 0.0, 0.0])
-        defaultValues.meta['tip'] = "Values used for out-of-range points."
+        defaultValues = pythia.pyre.inventory.list("default_values", default=[0.0, 0.0, 0.0])
+        defaultValues.meta["tip"] = "Values used for out-of-range points."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -129,7 +122,7 @@ class Transform(Application):
         # pdb.set_trace()
         self._readPoints()
         self._readSegs()
-        f = open(self.pointsSpatialDB, 'w')
+        f = open(self.pointsSpatialDB, "w")
         self._writeSpatialDBHead(f)
         self._genSpatialDB(f)
         f.close()
@@ -138,8 +131,7 @@ class Transform(Application):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """Setup members using inventory.
-        """
+        """Setup members using inventory."""
         Application._configure(self)
         self.dataDim = self.inventory.dataDim
         self.pointsFile = self.inventory.pointsFile
@@ -159,40 +151,40 @@ class Transform(Application):
         self.zMaxVal = self.inventory.zMax.value
         self.defaultValues = self.inventory.defaultValues
 
-        self.upVec = numpy.array([float(self.upDir[0]), float(self.upDir[1]),
-                                  float(self.upDir[2])], dtype=numpy.float64)
+        self.upVec = numpy.array(
+            [float(self.upDir[0]), float(self.upDir[1]), float(self.upDir[2])], dtype=numpy.float64
+        )
 
-        self.normalVec = numpy.array([float(self.normalDir[0]),
-                                      float(self.normalDir[1]),
-                                      float(self.normalDir[2])], dtype=numpy.float64)
+        self.normalVec = numpy.array(
+            [float(self.normalDir[0]), float(self.normalDir[1]), float(self.normalDir[2])], dtype=numpy.float64
+        )
 
         self.dipCutoffProj = abs(math.sin(self.dipCutoff.value))
 
         return
 
     def _writeSpatialDBHead(self, f):
-        """Writes header portion of spatial database.
-        """
-        f.write('#SPATIAL.ascii 1\n')
-        f.write('SimpleDB {\n')
-        f.write('  num-values = 3\n')
-        f.write('  value-names = left-lateral-slip   reverse-slip  fault-opening\n')
-        f.write('  value-units = m m m\n')
-        f.write('  num-locs = '+str(self.numPoints)+'\n')
-        f.write('  data-dim = '+str(self.dataDim)+'\n')
-        f.write('  space-dim = '+str(self.spaceDim)+'\n')
-        f.write('  cs-data = geo-projected {\n')
-        f.write('    to-meters = 1.0\n')
-        f.write('    ellipsoid = clrk66\n')
-        f.write('    datum-horiz = NAD27\n')
-        f.write('    datum-vert = mean sea level\n')
-        f.write('    projector = projection {\n')
-        f.write('      projection = utm\n')
-        f.write('      units = m\n')
-        f.write('      proj-options = +zone=11\n')
-        f.write('    }\n')
-        f.write('  }\n')
-        f.write('}\n')
+        """Writes header portion of spatial database."""
+        f.write("#SPATIAL.ascii 1\n")
+        f.write("SimpleDB {\n")
+        f.write("  num-values = 3\n")
+        f.write("  value-names = left-lateral-slip   reverse-slip  fault-opening\n")
+        f.write("  value-units = m m m\n")
+        f.write("  num-locs = " + str(self.numPoints) + "\n")
+        f.write("  data-dim = " + str(self.dataDim) + "\n")
+        f.write("  space-dim = " + str(self.spaceDim) + "\n")
+        f.write("  cs-data = geo-projected {\n")
+        f.write("    to-meters = 1.0\n")
+        f.write("    ellipsoid = clrk66\n")
+        f.write("    datum-horiz = NAD27\n")
+        f.write("    datum-vert = mean sea level\n")
+        f.write("    projector = projection {\n")
+        f.write("      projection = utm\n")
+        f.write("      units = m\n")
+        f.write("      proj-options = +zone=11\n")
+        f.write("    }\n")
+        f.write("  }\n")
+        f.write("}\n")
         return
 
     def _genSpatialDB(self, f):
@@ -200,12 +192,9 @@ class Transform(Application):
         spatial DB.
         """
 
-        normalsArr = numpy.array(self.normals,
-                                 dtype=numpy.float64).reshape(self.numPoints,
-                                                              self.spaceDim)
+        normalsArr = numpy.array(self.normals, dtype=numpy.float64).reshape(self.numPoints, self.spaceDim)
 
-        points = numpy.array(self.pointsUTM, dtype=numpy.float64).reshape(self.numPoints,
-                                                                          self.spaceDim)
+        points = numpy.array(self.pointsUTM, dtype=numpy.float64).reshape(self.numPoints, self.spaceDim)
 
         iCount = 0
         velocity = [0.0, 0.0, 0.0]
@@ -220,24 +209,27 @@ class Transform(Application):
                 velocity[1] = self.defaultValues[1]
                 velocity[2] = self.defaultValues[2]
             for dim in range(self.spaceDim):
-                f.write(' %.12e' % points[point, dim])
+                f.write(" %.12e" % points[point, dim])
             for dim in range(self.spaceDim):
-                f.write(' %.12e' % velocity[dim])
-            f.write('\n')
+                f.write(" %.12e" % velocity[dim])
+            f.write("\n")
             iCount += 3
         return
 
     def _testRange(self, point):
-        """Checks to see if point is in range.
-        """
-        inRange = point[0] >= self.xMinVal and point[0] <= self.xMaxVal and \
-            point[1] >= self.yMinVal and point[1] <= self.yMaxVal and \
-            point[2] >= self.zMinVal and point[2] <= self.zMaxVal
+        """Checks to see if point is in range."""
+        inRange = (
+            point[0] >= self.xMinVal
+            and point[0] <= self.xMaxVal
+            and point[1] >= self.yMinVal
+            and point[1] <= self.yMaxVal
+            and point[2] >= self.zMinVal
+            and point[2] <= self.zMaxVal
+        )
         return inRange
 
     def _findSeg(self, point):
-        """Finds segment to use with a given point.
-        """
+        """Finds segment to use with a given point."""
         px = point[0]
         py = point[1]
         """
@@ -276,19 +268,18 @@ class Transform(Application):
             sy1 = self.segInfo[seg, 1]
             sx2 = self.segInfo[seg, 2]
             sy2 = self.segInfo[seg, 3]
-            sxmid = 0.5*(sx1 + sx2)
-            symid = 0.5*(sy1 + sy2)
+            sxmid = 0.5 * (sx1 + sx2)
+            symid = 0.5 * (sy1 + sy2)
             dx = px - sxmid
             dy = py - symid
-            dist = math.sqrt(dx*dx+dy*dy)
+            dist = math.sqrt(dx * dx + dy * dy)
             if dist < distMin:
                 distMin = dist
                 iSeg = seg
         return iSeg
 
     def _local2Global(self, points, normalsArr):
-        """Converts initial local coordinate system to global.
-        """
+        """Converts initial local coordinate system to global."""
         iSeg = self._findSeg(points)
         sx1 = self.segInfo[iSeg, 0]
         sy1 = self.segInfo[iSeg, 1]
@@ -313,9 +304,8 @@ class Transform(Application):
             asVec *= -1.0
         dipCos = math.sin(math.radians(dip))
         if math.fabs(dipCos) != 1.0:
-            r = math.sqrt(1.0/(1.0-dipCos*dipCos))
-            udVec = numpy.array(
-                [horPerp[0]/r, horPerp[1]/r, dipCos], dtype=numpy.float64)
+            r = math.sqrt(1.0 / (1.0 - dipCos * dipCos))
+            udVec = numpy.array([horPerp[0] / r, horPerp[1] / r, dipCos], dtype=numpy.float64)
         else:
             udVec = numpy.array([0.0, 0.0, dipCos], dtype=numpy.float64)
         normVec = numpy.cross(asVec, udVec)
@@ -326,8 +316,7 @@ class Transform(Application):
         return velocity
 
     def _localTrans(self, velocity, normalsArr):
-        """Performs a transformation on velocity vector to local coords.
-        """
+        """Performs a transformation on velocity vector to local coords."""
         # This function will need to partially duplicate the functionaliry of the
         # CellGeometry _orient2D function.
         mag = math.sqrt(numpy.dot(normalsArr, normalsArr))
@@ -360,17 +349,15 @@ class Transform(Application):
             # Horizontal normal movement is the difference between total velocity and
             # strike-slip velocity.
             vnormal = velocity - vstrikeSlip
-            magHorizNormal = math.sqrt(
-                vnormal[0]*vnormal[0]+vnormal[1]*vnormal[1])
+            magHorizNormal = math.sqrt(vnormal[0] * vnormal[0] + vnormal[1] * vnormal[1])
 
             # Project horizontal normal movement onto dip-slip direction, then scale
             # so that horizontal components are equal to block-normal motion.
             dipSlipProj = numpy.dot(vnormal, upDip)
             vdipSlip = dipSlipProj * upDip
-            magDipSlipHoriz = math.sqrt(vdipSlip[0]*vdipSlip[0] +
-                                        vdipSlip[1]*vdipSlip[1])
+            magDipSlipHoriz = math.sqrt(vdipSlip[0] * vdipSlip[0] + vdipSlip[1] * vdipSlip[1])
             if magDipSlipHoriz > 0.0:
-                multFac = magHorizNormal/magDipSlipHoriz
+                multFac = magHorizNormal / magDipSlipHoriz
             else:
                 multFac = 0.0
             vtotal = vstrikeSlip + multFac * vdipSlip
@@ -380,46 +367,43 @@ class Transform(Application):
         return vlocal
 
     def _readPoints(self):
-        """Reads point coordinates and normals from a file.
-        """
+        """Reads point coordinates and normals from a file."""
         f = file(self.pointsFile)
         for line in f.readlines():
-            if not line.startswith('#'):
+            if not line.startswith("#"):
                 data = line.split()
                 # self.data.append([float(number) for number in line.split()])
                 for dim in range(self.spaceDim):
                     self.pointsUTM.append(float(data[dim]))
                 for dim in range(self.spaceDim):
-                    self.normals.append(float(data[dim+self.spaceDim]))
+                    self.normals.append(float(data[dim + self.spaceDim]))
                 self.numPoints += 1
         f.close()
         return
 
     def _readSegs(self):
-        """Reads fault segment info from a file.
-        """
+        """Reads fault segment info from a file."""
         segtmp = []
         f = file(self.segsFile)
         iCount = 1
         for line in f.readlines():
-            if not line.startswith('#'):
+            if not line.startswith("#"):
                 data = line.split()
                 for dim in range(2):
-                    segtmp.append(float(data[dim+2]))
+                    segtmp.append(float(data[dim + 2]))
                 if iCount % 2 == 0:
                     segtmp.append(float(data[5]))
                     for dim in range(self.spaceDim):
-                        segtmp.append(self.slipScale*float(data[dim+6]))
+                        segtmp.append(self.slipScale * float(data[dim + 6]))
                     self.numSegs += 1
                 iCount += 1
         f.close()
-        self.segInfo = numpy.array(
-            segtmp, dtype=numpy.float64).reshape(self.numSegs, 8)
+        self.segInfo = numpy.array(segtmp, dtype=numpy.float64).reshape(self.numSegs, 8)
         return
 
 
 # ----------------------------------------------------------------------
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = Transform()
     app.run()
 

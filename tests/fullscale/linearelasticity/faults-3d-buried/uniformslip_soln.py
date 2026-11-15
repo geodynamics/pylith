@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -21,10 +20,11 @@ p_vp = 5291.502622129181
 p_mu = p_density * p_vs**2
 p_lambda = p_density * p_vp**2 - 2 * p_mu
 
+
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
-    """Analytical solution to axial/shear displacement problem.
-    """
+    """Analytical solution to axial/shear displacement problem."""
+
     SPACE_DIM = 3
     TENSOR_SIZE = 6
 
@@ -44,46 +44,41 @@ class AnalyticalSoln(object):
     def getMask(self, name, mesh_entity, pts):
         mask = None
         if name == "displacement":
-            fdist = numpy.dot(pts-fault_center, fault_normal)
+            fdist = numpy.dot(pts - fault_center, fault_normal)
             index = numpy.argmin(numpy.abs(numpy.min(fdist)))
             mask = numpy.abs(fdist) < 1.0
         return mask
-    
+
     def zero_displacement(self, locs):
-        """Compute displacement field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute displacement field at locations."""
+        npts, dim = locs.shape
 
         disp = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
         return disp
 
     def density(self, locs):
-        """Compute density field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute density field at locations."""
+        npts, dim = locs.shape
         density = p_density * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return density
 
     def shear_modulus(self, locs):
-        """Compute shear modulus field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute shear modulus field at locations."""
+        npts, dim = locs.shape
         shear_modulus = p_mu * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return shear_modulus
 
     def bulk_modulus(self, locs):
-        """Compute bulk modulus field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute bulk modulus field at locations."""
+        npts, dim = locs.shape
         bulk_modulus = (p_lambda + 2.0 / 3.0 * p_mu) * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return bulk_modulus
 
     def slip(self, locs):
-        """Compute slip field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute slip field at locations."""
+        npts, dim = locs.shape
         slip = numpy.zeros((1, npts, 3), dtype=numpy.float64)
-        slip[:,:,1] = +2.0
+        slip[:, :, 1] = +2.0
         return slip
 
 

@@ -2,8 +2,7 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
+// Copyright (c) 2010-2026 All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
@@ -14,10 +13,9 @@
 
 namespace pylith {
     namespace faults {
-        class FaultCohesiveKin: public pylith::faults::FaultCohesive {
+        class FaultCohesiveKin : public pylith::faults::FaultCohesive {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             /// Default constructor.
             FaultCohesiveKin(void);
 
@@ -34,16 +32,16 @@ public:
              * @param sources Array of kinematic earthquake sources.
              * @param numSources Number of earthquake sources.
              */
-            %apply(const char* const* string_list, const int list_len) {
-                (const char* const* names,
-                 const int numNames)
-            };
+            % apply(const char* const* string_list,
+                    const int list_len){(const char* const* names,
+                                         const int numNames)};
             void setEqRuptures(const char* const* names,
                                const int numNames,
                                pylith::faults::KinSrc** ruptures,
                                const int numRuptures);
 
-            %clear(const char* const* names, const int numNames);
+            % clear(const char* const* names,
+                    const int numNames);
 
             /** Verify configuration is acceptable.
              *
@@ -57,8 +55,9 @@ public:
              * @param[in] materials Materials in problem.
              * @returns Integrator if applicable, otherwise NULL.
              */
-            pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution,
-                                                             const std::vector < pylith::materials::Material* > &materials);
+            pylith::feassemble::Integrator*
+            createIntegrator(const pylith::topology::Field& solution,
+                             const std::vector<pylith::materials::Material*>& materials);
 
             /** Create auxiliary field.
              *
@@ -79,8 +78,7 @@ public:
                                       const double t);
 
             // PROTECTED METHODS //////////////////////////////////////////////////////////////////
-protected:
-
+          protected:
             /** Update slip related subfields in auxiliary field at beginning of time step.
              *
              * @param[out] auxiliaryField Auxiliary field.
@@ -99,7 +97,7 @@ protected:
              */
             void _setKernelsResidual(pylith::feassemble::IntegratorInterface* integrator,
                                      const pylith::topology::Field& solution,
-                                     const std::vector < pylith::materials::Material* > &materials) const;
+                                     const std::vector<pylith::materials::Material*>& materials) const;
 
             /** Set kernels for Jacobian.
              *
@@ -109,11 +107,11 @@ protected:
              */
             void _setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
                                      const pylith::topology::Field& solution,
-                                     const std::vector < pylith::materials::Material* > &materials) const;
+                                     const std::vector<pylith::materials::Material*>& materials) const;
 
         }; // class FaultCohesiveKin
 
-    } // faults
-} // pylith
+    } // namespace faults
+} // namespace pylith
 
 // End of file

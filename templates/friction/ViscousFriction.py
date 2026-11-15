@@ -2,8 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -48,14 +47,10 @@ class ViscousFriction(FrictionModel, ModuleViscousFriction):
         #
         # Do not change the name of this variable. The output manager will
         # request this variable by name.
-        self.availableFields = \
-            {'vertex':
-             {'info': ["static_coefficient",
-                       "reference_slip_rate"],
-              'data': ["slip_rate"]},
-             'cell':
-             {'info': [],
-              'data': []}}
+        self.availableFields = {
+            "vertex": {"info": ["static_coefficient", "reference_slip_rate"], "data": ["slip_rate"]},
+            "cell": {"info": [], "data": []},
+        }
         self._loggingPrefix = "FrVisc "  # Prefix that appears in PETSc logging
         return
 
@@ -72,6 +67,7 @@ class ViscousFriction(FrictionModel, ModuleViscousFriction):
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
+
 
 # This is the function that is called when you invoke
 # friction = pylith.pylith.contrib.ViscousFfriction

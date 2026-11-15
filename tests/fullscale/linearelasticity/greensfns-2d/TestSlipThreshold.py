@@ -3,8 +3,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -13,6 +12,7 @@ from pylith.testing.FullTestApp import FullTestCase, TestDriver, Check, check_si
 
 import meshes
 import faultimpulses_soln
+
 
 # -------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
@@ -27,7 +27,7 @@ class TestCase(FullTestCase):
             Check(
                 mesh_entities=["mat_xneg", "mat_xpos"],
                 filename="output/{name}-{mesh_entity}_info.h5",
-                cell_fields = ["density", "bulk_modulus", "shear_modulus"],
+                cell_fields=["density", "bulk_modulus", "shear_modulus"],
                 defaults=defaults,
             ),
             Check(
@@ -51,7 +51,7 @@ class TestCase(FullTestCase):
             ),
             Check(
                 mesh_entities=["mat_xneg", "mat_xpos"],
-                vertex_fields = ["displacement"],
+                vertex_fields=["displacement"],
                 defaults=defaults,
             ),
             Check(
@@ -86,7 +86,6 @@ class TestCase(FullTestCase):
                 filename = check.filename.format(name=self.name, mesh_entity=mesh_entity)
                 with self.subTest(filename=filename):
                     check_sizes(self, filename, check, mesh_entity, check.mesh.ENTITIES[mesh_entity])
-
 
 
 # -------------------------------------------------------------------------------------------------

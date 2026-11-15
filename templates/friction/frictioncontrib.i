@@ -2,8 +2,7 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
+// Copyright (c) 2010-2026 All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
@@ -12,48 +11,47 @@
 // Define the frictioncontrib SWIG interface module.
 
 // Set module name
-%module frictioncontrib
+%
+    module frictioncontrib
 
-// Header files for module C++ code.
-%{
+    // Header files for module C++ code.
+    %
+    {
 #include "pylith/friction/frictionfwd.hh" // forward declarations
 
-#include "spatialdata/spatialdb/spatialdbfwd.hh" // forward declarations
 #include "pylith/scales/scalesfwd.hh" // forward declarations
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // forward declarations
 
 #include "ViscousFriction.hh"
 
-#include "pylith/utils/types.hh"
 #include "pylith/utils/array.hh"
-    %
-}
+#include "pylith/utils/types.hh"
+        % }
 
-// Convert standard C++ exceptions to Python exceptions.
-%include "exception.i"
-%exception {
+    // Convert standard C++ exceptions to Python exceptions.
+    % include "exception.i" % exception {
     try {
         $ action
     } catch (const std::exception& err) {
-        SWIG_exception (SWIG_RuntimeError, err.what ());
+        SWIG_exception(SWIG_RuntimeError, err.what());
     } // try/catch
 } // exception
 
-%include "typemaps.i"
-%include "include/scalartypemaps.i"
+% include "typemaps.i" %
+    include "include/scalartypemaps.i"
 
-// Numpy interface stuff
-%{
-#define SWIG_FILE_WITH_INIT
+    // Numpy interface stuff
     %
-}
-%include "include/numpy.i"
-%init %{
+    {
+#define SWIG_FILE_WITH_INIT
+        % } %
+    include "include/numpy.i" % init % {
     import_array();
     %
 }
 
 // Interface files.
-%include "friction/FrictionModel.i"
-%include "ViscousFriction.i"
+% include "friction/FrictionModel.i" %
+    include "ViscousFriction.i"
 
-// End of file
+    // End of file

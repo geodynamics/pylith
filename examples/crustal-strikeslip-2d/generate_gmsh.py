@@ -1,4 +1,12 @@
 #!/usr/bin/env nemesis
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
 """Generate a tri of 3 strike-slip faults using Gmsh, making use of the
 built-in geometry engine.
 
@@ -19,7 +27,8 @@ import numpy
 import gmsh
 
 # Import the gmsh_utils Python module supplied with PyLith.
-from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup, GenerateMesh)
+from pylith.meshio.gmsh_utils import BoundaryGroup, MaterialGroup, GenerateMesh
+
 
 class App(GenerateMesh):
     """
@@ -28,6 +37,7 @@ class App(GenerateMesh):
     App uses `GenerateMesh` from `gmsh_utils` for common functionality that we avoid
     duplicating in each of our examples.
     """
+
     #    pNW---------------------------------pNE
     #    |                                   |
     #    |                                   |
@@ -61,12 +71,11 @@ class App(GenerateMesh):
     FILENAME_STRANDETRACE = "faulttrace_east_utm.txt"
 
     # Discretization size on faults and bias (rate of cell size increase away from fault)
-    DX_FAULT = 1.0e+3
+    DX_FAULT = 1.0e3
     DX_BIAS = 1.07
 
     def __init__(self):
-        """Constructor.
-        """
+        """Constructor."""
         super().__init__()
 
         # Set the cell choices available through command line options.
@@ -75,7 +84,7 @@ class App(GenerateMesh):
         self.cell_choices = {
             "default": "tri",
             "choices": ["tri", "quad"],
-            }
+        }
         self.filename = "mesh_tri.msh"
 
     def _create_points_from_file(self, filename):
@@ -108,13 +117,12 @@ class App(GenerateMesh):
         loop = gmsh.model.geo.add_curve_loop([self.c_south, self.c_east, self.c_north, self.c_west])
         self.s_domain = gmsh.model.geo.add_plane_surface([loop])
 
-
         # Create points for main fault
         points = self._create_points_from_file(self.FILENAME_MAINTRACE)
-        p_fault_intersection = points[3] # Intersection of fault strands and main fault
+        p_fault_intersection = points[3]  # Intersection of fault strands and main fault
         spline = gmsh.model.geo.add_spline(points)
         self.curves_fault_main = gmsh.model.geo.split_curve(spline, [p_fault_intersection])
-        self.fault_main_ends = [points[0], points[-1]] # Ends of fault
+        self.fault_main_ends = [points[0], points[-1]]  # Ends of fault
 
         # Create points for west fault strand
         points = self._create_points_from_file(self.FILENAME_WESTTRACE)
@@ -124,9 +132,8 @@ class App(GenerateMesh):
         points = self._create_points_from_file(self.FILENAME_STRANDETRACE)
         self.c_fault_east = gmsh.model.geo.add_spline(points)
 
-
         # Embed faults into domain so cells will align along fault
-        gmsh.model.geo.remove_all_duplicates() # Duplicate points at intersection
+        gmsh.model.geo.remove_all_duplicates()  # Duplicate points at intersection
         gmsh.model.geo.synchronize()
         gmsh.model.mesh.embed(1, self.curves_fault_main, 2, self.s_domain)
         gmsh.model.mesh.embed(1, [self.c_fault_west], 2, self.s_domain)
@@ -137,7 +144,6 @@ class App(GenerateMesh):
         _, self.fault_west_ends = gmsh.model.get_adjacencies(dim=1, tag=self.c_fault_west)
         _, self.fault_east_ends = gmsh.model.get_adjacencies(dim=1, tag=self.c_fault_east)
 
-
     def mark(self):
         """Mark geometry for materials, boundary conditions, faults, etc.
 
@@ -147,9 +153,7 @@ class App(GenerateMesh):
         # Create a material for the domain.
         # The tag argument specifies the integer tag for the physical group.
         # The entities argument specifies the array of surfaces for the material.
-        materials = (
-            MaterialGroup(tag=1, entities=[self.s_domain]),
-        )
+        materials = (MaterialGroup(tag=1, entities=[self.s_domain]),)
         for material in materials:
             material.create_physical_group()
 
@@ -163,7 +167,6 @@ class App(GenerateMesh):
             BoundaryGroup(name="boundary_east", tag=11, dim=1, entities=[self.c_east]),
             BoundaryGroup(name="boundary_north", tag=12, dim=1, entities=[self.c_north]),
             BoundaryGroup(name="boundary_west", tag=13, dim=1, entities=[self.c_west]),
-
             BoundaryGroup(name="fault_main", tag=20, dim=1, entities=self.curves_fault_main),
             BoundaryGroup(name="fault_west", tag=21, dim=1, entities=[self.c_fault_west]),
             BoundaryGroup(name="fault_east", tag=22, dim=1, entities=[self.c_fault_east]),
@@ -181,7 +184,7 @@ class App(GenerateMesh):
         in our local App class.
         """
         # Set discretization size with geometric progression from distance to the fault.
-        
+
         # We turn off the default sizing methods.
         gmsh.option.set_number("Mesh.MeshSizeFromPoints", 0)
         gmsh.option.set_number("Mesh.MeshSizeFromCurvature", 0)
@@ -189,12 +192,14 @@ class App(GenerateMesh):
 
         # First, we setup a field `field_distance` with the distance from the fault.
         field_distance = gmsh.model.mesh.field.add("Distance")
-        gmsh.model.mesh.field.setNumbers(field_distance, "CurvesList", self.curves_fault_main.tolist() + [self.c_fault_west, self.c_fault_east])
+        gmsh.model.mesh.field.setNumbers(
+            field_distance, "CurvesList", self.curves_fault_main.tolist() + [self.c_fault_west, self.c_fault_east]
+        )
 
         # Second, we setup a field `field_size`, which is the mathematical expression
         # for the cell size as a function of the cell size on the fault, the distance from
         # the fault (as given by `field_size`, and the bias factor.
-        # The `GenerateMesh` class includes a special function `get_math_progression` 
+        # The `GenerateMesh` class includes a special function `get_math_progression`
         # for creating the string with the mathematical function.
         field_size = gmsh.model.mesh.field.add("MathEval")
         math_exp = GenerateMesh.get_math_progression(field_distance, min_dx=self.DX_FAULT, bias=self.DX_BIAS)
@@ -220,4 +225,3 @@ if __name__ == "__main__":
 
 
 # End of file
-

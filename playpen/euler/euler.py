@@ -3,8 +3,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
+# Copyright (c) 2010-2026 All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
@@ -25,8 +24,7 @@ class Euler(Application):
     """
 
     class Inventory(Application.Inventory):
-        """Python object for managing Euler facilities and properties.
-        """
+        """Python object for managing Euler facilities and properties."""
 
         # @class Inventory
         # Python object for managing Euler facilities and properties.
@@ -62,81 +60,71 @@ class Euler(Application):
         from pythia.pyre.units.length import km
 
         from spatialdata.geocoords.CSGeoProj import CSGeoProj
-        srcCoordSys = pythia.pyre.inventory.facility("src_coordsys",
-                                                     family="src_coordsys",
-                                                     factory=CSGeoProj)
-        srcCoordSys.meta['tip'] = "Source coordinate system."
+
+        srcCoordSys = pythia.pyre.inventory.facility("src_coordsys", family="src_coordsys", factory=CSGeoProj)
+        srcCoordSys.meta["tip"] = "Source coordinate system."
 
         from spatialdata.geocoords.CSGeo import CSGeo
-        destCoordSys = pythia.pyre.inventory.facility("dest_coordsys",
-                                                      family="dest_coordsys",
-                                                      factory=CSGeo)
-        destCoordSys.meta['tip'] = "Destination coordinate system."
+
+        destCoordSys = pythia.pyre.inventory.facility("dest_coordsys", family="dest_coordsys", factory=CSGeo)
+        destCoordSys.meta["tip"] = "Destination coordinate system."
 
         dataDim = pythia.pyre.inventory.int("data_dim", default=2)
-        dataDim.meta['tip'] = "Dimension of data."
+        dataDim.meta["tip"] = "Dimension of data."
 
         bcType = pythia.pyre.inventory.str("bc_type", default="dislocation")
-        bcType.meta['tip'] = "Type of BC (dislocation or displacement)."
+        bcType.meta["tip"] = "Type of BC (dislocation or displacement)."
 
-        pointsFile = pythia.pyre.inventory.str(
-            "points_file", default="points.def")
-        pointsFile.meta['tip'] = "Filename of file containing point coordinates."
+        pointsFile = pythia.pyre.inventory.str("points_file", default="points.def")
+        pointsFile.meta["tip"] = "Filename of file containing point coordinates."
 
-        pointsSpatialDB = pythia.pyre.inventory.str("points_spatialdb",
-                                                    default="points.spatialdb")
-        pointsSpatialDB.meta['tip'] = "Filename of output spatial database."
+        pointsSpatialDB = pythia.pyre.inventory.str("points_spatialdb", default="points.spatialdb")
+        pointsSpatialDB.meta["tip"] = "Filename of output spatial database."
 
         bcScale = pythia.pyre.inventory.float("bc_scale", default=1.0)
-        bcScale.meta['tip'] = "Scaling factor for output BC."
+        bcScale.meta["tip"] = "Scaling factor for output BC."
 
         upDir = pythia.pyre.inventory.list("up_dir", default=[0.0, 0.0, 1.0])
-        upDir.meta['tip'] = "Up direction."
+        upDir.meta["tip"] = "Up direction."
 
-        normalDir = pythia.pyre.inventory.list(
-            "normal_dir", default=[1.0, 0.0, 0.0])
-        normalDir.meta['tip'] = "General preferred normal direction."
+        normalDir = pythia.pyre.inventory.list("normal_dir", default=[1.0, 0.0, 0.0])
+        normalDir.meta["tip"] = "General preferred normal direction."
 
-        eulerLat = pythia.pyre.inventory.dimensional(
-            "euler_lat", default=0.0*deg)
-        eulerLat.meta['tip'] = "Latitude of Euler pole."
+        eulerLat = pythia.pyre.inventory.dimensional("euler_lat", default=0.0 * deg)
+        eulerLat.meta["tip"] = "Latitude of Euler pole."
 
-        eulerLon = pythia.pyre.inventory.dimensional(
-            "euler_lon", default=0.0*deg)
-        eulerLon.meta['tip'] = "Longitude of Euler pole."
+        eulerLon = pythia.pyre.inventory.dimensional("euler_lon", default=0.0 * deg)
+        eulerLon.meta["tip"] = "Longitude of Euler pole."
 
-        eulerRot = pythia.pyre.inventory.dimensional(
-            "euler_rot", default=0.0*deg)
-        eulerRot.meta['tip'] = "Rotation of Euler pole (CCW positive)."
+        eulerRot = pythia.pyre.inventory.dimensional("euler_rot", default=0.0 * deg)
+        eulerRot.meta["tip"] = "Rotation of Euler pole (CCW positive)."
 
         dipSlip = pythia.pyre.inventory.bool("dip_slip", default=True)
-        dipSlip.meta['tip'] = "Allow dip-slip to take up non-strike-slip movement."
+        dipSlip.meta["tip"] = "Allow dip-slip to take up non-strike-slip movement."
 
-        dipCutoff = pythia.pyre.inventory.dimensional(
-            "dip_cutoff", default=75.0*deg)
-        dipCutoff.meta['tip'] = "Cutoff dip below which dip-slip is allowed."
+        dipCutoff = pythia.pyre.inventory.dimensional("dip_cutoff", default=75.0 * deg)
+        dipCutoff.meta["tip"] = "Cutoff dip below which dip-slip is allowed."
 
-        xMin = pythia.pyre.inventory.dimensional("x_min", default=-1.0e8*m)
-        xMin.meta['tip'] = "Minimum x-value for which to apply rotation."
+        xMin = pythia.pyre.inventory.dimensional("x_min", default=-1.0e8 * m)
+        xMin.meta["tip"] = "Minimum x-value for which to apply rotation."
 
-        xMax = pythia.pyre.inventory.dimensional("x_max", default=1.0e8*m)
-        xMax.meta['tip'] = "Maximum x-value for which to apply rotation."
+        xMax = pythia.pyre.inventory.dimensional("x_max", default=1.0e8 * m)
+        xMax.meta["tip"] = "Maximum x-value for which to apply rotation."
 
-        yMin = pythia.pyre.inventory.dimensional("y_min", default=-1.0e8*m)
-        yMin.meta['tip'] = "Minimum y-value for which to apply rotation."
+        yMin = pythia.pyre.inventory.dimensional("y_min", default=-1.0e8 * m)
+        yMin.meta["tip"] = "Minimum y-value for which to apply rotation."
 
-        yMax = pythia.pyre.inventory.dimensional("y_max", default=1.0e8*m)
-        yMax.meta['tip'] = "Maximum y-value for which to apply rotation."
+        yMax = pythia.pyre.inventory.dimensional("y_max", default=1.0e8 * m)
+        yMax.meta["tip"] = "Maximum y-value for which to apply rotation."
 
-        zMin = pythia.pyre.inventory.dimensional("z_min", default=-1.0e8*m)
-        zMin.meta['tip'] = "Minimum z-value for which to apply rotation."
+        zMin = pythia.pyre.inventory.dimensional("z_min", default=-1.0e8 * m)
+        zMin.meta["tip"] = "Minimum z-value for which to apply rotation."
 
-        zMax = pythia.pyre.inventory.dimensional("z_max", default=1.0e8*m)
-        zMax.meta['tip'] = "Maximum z-value for which to apply rotation."
+        zMax = pythia.pyre.inventory.dimensional("z_max", default=1.0e8 * m)
+        zMax.meta["tip"] = "Maximum z-value for which to apply rotation."
 
-        defaultValues = pythia.pyre.inventory.list("default_values",
-                                                   default=[0.0, 0.0, 0.0])
-        defaultValues.meta['tip'] = "Values used for out-of-range points."
+        defaultValues = pythia.pyre.inventory.list("default_values", default=[0.0, 0.0, 0.0])
+        defaultValues.meta["tip"] = "Values used for out-of-range points."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -155,7 +143,7 @@ class Euler(Application):
         # import pdb
         # pdb.set_trace()
         self._readPoints()
-        f = open(self.pointsSpatialDB, 'w')
+        f = open(self.pointsSpatialDB, "w")
         self._writeSpatialDBHead(f)
         self._genSpatialDB(f)
         f.close()
@@ -164,8 +152,7 @@ class Euler(Application):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """Setup members using inventory.
-        """
+        """Setup members using inventory."""
         Application._configure(self)
         self.srcCoordSys = self.inventory.srcCoordSys
         self.destCoordSys = self.inventory.destCoordSys
@@ -202,37 +189,36 @@ class Euler(Application):
         self.eulerPole[1] = self.earthRad * rot * clat * slon
         self.eulerPole[2] = self.earthRad * rot * slat
 
-        self.upVec = numpy.array([float(self.upDir[0]), float(self.upDir[1]),
-                                  float(self.upDir[2])], dtype=numpy.float64)
+        self.upVec = numpy.array(
+            [float(self.upDir[0]), float(self.upDir[1]), float(self.upDir[2])], dtype=numpy.float64
+        )
 
-        self.normalVec = numpy.array([float(self.normalDir[0]),
-                                      float(self.normalDir[1]),
-                                      float(self.normalDir[2])], dtype=numpy.float64)
+        self.normalVec = numpy.array(
+            [float(self.normalDir[0]), float(self.normalDir[1]), float(self.normalDir[2])], dtype=numpy.float64
+        )
 
         self.dipCutoffProj = abs(math.sin(self.dipCutoff.value))
 
         return
 
     def _writeSpatialDBHead(self, f):
-        """Writes header portion of spatial database.
-        """
-        f.write('#SPATIAL.ascii 1\n')
-        f.write('SimpleDB {\n')
-        f.write('  num-values = 3\n')
-        if self.bcType == 'dislocation':
-            f.write(
-                '  value-names = left-lateral-slip   reverse-slip  fault-opening\n')
+        """Writes header portion of spatial database."""
+        f.write("#SPATIAL.ascii 1\n")
+        f.write("SimpleDB {\n")
+        f.write("  num-values = 3\n")
+        if self.bcType == "dislocation":
+            f.write("  value-names = left-lateral-slip   reverse-slip  fault-opening\n")
         else:
-            f.write('  value-names = dof-0   dof-1  dof-2\n')
-        f.write('  value-units = m m m\n')
-        f.write('  num-locs = '+str(self.numPoints)+'\n')
-        f.write('  data-dim = '+str(self.dataDim)+'\n')
-        f.write('  space-dim = '+str(self.spaceDim)+'\n')
-        f.write('  cs-data = cartesian {\n')
-        f.write('    to-meters = 1.0\n')
-        f.write('    space-dim = '+str(self.spaceDim)+'\n')
-        f.write('  }\n')
-        f.write('}\n')
+            f.write("  value-names = dof-0   dof-1  dof-2\n")
+        f.write("  value-units = m m m\n")
+        f.write("  num-locs = " + str(self.numPoints) + "\n")
+        f.write("  data-dim = " + str(self.dataDim) + "\n")
+        f.write("  space-dim = " + str(self.spaceDim) + "\n")
+        f.write("  cs-data = cartesian {\n")
+        f.write("    to-meters = 1.0\n")
+        f.write("    space-dim = " + str(self.spaceDim) + "\n")
+        f.write("  }\n")
+        f.write("}\n")
         return
 
     def _genSpatialDB(self, f):
@@ -245,22 +231,19 @@ class Euler(Application):
         self.destCoordSys.initialize()
 
         from spatialdata.geocoords.Converter import convert
-        pointsLL = numpy.array(self.pointsUTM,
-                               dtype=numpy.float64).reshape(self.numPoints,
-                                                            self.spaceDim)
+
+        pointsLL = numpy.array(self.pointsUTM, dtype=numpy.float64).reshape(self.numPoints, self.spaceDim)
         convert(pointsLL, self.destCoordSys, self.srcCoordSys)
 
-        normalsArr = numpy.array(self.normals,
-                                 dtype=numpy.float64).reshape(self.numPoints,
-                                                              self.spaceDim)
+        normalsArr = numpy.array(self.normals, dtype=numpy.float64).reshape(self.numPoints, self.spaceDim)
 
         iCount = 0
         velocity = [0.0, 0.0, 0.0]
         for point in range(self.numPoints):
-            inRange = self._testRange(self.pointsUTM[iCount:iCount+3])
+            inRange = self._testRange(self.pointsUTM[iCount : iCount + 3])
             if inRange:
                 velocity = self._euler2Velocity(pointsLL[point])
-                if self.bcType == 'dislocation':
+                if self.bcType == "dislocation":
                     vlocal = self._localTrans(velocity, normalsArr[point])
                     velocity = self.bcScale * vlocal
             else:
@@ -268,24 +251,27 @@ class Euler(Application):
                 velocity[1] = self.bcScale * self.defaultValues[1]
                 velocity[2] = self.bcScale * self.defaultValues[2]
             for dim in range(self.spaceDim):
-                f.write(' %.12e' % self.pointsUTM[iCount + dim])
+                f.write(" %.12e" % self.pointsUTM[iCount + dim])
             for dim in range(self.spaceDim):
-                f.write(' %.12e' % velocity[dim])
-            f.write('\n')
+                f.write(" %.12e" % velocity[dim])
+            f.write("\n")
             iCount += 3
         return
 
     def _testRange(self, point):
-        """Checks to see if point is in range.
-        """
-        inRange = point[0] >= self.xMinVal and point[0] <= self.xMaxVal and \
-            point[1] >= self.yMinVal and point[1] <= self.yMaxVal and \
-            point[2] >= self.zMinVal and point[2] <= self.zMaxVal
+        """Checks to see if point is in range."""
+        inRange = (
+            point[0] >= self.xMinVal
+            and point[0] <= self.xMaxVal
+            and point[1] >= self.yMinVal
+            and point[1] <= self.yMaxVal
+            and point[2] >= self.zMinVal
+            and point[2] <= self.zMaxVal
+        )
         return inRange
 
     def _localTrans(self, velocity, normalsArr):
-        """Performs a transformation on velocity vector to local coords.
-        """
+        """Performs a transformation on velocity vector to local coords."""
         # This function will need to partially duplicate the functionaliry of the
         # CellGeometry _orient2D function.
         mag = math.sqrt(numpy.dot(normalsArr, normalsArr))
@@ -318,17 +304,15 @@ class Euler(Application):
             # Horizontal normal movement is the difference between total velocity and
             # strike-slip velocity.
             vnormal = velocity - vstrikeSlip
-            magHorizNormal = math.sqrt(
-                vnormal[0]*vnormal[0]+vnormal[1]*vnormal[1])
+            magHorizNormal = math.sqrt(vnormal[0] * vnormal[0] + vnormal[1] * vnormal[1])
 
             # Project horizontal normal movement onto dip-slip direction, then scale
             # so that horizontal components are equal to block-normal motion.
             dipSlipProj = numpy.dot(vnormal, upDip)
             vdipSlip = dipSlipProj * upDip
-            magDipSlipHoriz = math.sqrt(vdipSlip[0]*vdipSlip[0] +
-                                        vdipSlip[1]*vdipSlip[1])
+            magDipSlipHoriz = math.sqrt(vdipSlip[0] * vdipSlip[0] + vdipSlip[1] * vdipSlip[1])
             if magDipSlipHoriz > 0.0:
-                multFac = magHorizNormal/magDipSlipHoriz
+                multFac = magHorizNormal / magDipSlipHoriz
             else:
                 multFac = 0.0
             vtotal = vstrikeSlip + multFac * vdipSlip
@@ -342,8 +326,9 @@ class Euler(Application):
         Euler pole.
         """
         from pythia.pyre.units.angle import deg
-        lonDeg = pointsLL[0]*deg
-        latDeg = pointsLL[1]*deg
+
+        lonDeg = pointsLL[0] * deg
+        latDeg = pointsLL[1] * deg
         lonPoint = lonDeg.value
         latPoint = latDeg.value
         clat = math.cos(latPoint)
@@ -359,42 +344,39 @@ class Euler(Application):
         velNED = numpy.dot(rotMatrix, velGlobal)
         # NOTE:  I should rearrange the rotation matrix so this transformation
         # isn't necessary.
-        velENU = numpy.array(
-            [velNED[1], velNED[0], -velNED[2]], dtype=numpy.float64)
+        velENU = numpy.array([velNED[1], velNED[0], -velNED[2]], dtype=numpy.float64)
         return velENU
 
     def _makeRot(self, latPoint, lonPoint):
-        """Compute rotation matrix for a given geographic coordinates.
-        """
+        """Compute rotation matrix for a given geographic coordinates."""
         slat = math.sin(latPoint)
         clat = math.cos(latPoint)
         slon = math.sin(lonPoint)
         clon = math.cos(lonPoint)
-        vec1 = [-slat * clon, -slat * slon,  clat]
-        vec2 = [-slon,         clon,   0.0]
+        vec1 = [-slat * clon, -slat * slon, clat]
+        vec2 = [-slon, clon, 0.0]
         vec3 = [-clat * clon, -clat * slon, -slat]
         rotMatrix = numpy.array([vec1, vec2, vec3], dtype=numpy.float64)
         return rotMatrix
 
     def _readPoints(self):
-        """Reads point coordinates and normals from a file.
-        """
+        """Reads point coordinates and normals from a file."""
         f = file(self.pointsFile)
         for line in f.readlines():
-            if not line.startswith('#'):
+            if not line.startswith("#"):
                 data = line.split()
                 # self.data.append([float(number) for number in line.split()])
                 for dim in range(self.spaceDim):
                     self.pointsUTM.append(float(data[dim]))
                 for dim in range(self.spaceDim):
-                    self.normals.append(float(data[dim+self.spaceDim]))
+                    self.normals.append(float(data[dim + self.spaceDim]))
                 self.numPoints += 1
         f.close()
         return
 
 
 # ----------------------------------------------------------------------
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = Euler()
     app.run()
 
