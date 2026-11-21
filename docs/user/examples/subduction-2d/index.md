@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Vertical Cross-Section of Subduction Zone (2D)
 
 The files are in the directory `examples/subduction-2d`.
@@ -59,3 +68,5 @@ step02-interseismic.md
 step03-eqcycle.md
 exercises.md
 :::
+
+% End of file

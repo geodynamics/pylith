@@ -1,3 +1,13 @@
+dnl -*- autoconf -*-
+dnl -*- coding: utf-8 -*-
+dnl
+dnl This code is part of PyLith, developed through the Computational Infrastructure
+dnl for Geodynamics (https://github.com/geodynamics/pylith).
+dnl
+dnl Copyright (c) 2010-2026 The PyLith authors and contributors
+dnl SPDX-License-Identifier: MIT
+
+
 # =================================================================================================
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
@@ -87,3 +97,6 @@ AC_OUTPUT
 
 
 # End of file
+
+
+dnl End of file

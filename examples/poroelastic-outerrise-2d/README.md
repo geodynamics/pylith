@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Examples: 2D Outer-Rise Hydration Using Poroelasticity
 
 This example examines how bending stresses and permeability structure influence the hydration state of a slab of oceanic lithosphere in the outer-rise of a subduction zone.
@@ -50,3 +59,5 @@ To run the example:
 ```bash
 pylith step03_faults_flexure.cfg
 ```
+
+% End of file

@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 See INSTALL for suggested methods for installing PyLith.
 
 REQUIRED DEPENDENCIES
@@ -29,3 +38,5 @@ Catch2 (https://github.com/catchorg/Catch2)
 Cubit (https://cubit.sandia.gov)
 Gmsh (https://gmsh.info)
 netcdf (http://www.unidata.ucar.edu/software/netcdf/)
+
+% End of file

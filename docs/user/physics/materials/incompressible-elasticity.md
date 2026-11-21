@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-physics-incompressible-elasticity)=
 # Incompressible Elasticity
 
@@ -49,3 +58,5 @@ PL: isotropic power-law viscoelasticity
 :::{seealso}
 See [`IncompressibleElasticity` Component](../../components/materials/IncompressibleElasticity.md) for the Pyre properties and facilities and configuration examples.
 :::
+
+% End of file

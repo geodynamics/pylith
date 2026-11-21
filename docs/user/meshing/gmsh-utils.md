@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-meshing-gmsh-utils)=
 # `gmsh_utils`
 
@@ -67,3 +76,5 @@ The data members include:
 The `BoundaryGroup` data class include a method `create_physical_group()` that will create a physical group from the information in the `BoundaryGroup`.
 The `create_physical_group()` method has an argument `recursive` with a default value of `False`; this will create a physical group with entities passed as an argument.
 Using `recursive=True` will create a physical group with the entities passed as an argument as well as lower dimension entities; this was required in PyLith before version 5.0.0.
+
+% End of file

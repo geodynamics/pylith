@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 6: Error 7
 
 ## Error Message
@@ -149,3 +158,5 @@ data-dim = 2
 # Correct
 data-dim = 1
 ```
+
+% End of file

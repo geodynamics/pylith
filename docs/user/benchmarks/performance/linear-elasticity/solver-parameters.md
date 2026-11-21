@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Solver Parameters
 
 We consider the solver parameters used in PyLith versions 3.x (Schur complement) and 4.x (variable point block Jacobi), including adjustments that improve performance.
@@ -168,3 +177,5 @@ For example, to achieve an accuracy in the displacement field of 1.0e-7 relative
 \text{ksp\_atol} = 1.0 \times 10^{-7} \ u_\mathit{nominal} / h_o, \\
 \text{snes\_atol} = 4.0 \times 10^{-7} \ u_\mathit{nominal} / h_o.
 \end{gather}
+
+% End of file

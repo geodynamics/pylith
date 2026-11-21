@@ -1,3 +1,12 @@
+# -*- yaml -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 # Build and test using Docker images for test environment (includes external dependencies)
 
 trigger:
@@ -96,3 +105,5 @@ stages:
               arguments: "-t pylith-docenv --build-arg BASE_IMAGE=$(IMAGE_REGISTRY)/$(BASE_IMAGE)"
               addPipelineData: false
               addBaseImageData: false
+
+# End of file

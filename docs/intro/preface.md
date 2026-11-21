@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Preface
 
 This documentation targets two categories of users: (1) scientists who prefer to use prepackaged and specialized analysis tools, and (2) experienced computational Earth scientists.
@@ -61,3 +70,5 @@ See the contributors list for each release for specific contributions.
 
 Your suggestions and corrections can only improve this documentation.
 Please report any errors, inaccuracies, or typos to the PyLith section of the CIG Community Forum <https://community.geodynamics.org/c/pylith> or create a GitHub pull request.
+
+% End of file

@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Common Information
 
 In addition to the finite-element mesh, PyLith requires files to specify the simulation parameters.
@@ -20,3 +29,5 @@ The spatial database files for elastic properties all use just a single point to
 
 The distorted cells at the trench result in a small degradation in the preconditioning, so the default KSP absolute tolerance is not quite small enough for the nonlinear solver in a single iteration.
 Consequently, we reduce the KSP absolute tolerance to 2.0e-8, which allow the nonlinear solver to converge in a single iteration.
+
+% End of file

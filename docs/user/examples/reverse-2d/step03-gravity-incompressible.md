@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 3: Gravitational Body Forces with Incompressible Elasticity
 
 % Metadata extracted from parameter files.
@@ -127,3 +136,5 @@ The colors of the shaded surface indicate the xy component of the Cauchy stress 
 The undeformed configuration is shown by the gray wireframe.
 The shear stress is negligible.
 :::
+
+% End of file

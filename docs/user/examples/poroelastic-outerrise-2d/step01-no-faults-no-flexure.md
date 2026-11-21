@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 1: No faults, no flexure
 
 ```{include} step01_no_faults_no_flexure-synopsis.md
@@ -96,3 +105,5 @@ pylith_viz --filenames=output/step01_no_faults_no_flexure-slab.h5 warp_grid --fi
 
 Porosity field at the end of model run time for Step 1.
 :::
+
+% End of file

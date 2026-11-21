@@ -1,12 +1,13 @@
-# =================================================================================================
+# -*- journal -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026 All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
-#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # Cubit journal file with geometry for example showing how to specify
 # the discretization size using a field variable in an Exodus-II file.
 #
@@ -18,6 +19,8 @@
 # ----------------------------------------------------------------------
 # Set units to SI.
 # ----------------------------------------------------------------------
+
+
 ${Units('si')}
 #
 # ----------------------------------------------------------------------
@@ -69,8 +72,5 @@ imprint all with volume all
 merge all
 compress ids all
 
+
 # End of file
-
-
-
-

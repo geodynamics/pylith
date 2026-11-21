@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # SolnDispPresTracStrainLagrange
 
 % WARNING: Do not edit; this is a generated file!
@@ -30,3 +39,4 @@ Example of setting `SolnDispPresTracStrainLagrange` Pyre properties and faciliti
 solution = pylith.problems.SolnDispPresTracStrainLagrange
 :::
 
+% End of file

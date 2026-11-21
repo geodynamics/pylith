@@ -1,3 +1,13 @@
+# -*- journal -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # ----------------------------------------------------------------------
 # Create blocks for materials
 # ----------------------------------------------------------------------
@@ -39,3 +49,6 @@ group "domain_nofault" add node all
 group "domain_nofault" remove node in fault
 nodeset 23 group domain_nofault
 nodeset 23 name "domain_nofault"
+
+
+# End of file

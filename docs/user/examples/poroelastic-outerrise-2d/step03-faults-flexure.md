@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 3: Faults with flexure
 
 ```{include} step03_faults_flexure-synopsis.md
@@ -102,3 +111,5 @@ pylith_viz --filenames=output/step03_faults_flexure-slab.h5 warp_grid --field=po
 
 Porosity field at the end of the simulation for Step 3.
 :::
+
+% End of file

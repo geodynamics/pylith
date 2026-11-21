@@ -1,3 +1,13 @@
+# -*- text -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT 
+
+
 # Dummy set of points all with normals oriented upward at 45 degrees in
 # the x-z plane.
 # The rotation pole defined in euler.cfg is located 90 degrees away
@@ -15,7 +25,10 @@
   5.00e5  3.70e6 -1.0e4     0.0e0  7.0710678119e-01  7.0710678119e-01
 # This point has a N-oriented normal, so all movement should be tensile.
   5.00e5  3.70e6 -1.0e4     0.0e0             1.0e0  0.0e0
-# This point has a normal directed almost N, with a slight verical
+# This point has a normal directed almost N, with a slight vertical
 # component.  Since it is above the 75-degree cutoff, it should also
 # have purely tensile movement.
   5.00e5  3.70e6 -1.0e4     0.0e0  0.984807753012208  0.17364817766693
+
+
+# End of file

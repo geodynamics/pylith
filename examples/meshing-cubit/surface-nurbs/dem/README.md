@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 This is a simple example showing how to create a NURBS surface using
 Cubit, given a set of regularly-spaced data, such as might be obtained
 from a DEM. We create the surface as a net surface (see Cubit
@@ -44,3 +53,5 @@ Cubit sessions and use it just as you would any surface created within
 Cubit.  For example, to use this surface within Cubit, you would type:
 
 import acis 'ruapehu_topo.sat'
+
+% End of file

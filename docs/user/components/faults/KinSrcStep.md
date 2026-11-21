@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # KinSrcStep
 
 % WARNING: Do not edit; this is a generated file!
@@ -34,3 +43,4 @@ db_auxiliary_field.values = [initiation_time, final_slip_left_lateral, final_sli
 db_auxiliary_field.data = [0.0*s, -2.0*m, 0.0*m]
 :::
 
+% End of file

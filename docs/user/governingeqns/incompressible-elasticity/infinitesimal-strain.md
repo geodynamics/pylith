@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Infinitesimal Strain (Bathe) and No Faults
 
 In this section we apply a similar approach to the one we use for the elasticity equation to the case of an incompressible material.
@@ -45,3 +54,5 @@ The strong form is
 :::{toctree}
 infinitesimal-strain-quasistatic.md
 :::
+
+% End of file

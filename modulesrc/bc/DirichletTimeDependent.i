@@ -1,15 +1,12 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026 All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
-/** @file modulesrc/bc/DirichletTimeDependent.i
- *
- * @brief Python interface to C++ DirichletTimeDependent object.
- */
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 namespace pylith {
     namespace bc {
@@ -33,13 +30,13 @@ namespace pylith {
              * @param[in] dof Array of indices for constrained degrees of freedom.
              * @param[in] size Size of array
              */
-            % apply(int* INPLACE_ARRAY1,
+            %apply(int* INPLACE_ARRAY1,
                     int DIM1){(const int* flags,
                                const int size)};
             void setConstrainedDOF(const int* flags,
                                    const int size);
 
-            % clear(const int* flags,
+            %clear(const int* flags,
                     const int size);
 
             /** Get indices of constrained degrees of freedom.
@@ -153,5 +150,6 @@ namespace pylith {
 
     } // namespace bc
 } // namespace pylith
+
 
 // End of file

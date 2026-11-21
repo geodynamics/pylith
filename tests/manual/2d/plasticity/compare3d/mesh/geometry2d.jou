@@ -1,3 +1,13 @@
+# -*- journal -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # ----------------------------------------------------------------------
 # Create vertices defining plane.
 # ----------------------------------------------------------------------
@@ -14,3 +24,6 @@ create vertex 2.0 1.0 0.0
 # -2 km <= x <= 2 km
 # -1 km <= y <= 1 km
 create planar surface with plane vertex 1 vertex 2 vertex 3
+
+
+# End of file

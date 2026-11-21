@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Error Messages
 
 Summary of error messages addressed in this set of examples.
@@ -119,3 +128,5 @@ caption: Refer to [Step 6, Error 7](step06-error07.md).
 [0]PETSC ERROR: Error in external library
 [0]PETSC ERROR: Could not find values for initiation_time at (  -21860.3  -27621) in spatial database 'Fault rupture for main fault'.
 ```
+
+% End of file

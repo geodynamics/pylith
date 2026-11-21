@@ -1,15 +1,12 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026 All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
-/** @file modulesrc/faults/FaultCohesiveKin.i
- *
- * @brief Python interface to C++ FaultCohesiveKin object.
- */
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 namespace pylith {
     namespace faults {
@@ -32,7 +29,7 @@ namespace pylith {
              * @param sources Array of kinematic earthquake sources.
              * @param numSources Number of earthquake sources.
              */
-            % apply(const char* const* string_list,
+            %apply(const char* const* string_list,
                     const int list_len){(const char* const* names,
                                          const int numNames)};
             void setEqRuptures(const char* const* names,
@@ -40,7 +37,7 @@ namespace pylith {
                                pylith::faults::KinSrc** ruptures,
                                const int numRuptures);
 
-            % clear(const char* const* names,
+            %clear(const char* const* names,
                     const int numNames);
 
             /** Verify configuration is acceptable.
@@ -113,5 +110,6 @@ namespace pylith {
 
     } // namespace faults
 } // namespace pylith
+
 
 // End of file

@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Workflow
 
 1. Update your local `main` branch
@@ -16,3 +25,5 @@
 :::{note}
 You will likely need to update your `main` branch during this process to keep it in sync with the `main` branch in `geodynamics/pylith`.
 :::
+
+% End of file

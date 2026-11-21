@@ -1,11 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026 All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -1612,5 +1613,6 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_HexQ4
 }; // TestIsotropicLinearGenMaxwell3D_LinearStrain_HexQ4
 // Remove this test for now until higher order integration is done properly.
 // CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_HexQ4);
+
 
 // End of file

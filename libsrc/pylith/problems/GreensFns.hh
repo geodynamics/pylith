@@ -1,11 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026 All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/faults/faultsfwd.hh" // HOLDSA FaultCohesiveImpulses
@@ -149,5 +151,6 @@ class pylith::problems::GreensFns : public pylith::problems::Problem {
     pylith::problems::ProgressMonitorStep* _monitor; ///< Monitor for simulation progress.
 
 }; // GreensFns
+
 
 // End of file

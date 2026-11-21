@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Examples: 3-D Subduction Zone
 
 This suite of examples demonstrates use of a wide variety of features
@@ -31,3 +40,5 @@ Examples:
 * `Step 8a,b,c`: Stress field due to gravitational body forces
 
 Refer to the examples section of the PyLith documentation for more information.
+
+% End of file

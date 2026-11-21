@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 Test of Drucker-Prager plasticity using initial stresses and different
 time step sizes.
 
@@ -15,3 +24,5 @@ function of time (should be zero until t = 10 years). The right-hand
 plot shows the second deviatoric stress invariant for both the elastic
 and plastic cases. They should be identical until t = 10 years, at
 which point the plastic stresses will be less.
+
+% End of file

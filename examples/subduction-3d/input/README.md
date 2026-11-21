@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Directory for simulation input data that must be downloaded
 
 This directory is simulation input data that is too large to include in the PyLith GitHub repository.
@@ -20,3 +29,5 @@ gunzip mesh_tet.exo.gz
 curl -L -O https://github.com/geodynamics/pylith/releases/download/v5.0.0/examples-subduction-3d-etopo2020_bedrock_local.tiff
 mv examples-subduction-3d-etopo2020_bedrock_local.tiff etopo2020_bedrock_local.tiff 
 ```
+
+% End of file

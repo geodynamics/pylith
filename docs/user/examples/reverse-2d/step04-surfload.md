@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 4: Surface Tractions
 
 % Metadata extracted from parameter files.
@@ -239,3 +248,5 @@ The higher order discretization removes the jumps in the shear stress field betw
 3. Refining the mesh to decrease the discretization size by a factor of two yields better resolution of the shear stress field.
 4. Using a basis order of 2 with the coarse mesh provides better resolution of the stress concentration compared with refining the mesh.
 5. When resolving the stress field components is important, you will likely want to use a basis ordre of 2 for the displacement solution subfield.
+
+% End of file

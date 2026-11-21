@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-examples-box-2d)=
 # Axial and Shear Deformation (2D Box)
 
@@ -40,3 +49,5 @@ step04-sheardispic.md
 step05-sheardisptractrate.md
 exercises.md
 :::
+
+% End of file

@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Infinitesimal Strain and No Faults
 
 We base this formulation for poroelasticity on {cite:t}`Detournay:Cheng:Poroelasticity:1993` and {cite:t}`Cheng:2016:Poroelasticity`.
@@ -88,3 +97,5 @@ We can write the trace of the strain tensor as the dot product of the gradient a
 infinitesimal-strain-quasistatic.md
 infinitesimal-strain-dynamic.md
 :::
+
+% End of file

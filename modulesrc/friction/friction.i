@@ -1,44 +1,44 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026 All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 // SWIG interface
-%
-    module friction
+%module friction
 
-    // Header files for module C++ code
-    %
-    {
-// #include "pylith/friction/FrictionModel.hh"
+// Header files for module C++ code
+%{
+//#include "pylith/friction/FrictionModel.hh"
 
-#include "pylith/utils/array.hh"
 #include "pylith/utils/types.hh"
-        % }
+#include "pylith/utils/array.hh"
+%}
 
-    % include "exception.i" % exception {
-    try {
-        $action
-    } catch (const std::exception& err) {
-        SWIG_exception(SWIG_RuntimeError, err.what());
-    } // try/catch
-} // exception
+%include "exception.i"
+%exception {
+  try {
+    $action
+  } catch (const std::exception& err) {
+    SWIG_exception(SWIG_RuntimeError, err.what());
+  } // try/catch
+ } // exception
 
-% include "typemaps.i" %
-    include "../include/scalartypemaps.i"
+%include "typemaps.i"
+%include "../include/scalartypemaps.i"
 
-    // Numpy interface stuff
-    %
-    {
+// Numpy interface stuff
+%{
 #define SWIG_FILE_WITH_INIT
-        % } %
-    include "../include/numpy.i" % init % {
-    import_array();
-    %
-}
+%}
+%include "../include/numpy.i"
+%init %{
+import_array();
+%}
 
 // Interfaces
 //%include "FrictionModel.i"

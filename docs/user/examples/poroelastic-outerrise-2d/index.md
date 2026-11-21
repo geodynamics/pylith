@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # 2D Outer-Rise Hydration Using Poroelasticity
 
 The files are in the directory `examples/poroelastic-outerrise-2d`.
@@ -38,3 +47,5 @@ step02-no-faults-flexure.md
 step03-faults-flexure.md
 exercises.md
 :::
+
+% End of file

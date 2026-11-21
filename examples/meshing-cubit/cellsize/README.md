@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 Cubit example demonstrating how to use a field variable in an ExodusII
 file to specify the cell size in a Cubit mesh. This technique only
 works for triangluar, quadrilateral, and tetrahedral cells.
@@ -26,3 +35,5 @@ NOTES:
   The geometry in the background mesh used to specify the cell size
   *must* be exactly the same geometry as that of the final mesh. Cubit
   will crash if the geometry is different.
+
+% End of file

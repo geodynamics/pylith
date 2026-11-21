@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-governingeqns-bulk-elasticity-constitutive)=
 # Elasticity Constitutive Models
 
@@ -70,3 +79,5 @@ We call these modified elastic constants $C_{ijkl}^{dev}$, so that we have
 :label: eqn:elasticity:devstress:jacobian2
 C_{ikjl}^{dev} = C_{ikjl} - \frac{1}{3}C_{mmjl} \delta_{ik}.
 ```
+
+% End of file

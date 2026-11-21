@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-appendices-analytical-solns)=
 # Analytical Solutions
 
@@ -122,3 +131,5 @@ u_y &= -\frac{\tau_0}{4\mu}\frac{\lambda}{\lambda+\mu} y.
 Diagram of axial extension example for the Airy stress function.
 We constraint the normal degree of freedom on the $x=x_0$ and $y=y_0$ boundaries and apply a uniform normal traction $\tau_0$ on $x=x_1$.
 :::
+
+% End of file

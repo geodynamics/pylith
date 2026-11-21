@@ -1,17 +1,12 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026 All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
 
-/**
- * @file modulesrc/topology/Field.hh
- *
- * @brief Python interface to C++ Field object.
- */
 
 namespace pylith {
     namespace topology {
@@ -151,7 +146,7 @@ namespace pylith {
              * @param[in] feSpace Finite-element space (POLYNOMIAL_SPACE or POINT_SPACE).
              * @param[in] isBasisContinuous True if basis is continuous.
              */
-            % apply(const char* const* string_list,
+            %apply(const char* const* string_list,
                     const int list_len){(const char* components[],
                                          const int numComponents)};
             void subfieldAdd(const char* name,
@@ -168,7 +163,7 @@ namespace pylith {
                              const SpaceEnum feSpace,
                              const bool isBasisContinuous);
 
-            % clear(const char* components[],
+            %clear(const char* components[],
                     const int numComponents);
 
             /** Setup sections for subfields.
@@ -226,5 +221,6 @@ namespace pylith {
 
     } // namespace topology
 } // namespace pylith
+
 
 // End of file

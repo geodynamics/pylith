@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Building the documentation
 
 You can build a local copy of the documentation using Sphinx.
@@ -35,3 +44,5 @@ cd _build/latex && make
 # Generate the documentation as an epub.
 ./build.sh epub
 ```
+
+% End of file

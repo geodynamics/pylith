@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-physics-time-dependent-bc)=
 # Time-Dependent Boundary Conditions
 
@@ -63,3 +72,5 @@ The spatial database file the auxiliary subfields for the Neumann boundary condi
 :::{seealso}
 [`NeumannTimeDependent` Component](../../components/bc/NeumannTimeDependent.md) for the Pyre properties and facilities and configuration examples.
 :::
+
+% End of file

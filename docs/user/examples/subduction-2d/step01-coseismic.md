@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 1: Static Coseismic Slip
 
 % Features extracted from simulation parameter files.
@@ -167,3 +176,5 @@ pylith_viz --filename=output/step01_coseismic-domain.h5 warp_grid --component=x
 Solution for Step 1.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 1000.
 :::
+
+% End of file

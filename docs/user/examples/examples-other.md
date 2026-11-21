@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Additional Examples
 
 ## Cubit Meshing Examples
@@ -17,3 +26,5 @@ The files with the errors corrected are in `examples/troubleshooting-2d/correct`
 The CIG GitHub software repository <https://github.com/geodynamics/pylith_benchmarks> contains input files for a number of community benchmarks.
 The benchmarks do not include the mesh files because they are so large; instead they include the Cubit Python scripts that can be used to generate the meshes.
 Most, but not all, of the input files in the repository are updated for PyLith v2.0.0, so you will need to modify them if you use another version of PyLith.
+
+% End of file

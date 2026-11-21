@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-problem-nondimensionalization)=
 # Nondimensionalization
 
@@ -126,3 +135,5 @@ t_o = \frac{\mu_{f_o}}{k_o} \frac{l_o^2}{\mu_o}
 :::{admonition} Pyre User Interface
 See [QuasistaticPoroelasticity component](../components/scales/QuasistaticPoroelasticity.md).
 :::
+
+% End of file

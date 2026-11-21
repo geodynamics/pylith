@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 6: Error 5
 
 ## Error Message
@@ -126,3 +135,5 @@ value-names = final-slip-left-lateral  final-slip-opening  initiation-time
 # Correct
 value-names = final_slip_left_lateral  final_slip_opening  initiation_time
 ```
+
+% End of file

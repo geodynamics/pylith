@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 8: Use of Gravitational Body Forces
 
 This example demonstrates the use of gravitational body forces as well as the use of initial stresses to balance the body forces. This involves enabling gravity within our domain with Dirichlet roller boundary conditions on the lateral and bottom boundaries; we do not include faults in this example.  We also demonstrate what happens when the initial stresses are not in balance with the gravitational stresses, and show how viscoelastic problems with gravitational stresses will in general not reach a steady-state solution. This example consists of three sub-problems:
@@ -128,3 +137,5 @@ The colors of the shaded surface indicate the z displacement, and the deformatio
 :::
 
 Note that the vertical displacements for Step 8b are very close to zero, because the material is nearly incompressible.
+
+% End of file

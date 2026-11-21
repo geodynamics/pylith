@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # PyLith v3.0.0 now available
 
 I am pleased to announce the release of PyLith 3.0.0, a finite-element code designed to solve dynamic elastic problems and quasistatic viscoelastic problems in tectonic deformation.
@@ -60,3 +69,5 @@ For Linux there are additional libraries that must be installed for Gmsh to run;
 * Rey Koki
 * Kali Allison
 * Lorraine Hwang
+
+% End of file

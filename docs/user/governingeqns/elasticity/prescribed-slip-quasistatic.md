@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Quasistatic
 
 As in the case of elasticity without faults, we first consider the quasistatic case in which we neglect the inertial term ($\rho \frac{\partial \vec{v}}{\partial t} \approx \vec{0}$).
@@ -88,3 +97,5 @@ J_F = \left( \begin{array} {cc} J_F^{uu} & J_F^{u\lambda} \\ J_F^{\lambda u} & 0
 %
 where $C$ contains entries of $\pm 1$ for degrees of freedom on the two sides of the fault.
 The Schur complement of $J$ with respect to $J_F^{uu}$ is $-C\left(J_F^{uu}\right)^{-1}C^T$.
+
+% End of file

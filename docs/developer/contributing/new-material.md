@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Adding New Governing Equations and/or Bulk Rheologies
 
 ## Overview
@@ -88,3 +97,5 @@ Layout of material auxiliary subfields.
 The subfields include those for both the governing equation and the bulk rheology.
 The required subfields are at the ends with the optional fields in the middle. This allows the same pointwise functions to be used for some cases with and without the optional subfields.
 :::
+
+% End of file

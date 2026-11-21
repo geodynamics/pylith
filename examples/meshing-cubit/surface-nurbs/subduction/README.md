@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 Cubit example illustrating methods for creating nonplanar surfaces in
 meshing a subduction interface with a steeply-dipping splay fault and
 topography/bathymetry.
@@ -49,3 +58,5 @@ produced by the Python scripts within Cubit.
 
     bc.jou:        Creates material blocks and nodesets that could be used in
                    a PyLith simulation.
+
+% End of file

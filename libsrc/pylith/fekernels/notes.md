@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Notes
 
 At run time, a user specifies:
@@ -99,3 +108,5 @@ Integration of momentum PDE requiries:
          1. If kernel flags were types
          2. requires `class` class expansion for constraint is . If false at compile time, no expansion.
          3. TODO: Look up C++ concepts.
+
+% End of file

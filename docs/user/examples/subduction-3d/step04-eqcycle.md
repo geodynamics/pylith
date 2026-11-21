@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 4: Earthquake Cycle with Prescribed Slip
 
 This example combines the interseismic deformation from Step 3 and expands on the earthquake ruptures from Step 2.
@@ -124,3 +133,5 @@ pylith_viz --filename=output/step04_eqcycle-domain.h5 warp_grid --component=x --
 Solution for Step 4 at t=100 yr.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 5000.
 :::
+
+% End of file

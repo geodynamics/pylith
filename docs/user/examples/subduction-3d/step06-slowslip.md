@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 6: Prescribed Slow Slip Events
 
 This example simulates several slow slip events on the slab interface.
@@ -129,3 +138,5 @@ pylith_viz --filename=output/step06_slowslip-domain.h5 warp_grid --component=x -
 Solution for Step 6 at t=0.08 yr.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 10,000.
 :::
+
+% End of file

@@ -1,0 +1,13 @@
+# -*- conf -*-
+# -*- coding: utf-8 -*-
+#
+# michael a.g. aïvázis <michael.aivazis@para-sim.com>
+# (c) 1998-2026 all rights reserved
+
+# the tools the convention checks run, pinned so that a local run and the one on a pull request
+# agree; formatters change their output from one release to the next
+black==26.5.1
+clang-format==23.1.1
+codespell==2.4.3
+
+# end of file

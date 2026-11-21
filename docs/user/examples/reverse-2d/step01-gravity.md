@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 1: Gravitational Body Forces
 
 % Metadata extracted from parameter files.
@@ -301,3 +310,5 @@ Increasing the basis order reduces the maximum shear stress by about 10 orders o
 5. Refining the mesh decreases the magnitude shear stress by about a factor of 2.
 6. Using a basis order of 2 for the solution subfields reduces the magnitude of the shear stress by nearly 10 orders of magnitude.
 7. When resolving the stress field components is important, you will likely want to use a basis order of 2 for the displacement solution subfield.
+
+% End of file

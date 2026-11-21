@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 5: Static Coseismic Slip
 
 This example involves a static simulation that solves for the deformation from prescribed coseismic slip on the main fault.
@@ -262,3 +271,5 @@ With the higher order discretization of the solution subfields, we find better r
 3. This stress concentration is difficult to resolve with a basis order of 1 for the solution subfields, even if we refine the mesh.
 4. Using a basis order of 2 provides better resolution of the stress concentration, but it is poorly resolved without also refining the mesh.
 5. Adaptive mesh refinement (not yet available in PyLith) that refines the region just around the stress concentration would help resolve the stress concentration without substantially increasing the problem size.
+
+% End of file

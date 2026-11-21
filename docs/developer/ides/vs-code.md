@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Visual Studio Code
 
 Visual Studio Code (VS Code) provides a extensive integrated development environment for writing code, source control, building, and running tests.
@@ -62,3 +71,5 @@ Other extensions that you may find useful include:
 - Remote-SSH
 - Git Graph
 - Git Lens
+
+% End of file

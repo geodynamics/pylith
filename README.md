@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # PyLith
 
 [![DOI](https://www.zenodo.org/badge/DOI/10.5281/zenodo.21909051.svg)](https://doi.org/10.5281/zenodo.21909051)
@@ -53,3 +62,4 @@ For a more complete list of contributors, refer to the [GitHub contributors](htt
 
 Please see the User Guide for [acknowledgement and citation](https://pylith.readthedocs.io/en/stable/intro/preface.html#citation) information.
 
+% End of file

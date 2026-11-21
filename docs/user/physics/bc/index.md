@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-physics-boundary-conditions)=
 # Boundary Conditions
 
@@ -51,3 +60,5 @@ absorbing-dampers.md
 :::{seealso}
 See {ref}`sec-user-governing-eqns` for the derivation of the finite-element formulation for each of the boundary conditions.
 :::
+
+% End of file

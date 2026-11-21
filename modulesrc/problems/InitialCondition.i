@@ -1,17 +1,12 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026 All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
 
-/**
- * @file modulesrc/problems/Problem.hh
- *
- * @brief Python interface to C++ Problem.
- */
 
 namespace pylith {
     namespace problems {
@@ -32,13 +27,13 @@ namespace pylith {
              * @param[in] subfields Array of names of solution subfields.
              * @param[in] numSubfields Number of subfields.
              */
-            % apply(const char* const* string_list,
+            %apply(const char* const* string_list,
                     const int list_len){(const char* subfields[],
                                          const int numSubfields)};
             void setSubfields(const char* subfields[],
                               const int numSubfields);
 
-            % clear(const char* subfields[],
+            %clear(const char* subfields[],
                     const int numSubfields);
 
             /** Set solver type.
@@ -53,5 +48,6 @@ namespace pylith {
 
     } // namespace problems
 } // namespace pylith
+
 
 // End of file

@@ -1,52 +1,57 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026 All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
-// SWIG interface
-%
-    module utils
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
 
-    // Header files for module C++ code
-    %
-    {
-#include "pylith/utils/DependenciesVersion.hh"
-#include "pylith/utils/PylithVersion.hh"
+
+// SWIG interface
+%module utils
+
+// Header files for module C++ code
+%{
 #include "pylith/utils/PyreComponent.hh"
+#include "pylith/utils/PylithVersion.hh"
+#include "pylith/utils/DependenciesVersion.hh"
 #include "pylith/utils/TestArray.hh"
 #include "pylith/utils/constants.hh"
 
-#include "pylith/utils/arrayfwd.hh" // USES scalar_array
 #include <petsclog.h> // USES PetscLogEventBegin/End() in inline methods
-        % }
+#include "pylith/utils/arrayfwd.hh" // USES scalar_array
+%}
 
-    % include "exception.i" % exception {
+%include "exception.i"
+%exception {
     try {
         $action
     } catch (const std::exception& err) {
-        SWIG_exception(SWIG_RuntimeError, err.what());
+        SWIG_exception (SWIG_RuntimeError, err.what ());
     } // try/catch
 } // exception
 
-% include "typemaps.i" % include "../include/scalartypemaps.i" %
-    include "../include/chararray.i"
+%include "typemaps.i"
+%include "../include/scalartypemaps.i"
+%include "../include/chararray.i"
 
-    // Numpy interface stuff
-    %
-    {
+// Numpy interface stuff
+%{
 #define SWIG_FILE_WITH_INIT
-        % } %
-    include "../include/numpy.i" % init % {
+%}
+%include "../include/numpy.i"
+%init %{
     import_array();
-    %
-}
+%}
 
 // Interfaces
-% include "pylith_general.i" % include "PyreComponent.i" % include "PylithVersion.i" % include "DependenciesVersion.i" %
-    include "TestArray.i" %
-    include "constants.i"
+%include "pylith_general.i"
+%include "PyreComponent.i"
+%include "PylithVersion.i"
+%include "DependenciesVersion.i"
+%include "TestArray.i"
+%include "constants.i"
 
-    // End of file
+
+// End of file

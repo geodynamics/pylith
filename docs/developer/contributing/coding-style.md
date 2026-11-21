@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Coding Style
 
 There are a number of standard coding styles for programming languages, notably PEP8 for Python. For PyLith, we try to be consistent in naming conventions across Python and C++ while following a subset of the conventions used in PETSc and PEP8 with documentation styles consistent with Doxygen.
@@ -167,3 +176,5 @@ We recommend using a static data member for the name with the lowercase name mat
 
 Python files use the `.py` suffix.
 All classes, methods, and functions should be documented using docstrings.
+
+% End of file

@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # QuasistaticPoroelasticity
 
 % WARNING: Do not edit; this is a generated file!
@@ -44,3 +53,4 @@ viscosity = 0.001*Pa*s
 permeability = 1.0e-12*m**2
 :::
 
+% End of file

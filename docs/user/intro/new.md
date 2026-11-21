@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Significant Recent Changes
 
 See [Release Notes](../../intro/release-notes.md) for a summary of features and bug fixes for each release.
@@ -56,3 +65,5 @@ See [Release Notes](../../intro/release-notes.md) for a summary of features and 
 * Updated to Python 3.
   * Pythia/Pyre, spatialdata, and PyLith have all been migrated to Python 3; and
   * The nemesis package has been merged into Pyre/Pyre.
+
+% End of file

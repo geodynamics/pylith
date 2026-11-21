@@ -1,3 +1,13 @@
+# -*- gitignore -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 /GPATH
 /GRTAGS
 /GSYMS
@@ -25,13 +35,11 @@ autom4te.cache
 /build
 /dist
 output/
-examples/subduction-3d/scratch/*.spatialdb
-examples/subduction-3d/scratch/*.sat
-examples/subduction-3d/scratch/*.txt
-examples/subduction-3d/scratch/*.jou
-examples/subduction-3d/input/*.exo
+examples/subduction-3d/scratch
+examples/subduction-3d/input
 examples/poroelastic-outerrise-2d/*.spatialdb
 /docs/_build/
+benchmarks/linearelasticity/solver-faults-3d/mesh*.msh
 /doc-latex/userguide/userguide.pdf
 /doc-latex/userguide/userguide.aux
 /doc-latex/userguide/userguide.fdb_latexmk
@@ -43,3 +51,6 @@ examples/poroelastic-outerrise-2d/*.spatialdb
 /doc-latex/userguide/userguide.lot
 /doc-latex/userguide/userguide.out
 benchmarks/linearelasticity/*/logs
+
+
+# End of file

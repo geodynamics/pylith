@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 The tests in this directory involve displacement BC applied in the elastic
 solution. There are then 10 time steps to allow plastic yield. There should
 be no additional yield after the first time step. If there is, either
@@ -33,3 +42,5 @@ To run all of the simulations, use the run-models.sh script.
 
 The 2D and 3D problems should yield the same displacements, strains,
 stresses, and plastic strains when the appropriate components are compared.
+
+% End of file

@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Running C++ unit tests and MMS tests
 
 ## Running C++ unit tests
@@ -85,3 +94,5 @@ For example, `gdb .libs/test_problems`.
 $ valgrind --log-file=valgrind_problems.log \
   --suppressions=$PYLITH_DIR/share/valgrind-python.supp .libs/test_problems
 ```
+
+% End of file

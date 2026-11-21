@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-governingeqns-elasticity-powerlaw)=
 # Power-law Viscoelastic Models
 
@@ -230,3 +239,5 @@ Rearranging, we compute the Jacobian for the deviatoric stress components using
 \frac{\frac{\partial \epsilon_{ij}^{\prime dev}}{\partial
 \epsilon_{kl}}}{G + \sigma_{ij}^{dev} \frac{\partial G}{\partial \sigma_{ij}^{dev}} + \sigma_{ij}^{dev}(t)\frac{\partial H}{\partial \sigma_{ij}^{dev}}}.
 ```
+
+% End of file

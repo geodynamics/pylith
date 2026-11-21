@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-run-pylith-troubleshooting)=
 # Troubleshooting
 
@@ -144,3 +153,5 @@ The following steps can help diagnose the source of the problem.
 1. If using `preonly` for the KSP type (often the default), then try switching to `gmres` with a KSP tolerance of `1.0e-12`.
   If that works, then try backing off on the tolerance.
   Helpful PETSc settings include `--petsc.ksp_view=true`, `--petsc.ksp_type=gmres` and `--petsc.ksp_rtol=1.0e-12`.
+
+% End of file

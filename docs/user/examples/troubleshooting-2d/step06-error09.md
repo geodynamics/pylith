@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 6: Successful run
 
 ```{code-block} pyrejournal
@@ -82,3 +91,5 @@ $ pylith step06_twofaults.cfg
 ```
 
 Our simulation now runs without errors and the output looks correct.
+
+% End of file

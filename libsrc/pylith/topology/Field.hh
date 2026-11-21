@@ -1,11 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026 All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/topology/FieldBase.hh" // ISA FieldBase
@@ -294,5 +296,6 @@ class pylith::topology::Field : public pylith::topology::FieldBase, public pylit
     const Field& operator=(const Field&); ///< Not implemented
 
 }; // Field
+
 
 // End of file

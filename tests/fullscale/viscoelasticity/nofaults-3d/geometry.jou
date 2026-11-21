@@ -1,3 +1,13 @@
+# -*- journal -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # ----------------------------------------------------------------------
 # Set units to SI.
 # ----------------------------------------------------------------------
@@ -18,3 +28,5 @@ reset
 brick x {8.0*km} y {8.0*km} z {8.0*km}
 volume 1 move x 0 y 0 z {-4.0*km}
 
+
+# End of file

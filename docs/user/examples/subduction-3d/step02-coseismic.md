@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 2: Earthquake Rupture and Postseismic Relaxation
 
 This example involves a quasi-static simulation for coseismic earthquake rupture and postseismic relaxation.
@@ -147,3 +156,5 @@ pylith_viz --filename=output/step02_coseismic-domain.h5 warp_grid --component=x 
 Solution for Step 2 at t=200 yr.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 10,000.
 :::
+
+% End of file

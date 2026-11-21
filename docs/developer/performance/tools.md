@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (developer-performance-tools)=
 # Performance Tools
 
@@ -33,3 +42,5 @@ Run a PyLith simulation adding the command line argument `--petsc.log_view=:FILE
 :::{note}
 You can install [FlameGraph](https://github.com/brendangregg/FlameGraph) by cloning the repository or downloading and unpacking a release.
 :::
+
+% End of file

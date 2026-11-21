@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 6: Error 2
 
 ## Error Message
@@ -47,3 +56,5 @@ db_auxiliary_field.filename = fault_slip.spatialdb
 # Correct
 db_auxiliary_field.iohandler.filename = fault_slip.spatialdb
 ```
+
+% End of file

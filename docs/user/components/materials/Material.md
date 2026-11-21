@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Material
 
 % WARNING: Do not edit; this is a generated file!
@@ -35,3 +44,4 @@ Abstract base class for a bulk material.
   - **default value**: 1
   - **current value**: 1, from {default}
 
+% End of file

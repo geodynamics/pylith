@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Mesh Description
 
 For this small, simple problem we constructed the finite-element mesh manually in a text editor using the [`MeshIOAscii` file format](../../file-formats/meshio-ascii.md).
@@ -15,3 +24,5 @@ Uniform resolution finite-element mesh with quadrilateral cells.
 Vertices are numbered sequentially from zero with the labels adjacent to each vertex.
 Cells are numbered sequentially from zero with the labels at the center of each cell.
 :::
+
+% End of file

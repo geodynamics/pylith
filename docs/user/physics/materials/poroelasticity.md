@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-physics-poroelasticity)=
 # Poroelasticity
 
@@ -52,3 +61,5 @@ When porosity is enabled as a state variable, it will be included in the output 
 :::{seealso}
 See [`Poroelasticity` Component](../../components/materials/Poroelasticity.md) for the Pyre properties and facilities and configuration examples.
 :::
+
+% End of file

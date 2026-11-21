@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 This is a simple test of the DruckerPragerPlaneStrain elastoplastic model.
 The results may be compared against the results from a 3D model with the
 z-displacements constrained to zero.  There are two sets of models:  cyclic
@@ -24,3 +33,5 @@ At present, the amount of displacement applied for the shear problem is
 extremely small. Otherwise, there is additional plastic deformation after
 the first time step. It remains to be seen whether this is an issue with
 the code, or whether this behavior is to be expected.
+
+% End of file

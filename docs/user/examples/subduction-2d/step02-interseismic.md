@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 2: Quasistatic Interseismic Deformation
 
 % Features extracted from simulation parameter files.
@@ -138,3 +147,5 @@ pylith_viz --filename=output/step02_interseismic-domain.h5 warp_grid --component
 Solution for Step 2 at t=100 yr.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 1000.
 :::
+
+% End of file

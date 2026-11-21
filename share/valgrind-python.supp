@@ -1,4 +1,13 @@
+# -*- valgrind -*-
+# -*- coding: utf-8 -*-
 #
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # This is a valgrind suppression file that should be used when using valgrind.
 #
 #  Here's an example of running valgrind:
@@ -224,3 +233,6 @@
    match-leak-kinds: indirect
    fun:_Znwm
 }
+
+
+# End of file

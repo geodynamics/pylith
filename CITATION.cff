@@ -1,3 +1,13 @@
+# -*- yaml -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 cff-version: 1.2.0
 title: PyLith
 message: >-
@@ -50,3 +60,6 @@ preferred-citation:
   title: "A domain decomposition approach to implementing fault slip in finite-element models of quasistatic and dynamic crustal deformation"
   volume: 118
   year: 2013
+
+
+# End of file

@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-run-pylith-pylithapp)=
 # PyLith Application
 
@@ -30,3 +39,5 @@ We strongly encourage users to include all of the metadata in their own PyLith p
 :::{seealso}
 [`SimulationMetadata` Component](../components/utils/SimulationMetadata.md)
 :::
+
+% End of file

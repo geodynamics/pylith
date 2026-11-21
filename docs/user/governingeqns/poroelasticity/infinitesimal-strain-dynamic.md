@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Dynamic
 
 :::{admonition} TODO @rwalkerlewis
@@ -92,3 +101,5 @@ The LHS Jacobians are:
   M_{v} &= J_F^{vv} = \frac{\partial F^v}{\partial v} + s_{tshift} \frac{\partial F^v}{\partial \dot{v}} =
   \int_{\Omega} {\psi_\mathit{trial}^{v}}_{i}{\color{blue}  \underbrace{\color{black}\rho_{b}(\vec{x}) s_{tshift} \delta_{ij}}_{\color{blue}{J^{vv}_{f0}}}} {\psi_\mathit{basis}^{v}}_{j} \  d \Omega
 \end{align}
+
+% End of file

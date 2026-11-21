@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Overview of Running PyLith
 
 ## Command Line Interface
@@ -404,3 +413,5 @@ The `pylithapp.cfg` files placed in (3) will override those in (2), (2) override
 :::{tip}
 See {ref}`sec-user-run-pylith-utilities` and {ref}`sec-user-run-pylith-parameter-gui` for several helpful utilities for viewing PyLith parameters and finding examples using specific features.
 :::
+
+% End of file

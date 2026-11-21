@@ -1,17 +1,12 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026 All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
 
-/**
- * @file modulesrc/petsc/Options.i
- *
- * @brief Python interface to C++ Defaults.
- */
 
 namespace pylith {
     namespace petsc {
@@ -38,5 +33,6 @@ namespace pylith {
 
     } // namespace petsc
 } // namespace pylith
+
 
 // End of file

@@ -1,3 +1,12 @@
+# -*- yaml -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 ---
 Language: Cpp
 AlignAfterOpenBracket: true
@@ -161,11 +170,11 @@ IfMacros:
   - KJ_IF_MAYBE
 IncludeBlocks: Preserve
 IncludeCategories:
-  - Regex: "^\"(llvm|llvm-c|clang|clang-c)/"
+  - Regex: '^"(llvm|llvm-c|clang|clang-c)/'
     Priority: 2
     SortPriority: 0
     CaseSensitive: false
-  - Regex: "^(<|\"(gtest|gmock|isl|json)/)"
+  - Regex: '^(<|"(gtest|gmock|isl|json)/)'
     Priority: 3
     SortPriority: 0
     CaseSensitive: false
@@ -317,4 +326,5 @@ WhitespaceSensitiveMacros:
   - PP_STRINGIZE
   - STRINGIZE
 WrapNamespaceBodyWithEmptyLines: Leave
-...
+
+# End of file

@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 7: Slip on Two Faults and Maxwell Viscoelastic Materials
 
 % Metadata extracted from parameter files.
@@ -178,3 +187,5 @@ caption: Compare the results from Step 7 ad 7b using the `plot_compare.py` Pytho
 Displacement and shear stress time histories for Step 7 and 7b at a location in the viscoelastic slab below the bottom ends of the main fault and splay fault.
 The backward Euler time stepping algorithm does a poor job of resolving the rapid deformation following the sudden application of coseismic slip, resulting in some oscillations in the deformation in Step 7b which uses adaptive time stepping.
 :::
+
+% End of file

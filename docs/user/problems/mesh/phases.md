@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Initialization Phases
 
 `MeshReader`
@@ -167,3 +176,5 @@ Refinement occurs after distribution of the mesh among processes.
 This allows one to run much larger simulations by (1) permitting the mesh generator to construct a mesh with a node spacing larger than that needed in the simulation and (2) operations performed in serial during the simulation setup phase, such as, adjusting the topology to insert cohesive cells and distribution of the mesh among processors uses this much smaller coarse mesh.
 For 2D problems the global mesh refinement increases the maximum problem size by a factor of $4^{n}$, and for 3D problems it increases the maximum problem size by a factor of $8^{n}$, where $n$ is the number of recursive refinement levels.
 For a tetrahedral mesh, the element quality decreases with refinement so $n$ should be limited to 1-2.
+
+% End of file

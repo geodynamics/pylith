@@ -1,11 +1,20 @@
 #!/usr/bin/env nemesis
-"""Application for converting mesh files from one format to another.
-"""
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
 
+
+"""Application for converting mesh files from one format to another."""
 
 if __name__ == "__main__":
     from pylith.apps.ConvertMeshApp import ConvertMeshApp
     from pythia.pyre.applications import start
+
     start(applicationClass=ConvertMeshApp)
 
 

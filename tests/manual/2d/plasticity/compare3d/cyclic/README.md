@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 The tests in this directory involve time-varying displacements applied to a
 model consisting of a single cell. The dof are all constrained, so there are
 no variables for which to solve.
@@ -26,3 +35,4 @@ no variables for which to solve.
   + 3-D dynamic
     pylith onecell_3d.cfg dynamic.cfg sin3d.cfg sin3d_dynamic.cfg
 
+% End of file

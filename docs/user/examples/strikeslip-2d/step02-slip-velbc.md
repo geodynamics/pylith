@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 2: Single Earthquake Rupture and Velocity Boundary Conditions
 
 % Metadata extracted from parameter files.
@@ -130,3 +139,5 @@ The colors of the shaded surface indicate the y displacement, and the deformatio
 The undeformed configuration is shown by the gray wireframe.
 The coseismic fault slip at 100 years releases all of the accumulated strain energy.
 :::
+
+% End of file

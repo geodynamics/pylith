@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # 2D Power Law Manual Tests
 
 These tests check the accuracy of the power-law solution for different time step sizes.
@@ -24,3 +33,5 @@ The `jacobian_powerlaw.py` script is used to compute the Jacobian for a power-la
 ```bash
 ./jacobian_powerlaw.py
 ```
+
+% End of file

@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 Overview
 
   This directory contains source files for building a user defined
@@ -121,3 +130,4 @@ Hints
   remove the assert() calls during compilation configure with -DNDEBUG
   added to the CFLAGS and CXXFLAGS environment variables.
 
+% End of file

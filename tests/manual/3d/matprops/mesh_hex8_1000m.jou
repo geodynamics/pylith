@@ -1,3 +1,13 @@
+# -*- journal -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # ----------------------------------------------------------------------
 # Generate geometry
 # ----------------------------------------------------------------------
@@ -91,3 +101,6 @@ nodeset 17 name "face_zpos"
 # Export exodus file
 # ----------------------------------------------------------------------
 export mesh "mesh_hex8_1000m.exo" dimension 3 overwrite
+
+
+# End of file

@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-petsc-fe-formulation)=
 # Finite-Element Formulation with PETSc
 
@@ -89,3 +98,5 @@ If no RHS function is given, then the PETSc TS assumes $G(t,s) = 0$, so we only 
 For implicit-explicit time stepping algorithms, the equations integrated with explicit time stepping have $\dot{s}$ as the LHS function, and the equations integrated with implicit time stepping have 0 as the RHS function.
 
 [^1]: Some resources for learning about the finite-element method include {cite:t}`Zienkiewicz:Taylor:2000`, {cite:t}`Taylor:2003`,  {cite:t}`Farrell:FEM:2021`, and {cite:t}`Cotter:Ham:FEM:2023`.
+
+% End of file

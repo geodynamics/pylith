@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Vertical Cross-Section of a Reverse Fault with Splay (2D)
 
 The files are in the directory `examples/reverse-2d`.
@@ -57,3 +66,5 @@ step07-twofaults-maxwell.md
 step08-twofaults-powerlaw.md
 exercises.md
 :::
+
+% End of file

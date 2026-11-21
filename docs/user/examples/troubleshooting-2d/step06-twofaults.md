@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 6: Slip on Two Faults
 
 In this example we include coseismic prescribed slip on both the main and splay faults.
@@ -14,3 +23,5 @@ We use roller boundary conditions on the lateral sides and bottom of the domain.
 :::
 
 See [examples/reverse-2d Step 6](../reverse-2d/step06-twofaults-elastic.md) for more information.
+
+% End of file

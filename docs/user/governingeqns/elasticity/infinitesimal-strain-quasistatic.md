@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Quastistatic
 
 If we neglect the inertial term ($\rho \frac{\partial \vec{v}}{\partial t} \approx \vec{0}$), then time dependence only arises from history-dependent constitutive equations and boundary conditions.
@@ -54,3 +63,5 @@ We only have a Jacobian for the LHS:
 J_F^{uu} &= \frac{\partial F^u}{\partial u} = \int_\Omega \nabla {\vec{\psi}_\mathit{trial}^{u}} : \frac{\partial}{\partial u}(-\boldsymbol{\sigma}) \, d\Omega  = \int_\Omega \nabla {\vec{\psi}_\mathit{trial}^{u}} : -\boldsymbol{C} : \frac{1}{2}(\nabla + \nabla^T){\vec{\psi}_\mathit{basis}^{u}}\, d\Omega  = \int_\Omega {\psi_\mathit{trial}^{u}}_{i,k} \, {\color{blue} \underbrace{\color{black}\left( -C_{ikjl} \right)}_{\color{blue}{J_{f3}^{uu}}}} \, {\psi_\mathit{basis}^{u}}_{j,l}\, d\Omega.
 \end{aligned}
 ```
+
+% End of file

@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Output
 
 PyLith produces four kinds of output:
@@ -361,3 +370,5 @@ The best workaround is to use an `elapsed_time` that is a fraction of the time s
 :::{seealso}
 [`OutputTriggerTime` Component](../components/meshio/OutputTriggerTime.md)
 :::
+
+% End of file

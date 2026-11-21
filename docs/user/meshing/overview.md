@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Overview
 
 Cubit and Gmsh can generate quadrilateral or triangular meshes in 2D and hexahedral or tetrahedral meshes in 3D.
@@ -36,3 +45,5 @@ This means that one process must be able to hold the entire mesh in memory, and 
 The preferred approach for large simulations is to convert the finite-element mesh to an HDF5 file in the PETSc mesh format.
 This format is designed for parallel I/O, and PyLith will read the mesh in parallel.
 Refer to {ref}`sec-user-run-pylith-convertmesh` for more information about converting mesh files.
+
+% End of file

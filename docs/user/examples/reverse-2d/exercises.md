@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Suggested Exercises
 
 1. Change the reference stress state in Step 2 by editing the spatial database. How does this affect the solution?
@@ -6,3 +15,5 @@
 4. Adjust the distribution of surface tractions in Step 4.
 5. Experiment with refining the mesh and basis orders of 1 or 2 for the solution subfields. What combination gives the highest accuracy with a reasonable simulation runtime?
 6. Adjust the timing of the earthquake ruptures in Steps 6-8.
+
+% End of file

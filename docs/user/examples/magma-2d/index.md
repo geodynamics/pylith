@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # 2D Magma Reservoir Using Poroelasticity
 
 The files are in the directory `examples/magma-2d`.
@@ -37,3 +46,5 @@ step01-inflation.md
 step02-inflation-statevars.md
 exercises.md
 :::
+
+% End of file

@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-meshing-gmsh)=
 # Gmsh
 
@@ -152,3 +161,5 @@ This will generate the following error when the mesh is read via the `MeshIOPets
 [0]PETSC ERROR: #6 DMSetFromOptions() at petsc-dev/src/dm/interface/dm.c:914
 [0]PETSC ERROR: #7 virtual void pylith::meshio::MeshIOPetsc::_read()() at src/cig/pylith/libsrc/pylith/meshio/MeshIOPetsc.cc:147
 ```
+
+% End of file

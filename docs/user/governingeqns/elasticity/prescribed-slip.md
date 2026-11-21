@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Infinitesimal Strain and Prescribed Fault Slip
 
 For each fault, which is an internal interface, we add a boundary condition to the elasticity equation prescribing the jump in the displacement field across the fault,
@@ -50,3 +59,5 @@ Thus, for a fault interface, we have
 prescribed-slip-quasistatic.md
 prescribed-slip-dynamic.md
 :::
+
+% End of file

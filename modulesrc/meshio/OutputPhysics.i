@@ -1,17 +1,12 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026 All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
 
-/**
- * @file modulesrc/meshio/OutputPhysics.i
- *
- * @brief Python interface to C++ OutputPhysics object.
- */
 
 namespace pylith {
     namespace meshio {
@@ -33,13 +28,13 @@ namespace pylith {
              * @param[in] names Array of field names.
              * @param[in] numNames Length of array.
              */
-            % apply(const char* const* string_list,
+            %apply(const char* const* string_list,
                     const int list_len){(const char* names[],
                                          const int numNames)};
             void setInfoFields(const char* names[],
                                const int numNames);
 
-            % clear(const char* names[],
+            %clear(const char* names[],
                     const int numNames);
 
             /** Get names of information fields requested for output.
@@ -53,13 +48,13 @@ namespace pylith {
              * @param[in] names Array of field names.
              * @param[in] numNames Length of array.
              */
-            % apply(const char* const* string_list,
+            %apply(const char* const* string_list,
                     const int list_len){(const char* names[],
                                          const int numNames)};
             void setDataFields(const char* names[],
                                const int numNames);
 
-            % clear(const char* names[],
+            %clear(const char* names[],
                     const int numNames);
 
             /** Get names of data fields requested for output.
@@ -96,5 +91,6 @@ namespace pylith {
 
     } // namespace meshio
 } // namespace pylith
+
 
 // End of file

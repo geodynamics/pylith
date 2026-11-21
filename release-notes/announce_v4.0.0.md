@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # PyLith v4.0.0 now available
 
 I am pleased to announce the release of PyLith 4.0.0, a finite-element code designed to solve dynamic elastic problems and quasi-static viscoelastic problems in tectonic deformation.
@@ -52,3 +61,5 @@ Documentation
 * Lorraine Hwang
 * Rezgar Shakeri
 * Robert Walker
+
+% End of file

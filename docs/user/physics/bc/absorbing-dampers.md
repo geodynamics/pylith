@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-physics-absorbing-dampers)=
 # Absorbing Boundary Conditions
 
@@ -15,3 +24,5 @@ See [`AbsorbingDampers` Component](../../components/bc/AbsorbingDampers.md) for 
 
 See {ref}`sec-user-governing-eqns-absorbing-boundary` for the derivation of the finite-element implementation of the absorbing boundary.
 :::
+
+% End of file

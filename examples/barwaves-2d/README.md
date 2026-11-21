@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Examples: Shear wave propagating down a bar
 
 This suite of exampes demonstrates some basic concepts of using PyLith
@@ -59,5 +68,4 @@ pylith step03_swave_absorbed.cfg
 
 ## Step04: Shear wave from prescribed slip
 
-
-
+% End of file

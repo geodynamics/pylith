@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # IsotropicLinearElasticity
 
 % WARNING: Do not edit; this is a generated file!
@@ -32,3 +41,4 @@ auxiliary_subfields.shear_modulus.basis_order = 0
 auxiliary_subfields.bulk_modulus.basis_order = 0
 :::
 
+% End of file
