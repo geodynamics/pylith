@@ -29,7 +29,7 @@ We specify the parameters controlling the geometry, mesh size, and cell shape ne
 The numbering of geometric entities, such as points, curves, and surfaces can depend upon the version of the ACIS geometry library used in Cubit.
 Strategies to make scripts independent of the version of the ACIS geometry library being used include:
 1. Use a variable to store the geometry `id`.
-2. Use "idless" scripts that refer to entities by location rather than `id`. Refer to the Cubit documentation for more informaiton.
+2. Use "idless" scripts that refer to entities by location rather than `id`. Refer to the Cubit documentation for more information.
 3. Name entities when they are created to minimize use of the entity `id` in scripts.
 We often make use of all three of these methods.
 :::

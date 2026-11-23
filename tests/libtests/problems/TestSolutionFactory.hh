@@ -55,7 +55,7 @@ class pylith::problems::TestSolutionFactory : public pylith::utils::GenericCompo
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
   protected:
-    /// Initialze mesh, coordinate system, solution, and factory.
+    /// Initialize mesh, coordinate system, solution, and factory.
     void _initialize(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////

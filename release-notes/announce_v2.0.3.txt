@@ -81,7 +81,7 @@ Version 2.0.2
     affecting systems with OS X 10.7 and 10.8.
 
   - Improved example journal files for Cubit/Trelis to improve
-    compability (examples/meshing/surface_nurbs/dem).
+    compatibility (examples/meshing/surface_nurbs/dem).
 
   - Updated more journal in examples so that APREPRO lines have a
     leading '$' instead of a '#' to differentiate from comments.
@@ -99,7 +99,7 @@ Version 2.0.1
 * Bug fixes
 
   - Improved example journal files for Cubit/Trelis to improve
-    compability. All journal files should work with Cubit 14.1 and
+    compatibility. All journal files should work with Cubit 14.1 and
     Trelis 15.0.
 
   - Created examples of IDless journal files in examples/2d/greensfns.

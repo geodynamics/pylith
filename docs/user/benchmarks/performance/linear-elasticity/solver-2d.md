@@ -67,7 +67,7 @@ Using independent displacement amd length scales does not improve solver perform
 
 Solver performance for 2-D plane strain elasticity with prescribed slip.
 The left panel shows the number of iterations used by the linear solver as a function of the problem size (number of unknowns).
-The right panels shows the total (squares) and solve (triangles) runtime as a function of hte problem size (number of unknowns).
+The right panels shows the total (squares) and solve (triangles) runtime as a function of the problem size (number of unknowns).
 The dashed lines indicate the solves required more than 10,000 iterations at the next level of refinement.
 :::
 

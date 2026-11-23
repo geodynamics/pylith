@@ -34,7 +34,7 @@
 #include "catch2/catch_test_macros.hpp"
 
 // ------------------------------------------------------------------------------------------------
-// Constuctor.
+// Constructor.
 pylith::TestIncompressibleElasticity::TestIncompressibleElasticity(TestIncompressibleElasticity_Data* data) :
     _data(data) {
     REQUIRE(_data);

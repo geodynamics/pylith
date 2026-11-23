@@ -59,7 +59,7 @@ Release notes:
         to fault slip, which increase the accuracy of displacement
         fields near faults and facilitate visualization of fault slip.
 
-      - Usage of cohesive elements will facilitiate the upcoming
+      - Usage of cohesive elements will facilitate the upcoming
         addition of fault constitutive relations, where fault slip
         occurs in response to prescribed physics.
 

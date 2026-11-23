@@ -47,12 +47,12 @@ class TestEqInfoTri(TestEqInfo):
         twoE.moment = numpy.array([0.1 * 1.5 * 1.0e10, 0.0], dtype=numpy.float64)
         self._check(twoE, stats_tri.two)
 
-        allE = stats_tri.RuptureStats()
-        allE.timestamp = timestamp
-        allE.ruparea = oneE.ruparea + twoE.ruparea
-        allE.potency = oneE.potency + twoE.potency
-        allE.moment = oneE.moment + twoE.moment
-        self._check(allE, stats_tri.all)
+        all_E = stats_tri.RuptureStats()
+        all_E.timestamp = timestamp
+        all_E.ruparea = oneE.ruparea + twoE.ruparea
+        all_E.potency = oneE.potency + twoE.potency
+        all_E.moment = oneE.moment + twoE.moment
+        self._check(all_E, stats_tri.all)
         return
 
 

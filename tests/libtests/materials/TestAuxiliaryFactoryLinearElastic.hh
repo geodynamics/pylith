@@ -45,7 +45,7 @@ class pylith::materials::TestAuxiliaryFactoryLinearElastic : public pylith::util
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
   protected:
-    /// Initialze mesh, coordinate system, auxiliary field, and factory.
+    /// Initialize mesh, coordinate system, auxiliary field, and factory.
     void _initialize(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////

@@ -14,9 +14,9 @@ mesh = { // begin mesh
   // a comment here
   dimension = 2 // comment there
   use-index-zero = true
-  // coment 1
-  // ^^^^^^ mispelled word
-  vertices = { // begin vertics
+  // comment 1
+  // ^^^^^^ misspelled word
+  vertices = { // begin vertices
     dimension = 2
   // 9 vertices for this mesh
     count = 9

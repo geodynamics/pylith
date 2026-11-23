@@ -1106,7 +1106,7 @@ class pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain {
     // -----------------------------------------------------------------------------
     /** f1u function for isotropic linear poroelasticity plane strain WITHOUT reference stress and reference strain.
      * Quasi - Static Case
-     * Solution fields: [disp(dim), pore_pres(dim), vel(dim, optional)]
+     * Solution fields: [disp(dim), pore_pressure(dim), vel(dim, optional)]
      * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1), ...]
      */
     static inline void
@@ -1188,7 +1188,7 @@ class pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain {
     // -----------------------------------------------------------------------------
     /** f1u function for isotropic linear poroelasticity plane strain WITH reference stress and reference strain.
      *
-     * Solution fields: [disp(dim), pres(dim), vel(dim, optional)]
+     * Solution fields: [disp(dim), pressure(dim), vel(dim, optional)]
      * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1), ..., refstress(4), refstrain(4)]
      */
     static inline void
@@ -3475,7 +3475,7 @@ class pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain {
     // -----------------------------------------------------------------------------
     /** g1v function for isotropic linear poroelasticity plane strain WITHOUT reference stress and reference strain.
      * Dynamic Case
-     * Solution fields: [disp(dim), pore_pres(dim), vel(dim, optional)]
+     * Solution fields: [disp(dim), pore_pressure(dim), vel(dim, optional)]
      * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1), ...]
      */
     static inline void
@@ -3557,7 +3557,7 @@ class pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain {
     // -----------------------------------------------------------------------------
     /** g1v function for isotropic linear poroelasticity plane strain WITH reference stress and reference strain.
      *
-     * Solution fields: [disp(dim), pres(dim), vel(dim, optional)]
+     * Solution fields: [disp(dim), pressure(dim), vel(dim, optional)]
      * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1), ..., refstress(4), refstrain(4)]
      */
     static inline void
@@ -4653,7 +4653,7 @@ class pylith::fekernels::IsotropicLinearPoroelasticity3D {
     // -----------------------------------------------------------------------------
     /** f1u function for isotropic linear poroelasticity plane strain WITHOUT reference stress and reference strain.
      * Quasi - Static Case
-     * Solution fields: [disp(dim), pore_pres(dim), vel(dim, optional)]
+     * Solution fields: [disp(dim), pore_pressure(dim), vel(dim, optional)]
      * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1), ...]
      */
     static inline void
@@ -4735,7 +4735,7 @@ class pylith::fekernels::IsotropicLinearPoroelasticity3D {
     // -----------------------------------------------------------------------------
     /** f1u function for isotropic linear poroelasticity plane strain WITH reference stress and reference strain.
      *
-     * Solution fields: [disp(dim), pres(dim), vel(dim, optional)]
+     * Solution fields: [disp(dim), pressure(dim), vel(dim, optional)]
      * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1), ..., refstress(4), refstrain(4)]
      */
 
@@ -7017,7 +7017,7 @@ class pylith::fekernels::IsotropicLinearPoroelasticity3D {
     // -----------------------------------------------------------------------------
     /** g1v function for isotropic linear poroelasticity plane strain WITHOUT reference stress and reference strain.
      * Dynamic Case
-     * Solution fields: [disp(dim), pore_pres(dim), vel(dim, optional)]
+     * Solution fields: [disp(dim), pore_pressure(dim), vel(dim, optional)]
      * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1), ...]
      */
     static inline void
@@ -7099,7 +7099,7 @@ class pylith::fekernels::IsotropicLinearPoroelasticity3D {
     // -----------------------------------------------------------------------------
     /** g1v function for isotropic linear poroelasticity plane strain WITH reference stress and reference strain.
      *
-     * Solution fields: [disp(dim), pres(dim), vel(dim, optional)]
+     * Solution fields: [disp(dim), pressure(dim), vel(dim, optional)]
      * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1), ..., refstress(4), refstrain(4)]
      */
     static inline void

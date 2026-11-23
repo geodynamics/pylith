@@ -199,8 +199,8 @@ stressPert = meanStressArrPert + devStressPert
 
 # Equilibrium equation.
 print("Computing equilibrium:")
-equilDeriv = sympy.tensor.array.derive_by_array(stress, X)
-equil = sympy.tensor.array.tensorcontraction(equilDeriv, (1, 2))
+equilibriumDeriv = sympy.tensor.array.derive_by_array(stress, X)
+equilibrium = sympy.tensor.array.tensorcontraction(equilibriumDeriv, (1, 2))
 
 # Write results to file.
 print("Writing solution variables:")
@@ -237,7 +237,7 @@ printTensor(visStrainRate_3Pert, "visStrainPert_3_t")
 
 print("Writing equilibrium equations:")
 out.write("\nEquilibrium:\n")
-printTensor(equil, "equil")
+printTensor(equilibrium, "equilibrium")
 
 print("Writing additional variables:")
 out.write("\nAdditional:\n")

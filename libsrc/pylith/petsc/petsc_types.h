@@ -14,7 +14,7 @@
 /// forward declaration for PETSc PetscErrorCode
 typedef int PetscErrorCode;
 
-/// forward delcaration of PETSc context.
+/// forward declaration of PETSc context.
 typedef void* PetscCtx;
 
 /// forward declaration for PETSc Mat
@@ -32,7 +32,7 @@ typedef struct _p_KSP* PetscKSP;
 /// forward declaration for PETSc SNES
 typedef struct _p_SNES* PetscSNES;
 
-/// forward declatation for PETSc line search
+/// forward declaration for PETSc line search
 typedef struct _p_LineSearch* PetscSNESLineSearch;
 
 /// forward declaration for PETSc TS

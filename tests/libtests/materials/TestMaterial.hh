@@ -133,7 +133,7 @@ class pylith::materials::TestMaterial : public CppUnit::TestFixture, public pyli
   protected:
     // TestMaterial
     pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
-    pylith::topology::Fields* _solutionFields; ///< Contrainer for solution fields.
+    pylith::topology::Fields* _solutionFields; ///< Container for solution fields.
 
 }; // class TestMaterial
 

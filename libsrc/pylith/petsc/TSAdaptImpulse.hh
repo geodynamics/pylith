@@ -56,7 +56,7 @@ class pylith::petsc::TSAdaptImpulse {
   private:
     static double _impulseStep; ///< Time step for impulse portion.
 
-    // Not impemented /////////////////////////////////////////////////////////////////////////////
+    // Not implemented ////////////////////////////////////////////////////////////////////////////
   private:
     TSAdaptImpulse(void); ///< Not implemented.
 };

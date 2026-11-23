@@ -9,7 +9,7 @@
 
 # Step 1: Axial Extension
 
-% Meatadata extracted from parameter files
+% Metadata extracted from parameter files
 ```{include} step01_axialdisp-synopsis.md
 ```
 

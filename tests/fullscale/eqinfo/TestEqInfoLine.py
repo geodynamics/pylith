@@ -49,12 +49,12 @@ class TestEqInfoLine(TestEqInfo):
         twoE.moment = twoE.potency * 1.0e10
         self._check(twoE, stats_line.two)
 
-        allE = stats_line.RuptureStats()
-        allE.timestamp = timestamp
-        allE.ruparea = oneE.ruparea + twoE.ruparea
-        allE.potency = oneE.potency + twoE.potency
-        allE.moment = oneE.moment + twoE.moment
-        self._check(allE, stats_line.all)
+        all_E = stats_line.RuptureStats()
+        all_E.timestamp = timestamp
+        all_E.ruparea = oneE.ruparea + twoE.ruparea
+        all_E.potency = oneE.potency + twoE.potency
+        all_E.moment = oneE.moment + twoE.moment
+        self._check(all_E, stats_line.all)
         return
 
 

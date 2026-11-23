@@ -26,7 +26,7 @@ Example: <https://pylith.readthedocs.io/en/stable/user/run-pylith/overview.html>
 Provide feedback on how to improve the documentation.
 Is there a section that is difficult to understand?
 Is a section missing information?
-Would a diagram make a section easier to undestand?
+Would a diagram make a section easier to understand?
 
 Report a typo or other error.
 

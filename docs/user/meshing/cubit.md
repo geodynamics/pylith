@@ -50,7 +50,7 @@ s
 : Get id of last entity create of type `entity_type`.
 
 `cubit.get_id_from_name(name: str)`
-: Get id of enty with name `name`.
+: Get id of entity with name `name`.
 
 `cubit.get_id_string(entity_ids: list)`
 : Get string with list of ids for list of entity ids `entity_ids`.

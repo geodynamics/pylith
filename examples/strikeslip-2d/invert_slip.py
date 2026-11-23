@@ -16,7 +16,7 @@ there are no data uncertainties, and we use the minimum moment for a penalty fun
 For the provided simulation in input files, simply run the script with no arguments.
 The inversion results will be written to `output/step05_greensfns-inversion_results.txt`.
 
-The order of the impulses and stations in the output depends on the parititioning among processes.
+The order of the impulses and stations in the output depends on the partitioning among processes.
 Consequently, we reorder the impulses and stations by the y coordinate to insure we maintain
 consistent ordering.
 """

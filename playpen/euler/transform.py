@@ -41,7 +41,7 @@ class Transform(Application):
         # @li \b points_spatialdb Filename of output spatial database.
         # @li \b up_dir Vector defining up direction.
         # @li \b normal_dir General preferred normal direction.
-        # @li \b dip_slip Allow dip-slip to accomodate non-strike-slip movement.
+        # @li \b dip_slip Allow dip-slip to accommodate non-strike-slip movement.
         # @li \b dip_cutoff Cutoff dip below which dip-slip movement is allowed.
         # @li \b x_min Minimum x-value for which to compute values.
         # @li \b x_max Maximum x-value for which to compute values.

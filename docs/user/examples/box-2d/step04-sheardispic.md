@@ -9,7 +9,7 @@
 
 # Step 4: Shear Displacement and Initial Conditions
 
-% Meatadata extracted from parameter files
+% Metadata extracted from parameter files
 ```{include} step04_sheardispic-synopsis.md
 ```
 

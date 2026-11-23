@@ -147,7 +147,7 @@ Concepts:
       - constant rate BC
     + Initial conditions
     + Elasticity
-      - Referense state
+      - Reference state
       - Body forces
       - Gravitational body forces
       - Rheologies

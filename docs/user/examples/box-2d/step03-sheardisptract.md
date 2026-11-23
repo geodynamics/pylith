@@ -9,7 +9,7 @@
 
 # Step 3: Shear Displacement and Tractions
 
-% Meatadata extracted from parameter files
+% Metadata extracted from parameter files
 ```{include} step03_sheardisptract-synopsis.md
 ```
 

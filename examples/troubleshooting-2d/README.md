@@ -12,7 +12,7 @@
 This suite of examples demonstrates how to use a variety of techniques
 to troubleshoot errors in running PyLith simulations.  We introduce 
 several common and a few uncommon mistakes into input files
-from `exmaples/reverse-2d`.
+from `examples/reverse-2d`.
 
 ## Step 1: Gravitational body forces and linear isotropic elasticity
 

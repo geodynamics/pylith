@@ -11,7 +11,7 @@
 
 # @file postproc/princaxes
 #
-# @brief Python application to compute principal axes for a tensor respresented
+# @brief Python application to compute principal axes for a tensor represented
 # as a vector. Information is read from a VTK file and a VTK file with the
 # same dimensions is output.
 
@@ -26,7 +26,7 @@ from pythia.pyre.applications.Script import Script as Application
 
 
 class PrincAxes(Application):
-    """Python application to compute principal axes for a tensor respresented
+    """Python application to compute principal axes for a tensor represented
     as a vector. Information is read from a VTK file and a VTK file with the
     same dimensions is output.
     """

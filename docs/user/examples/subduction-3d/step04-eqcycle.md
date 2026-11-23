@@ -106,7 +106,7 @@ viewer_hdf5_collective = true
 The beginning of the output is near the same as in Steps 2 and 3.
 The simulation advances 31 time steps.
 As in Step 3 each linear solve requires about 20 iterations to converge.
-Some time steps require 2 SNES iterations (likley due to poor mesh quality along the trench) although the linear solve in the second SNES iteration requires no more than 1 iterations in most cases.
+Some time steps require 2 SNES iterations (likely due to poor mesh quality along the trench) although the linear solve in the second SNES iteration requires no more than 1 iterations in most cases.
 
 ```{code-block} pyrejournal
 ---

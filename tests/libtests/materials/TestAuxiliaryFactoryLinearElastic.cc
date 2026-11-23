@@ -250,7 +250,7 @@ pylith::materials::TestAuxiliaryFactoryLinearElastic::testSetValuesFromDB(void) 
 
 
 // ------------------------------------------------------------------------------------------------
-// Initialze mesh, coordinate system, auxiliary field, and factory.
+// Initialize mesh, coordinate system, auxiliary field, and factory.
 void
 pylith::materials::TestAuxiliaryFactoryLinearElastic::_initialize(void) {
     PYLITH_METHOD_BEGIN;

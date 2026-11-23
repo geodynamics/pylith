@@ -132,7 +132,7 @@ namespace pylith {
              *
              * Should be followed by calls to subfieldsSetup() and allocate().
              *
-             * @param[in] name Programatic name of subfield.
+             * @param[in] name Programmatic name of subfield.
              * @param[in] alias User-specified alias for subfield.
              * @param[in] fieldType Type of vector field.
              * @param[in] components Array of names of field components.

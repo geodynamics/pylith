@@ -135,7 +135,7 @@ They just expose ordinary helper methods.
 
 **Concrete test cases — the wiring.**
 A concrete class inherits `MMSTestCase` plus the mixins it needs.
-It defines analytical functions as private statics, configures all parameters in its constructor, and implements each `MMSTestCase` virtual hook as a one-line delegation to a mixin helper.
+It defines analytical functions as private static functions, configures all parameters in its constructor, and implements each `MMSTestCase` virtual hook as a one-line delegation to a mixin helper.
 Because the concrete class is the only place hooks and helpers meet, the "who calls whom" question has a single, uniform answer everywhere.
 
 Example of the one-line delegation contract:

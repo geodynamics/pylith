@@ -63,46 +63,46 @@
   \path let \p1=(local-branch.south) in coordinate (x-local-branch) at (\x1,0);
 
   % operations
-  \path let \p1=(upstream-main.south) in coordinate (currenty) at (0,\y1);
+  \path let \p1=(upstream-main.south) in coordinate (current_y) at (0,\y1);
 
   % fetch
-  \coordinate (currenty) at ($(currenty)-(0,3mm)$);
-  \path[arrow-down] ($(x-upstream-main)+(currenty)$) edge node[above, pos=0.8] {fetch} ($(x-local-main)+(currenty)$);
+  \coordinate (current_y) at ($(current_y)-(0,3mm)$);
+  \path[arrow-down] ($(x-upstream-main)+(current_y)$) edge node[above, pos=0.8] {fetch} ($(x-local-main)+(current_y)$);
 
   % branch
-  \coordinate (currenty) at ($(currenty)-(0,6mm)$);
-  \path[arrow-down] ($(x-local-main)+(currenty)$) edge node[above, pos=0.8] {branch} ($(x-local-branch)+(currenty)$);
+  \coordinate (current_y) at ($(current_y)-(0,6mm)$);
+  \path[arrow-down] ($(x-local-main)+(current_y)$) edge node[above, pos=0.8] {branch} ($(x-local-branch)+(current_y)$);
 
   % commits
-  \coordinate (currenty) at ($(currenty)-(0,3mm)$);
-  \draw[arrow-up] ($(x-local-branch)+(currenty)$) to [looseness=4, in=0, out=0] node[right] {commit} ++(0,-3mm);
+  \coordinate (current_y) at ($(current_y)-(0,3mm)$);
+  \draw[arrow-up] ($(x-local-branch)+(current_y)$) to [looseness=4, in=0, out=0] node[right] {commit} ++(0,-3mm);
 
-  \coordinate (currenty) at ($(currenty)-(0,6mm)$);
-  \draw[arrow-up] ($(x-local-branch)+(currenty)$) to [looseness=4, in=0, out=0] node[right] {commit} ++(0,-3mm);
+  \coordinate (current_y) at ($(current_y)-(0,6mm)$);
+  \draw[arrow-up] ($(x-local-branch)+(current_y)$) to [looseness=4, in=0, out=0] node[right] {commit} ++(0,-3mm);
 
   % push
-  \coordinate (currenty) at ($(currenty)-(0,6mm)$);
-  \path[arrow-up] ($(x-local-branch)+(currenty)$) edge node[above, pos=0.9] {push} ($(x-origin-branch)+(currenty)$);
+  \coordinate (current_y) at ($(current_y)-(0,6mm)$);
+  \path[arrow-up] ($(x-local-branch)+(current_y)$) edge node[above, pos=0.9] {push} ($(x-origin-branch)+(current_y)$);
 
 
   % commits
-  \coordinate (currenty) at ($(currenty)-(0,3mm)$);
-  \draw[arrow-up] ($(x-local-branch)+(currenty)$) to [looseness=4, in=0, out=0] node[right] {commit} ++(0,-3mm);
+  \coordinate (current_y) at ($(current_y)-(0,3mm)$);
+  \draw[arrow-up] ($(x-local-branch)+(current_y)$) to [looseness=4, in=0, out=0] node[right] {commit} ++(0,-3mm);
 
-  \coordinate (currenty) at ($(currenty)-(0,6mm)$);
-  \draw[arrow-up] ($(x-local-branch)+(currenty)$) to [looseness=4, in=0, out=0] node[right] {commit} ++(0,-3mm);
+  \coordinate (current_y) at ($(current_y)-(0,6mm)$);
+  \draw[arrow-up] ($(x-local-branch)+(current_y)$) to [looseness=4, in=0, out=0] node[right] {commit} ++(0,-3mm);
 
   % push
-  \coordinate (currenty) at ($(currenty)-(0,6mm)$);
-  \path[arrow-up] ($(x-local-branch)+(currenty)$) edge node[above, pos=0.9] {push} ($(x-origin-branch)+(currenty)$);
+  \coordinate (current_y) at ($(current_y)-(0,6mm)$);
+  \path[arrow-up] ($(x-local-branch)+(current_y)$) edge node[above, pos=0.9] {push} ($(x-origin-branch)+(current_y)$);
 
   % pull request
-  \coordinate (currenty) at ($(currenty)-(0,3mm)$);
-  \path[arrow-up] ($(x-origin-branch)+(currenty)$) edge node[above, pos=0.8] {pull request} ($(x-upstream-main)+(currenty)$);
+  \coordinate (current_y) at ($(current_y)-(0,3mm)$);
+  \path[arrow-up] ($(x-origin-branch)+(current_y)$) edge node[above, pos=0.8] {pull request} ($(x-upstream-main)+(current_y)$);
 
   % fetch 
-  \coordinate (currenty) at ($(currenty)-(0,12mm)$);
-  \path[arrow-down] ($(x-upstream-main)+(currenty)$) edge node[above, pos=0.9] {fetch} ($(x-local-main)+(currenty)$);
+  \coordinate (current_y) at ($(current_y)-(0,12mm)$);
+  \path[arrow-down] ($(x-upstream-main)+(current_y)$) edge node[above, pos=0.9] {fetch} ($(x-local-main)+(current_y)$);
 
 
 

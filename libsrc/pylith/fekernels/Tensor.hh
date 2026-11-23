@@ -104,17 +104,17 @@ class pylith::fekernels::TensorOps {
     }
 
   private:
-    inline TensorOps(fromfn_type_scalar fromS,
-                     fromfn_type fromV,
-                     fromfn_type fromT,
-                     tofn_type toV,
-                     tofn_type toT,
+    inline TensorOps(fromfn_type_scalar from_S,
+                     fromfn_type from_V,
+                     fromfn_type from_T,
+                     tofn_type to_V,
+                     tofn_type to_T,
                      const int vSize) :
-        fromScalar(fromS),
-        fromVector(fromV),
-        fromTensor(fromT),
-        toVector(toV),
-        toTensor(toT),
+        fromScalar(from_S),
+        fromVector(from_V),
+        fromTensor(from_T),
+        toVector(to_V),
+        toTensor(to_T),
         vectorSize(vSize) {
     }
 

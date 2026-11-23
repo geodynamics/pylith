@@ -190,7 +190,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxiliaryField
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // reference stress
 
-    if (_mymaterial->_useReferenceState) { // referece strain
+    if (_mymaterial->_useReferenceState) { // reference strain
         const char* label = "reference_strain";
         const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxiliaryField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(4), info.description.numComponents);

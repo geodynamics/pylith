@@ -75,7 +75,7 @@ namespace pylith {
 
             /** Set spatial database for populating auxiliary field.
              *
-             * @param[in] value Spatial database with iniital values for auxiliary field.
+             * @param[in] value Spatial database with initial values for auxiliary field.
              */
             void setAuxiliaryFieldDB(spatialdata::spatialdb::SpatialDB* const value);
 

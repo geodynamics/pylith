@@ -21,7 +21,7 @@
 #pragma once
 
 /*
- * Solution fields: [disp(dim), pres, vol_strain]
+ * Solution fields: [disp(dim), pressure, vol_strain]
  *
  * Displacement
  * \int_V \vec{\phi}_u \cdot \left( \rho \frac{\partial \vec{v}(t)}{\partial t} \right) \, dV =

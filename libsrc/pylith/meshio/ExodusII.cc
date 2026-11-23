@@ -18,7 +18,7 @@
 
 #include "petsc.h" // USES MPI_Comm
 
-// :KLUDGE: Prevent NetCDF from definining MPI types
+// :KLUDGE: Prevent NetCDF from defining MPI types
 #define MPI_INCLUDED
 #include <netcdf.h> // USES netcdf
 
@@ -112,7 +112,7 @@ pylith::meshio::ExodusII::close(void) { // close
 
 
 // ----------------------------------------------------------------------
-// Check if Cubit Exodus file constains dimension.
+// Check if Cubit Exodus file contains dimension.
 bool
 pylith::meshio::ExodusII::hasDim(const char* name,
                                  int* id) const { // hasDim
@@ -138,7 +138,7 @@ pylith::meshio::ExodusII::hasDim(const char* name,
 
 
 // ----------------------------------------------------------------------
-// Check if Cubit Exodus file constains attribute.
+// Check if Cubit Exodus file contains attribute.
 bool
 pylith::meshio::ExodusII::hasAttr(const char* name,
                                   const char* varName,
@@ -170,7 +170,7 @@ pylith::meshio::ExodusII::hasAttr(const char* name,
 
 
 // ----------------------------------------------------------------------
-// Check if Cubit Exodus file constains variable.
+// Check if Cubit Exodus file contains variable.
 bool
 pylith::meshio::ExodusII::hasVar(const char* name,
                                  int* id) const {

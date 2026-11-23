@@ -179,7 +179,7 @@ Raster graphics should be provided in either PNG or JPG formats (whichever is mo
 
 ## Math
 
-For unlabled equations you can use AMSTex environments, such as `equation`, `gather` and `align`.
+For unlabeled equations you can use AMSTex environments, such as `equation`, `gather` and `align`.
 Unfortunately, Sphinx does not currently support labeled equations using AMSTex environments.
 Labeled equations must use the Markdown syntax as in equation {math:numref}`eqn:quickref:example`.
 

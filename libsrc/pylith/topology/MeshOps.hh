@@ -112,7 +112,7 @@ class pylith::topology::MeshOps {
 
     /** Determine if cell is a cohesive cell.
      *
-     * @param[in] dm PETSc DM containining cell.
+     * @param[in] dm PETSc DM containing cell.
      * @param[in] cell Point number.
      * @returns True if cell is a cohesive cell.
      */

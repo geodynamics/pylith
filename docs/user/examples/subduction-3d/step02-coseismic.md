@@ -125,7 +125,7 @@ viewer_hdf5_collective = true
 ```
 
 At the beginning of the output written to the terminal, we see that PyLith is reading the mesh using the `MeshIOPetsc` reader.
-We also see the PETSc solver options, which show use of the variable point-block Jacobi and GAMG (algebriac multigrid) preconditioner settings.
+We also see the PETSc solver options, which show use of the variable point-block Jacobi and GAMG (algebraic multigrid) preconditioner settings.
 
 At the end of the output written to the terminal, we see that the solver advanced the solution 10 time steps.
 The linear solve converged after 14 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .

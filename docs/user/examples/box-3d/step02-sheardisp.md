@@ -9,7 +9,7 @@
 
 # Step 2: Shear Displacement
 
-% Meatadata extracted from parameter files
+% Metadata extracted from parameter files
 ```{include} step02_sheardisp-synopsis.md
 ```
 

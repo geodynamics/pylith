@@ -145,7 +145,7 @@ It writes results to a Python script for use in post-processing of simulation re
 The file `eqinfoapp.cfg` holds the parameters for `pylith_eqinfo` in this example.
 By default, `pylith_eqinfo` extracts information for the final time step in the output file.
 In order to compute the seismic moment and moment magnitude, we need the shear modulus, which in this case is uniform over the domain.
-Consquently, we specify the density and shear wave speed using a `UniformDB` in `eqinfoapp.cfg`.
+Consequently, we specify the density and shear wave speed using a `UniformDB` in `eqinfoapp.cfg`.
 
 ```{code-block} console
 ---

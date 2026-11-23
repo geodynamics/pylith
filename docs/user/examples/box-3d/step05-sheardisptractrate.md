@@ -9,7 +9,7 @@
 
 # Step 5: Time-Dependent Shear Displacement and Tractions
 
-% Meatadata extracted from parameter files
+% Metadata extracted from parameter files
 ```{include} step05_sheardisptractrate-synopsis.md
 ```
 
@@ -27,7 +27,7 @@ The parameters specific to this example are in `step05_sheardisptractrate.cfg`.
 Boundary conditions for shear deformation.
 We constrain the x and y displacements on the +x and -x boundaries.
 We apply tangential (shear) tractions on the +y and -y boundaries.
-At a time of 1 year we increase the amplitude at a constrant rate $b$ ($H(t)$ corresponds to the heavyside step function).
+At a time of 1 year we increase the amplitude at a constant rate $b$ ($H(t)$ corresponds to the heavyside step function).
 :::
 
 This is a time-dependent problem, so we must specify the start and end times of the simulation along with the initial time step.

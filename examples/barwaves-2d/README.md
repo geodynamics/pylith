@@ -9,7 +9,7 @@
 
 # Examples: Shear wave propagating down a bar
 
-This suite of exampes demonstrates some basic concepts of using PyLith
+This suite of examples demonstrates some basic concepts of using PyLith
 to solve the dynamic elasticity equation. We discretize the bar with either
 triangular or quadrilateral cells.
 

@@ -35,7 +35,7 @@ The default nondimensionalization is reasonable for many problems; however, it m
 The scales are specified in terms of the displacement scale, length scale, shear modulus, and time scale.
 
 `displacement_scale`
-: Nominal size of the displacment
+: Nominal size of the displacement
 
 `length_scale`
 : Nominal size of the geometry controlling the deformation (for example, fault dimension or size of the domain)
@@ -71,7 +71,7 @@ t_o = l_o / v_s
 ```
 
 `displacement_scale`
-: Nominal size of the displacment
+: Nominal size of the displacement
 
 `length_scale`
 : Nominal size of the geometry controlling the deformation (for example, fault dimension or size of the domain)
@@ -107,7 +107,7 @@ t_o = \frac{\mu_{f_o}}{k_o} \frac{l_o^2}{\mu_o}
 ```
 
 `displacement_scale`
-: Nominal size of the displacment
+: Nominal size of the displacement
 
 `length_scale`
 : Nominal size of the geometry controlling the deformation (for example, fault dimension or size of the domain)

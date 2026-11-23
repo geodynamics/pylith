@@ -12,7 +12,7 @@
 ## Geometry
 
 We use a rectangular prism for the domain and construct vertical fault surfaces from the surface traces.
-We adjust the dimensions of the domain to avoid small surfaces where the exteneded fault surfaces meet the domain boundaries.
+We adjust the dimensions of the domain to avoid small surfaces where the extended fault surfaces meet the domain boundaries.
 
 :::{warning}
 With Cubit, we can embed the fault surfaces in the domain analogous to what we did using Gmsh.

@@ -51,12 +51,12 @@ class TestEqInfoQuad(TestEqInfo):
         twoE.moment = numpy.array([slip0 * area0 * 1.0e10 + area1 * slip1 * 2.0e10], dtype=numpy.float64)
         self._check(twoE, stats_quad.two)
 
-        allE = stats_quad.RuptureStats()
-        allE.timestamp = timestamp
-        allE.ruparea = oneE.ruparea + twoE.ruparea
-        allE.potency = oneE.potency + twoE.potency
-        allE.moment = oneE.moment + twoE.moment
-        self._check(allE, stats_quad.all)
+        all_E = stats_quad.RuptureStats()
+        all_E.timestamp = timestamp
+        all_E.ruparea = oneE.ruparea + twoE.ruparea
+        all_E.potency = oneE.potency + twoE.potency
+        all_E.moment = oneE.moment + twoE.moment
+        self._check(all_E, stats_quad.all)
         return
 
 

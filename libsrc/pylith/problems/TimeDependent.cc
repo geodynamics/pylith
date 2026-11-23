@@ -355,7 +355,7 @@ pylith::problems::TimeDependent::initialize(void) {
     PylithCallPetsc(TSSetApplicationContext(_ts, (void*)this));
     _registerMonitors();
 
-    // Set time stepping paramters.
+    // Set time stepping parameters.
     switch (getSolverType()) {
     case LINEAR:
         PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "Setting PetscTS problem type to 'linear'.");

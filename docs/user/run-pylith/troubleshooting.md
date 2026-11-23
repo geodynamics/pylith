@@ -107,7 +107,7 @@ Please report these cases so that we can fix these problems (either trap the err
 If this occurs with any of the problems distributed with PyLith, simply submit a bug report (see {ref}`sec-getting-help`) indicating which problem you ran and your platform.
 
 :::{important}
-PETSc will often report errors as semgentation faults even if the underlying problem is not an invalid read/write.
+PETSc will often report errors as segmentation faults even if the underlying problem is not an invalid read/write.
 If you see PETSc reporting a segmentation fault, examine the output carefully for other error messages that indicate the real issue is something else.
 :::
 

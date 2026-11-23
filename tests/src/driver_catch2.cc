@@ -69,7 +69,7 @@ class pylith::testing::TestDriver {
     /** Activate journals.
      *
      * @param[in] category Journal category.
-     * @param[in] journalArgs String with comma separted list of journal names.
+     * @param[in] journalArgs String with comma separated list of journal names.
      */
     void _activateJournals(JournalEnum category,
                            const std::string& journalArgs);

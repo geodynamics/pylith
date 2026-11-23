@@ -60,7 +60,7 @@ git rebase -i main
 * **Compare with respect to common ancestor**: `git diff main...feature`
 * **Compare commits**: `git log branch1..branch2`
 * **Compare specific file**: `git diff main..feature -- FILE`
-* **Compare specific file wih working tree**: `git diff main-- FILE`
+* **Compare specific file with working tree**: `git diff main-- FILE`
 
 ### Delete branches
 

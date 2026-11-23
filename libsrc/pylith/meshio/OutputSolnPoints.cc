@@ -211,7 +211,7 @@ pylith::meshio::OutputSolnPoints::_setupInterpolator(const pylith::topology::Fie
     _pointMesh =
         pylith::topology::MeshOps::createFromPoints(pointsLocal, numPointsLocal, cs, lengthScale, comm, componentName);
 
-    // Upate point names to only local points.
+    // Update point names to only local points.
     pylith::string_vector pointNamesLocal(numPointsLocal);
     const size_t numPoints = _pointNames.size();
     for (size_t iPointLocal = 0; iPointLocal < numPointsLocal; ++iPointLocal) {

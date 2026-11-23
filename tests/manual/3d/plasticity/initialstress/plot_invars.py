@@ -41,10 +41,10 @@ def computeStressInvar(fileName):
 
     stress = h5["cell_fields/stress"][:, :, :] / stressUnits
     h5.close()
-    pres = (stress[:, :, 0] + stress[:, :, 1] + stress[:, :, 2]) / 3.0
-    s11 = stress[:, :, 0] - pres
-    s22 = stress[:, :, 1] - pres
-    s33 = stress[:, :, 2] - pres
+    pressure = (stress[:, :, 0] + stress[:, :, 1] + stress[:, :, 2]) / 3.0
+    s11 = stress[:, :, 0] - pressure
+    s22 = stress[:, :, 1] - pressure
+    s33 = stress[:, :, 2] - pressure
     s12 = stress[:, :, 3]
     s23 = stress[:, :, 4]
     s13 = stress[:, :, 5]

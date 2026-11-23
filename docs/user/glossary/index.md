@@ -102,7 +102,7 @@ The integrals in the weak form are integrated using numerical quadrature.
 The location of the quadrature points are usually found to achieve a desired order of accuracy in integrated fields.
 
 solution field
-: A field with subfields for the unkown values that will be determined by solving a system of equations.
+: A field with subfields for the unknown values that will be determined by solving a system of equations.
 
 spatial database
 : Data specifying values of one or more fields as a function of space.

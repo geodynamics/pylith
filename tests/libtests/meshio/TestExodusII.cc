@@ -262,7 +262,7 @@ pylith::meshio::TestExodusII::testGetVarDouble(void) {
 // Test getVar(int*).
 void
 pylith::meshio::TestExodusII::testGetVarInt(void) {
-    const int connectE[3] = {3, 2, 4};
+    const int connectExpected[3] = {3, 2, 4};
 
     const int ndims = 2;
     int dims[2];
@@ -275,7 +275,7 @@ pylith::meshio::TestExodusII::testGetVarInt(void) {
     exofile.getVar(&connect[0], dims, ndims, "connect2");
 
     for (int i = 0; i < size; ++i) {
-        CHECK(connectE[i] == connect[i]);
+        CHECK(connectExpected[i] == connect[i]);
     }
 
     // Attempt to get variable that doesn't exist.

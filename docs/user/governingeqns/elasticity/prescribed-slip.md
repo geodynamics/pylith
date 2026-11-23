@@ -21,7 +21,7 @@ For each fault, which is an internal interface, we add a boundary condition to t
 where $\vec{u}^+$ is the displacement vector on the "positive" side of the fault, $\vec{u}^-$ is the displacement vector on the "negative" side of the fault, $\vec{d}$ is the slip vector on the fault, and $\vec{n}$ is the fault normal which points from the negative side of the fault to the positive side of the fault.
 We enforce the jump in displacements across the fault using a Lagrange multiplier corresponding to equal and opposite tractions on the two sides of the fault.
 
-We apply conservation of momemtum,
+We apply conservation of momentum,
 \begin{equation}
   \int_\Omega \rho(\vec{x}) \frac{\partial \vec{v}}{\partial t} \, d\Omega = \int_\Omega \vec{f}(\vec{x},t) \, d\Omega + \int_\Gamma \vec{\tau}(\vec{x},t) \, d\Gamma,
 \end{equation}

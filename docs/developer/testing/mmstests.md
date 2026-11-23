@@ -31,7 +31,7 @@ In the Taylor series Jacobian test, we verify that
 \begin{equation}
   || F(\vec{s} + \epsilon \vec{\delta s}) - F(\vec{s}) - \epsilon J \vec{v} || < \epsilon^2,
 \end{equation}
-where $\vec{\delta s}$ is a perturbation in the soluton and $J$ is the Jacobian matrix.
+where $\vec{\delta s}$ is a perturbation in the solution and $J$ is the Jacobian matrix.
 
 The C++ class `pylith::testing::MMSTest` implements these four tests.
 In implementing an MMS test case, we need to provide:

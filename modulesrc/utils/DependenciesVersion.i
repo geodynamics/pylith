@@ -31,7 +31,7 @@ namespace pylith {
              */
             static const char* mpiVersion(void);
 
-            /** Get MPI implemenation info (OpenMPI, MPICH, etc).
+            /** Get MPI implementation info (OpenMPI, MPICH, etc).
              *
              * @returns MPI implementation info.
              */

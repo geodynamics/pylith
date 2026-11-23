@@ -210,7 +210,7 @@ class GenerateMesh(ABC):
             "--ascii",
             action="store_false",
             dest="binary",
-            help="Write mesh to ASCII file (detault is binary).",
+            help="Write mesh to ASCII file (default is binary).",
             default=True,
         )
 

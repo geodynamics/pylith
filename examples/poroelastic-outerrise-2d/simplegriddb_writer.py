@@ -21,7 +21,7 @@ def write_spatialgrid_file(
     field_names is an array that contains the names of the fields that the SpatialGridDB file initializes in the PyLith model.
     field_units is an array that contains the units corresponding to the entries of field_names that the SpatialGridDB file
     initializes in the PyLith model.
-    field_data is an array that contains the data corresponding to the entires of field_names that the SpatialGridDB file
+    field_data is an array that contains the data corresponding to the entries of field_names that the SpatialGridDB file
     initializes in the PyLith model.
     filename is the name of the SpatialGridDB file.
     dimension is the dimension of the SpatialGridDB file.

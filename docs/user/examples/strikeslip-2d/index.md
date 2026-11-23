@@ -46,7 +46,7 @@ We refer to the domain boundaries using the names shown in the diagram.
 :::
 
 :::{important}
-We decribe how to generate the finite-element mesh using both Gmsh and Cubit.
+We describe how to generate the finite-element mesh using both Gmsh and Cubit.
 The files for both methods are included.
 For Step 1 we provide PyLith parameter files for both meshes; for Steps 2 and 3 we only provide the Parameter files that use the Gmsh file.
 :::

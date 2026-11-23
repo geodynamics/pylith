@@ -47,9 +47,9 @@ def computeStressInvar(fileName):
     numSteps = time.shape[0]
     stressInvarMean = numpy.zeros(numSteps, dtype=numpy.float64)
 
-    pres = (stress[:, :, 0] + stress[:, :, 1] + stress[:, :, 2]) / 3.0
-    s11 = stress[:, :, 0] - pres
-    s22 = stress[:, :, 1] - pres
+    pressure = (stress[:, :, 0] + stress[:, :, 1] + stress[:, :, 2]) / 3.0
+    s11 = stress[:, :, 0] - pressure
+    s22 = stress[:, :, 1] - pressure
     s12 = stress[:, :, 2]
 
     stressInvar = numpy.sqrt(0.5 * (s11 * s11 + s22 * s22 + 2.0 * (s12 * s12)))

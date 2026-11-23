@@ -30,7 +30,7 @@ that is, surfaces must be connected and not contain holes.
 ## Arrays of boundary condition components
 
 A dynamic array of boundary condition components associates a name (string) with each boundary condition. The default boundary condition for each component in the array is `DirichletTimeDependent`.
-Other boundary conditions can be bound to the named items in the array by assining the component type to the named boundary condition.
+Other boundary conditions can be bound to the named items in the array by assigning the component type to the named boundary condition.
 
 ```{code-block} cfg
 ---
