@@ -1,0 +1,75 @@
+# -*- yaml -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+# Adapted from pyre.
+#
+# check a pull request against the conventions of the repository: spelling, the formatting of
+# python and c++ sources, file preambles and closing markers, and the commits it adds; the
+# checks are the ones in {etc/ci/conventions/check.py}, which contributors run locally too
+
+name: pr-conventions
+on:
+  - workflow_call
+  # and manually
+  - workflow_dispatch
+
+jobs:
+  conventions:
+    name: conventions
+    runs-on: ubuntu-latest
+    steps:
+      # the pull request itself, rather than its merge with the base, with the whole history,
+      # so the commits it adds can be told apart from the ones it is based on
+      - name: checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      # the tools, pinned so the verdict matches a local run
+      - name: python setup
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+
+      - name: install the tools
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r etc/ci/conventions/requirements.txt
+
+      # make sure the checker still catches what it is meant to catch
+      - name: selftest
+        run: python3 etc/ci/conventions/selftest.py
+
+      # each check reports on its own, and they all run whatever the others found
+      - name: spelling
+        if: ${{ !cancelled() }}
+        run: python3 etc/ci/conventions/check.py --only spelling
+
+      - name: python
+        if: ${{ !cancelled() }}
+        run: python3 etc/ci/conventions/check.py --only python
+
+      - name: c++
+        if: ${{ !cancelled() }}
+        run: python3 etc/ci/conventions/check.py --only cxx
+
+      - name: preambles
+        if: ${{ !cancelled() }}
+        run: python3 etc/ci/conventions/check.py --only preambles --base "origin/${BASE}"
+        env:
+          BASE: ${{ github.base_ref }}
+
+      - name: commits
+        if: ${{ !cancelled() }}
+        run: python3 etc/ci/conventions/check.py --only commits --base "origin/${BASE}"
+        env:
+          BASE: ${{ github.base_ref }}
+
+# End of file

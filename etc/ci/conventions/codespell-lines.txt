@@ -1,0 +1,2 @@
+        write(root=root, name="words.txt", text="tread\n")
+        write(root=root, name="words.txt", text="tread\nraison\n")
