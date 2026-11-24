@@ -9,7 +9,7 @@
 
 
 dist_noinst_DATA = \
-	README \
+	README.md \
 	geometry.jou \
 	mesh.jou
 

@@ -10,8 +10,8 @@
 
 EXTRA_DIST = \
 	Makefile.am \
-	README \
-	materials/README \
+	README.md \
+	materials/README.md \
 	materials/configure.ac \
 	materials/Makefile.am \
 	materials/PlaneStrainState.hh \
@@ -28,7 +28,7 @@ EXTRA_DIST = \
 	materials/m4/cit_python.m4 \
 	materials/m4/cit_mpi.m4 \
 	materials/m4/cit_petsc.m4 \
-	friction/README \
+	friction/README.md \
 	friction/configure.ac \
 	friction/Makefile.am \
 	friction/ViscousFriction.hh \

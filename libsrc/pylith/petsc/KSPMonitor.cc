@@ -12,19 +12,14 @@
 
 #include "pylith/petsc/KSPMonitor.hh" // implementation of class methods
 
-<<<<<<< HEAD
-#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-    == == ==
-    =
->>>>>>> dbd6ccd44 (cxx: Switch from uncrustify to clang-format for C/C++ formatting.)
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <iomanip> // USES setw()
 
-        // ------------------------------------------------------------------------------------------------
-        // Constructor
-    pylith::petsc::KSPMonitor::KSPMonitor(void) {
+// ------------------------------------------------------------------------------------------------
+// Constructor
+pylith::petsc::KSPMonitor::KSPMonitor(void) {
 }
 
 // ------------------------------------------------------------------------------------------------

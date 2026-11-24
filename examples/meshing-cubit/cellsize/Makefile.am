@@ -9,7 +9,7 @@
 
 
 dist_noinst_DATA = \
-	README \
+	README.md \
 	exodus_add_properties.py \
 	geometry.jou \
 	mesh_cellsize.jou \

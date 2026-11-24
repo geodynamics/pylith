@@ -42,13 +42,13 @@ dist_noinst_PYTHON = \
 
 
 EXTRA_DIST = \
-	AUTHORS \
+	AUTHORS.md \
 	CITATION.cff \
 	CHANGES.md \
-	DEPENDENCIES \
-	INSTALL \
+	DEPENDENCIES.md \
+	INSTALL.md \
 	LICENSE.md \
-	NEWS \
+	NEWS.md \
 	README.md \
 	CLAUDE.md \
 	setup.cfg \

@@ -14,7 +14,7 @@ SUBDIRS = \
 
 
 dist_noinst_DATA = \
-	README \
+	README.md \
 	dem2lines.cfg \
 	dem2lines.py \
 	ruapehu-nzmg-1km.txt
