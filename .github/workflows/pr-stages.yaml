@@ -19,6 +19,8 @@ on:
       - main
 
 jobs:
+  conventions:
+    uses: ./.github/workflows/pr-conventions.yaml
   stage-1:
     uses: ./.github/workflows/pr-stage-1.yaml
   stage-2:
