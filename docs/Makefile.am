@@ -8,6 +8,9 @@
 # SPDX-License-Identifier: MIT
 
 
+dist_noinst_PYTHON = \
+	user/examples/box-2d/figs/generate_diagrams.py
+
 dist_noinst_DATA = \
 	conf.py \
 	build.sh \
@@ -796,6 +799,7 @@ dist_noinst_DATA = \
 	developer/debugging/fields.md \
 	developer/debugging/index.md \
 	developer/debugging/tools.md \
+	developer/design-specifications/mms-redesign-v2.md \
 	developer/testing/libtests.md \
 	developer/testing/run-cxxtests.md \
 	developer/testing/fullscale.md \

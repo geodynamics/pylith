@@ -51,10 +51,16 @@ EXTRA_DIST = \
 	NEWS.md \
 	README.md \
 	CLAUDE.md \
-	setup.cfg \
+	pyproject.toml \
 	setup.py \
 	docker/pylith-testenv \
-	docker/pylith-docenv
+	docker/pylith-docenv \
+	.clang-format \
+	etc/ci/conventions/check.py \
+	etc/ci/conventions/codespell-lines.txt \
+	etc/ci/conventions/codespell-words.txt \
+	etc/ci/conventions/requirements.txt \
+	etc/ci/conventions/selftest.py
 
 
 if ENABLE_TEST_COVERAGE
