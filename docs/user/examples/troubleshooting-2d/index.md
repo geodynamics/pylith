@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-examples-troubleshooting-2d)=
 # Troubleshooting (2D)
 
@@ -36,3 +45,5 @@ step06-error07.md
 step06-error08.md
 step06-error09.md
 :::
+
+% End of file

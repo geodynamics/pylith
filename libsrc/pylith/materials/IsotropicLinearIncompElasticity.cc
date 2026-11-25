@@ -1,24 +1,24 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/materials/IsotropicLinearIncompElasticity.hh" // implementation of object methods
 
-#include "pylith/materials/AuxiliaryFactoryElastic.hh" // USES AuxiliaryFactory
 #include "pylith/fekernels/IsotropicLinearIncompElasticity.hh" // USES IsotropicLinearIncompElasticity kernels
+#include "pylith/materials/AuxiliaryFactoryElastic.hh" // USES AuxiliaryFactory
 
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 
-#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
@@ -46,7 +46,8 @@ void
 pylith::materials::IsotropicLinearIncompElasticity::deallocate(void) {
     RheologyIncompressibleElasticity::deallocate();
 
-    delete _auxiliaryFactory;_auxiliaryFactory = NULL;
+    delete _auxiliaryFactory;
+    _auxiliaryFactory = NULL;
 } // deallocate
 
 
@@ -54,7 +55,7 @@ pylith::materials::IsotropicLinearIncompElasticity::deallocate(void) {
 // Use reference stress and strain in computation of stress and strain?
 void
 pylith::materials::IsotropicLinearIncompElasticity::useReferenceState(const bool value) {
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "useReferenceState="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "useReferenceState=" << value << ")");
 
     _useReferenceState = value;
 } // useReferenceState
@@ -100,17 +101,23 @@ pylith::materials::IsotropicLinearIncompElasticity::addAuxiliarySubfields(void) 
 // ------------------------------------------------------------------------------------------------
 // Get f0p kernel for LHS residual, F(t,s,\dot{s}).
 PetscPointFn*
-pylith::materials::IsotropicLinearIncompElasticity::getKernelf0p(const spatialdata::geocoords::CoordSys* coordsys) const {
+pylith::materials::IsotropicLinearIncompElasticity::getKernelf0p(
+    const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getKernelf0p(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "getKernelf0p(coordsys=" << typeid(coordsys).name() << ")");
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscPointFn* f0p =
-        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::f0p_infinitesimalStrain :
-        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::f0p_infinitesimalStrain :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::f0p_infinitesimalStrain_refState :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::f0p_infinitesimalStrain_refState :
-        NULL;
+        (!_useReferenceState && 3 == spaceDim)
+            ? pylith::fekernels::IsotropicLinearIncompElasticity3D::f0p_infinitesimalStrain
+        : (!_useReferenceState && 2 == spaceDim)
+            ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::f0p_infinitesimalStrain
+        : (_useReferenceState && 3 == spaceDim)
+            ? pylith::fekernels::IsotropicLinearIncompElasticity3D::f0p_infinitesimalStrain_refState
+        : (_useReferenceState && 2 == spaceDim)
+            ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::f0p_infinitesimalStrain_refState
+            : NULL;
 
     PYLITH_METHOD_RETURN(f0p);
 } // getKernelResidualPressure
@@ -119,17 +126,23 @@ pylith::materials::IsotropicLinearIncompElasticity::getKernelf0p(const spatialda
 // ------------------------------------------------------------------------------------------------
 // Get f1u kernel for LHS residual, F(t,s,\dot{s}).
 PetscPointFn*
-pylith::materials::IsotropicLinearIncompElasticity::getKernelf1u(const spatialdata::geocoords::CoordSys* coordsys) const {
+pylith::materials::IsotropicLinearIncompElasticity::getKernelf1u(
+    const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getKernelf1u(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "getKernelf1u(coordsys=" << typeid(coordsys).name() << ")");
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscPointFn* f1u =
-        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::f1u_infinitesimalStrain :
-        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::f1u_infinitesimalStrain :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::f1u_infinitesimalStrain_refState :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::f1u_infinitesimalStrain_refState :
-        NULL;
+        (!_useReferenceState && 3 == spaceDim)
+            ? pylith::fekernels::IsotropicLinearIncompElasticity3D::f1u_infinitesimalStrain
+        : (!_useReferenceState && 2 == spaceDim)
+            ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::f1u_infinitesimalStrain
+        : (_useReferenceState && 3 == spaceDim)
+            ? pylith::fekernels::IsotropicLinearIncompElasticity3D::f1u_infinitesimalStrain_refState
+        : (_useReferenceState && 2 == spaceDim)
+            ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::f1u_infinitesimalStrain_refState
+            : NULL;
 
     PYLITH_METHOD_RETURN(f1u);
 } // getKernelRHSResidualStress
@@ -138,15 +151,17 @@ pylith::materials::IsotropicLinearIncompElasticity::getKernelf1u(const spatialda
 // ------------------------------------------------------------------------------------------------
 // Get elastic constants kernel for RHS Jacobian G(t,s).
 PetscPointJacFn*
-pylith::materials::IsotropicLinearIncompElasticity::getKernelJf3uu(const spatialdata::geocoords::CoordSys* coordsys) const {
+pylith::materials::IsotropicLinearIncompElasticity::getKernelJf3uu(
+    const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getKernelJf3uu(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "getKernelJf3uu(coordsys=" << typeid(coordsys).name() << ")");
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscPointJacFn* Jg3uu =
-        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::Jf3uu_infinitesimalStrain :
-        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::Jf3uu_infinitesimalStrain :
-        NULL;
+        (3 == spaceDim)   ? pylith::fekernels::IsotropicLinearIncompElasticity3D::Jf3uu_infinitesimalStrain
+        : (2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::Jf3uu_infinitesimalStrain
+                          : NULL;
 
     PYLITH_METHOD_RETURN(Jg3uu);
 } // getKernelJacobianElasticConstants
@@ -155,9 +170,11 @@ pylith::materials::IsotropicLinearIncompElasticity::getKernelJf3uu(const spatial
 // ------------------------------------------------------------------------------------------------
 // Get inverse of the bulk modulus kernel for LHS Jacobian F(t,s,\dot{s}).
 PetscPointJacFn*
-pylith::materials::IsotropicLinearIncompElasticity::getKernelJf0pp(const spatialdata::geocoords::CoordSys* coordsys) const {
+pylith::materials::IsotropicLinearIncompElasticity::getKernelJf0pp(
+    const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getKernelJf0pp(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "getKernelJf0pp(coordsys=" << typeid(coordsys).name() << ")");
 
     PetscPointJacFn* Jf0pp = pylith::fekernels::IsotropicLinearIncompElasticity::Jf0pp;
 
@@ -168,17 +185,23 @@ pylith::materials::IsotropicLinearIncompElasticity::getKernelJf0pp(const spatial
 // ------------------------------------------------------------------------------------------------
 // Get stress kernel for derived field.
 PetscPointFn*
-pylith::materials::IsotropicLinearIncompElasticity::getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const {
+pylith::materials::IsotropicLinearIncompElasticity::getKernelCauchyStressVector(
+    const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getKernelCauchyStressVector(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "getKernelCauchyStressVector(coordsys=" << typeid(coordsys).name() << ")");
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscPointFn* kernel =
-        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::cauchyStress_infinitesimalStrain_asVector :
-        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::cauchyStress_infinitesimalStrain_asVector :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::cauchyStress_infinitesimalStrain_refState_asVector :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::cauchyStress_infinitesimalStrain_refState_asVector :
-        NULL;
+        (!_useReferenceState && 3 == spaceDim)
+            ? pylith::fekernels::IsotropicLinearIncompElasticity3D::cauchyStress_infinitesimalStrain_asVector
+        : (!_useReferenceState && 2 == spaceDim)
+            ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::cauchyStress_infinitesimalStrain_asVector
+        : (_useReferenceState && 3 == spaceDim)
+            ? pylith::fekernels::IsotropicLinearIncompElasticity3D::cauchyStress_infinitesimalStrain_refState_asVector
+        : (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::
+                                                      cauchyStress_infinitesimalStrain_refState_asVector
+                                                : NULL;
 
     PYLITH_METHOD_RETURN(kernel);
 } // getKernelDerivedCauchyStress

@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Vertical Cross-Section of Subduction Zone (2D)
 
 The files are in the directory `examples/subduction-2d`.
@@ -42,7 +51,7 @@ We refer to the domain boundaries using the names shown in the diagram.
 :::
 
 :::{important}
-We decribe how to generate the finite-element mesh using both Gmsh and Cubit.
+We describe how to generate the finite-element mesh using both Gmsh and Cubit.
 The files for both methods are included.
 We use the Gmsh files in the PyLith parameter files.
 See [examples/strikeslip-2d/step01_slip_cubit.cfg](../strikeslip-2d/step01-slip.md) for a description of how to modify the parameter files to switch from using mesh files from Gmsh to mesh files from Cubit.
@@ -59,3 +68,5 @@ step02-interseismic.md
 step03-eqcycle.md
 exercises.md
 :::
+
+% End of file

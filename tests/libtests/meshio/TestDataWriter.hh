@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::VectorFieldEnum
@@ -15,13 +16,12 @@
 namespace pylith {
     namespace meshio {
         class TestDataWriter_Data;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 class pylith::meshio::TestDataWriter_Data {
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestDataWriter_Data(void);
 
@@ -29,8 +29,7 @@ public:
     ~TestDataWriter_Data(void);
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     const char* meshFilename; ///< Name of mesh input file.
     const char* faultLabel; ///< Name of group of vertices for fault.
     int faultId; ///< Material identifier for fault.
@@ -46,5 +45,6 @@ public:
     pylith::topology::FieldBase::Discretization cellDiscretization; ///< Discretization for cell fields.
 
 }; // class TestDataWriter_Data
+
 
 // End of file

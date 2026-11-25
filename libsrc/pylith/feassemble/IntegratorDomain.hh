@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/feassemble/feassemblefwd.hh" // forward declarations
@@ -19,8 +20,7 @@ class pylith::feassemble::IntegratorDomain : public pylith::feassemble::Integrat
     friend class TestIntegratorDomain; // unit testing
 
     // PUBLIC STRUCTS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Kernels (point-wise functions) for residual.
     struct ResidualKernels {
         std::string subfield; ///< Name of subfield.
@@ -32,7 +32,8 @@ public:
             subfield(""),
             part(LHS),
             r0(NULL),
-            r1(NULL) {}
+            r1(NULL) {
+        }
 
 
         ResidualKernels(const char* subfieldValue,
@@ -42,7 +43,8 @@ public:
             subfield(subfieldValue),
             part(partValue),
             r0(r0Value),
-            r1(r1Value) {}
+            r1(r1Value) {
+        }
 
 
     }; // ResidualKernels
@@ -64,7 +66,8 @@ public:
             j0(NULL),
             j1(NULL),
             j2(NULL),
-            j3(NULL) {}
+            j3(NULL) {
+        }
 
 
         JacobianKernels(const char* subfieldTrialValue,
@@ -80,14 +83,14 @@ public:
             j0(j0Value),
             j1(j1Value),
             j2(j2Value),
-            j3(j3Value) {}
+            j3(j3Value) {
+        }
 
 
     }; // JacobianKernels
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     IntegratorDomain(pylith::problems::Physics* const physics);
 
@@ -95,8 +98,7 @@ public:
     virtual ~IntegratorDomain(void);
 
     /// Deallocate PETSc and local data structures.
-    virtual
-    void deallocate(void);
+    virtual void deallocate(void);
 
     /** Get mesh associated with integrator domain.
      *
@@ -196,8 +198,7 @@ public:
                                      const pylith::feassemble::IntegrationData& integrationData);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Update state variables as needed.
      *
      * @param[in] t Current time.
@@ -219,8 +220,7 @@ protected:
                               const pylith::topology::Field& solution);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     std::vector<ProjectKernels> _kernelsUpdateStateVars; ///< kernels for updating state variables.
     std::vector<ProjectKernels> _kernelsDerivedField; ///< kernels for computing derived field.
 
@@ -230,12 +230,12 @@ private:
     pylith::feassemble::JacobianValues* _jacobianValues; ///< Jacobian values without finite-element integration.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     IntegratorDomain(void); ///< Not implemented.
     IntegratorDomain(const IntegratorDomain&); ///< Not implemented.
     const IntegratorDomain& operator=(const IntegratorDomain&); ///< Not implemented.
 
 }; // IntegratorDomain
+
 
 // End of file

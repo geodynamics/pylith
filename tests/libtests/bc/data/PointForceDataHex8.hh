@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "PointForceData.hh"
@@ -14,13 +15,12 @@
 namespace pylith {
     namespace bc {
         class PointForceDataHex8;
-    } // pylith
-} // bc
+    } // namespace bc
+} // namespace pylith
 
 class pylith::bc::PointForceDataHex8 : public PointForceData {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     PointForceDataHex8(void);
 
@@ -28,8 +28,7 @@ public:
     ~PointForceDataHex8(void);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     static const PylithScalar _tRef; ///< Reference time for rate of change of forces.
     static const PylithScalar _forceRate; ///< Rate of change of force.
     static const PylithScalar _tResidual; ///< Time for computing residual.
@@ -49,5 +48,6 @@ private:
     static const char* _meshFilename; ///< Filename for input mesh.
     static const char* _dbFilename; ///< Filename of simple spatial database.
 };
+
 
 // End of file

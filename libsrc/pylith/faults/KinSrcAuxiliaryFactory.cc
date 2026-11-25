@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -16,11 +16,11 @@
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
-#include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 
-#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
 
 #include <cassert>
 
@@ -33,7 +33,8 @@ pylith::faults::KinSrcAuxiliaryFactory::KinSrcAuxiliaryFactory(void) {
 
 // ------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::faults::KinSrcAuxiliaryFactory::~KinSrcAuxiliaryFactory(void) {}
+pylith::faults::KinSrcAuxiliaryFactory::~KinSrcAuxiliaryFactory(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -125,7 +126,7 @@ pylith::faults::KinSrcAuxiliaryFactory::addFinalSlip(void) {
     PYLITH_DEBUG(pylith::journal::application_flow, "addFinalSlip(void)");
 
     const char* subfieldName = "final_slip";
-    const char* componentNames[3] = { "final_slip_opening", "final_slip_left_lateral", "final_slip_reverse" };
+    const char* componentNames[3] = {"final_slip_opening", "final_slip_left_lateral", "final_slip_reverse"};
 
     const PylithReal displacementScale = _scales->getDisplacementScale();
 
@@ -156,7 +157,7 @@ pylith::faults::KinSrcAuxiliaryFactory::addSlipRate(void) {
     PYLITH_DEBUG(pylith::journal::application_flow, "addSlipRate(void)");
 
     const char* subfieldName = "slip_rate";
-    const char* componentNames[3] = { "slip_rate_opening", "slip_rate_left_lateral", "slip_rate_reverse" };
+    const char* componentNames[3] = {"slip_rate_opening", "slip_rate_left_lateral", "slip_rate_reverse"};
 
     const PylithReal displacementScale = _scales->getDisplacementScale();
     const PylithReal timeScale = _scales->getTimeScale();
@@ -207,21 +208,26 @@ pylith::faults::KinSrcAuxiliaryFactory::addTimeHistoryValue(void) {
 
 // ------------------------------------------------------------------------------------------------
 void
-pylith::faults::KinSrcAuxiliaryFactory::updateTimeHistoryValue(pylith::topology::Field* auxiliaryField,
-                                                               const PylithReal t,
-                                                               const PylithReal timeScale,
-                                                               spatialdata::spatialdb::TimeHistory* const dbTimeHistory) {
+pylith::faults::KinSrcAuxiliaryFactory::updateTimeHistoryValue(
+    pylith::topology::Field* auxiliaryField,
+    const PylithReal t,
+    const PylithReal timeScale,
+    spatialdata::spatialdb::TimeHistory* const dbTimeHistory) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow_detail5, "Updating time history value, t="<<t<<", timeScale="<<timeScale);
+    PYLITH_DEBUG(pylith::journal::application_flow_detail5,
+                 "Updating time history value, t=" << t << ", timeScale=" << timeScale);
     assert(auxiliaryField);
     assert(dbTimeHistory);
 
-    PetscSection auxiliaryFieldSection = auxiliaryField->getLocalSection();assert(auxiliaryFieldSection);
+    PetscSection auxiliaryFieldSection = auxiliaryField->getLocalSection();
+    assert(auxiliaryFieldSection);
     PetscInt pStart = 0, pEnd = 0;
     PylithCallPetsc(PetscSectionGetChart(auxiliaryFieldSection, &pStart, &pEnd));
     pylith::topology::VecVisitorMesh auxiliaryFieldVisitor(*auxiliaryField);
     PetscScalar* auxiliaryFieldArray = auxiliaryFieldVisitor.localArray();
-    if (pEnd > pStart) { assert(auxiliaryFieldArray); }
+    if (pEnd > pStart) {
+        assert(auxiliaryFieldArray);
+    }
 
     // Compute offset of time history subfields in auxiliary field.
     const PetscInt i_startTime = auxiliaryField->getSubfieldInfo("initiation_time").index;
@@ -230,7 +236,9 @@ pylith::faults::KinSrcAuxiliaryFactory::updateTimeHistoryValue(pylith::topology:
     // Loop over all points in section.
     for (PetscInt p = pStart; p < pEnd; ++p) {
         // Skip points without values in section.
-        if (!auxiliaryFieldVisitor.sectionDof(p)) {continue;}
+        if (!auxiliaryFieldVisitor.sectionDof(p)) {
+            continue;
+        }
 
         // Get starting time and compute relative time for point.
         const PetscInt offStartTime = auxiliaryFieldVisitor.sectionSubfieldOffset(i_startTime, p);
@@ -244,7 +252,8 @@ pylith::faults::KinSrcAuxiliaryFactory::updateTimeHistoryValue(pylith::topology:
             const int err = dbTimeHistory->query(&value, tDim);
             if (err) {
                 PYLITH_ERROR(pylith::exceptions::OutOfRangeError,
-                             "Error querying for time '" << tDim << "' in time history database '" << dbTimeHistory->getDescription() << "'.");
+                             "Error querying for time '" << tDim << "' in time history database '"
+                                                         << dbTimeHistory->getDescription() << "'.");
             } // if
         } // if
 

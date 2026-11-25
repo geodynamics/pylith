@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/initializers/InitializePhase.hh" // ISA InitializePhase
@@ -17,8 +18,7 @@ class pylith::initializers::MeshWriter : public pylith::initializers::Initialize
     friend class TestMeshWriter;
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     MeshWriter(void);
 
@@ -44,16 +44,15 @@ public:
                                 const pylith::problems::Problem& problem);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::meshio::MeshIO* _writer; ///< Mesh writer.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     MeshWriter(const MeshWriter&); ///< Not implemented
     const MeshWriter& operator=(const MeshWriter&); ///< Not implemented
 
 }; // MeshWriter
+
 
 // End of file

@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from pythia.pyre.components.Component import Component
 
@@ -29,21 +29,14 @@ class Convert(Component):
     from .MeshReordering import MeshReordering
     from .MeshWriter import MeshWriter
 
-    read_mesh = pythia.pyre.inventory.facility(
-        "read_mesh", family="initialize_phase", factory=MeshReader
-    )
+    read_mesh = pythia.pyre.inventory.facility("read_mesh", family="initialize_phase", factory=MeshReader)
     read_mesh.meta["tip"] = "Read mesh."
 
-    reorder_mesh = pythia.pyre.inventory.facility(
-        "reorder_mesh", family="initialize_phase", factory=MeshReordering
-    )
+    reorder_mesh = pythia.pyre.inventory.facility("reorder_mesh", family="initialize_phase", factory=MeshReordering)
     reorder_mesh.meta["tip"] = "Reorder mesh using reverse Cuthill-McKee algorithm."
 
-    write_mesh = pythia.pyre.inventory.facility(
-        "write_mesh", family="initialize_phase", factory=MeshWriter
-    )
+    write_mesh = pythia.pyre.inventory.facility("write_mesh", family="initialize_phase", factory=MeshWriter)
     write_mesh.meta["tip"] = "Write mesh."
-
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -63,21 +56,20 @@ class Convert(Component):
         ]
 
 
-
 class Initializer(InitializerBase):
-    """Python mesh initializer with convert phases.
-    """
+    """Python mesh initializer with convert phases."""
 
     import pythia.pyre.inventory
 
-    phases = pythia.pyre.inventory.facilityArray("phases", family="convert_phases", itemFactory=phaseFactory, factory=Convert)
-    phases.meta['tip'] = "Phases in converting mesh."
+    phases = pythia.pyre.inventory.facilityArray(
+        "phases", family="convert_phases", itemFactory=phaseFactory, factory=Convert
+    )
+    phases.meta["tip"] = "Phases in converting mesh."
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 def mesh_initializer():
-    """Factory associated with Initializer.
-    """
+    """Factory associated with Initializer."""
     return Initializer()
 
 

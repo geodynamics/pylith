@@ -1,24 +1,18 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
 
-/** @file modulesrc/materials/IsotropicLinearMaxwell.i
- *
- * Python interface to C++ IsotropicLinearMaxwell.
- */
 
 namespace pylith {
     namespace materials {
-        class IsotropicLinearMaxwell: public pylith::materials::RheologyElasticity {
+        class IsotropicLinearMaxwell : public pylith::materials::RheologyElasticity {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             /// Default constructor.
             IsotropicLinearMaxwell(void);
 
@@ -99,7 +93,7 @@ public:
              * @param[inout] kernels Array of kernels for updating state variables.
              * @param[in] coordsys Coordinate system.
              */
-            void addKernelsUpdateStateVars(std::vector < pylith::feassemble::IntegratorDomain::ProjectKernels > * kernels,
+            void addKernelsUpdateStateVars(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
                                            const spatialdata::geocoords::CoordSys* coordsys) const;
 
             /** Update kernel constants.
@@ -112,7 +106,8 @@ public:
 
         }; // class IsotropicLinearMaxwell
 
-    } // materials
-} // pylith
+    } // namespace materials
+} // namespace pylith
+
 
 // End of file

@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Infinitesimal Strain and No Faults
 
 We begin with the elasticity equation including the inertial term,
@@ -39,3 +48,5 @@ Because both $\vec{\tau}$ and $\vec{u}$ are vector quantities, there can be some
 infinitesimal-strain-quasistatic.md
 infinitesimal-strain-dynamic.md
 :::
+
+% End of file

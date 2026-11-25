@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- makefile -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -42,19 +42,25 @@ dist_noinst_PYTHON = \
 
 
 EXTRA_DIST = \
-	AUTHORS \
+	AUTHORS.md \
 	CITATION.cff \
 	CHANGES.md \
-	DEPENDENCIES \
-	INSTALL \
+	DEPENDENCIES.md \
+	INSTALL.md \
 	LICENSE.md \
-	NEWS \
+	NEWS.md \
 	README.md \
 	CLAUDE.md \
-	setup.cfg \
+	pyproject.toml \
 	setup.py \
 	docker/pylith-testenv \
-	docker/pylith-docenv
+	docker/pylith-docenv \
+	.clang-format \
+	etc/ci/conventions/check.py \
+	etc/ci/conventions/codespell-lines.txt \
+	etc/ci/conventions/codespell-words.txt \
+	etc/ci/conventions/requirements.txt \
+	etc/ci/conventions/selftest.py
 
 
 if ENABLE_TEST_COVERAGE
@@ -91,5 +97,6 @@ check-tarball:
 
 # Remove .info files from list of intermediate files
 .SECONDARY: coverage-libtests.info coverage-mmstests.info coverage-pytests.xml coverage-fullscale.info
+
 
 # End of file

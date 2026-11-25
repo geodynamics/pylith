@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Quasistatic
 
 For ease of solution in the quasistatic case, we introduce a third variable in the form of volumetric strain ($\epsilon_v$).
@@ -228,3 +237,5 @@ The corresponding additional Jacobian functions are
 % JF_edotedot
   J_F^{\epsilon_{vt} \epsilon_{vt}} &= \frac{\partial F^{\epsilon_{vt}}}{\partial {\epsilon_{vt}}} + s_{tshift} \frac{\partial F^{\epsilon_{vt}}}{\partial \dot{\epsilon}_{vt}} = -1, \\
 \end{align}
+
+% End of file

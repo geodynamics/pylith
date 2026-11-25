@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Intersecting Strike-Slip Faults (3D)
 
 *New in v4.1.0.*
@@ -46,3 +55,5 @@ step01-slip.md
 step02-varslip.md
 exercises.md
 :::
+
+% End of file

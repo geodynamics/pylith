@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Common Information
 
 In addition to the finite-element mesh, PyLith requires files to specify the simulation parameters.
@@ -63,3 +72,5 @@ db_auxiliary_field.description = Dirichlet BC +x edge
 
 auxiliary_subfields.initial_amplitude.basis_order = 0
 ```
+
+% End of file

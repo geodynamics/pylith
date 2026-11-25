@@ -1,41 +1,39 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/initializers/Initializer.hh" // implementation of class methods
 
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/initializers/InitializePhase.hh" // HASA InitializePhase
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 #include "pylith/topology/Mesh.hh" // HASA Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
-#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 
 
 namespace pylith {
     namespace initializers {
         namespace _Initializer {
             class Events {
-public:
-
-                static
-                void init(void);
+              public:
+                static void init(void);
 
                 static pylith::petsc::EventLogger logger;
                 static PetscLogEvent runPhases;
             };
 
-        }
-    }
-}
+        } // namespace _Initializer
+    } // namespace initializers
+} // namespace pylith
 
 
 // ------------------------------------------------------------------------------------------------
@@ -80,9 +78,9 @@ void
 pylith::initializers::Initializer::setPhases(pylith::initializers::InitializePhase* phases[],
                                              const size_t numPhases) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setPhases(numPhases="<<numPhases<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setPhases(numPhases=" << numPhases << ")");
 
-    assert( (!phases && 0 == numPhases) || (phases && 0 < numPhases) );
+    assert((!phases && 0 == numPhases) || (phases && 0 < numPhases));
 
     _phases.resize(numPhases);
     for (size_t i = 0; i < numPhases; ++i) {
@@ -108,7 +106,8 @@ pylith::initializers::Initializer::runPhases(const pylith::problems::Problem& pr
         assert(_phases[i]);
         meshNew = _phases[i]->run(meshPhase, problem);
         pylith::topology::MeshOps::checkTopology(*meshNew); // TEMPORARY
-        delete meshPhase;meshPhase = meshNew;
+        delete meshPhase;
+        meshPhase = meshNew;
     } // for
 
     pythia::journal::debug_t debug(pylith::journal::mesh);
@@ -116,7 +115,8 @@ pylith::initializers::Initializer::runPhases(const pylith::problems::Problem& pr
         meshNew->view(":mesh_domain_after_initialize.txt:ascii_info_detail");
         pylith::topology::Mesh* meshExploded = pylith::topology::MeshOps::explode(*meshNew);
         meshExploded->view(":mesh_domain_after_initialize.tex:ascii_latex");
-        delete meshExploded;meshExploded = nullptr;
+        delete meshExploded;
+        meshExploded = nullptr;
     } // if
     pylith::topology::MeshOps::checkTopology(*meshNew);
 

@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Output
 
 PyLith produces four kinds of output:
@@ -338,7 +347,7 @@ We strongly recommend using HDF5 output instead, which is the default starting i
 
 By default PyLith will write the requested output after every time step.
 In many cases we prefer to save the solution, state variables, etc at a coarser temporal resolution.
-`OutputTriggerStep` controls the decimation of the output by time step, and `OutputTriggerTime` controls the decimation of the output via elasped time.
+`OutputTriggerStep` controls the decimation of the output by time step, and `OutputTriggerTime` controls the decimation of the output via elapsed time.
 For a constant time step these can be equivalent.
 
 ### Decimate by time step
@@ -351,7 +360,7 @@ For a constant time step these can be equivalent.
 
 ### Decimate by time
 
-`OutputTriggerTime` decimates the output by skipping a user-specified elasped time between output time slices.
+`OutputTriggerTime` decimates the output by skipping a user-specified elapsed time between output time slices.
 
 :::{tip}
 Due to roundoff error in determining the simulation time over many time steps, a simulation may occasionally skip writing output unexpectedly when using `OutputTriggerTime`.
@@ -361,3 +370,5 @@ The best workaround is to use an `elapsed_time` that is a fraction of the time s
 :::{seealso}
 [`OutputTriggerTime` Component](../components/meshio/OutputTriggerTime.md)
 :::
+
+% End of file

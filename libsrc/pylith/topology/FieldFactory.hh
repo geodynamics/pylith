@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
@@ -20,8 +21,7 @@ class pylith::topology::FieldFactory : public pylith::utils::GenericComponent {
     friend class TestFieldFactory; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     FieldFactory(void);
 
@@ -69,15 +69,13 @@ public:
      * @param[in] spaceDim Spatial dimension of problem.
      * @param[in] defaultDescription Default description for new subfields.
      */
-    virtual
-    void initialize(pylith::topology::Field* field,
-                    const pylith::scales::Scales& scales,
-                    const int spaceDim,
-                    const pylith::topology::FieldBase::Description* defaultDescription=NULL);
+    virtual void initialize(pylith::topology::Field* field,
+                            const pylith::scales::Scales& scales,
+                            const int spaceDim,
+                            const pylith::topology::FieldBase::Description* defaultDescription = NULL);
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     pylith::topology::Field* _field; ///< Auxiliary field.
     pylith::topology::FieldBase::discretizations_map _subfieldDiscretizations; ///< Discretization for each subfield.
     pylith::topology::FieldBase::Description* _defaultDescription; ///< Description for default subfield.
@@ -85,11 +83,11 @@ protected:
     int _spaceDim; ///< Spatial dimension.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
-    FieldFactory(const FieldFactory &); ///< Not implemented.
+  private:
+    FieldFactory(const FieldFactory&); ///< Not implemented.
     const FieldFactory& operator=(const FieldFactory&); ///< Not implemented
 
 }; // class FieldFactory
+
 
 // End of file

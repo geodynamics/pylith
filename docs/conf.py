@@ -1,3 +1,13 @@
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # Configuration file for the Sphinx documentation builder.
 #
 # This file only contains a selection of the most common options. For a full
@@ -18,7 +28,7 @@
 # -- Project information -----------------------------------------------------
 
 project = "PyLith"
-copyright = "2010-2025, University of California, Davis"
+copyright = "2010-2026 All rights reserved."
 author = "Brad T. Aagaard, Matthew G. Knepley, Charles A. Williams"
 
 # The full version, including alpha/beta/rc tags
@@ -101,3 +111,6 @@ html_css_files = [
     "css/pyrejournal.css",
 ]
 html_last_updated_fmt = ""
+
+
+# End of file

@@ -1,18 +1,19 @@
 #!/usr/bin/env nemesis
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from pylith.testing.FullTestApp import FullTestCase, TestDriver, Check, check_sizes
 
 import meshes
 import faultimpulses_soln
+
 
 # -------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
@@ -27,7 +28,7 @@ class TestCase(FullTestCase):
             Check(
                 mesh_entities=["mat_xneg", "mat_xpos"],
                 filename="output/{name}-{mesh_entity}_info.h5",
-                cell_fields = ["density", "bulk_modulus", "shear_modulus"],
+                cell_fields=["density", "bulk_modulus", "shear_modulus"],
                 defaults=defaults,
             ),
             Check(
@@ -51,7 +52,7 @@ class TestCase(FullTestCase):
             ),
             Check(
                 mesh_entities=["mat_xneg", "mat_xpos"],
-                vertex_fields = ["displacement"],
+                vertex_fields=["displacement"],
                 defaults=defaults,
             ),
             Check(
@@ -88,7 +89,6 @@ class TestCase(FullTestCase):
                     check_sizes(self, filename, check, mesh_entity, check.mesh.ENTITIES[mesh_entity])
 
 
-
 # -------------------------------------------------------------------------------------------------
 class TestQuadBasis0(TestCase):
 
@@ -96,10 +96,7 @@ class TestQuadBasis0(TestCase):
         self.name = "leftlateral_b0_quad"
         self.mesh = meshes.QuadGmsh()
         self.nimpulses = 9
-        self.basis_order = {
-            "displacement": 1,
-            "slip": 0
-        }
+        self.basis_order = {"displacement": 1, "slip": 0}
         super().setUp()
 
         TestCase.run_pylith(self, self.name, ["leftlateral_b0.cfg", "leftlateral_b0_quad.cfg"])
@@ -144,10 +141,7 @@ class TestTriBasis0(TestCase):
         self.name = "leftlateral_b0_tri"
         self.mesh = meshes.TriGmsh()
         self.nimpulses = 8
-        self.basis_order = {
-            "displacement": 1,
-            "slip": 0
-        }
+        self.basis_order = {"displacement": 1, "slip": 0}
         super().setUp()
 
         TestCase.run_pylith(self, self.name, ["leftlateral_b0.cfg", "leftlateral_b0_tri.cfg"])

@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -17,17 +17,17 @@
 #include "pylith/fekernels/AbsorbingDampers.hh" // USES AbsorbingDampers kernels
 
 #include "pylith/feassemble/IntegratorBoundary.hh" // USES IntegratorBoundary
-#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/scales/Scales.hh" // USES Scales
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
-#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
-#include <strings.h> // USES strcasecmp()
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
+#include <strings.h> // USES strcasecmp()
 #include <typeinfo> // USES typeid
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -38,25 +38,23 @@ namespace pylith {
     namespace bc {
         class _AbsorbingDampers {
             // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             /** Set kernels for RHS residual.
              *
              * @param[out] integrator Integrator for boundary condition.
              * @param[in] bc Absorbing dampers boundary condition.
              * @param[in] solution Solution field.
              */
-            static
-            void setKernelsResidual(pylith::feassemble::IntegratorBoundary* integrator,
-                                    const pylith::bc::AbsorbingDampers& bc,
-                                    const pylith::topology::Field& solution);
+            static void setKernelsResidual(pylith::feassemble::IntegratorBoundary* integrator,
+                                           const pylith::bc::AbsorbingDampers& bc,
+                                           const pylith::topology::Field& solution);
 
             static const char* pyreComponent;
         };
         const char* _AbsorbingDampers::pyreComponent = "absorbingdampers";
 
-    } // bc
-} // pylith
+    } // namespace bc
+} // namespace pylith
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -83,7 +81,8 @@ pylith::bc::AbsorbingDampers::deallocate(void) {
 
     BoundaryCondition::deallocate();
 
-    delete _auxiliaryFactory;_auxiliaryFactory = NULL;
+    delete _auxiliaryFactory;
+    _auxiliaryFactory = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -94,14 +93,16 @@ pylith::bc::AbsorbingDampers::deallocate(void) {
 void
 pylith::bc::AbsorbingDampers::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "verifyConfiguration(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "verifyConfiguration(solution=" << solution.getLabel() << ")");
 
     BoundaryCondition::verifyConfiguration(solution);
 
     const pylith::topology::Field::SubfieldInfo& info = solution.getSubfieldInfo(_subfieldName.c_str());
     if (pylith::topology::Field::VECTOR != info.description.vectorFieldType) {
         PYLITH_COMPONENT_ERROR(pylith::exceptions::InvalidParameterError,
-                               "Absorbing boundary condition cannot be applied to non-vector field '"<< _subfieldName << "' in solution.");
+                               "Absorbing boundary condition cannot be applied to non-vector field '"
+                                   << _subfieldName << "' in solution.");
     } // if
 
     PYLITH_METHOD_END;
@@ -113,13 +114,16 @@ pylith::bc::AbsorbingDampers::verifyConfiguration(const pylith::topology::Field&
 pylith::feassemble::Integrator*
 pylith::bc::AbsorbingDampers::createIntegrator(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow_detail3, "Creating integrator for " << _subfieldName << " on " << getLabelName() << "("<<getLabelValue()<<").");
+    PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow_detail3,
+                               "Creating integrator for " << _subfieldName << " on " << getLabelName() << "("
+                                                          << getLabelValue() << ").");
 
-    pylith::feassemble::IntegratorBoundary* integrator = new pylith::feassemble::IntegratorBoundary(this);assert(integrator);
+    pylith::feassemble::IntegratorBoundary* integrator = new pylith::feassemble::IntegratorBoundary(this);
+    assert(integrator);
     integrator->setSubfieldName(getSubfieldName());
     integrator->setLabelName(getLabelName());
     integrator->setLabelValue(getLabelValue());
-    integrator->createLabelDS(solution, solution.getMesh().getDimension()-1);
+    integrator->createLabelDS(solution, solution.getMesh().getDimension() - 1);
 
     _AbsorbingDampers::setKernelsResidual(integrator, *this, solution);
     BoundaryCondition::_setKernelsDiagnosticField(integrator, solution);
@@ -133,7 +137,8 @@ pylith::bc::AbsorbingDampers::createIntegrator(const pylith::topology::Field& so
 std::vector<pylith::feassemble::Constraint*>
 pylith::bc::AbsorbingDampers::createConstraints(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createConstraints(solution="<<solution.getLabel()<<") empty method");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "createConstraints(solution=" << solution.getLabel() << ") empty method");
     std::vector<pylith::feassemble::Constraint*> constraintArray;
 
     PYLITH_METHOD_RETURN(constraintArray);
@@ -146,9 +151,12 @@ pylith::topology::Field*
 pylith::bc::AbsorbingDampers::createAuxiliaryField(const pylith::topology::Field& solution,
                                                    const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "createAuxiliaryField(solution=" << solution.getLabel() << ", domainMesh=)"
+                                                            << typeid(domainMesh).name() << ")");
 
-    pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
+    pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);
+    assert(auxiliaryField);
     auxiliaryField->setLabel("auxiliary field");
 
     assert(_auxiliaryFactory);

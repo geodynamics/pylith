@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -18,8 +18,8 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
 
-#include "pylith/scales/Scales.hh" // USES Scales
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
@@ -36,7 +36,8 @@ pylith::materials::AuxiliaryFactoryViscoelastic::AuxiliaryFactoryViscoelastic(vo
 
 // ------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::materials::AuxiliaryFactoryViscoelastic::~AuxiliaryFactoryViscoelastic(void) {}
+pylith::materials::AuxiliaryFactoryViscoelastic::~AuxiliaryFactoryViscoelastic(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -74,11 +75,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addMaxwellTimeGeneralizedMaxwel
     PYLITH_DEBUG(pylith::journal::application_flow, "addMaxwellTimeGeneralizedMaxwell(void)");
 
     const char* subfieldName = "maxwell_time";
-    const char* componentNames[3] = {
-        "maxwell_time_1",
-        "maxwell_time_2",
-        "maxwell_time_3"
-    };
+    const char* componentNames[3] = {"maxwell_time_1", "maxwell_time_2", "maxwell_time_3"};
     const PylithReal timeScale = _scales->getTimeScale();
 
     pylith::topology::Field::Description description;
@@ -141,7 +138,8 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addPowerLawReferenceStrainRate(
     PYLITH_DEBUG(pylith::journal::application_flow, "addPowerLawReferenceStrainRate(void)");
 
     const char* subfieldName = "power_law_reference_strain_rate";
-    const PylithReal strainRateScale = pylith::scales::ElasticityScales::getStrainScale(*_scales) / _scales->getTimeScale();
+    const PylithReal strainRateScale =
+        pylith::scales::ElasticityScales::getStrainScale(*_scales) / _scales->getTimeScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -221,14 +219,12 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addTotalStrain(void) {
     PYLITH_DEBUG(pylith::journal::application_flow, "addTotalStrain(void)");
 
     const char* subfieldName = "total_strain";
-    const char* componentNames[6] = {
-        "total_strain_xx",
-        "total_strain_yy",
-        "total_strain_zz",
-        "total_strain_xy",
-        "total_strain_yz",
-        "total_strain_xz"
-    };
+    const char* componentNames[6] = {"total_strain_xx",
+                                     "total_strain_yy",
+                                     "total_strain_zz",
+                                     "total_strain_xy",
+                                     "total_strain_yz",
+                                     "total_strain_xz"};
     const int strainSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
 
     pylith::topology::Field::Description description;
@@ -260,14 +256,12 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addDeviatoricStress(void) {
     PYLITH_DEBUG(pylith::journal::application_flow, "addDeviatoricStress(void)");
 
     const char* subfieldName = "deviatoric_stress";
-    const char* componentNames[6] = {
-        "deviatoric_stress_xx",
-        "deviatoric_stress_yy",
-        "deviatoric_stress_zz",
-        "deviatoric_stress_xy",
-        "deviatoric_stress_yz",
-        "deviatoric_stress_xz"
-    };
+    const char* componentNames[6] = {"deviatoric_stress_xx",
+                                     "deviatoric_stress_yy",
+                                     "deviatoric_stress_zz",
+                                     "deviatoric_stress_xy",
+                                     "deviatoric_stress_yz",
+                                     "deviatoric_stress_xz"};
     const int stressSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
     const PylithReal stressScale = pylith::scales::ElasticityScales::getStressScale(*_scales);
 
@@ -300,14 +294,12 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addViscousStrain(void) {
     PYLITH_DEBUG(pylith::journal::application_flow, "addViscousStrain(void)");
 
     const char* subfieldName = "viscous_strain";
-    const char* componentNames[6] = {
-        "viscous_strain_xx",
-        "viscous_strain_yy",
-        "viscous_strain_zz",
-        "viscous_strain_xy",
-        "viscous_strain_yz",
-        "viscous_strain_xz"
-    };
+    const char* componentNames[6] = {"viscous_strain_xx",
+                                     "viscous_strain_yy",
+                                     "viscous_strain_zz",
+                                     "viscous_strain_xy",
+                                     "viscous_strain_yz",
+                                     "viscous_strain_xz"};
     const int strainSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
 
     pylith::topology::Field::Description description;
@@ -339,8 +331,8 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addViscousStrainGeneralizedMaxw
     PYLITH_DEBUG(pylith::journal::application_flow, "addViscousStrainGeneralizedMaxwell(void)");
 
     const char* subfieldName = "viscous_strain";
-    const char* componentElementNumbers[3] = { "_1", "_2", "_3" };
-    const char* componentSuffixes[6] = { "_xx", "_yy", "_zz", "_xy", "_yz", "_xz" };
+    const char* componentElementNumbers[3] = {"_1", "_2", "_3"};
+    const char* componentSuffixes[6] = {"_xx", "_yy", "_zz", "_xy", "_yz", "_xz"};
     const int strainSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
 
     pylith::topology::Field::Description description;
@@ -353,7 +345,8 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addViscousStrainGeneralizedMaxw
     description.historySize = 1;
     for (int j = 0, iname = 0; j < 3; ++j) {
         for (int i = 0; i < strainSize; ++i, ++iname) {
-            description.componentNames[iname] = std::string(subfieldName) + std::string(componentElementNumbers[j]) + std::string(componentSuffixes[i]);
+            description.componentNames[iname] =
+                std::string(subfieldName) + std::string(componentElementNumbers[j]) + std::string(componentSuffixes[i]);
         } // for i
     } // for j
     description.scale = pylith::scales::ElasticityScales::getStrainScale(*_scales);

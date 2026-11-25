@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 /* Original mesh
  *
@@ -49,33 +49,19 @@ const int pylith::faults::CohesiveDataQuad4Lagrange::_numCells = 3;
 
 const int pylith::faults::CohesiveDataQuad4Lagrange::_cellDim = 2;
 
-const int pylith::faults::CohesiveDataQuad4Lagrange::_numCorners[3] = {
-    4,
-    4,
-    4
-};
+const int pylith::faults::CohesiveDataQuad4Lagrange::_numCorners[3] = {4, 4, 4};
 
-const int pylith::faults::CohesiveDataQuad4Lagrange::_materialIds[3] = {
-    0,  0,
-    1
-};
+const int pylith::faults::CohesiveDataQuad4Lagrange::_materialIds[3] = {0, 0, 1};
 
 const int pylith::faults::CohesiveDataQuad4Lagrange::_numGroups = 2;
 
-const int pylith::faults::CohesiveDataQuad4Lagrange::_groupSizes[2] = {
-    4+2, 4+2
-};
+const int pylith::faults::CohesiveDataQuad4Lagrange::_groupSizes[2] = {4 + 2, 4 + 2};
 
-const char* pylith::faults::CohesiveDataQuad4Lagrange::_groupNames[2] = {
-    "output", "fault"
-};
+const char* pylith::faults::CohesiveDataQuad4Lagrange::_groupNames[2] = {"output", "fault"};
 
-const char* pylith::faults::CohesiveDataQuad4Lagrange::_groupTypes[2] = {
-    "vertex", "vertex"
-};
+const char* pylith::faults::CohesiveDataQuad4Lagrange::_groupTypes[2] = {"vertex", "vertex"};
 
-const char* pylith::faults::CohesiveDataQuad4Lagrange::_filename =
-    "data/quad4.mesh";
+const char* pylith::faults::CohesiveDataQuad4Lagrange::_filename = "data/quad4.mesh";
 
 pylith::faults::CohesiveDataQuad4Lagrange::CohesiveDataQuad4Lagrange(void) { // constructor
     numVertices = _numVertices;
@@ -92,7 +78,8 @@ pylith::faults::CohesiveDataQuad4Lagrange::CohesiveDataQuad4Lagrange(void) { // 
 } // constructor
 
 
-pylith::faults::CohesiveDataQuad4Lagrange::~CohesiveDataQuad4Lagrange(void) {}
+pylith::faults::CohesiveDataQuad4Lagrange::~CohesiveDataQuad4Lagrange(void) {
+}
 
 
 // End of file

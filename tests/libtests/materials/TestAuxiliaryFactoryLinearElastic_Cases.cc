@@ -1,21 +1,21 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "TestAuxiliaryFactoryLinearElastic.hh" // Implementation of cases
 
 #include "pylith/materials/AuxiliaryFactoryElastic.hh" // USES AuxiliaryFactoryElastic
+#include "pylith/scales/Scales.hh" // USES Scales
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "catch2/catch_test_macros.hpp"
 
@@ -25,276 +25,284 @@
 namespace pylith {
     namespace materials {
         class TestAuxiliaryFactoryLinearElastic_Cases;
-    } // materials
-} // pylith
+    } // namespace materials
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases {
-public:
-
+  public:
     // Data factory methods
     static TestAuxiliaryFactoryLinearElastic_Data* Tri(void);
 
     static TestAuxiliaryFactoryLinearElastic_Data* Hex(void);
 
-private:
-
+  private:
     static const PylithReal LENGTH_SCALE;
     static const PylithReal KM;
     static const PylithReal TIME_SCALE;
     static const PylithReal RIGIDITY_SCALE;
     static const PylithReal DENSITY_SCALE;
 
-private:
-
-    static
-    double density_2d(const double x,
-                      const double y) {
-        return 2500.0 + 3.0*fabs(x)/KM + 2.0*fabs(y)/KM;
+  private:
+    static double
+    density_2d(const double x,
+               const double y) {
+        return 2500.0 + 3.0 * fabs(x) / KM + 2.0 * fabs(y) / KM;
     } // density
 
-    static
-    const char* density_units(void) {
+    static const char*
+    density_units(void) {
         return "kg/m**3";
     } // density_units
 
-    static
-    double vs_2d(const double x,
-                 const double y) {
-        return 1000.0 + 30.0*fabs(x)/KM + 20.0*fabs(y)/KM;
+    static double
+    vs_2d(const double x,
+          const double y) {
+        return 1000.0 + 30.0 * fabs(x) / KM + 20.0 * fabs(y) / KM;
     } // vs
 
-    static
-    const char* vs_units(void) {
+    static const char*
+    vs_units(void) {
         return "m/s";
     } // vs_units
 
-    static
-    double vp_2d(const double x,
-                 const double y) {
-        return 2000.0 + 50.0*fabs(x)/KM + 43.0*fabs(y)/KM;
+    static double
+    vp_2d(const double x,
+          const double y) {
+        return 2000.0 + 50.0 * fabs(x) / KM + 43.0 * fabs(y) / KM;
     } // vp
 
-    static
-    const char* vp_units(void) {
+    static const char*
+    vp_units(void) {
         return "m/s";
     } // vp_units
 
-    static
-    double shear_modulus_2d(const double x,
-                            const double y) {
-        const double vsV = vs_2d(x,y);
-        return density_2d(x,y) * (vsV*vsV);
+    static double
+    shear_modulus_2d(const double x,
+                     const double y) {
+        const double vsV = vs_2d(x, y);
+        return density_2d(x, y) * (vsV * vsV);
     } // shear_modulus
 
-    static
-    double bulk_modulus_2d(const double x,
-                           const double y) {
-        const double vsV = vs_2d(x,y);
-        const double vpV = vp_2d(x,y);
-        return density_2d(x,y)*(vpV*vpV - 4.0/3.0*vsV*vsV);
+    static double
+    bulk_modulus_2d(const double x,
+                    const double y) {
+        const double vsV = vs_2d(x, y);
+        const double vpV = vp_2d(x, y);
+        return density_2d(x, y) * (vpV * vpV - 4.0 / 3.0 * vsV * vsV);
     } // bulk_modulus
 
-    static
-    const char* modulus_units(void) {
+    static const char*
+    modulus_units(void) {
         return "Pa";
     } // modulus_units
 
-    static
-    double reference_stress_2d_xx(const double x,
-                                  const double y) {
-        return -0.3*x*x/(KM*KM) + 0.1*x*y/(KM*KM);
+    static double
+    reference_stress_2d_xx(const double x,
+                           const double y) {
+        return -0.3 * x * x / (KM * KM) + 0.1 * x * y / (KM * KM);
     } // reference_stress_xx
 
-    static
-    double reference_stress_2d_yy(const double x,
-                                  const double y) {
-        return -8.0e+6*x*y/(KM*KM) + 2.0e+6*y*y/(KM*KM);
+    static double
+    reference_stress_2d_yy(const double x,
+                           const double y) {
+        return -8.0e+6 * x * y / (KM * KM) + 2.0e+6 * y * y / (KM * KM);
     } // reference_stress_2d_yy
 
-    static
-    double reference_stress_2d_zz(const double x,
-                                  const double y) {
-        return -3.0e+6*x*x/(KM*KM) + 5.0e+6*y*y/(KM*KM);
+    static double
+    reference_stress_2d_zz(const double x,
+                           const double y) {
+        return -3.0e+6 * x * x / (KM * KM) + 5.0e+6 * y * y / (KM * KM);
     } // reference_stress_2d_zz
 
-    static
-    double reference_stress_2d_xy(const double x,
-                                  const double y) {
-        return -3.0e+6*x*x/(KM*KM) + 2.0e+6*x*y/(KM*KM);
+    static double
+    reference_stress_2d_xy(const double x,
+                           const double y) {
+        return -3.0e+6 * x * x / (KM * KM) + 2.0e+6 * x * y / (KM * KM);
     } // reference_stress_xy
 
-    static
-    const char* stress_units(void) {
+    static const char*
+    stress_units(void) {
         return "Pa";
     } // stress_units
 
-    static
-    double reference_strain_2d_xx(const double x,
-                                  const double y) {
-        return -0.3*x*x/(KM*KM) + 0.1*x*y/(KM*KM);
+    static double
+    reference_strain_2d_xx(const double x,
+                           const double y) {
+        return -0.3 * x * x / (KM * KM) + 0.1 * x * y / (KM * KM);
     } // reference_strain_2d_xx
 
-    static
-    double reference_strain_2d_yy(const double x,
-                                  const double y) {
-        return -0.8*x*y/(KM*KM) + 0.2*y*y/(KM*KM);
+    static double
+    reference_strain_2d_yy(const double x,
+                           const double y) {
+        return -0.8 * x * y / (KM * KM) + 0.2 * y * y / (KM * KM);
     } // reference_strain_2d_yy
 
-    static
-    double reference_strain_2d_zz(const double x,
-                                  const double y) {
-        return -0.3*x*x/(KM*KM) + 0.5*y*y/(KM*KM);
+    static double
+    reference_strain_2d_zz(const double x,
+                           const double y) {
+        return -0.3 * x * x / (KM * KM) + 0.5 * y * y / (KM * KM);
     } // reference_strain_2d_zz
 
-    static
-    double reference_strain_2d_xy(const double x,
-                                  const double y) {
-        return -0.3*x*x/(KM*KM) + 0.2*x*y/(KM*KM);
+    static double
+    reference_strain_2d_xy(const double x,
+                           const double y) {
+        return -0.3 * x * x / (KM * KM) + 0.2 * x * y / (KM * KM);
     } // reference_strain_xy
 
-    static
-    const char* strain_units(void) {
+    static const char*
+    strain_units(void) {
         return "None";
     } // stress_units
 
-    static
-    double density_3d(const double x,
-                      const double y,
-                      const double z) {
-        return 2500.0 + 3.0*fabs(x)/KM + 2.0*fabs(z)/KM;
+    static double
+    density_3d(const double x,
+               const double y,
+               const double z) {
+        return 2500.0 + 3.0 * fabs(x) / KM + 2.0 * fabs(z) / KM;
     } // density
 
-    static
-    double vs_3d(const double x,
-                 const double y,
-                 const double z) {
-        return 1000.0 + 300.0*fabs(x)/KM + 200.0*fabs(z)/KM;
+    static double
+    vs_3d(const double x,
+          const double y,
+          const double z) {
+        return 1000.0 + 300.0 * fabs(x) / KM + 200.0 * fabs(z) / KM;
     } // vs
 
-    static
-    double vp_3d(const double x,
-                 const double y,
-                 const double z) {
-        return 2500.0 + 400.0*fabs(x)/KM + 5.3*fabs(z)/KM;
+    static double
+    vp_3d(const double x,
+          const double y,
+          const double z) {
+        return 2500.0 + 400.0 * fabs(x) / KM + 5.3 * fabs(z) / KM;
     } // vp
 
-    static
-    double shear_modulus_3d(const double x,
-                            const double y,
-                            const double z) {
-        const double vsV = vs_3d(x,y,z);
-        return density_3d(x,y,z) *(vsV*vsV);
+    static double
+    shear_modulus_3d(const double x,
+                     const double y,
+                     const double z) {
+        const double vsV = vs_3d(x, y, z);
+        return density_3d(x, y, z) * (vsV * vsV);
     } // shear_modulus
 
-    static
-    double bulk_modulus_3d(const double x,
-                           const double y,
-                           const double z) {
-        const double vsV = vs_3d(x,y,z);
-        const double vpV = vp_3d(x,y,z);
-        return density_3d(x,y,z)*(vpV*vpV - 4.0/3.0*vsV*vsV);
+    static double
+    bulk_modulus_3d(const double x,
+                    const double y,
+                    const double z) {
+        const double vsV = vs_3d(x, y, z);
+        const double vpV = vp_3d(x, y, z);
+        return density_3d(x, y, z) * (vpV * vpV - 4.0 / 3.0 * vsV * vsV);
     } // bulk_modulus
 
-    static
-    double reference_stress_3d_xx(const double x,
-                                  const double y,
-                                  const double z) {
-        return -3.0e+6*x*z/(KM*KM) + 1.0e+6*x*z/(KM*KM);
+    static double
+    reference_stress_3d_xx(const double x,
+                           const double y,
+                           const double z) {
+        return -3.0e+6 * x * z / (KM * KM) + 1.0e+6 * x * z / (KM * KM);
     } // reference_stress_3d_xx
 
-    static
-    double reference_stress_3d_yy(const double x,
-                                  const double y,
-                                  const double z) {
-        return -8.0e+6*x*z/(KM*KM) + 2.0e+6*y*y/(KM*KM);
+    static double
+    reference_stress_3d_yy(const double x,
+                           const double y,
+                           const double z) {
+        return -8.0e+6 * x * z / (KM * KM) + 2.0e+6 * y * y / (KM * KM);
     } // reference_stress_3d_yy
 
-    static
-    double reference_stress_3d_zz(const double x,
-                                  const double y,
-                                  const double z) {
-        return -3.0e+6*x*x/(KM*KM) + 5.0e+6*y*z/(KM*KM);
+    static double
+    reference_stress_3d_zz(const double x,
+                           const double y,
+                           const double z) {
+        return -3.0e+6 * x * x / (KM * KM) + 5.0e+6 * y * z / (KM * KM);
     } // reference_stress_3d_zz
 
-    static
-    double reference_stress_3d_xy(const double x,
-                                  const double y,
-                                  const double z) {
-        return -3.0e+6*x/KM + 2.0e+6*x*y/(KM*KM);
+    static double
+    reference_stress_3d_xy(const double x,
+                           const double y,
+                           const double z) {
+        return -3.0e+6 * x / KM + 2.0e+6 * x * y / (KM * KM);
     } // reference_stress_3d_xy
 
-    static
-    double reference_stress_3d_yz(const double x,
-                                  const double y,
-                                  const double z) {
-        return -3.0e+6*x*z/(KM*KM) + 2.0e+6*x*y/(KM*KM);
+    static double
+    reference_stress_3d_yz(const double x,
+                           const double y,
+                           const double z) {
+        return -3.0e+6 * x * z / (KM * KM) + 2.0e+6 * x * y / (KM * KM);
     } // reference_stress_3d_yz
 
-    static
-    double reference_stress_3d_xz(const double x,
-                                  const double y,
-                                  const double z) {
-        return -3.0e+6*x/KM + 2.0e+6*y/KM;
+    static double
+    reference_stress_3d_xz(const double x,
+                           const double y,
+                           const double z) {
+        return -3.0e+6 * x / KM + 2.0e+6 * y / KM;
     } // reference_stress_3d_xz
 
-    static
-    double reference_strain_3d_xx(const double x,
-                                  const double y,
-                                  const double z) {
-        return -0.3*x*x/(KM*KM) + 0.1*x*z/(KM*KM);
+    static double
+    reference_strain_3d_xx(const double x,
+                           const double y,
+                           const double z) {
+        return -0.3 * x * x / (KM * KM) + 0.1 * x * z / (KM * KM);
     } // reference_strain_3d_xx
 
-    static
-    double reference_strain_3d_yy(const double x,
-                                  const double y,
-                                  const double z) {
-        return -0.8*x*y/(KM*KM) + 0.2*y*y/(KM*KM);
+    static double
+    reference_strain_3d_yy(const double x,
+                           const double y,
+                           const double z) {
+        return -0.8 * x * y / (KM * KM) + 0.2 * y * y / (KM * KM);
     } // reference_strain_3d_yy
 
-    static
-    double reference_strain_3d_zz(const double x,
-                                  const double y,
-                                  const double z) {
-        return -0.3*x*z/(KM*KM) + 0.5*y*y/(KM*KM);
+    static double
+    reference_strain_3d_zz(const double x,
+                           const double y,
+                           const double z) {
+        return -0.3 * x * z / (KM * KM) + 0.5 * y * y / (KM * KM);
     } // reference_strain_3d_zz
 
-    static
-    double reference_strain_3d_xy(const double x,
-                                  const double y,
-                                  const double z) {
-        return -0.3*x*x/(KM*KM) + 0.2*x*z/(KM*KM);
+    static double
+    reference_strain_3d_xy(const double x,
+                           const double y,
+                           const double z) {
+        return -0.3 * x * x / (KM * KM) + 0.2 * x * z / (KM * KM);
     } // reference_strain_3d_xy
 
-    static
-    double reference_strain_3d_yz(const double x,
-                                  const double y,
-                                  const double z) {
-        return -0.3*y*z/(KM*KM) + 0.2*x*z/(KM*KM);
+    static double
+    reference_strain_3d_yz(const double x,
+                           const double y,
+                           const double z) {
+        return -0.3 * y * z / (KM * KM) + 0.2 * x * z / (KM * KM);
     } // reference_strain_3d_yz
 
-    static
-    double reference_strain_3d_xz(const double x,
-                                  const double y,
-                                  const double z) {
-        return -0.3*y*y/(KM*KM) + 0.2*x*z/(KM*KM);
+    static double
+    reference_strain_3d_xz(const double x,
+                           const double y,
+                           const double z) {
+        return -0.3 * y * y / (KM * KM) + 0.2 * x * z / (KM * KM);
     } // reference_strain_3d_xz
-
 };
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestAuxiliaryFactoryLinearElastic::Tri::testAdd", "[TestAuxiliaryFactoryLinearElastic][add]") {
-    pylith::materials::TestAuxiliaryFactoryLinearElastic(pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::Tri()).testAdd();
+TEST_CASE("TestAuxiliaryFactoryLinearElastic::Tri::testAdd",
+          "[TestAuxiliaryFactoryLinearElastic][add]") {
+    pylith::materials::TestAuxiliaryFactoryLinearElastic(
+        pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::Tri())
+        .testAdd();
 }
-TEST_CASE("TestAuxiliaryFactoryLinearElastic::Tri::testSetValuesFromDB", "[TestAuxiliaryFactoryLinearElastic][testSetValuesFromDB]") {
-    pylith::materials::TestAuxiliaryFactoryLinearElastic(pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::Tri()).testSetValuesFromDB();
+TEST_CASE("TestAuxiliaryFactoryLinearElastic::Tri::testSetValuesFromDB",
+          "[TestAuxiliaryFactoryLinearElastic][testSetValuesFromDB]") {
+    pylith::materials::TestAuxiliaryFactoryLinearElastic(
+        pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::Tri())
+        .testSetValuesFromDB();
 }
 
-TEST_CASE("TestAuxiliaryFactoryLinearElastic::Hex::testAdd", "[TestAuxiliaryFactoryLinearElastic][add]") {
-    pylith::materials::TestAuxiliaryFactoryLinearElastic(pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::Hex()).testAdd();
+TEST_CASE("TestAuxiliaryFactoryLinearElastic::Hex::testAdd",
+          "[TestAuxiliaryFactoryLinearElastic][add]") {
+    pylith::materials::TestAuxiliaryFactoryLinearElastic(
+        pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::Hex())
+        .testAdd();
 }
-TEST_CASE("TestAuxiliaryFactoryLinearElastic::Hex::testSetValuesFromDB", "[TestAuxiliaryFactoryLinearElastic][testSetValuesFromDB]") {
-    pylith::materials::TestAuxiliaryFactoryLinearElastic(pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::Hex()).testSetValuesFromDB();
+TEST_CASE("TestAuxiliaryFactoryLinearElastic::Hex::testSetValuesFromDB",
+          "[TestAuxiliaryFactoryLinearElastic][testSetValuesFromDB]") {
+    pylith::materials::TestAuxiliaryFactoryLinearElastic(
+        pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::Hex())
+        .testSetValuesFromDB();
 }
 
 const PylithReal pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::LENGTH_SCALE = 1.0;
@@ -305,13 +313,15 @@ const PylithReal pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::KM 
 // --------------------------------------------------------------------------------------------------------------------
 pylith::materials::TestAuxiliaryFactoryLinearElastic_Data*
 pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::Tri(void) {
-    pylith::materials::TestAuxiliaryFactoryLinearElastic_Data* data = new pylith::materials::TestAuxiliaryFactoryLinearElastic_Data();
+    pylith::materials::TestAuxiliaryFactoryLinearElastic_Data* data =
+        new pylith::materials::TestAuxiliaryFactoryLinearElastic_Data();
     REQUIRE(data);
 
     data->auxDim = 2;
     data->dimension = 2;
     data->meshFilename = "data/tri.mesh";
-    data->cs = new spatialdata::geocoords::CSCart();REQUIRE(data->cs);
+    data->cs = new spatialdata::geocoords::CSCart();
+    REQUIRE(data->cs);
     data->cs->setSpaceDim(data->dimension);
 
     REQUIRE(data->scales);
@@ -343,13 +353,15 @@ pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::Tri(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::materials::TestAuxiliaryFactoryLinearElastic_Data*
 pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::Hex(void) {
-    pylith::materials::TestAuxiliaryFactoryLinearElastic_Data* data = new pylith::materials::TestAuxiliaryFactoryLinearElastic_Data();
+    pylith::materials::TestAuxiliaryFactoryLinearElastic_Data* data =
+        new pylith::materials::TestAuxiliaryFactoryLinearElastic_Data();
     REQUIRE(data);
 
     data->auxDim = 3;
     data->dimension = 3;
     data->meshFilename = "data/hex.mesh";
-    data->cs = new spatialdata::geocoords::CSCart();REQUIRE(data->cs);
+    data->cs = new spatialdata::geocoords::CSCart();
+    REQUIRE(data->cs);
     data->cs->setSpaceDim(data->dimension);
 
     REQUIRE(data->scales);

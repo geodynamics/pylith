@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/bc/BoundaryCondition.hh" // ISA Physics
@@ -17,8 +18,7 @@ class pylith::bc::AbsorbingDampers : public pylith::bc::BoundaryCondition {
     friend class TestAbsorbingDampers; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     AbsorbingDampers(void);
 
@@ -59,8 +59,7 @@ public:
                                                   const pylith::topology::Mesh& domainMesh);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get auxiliary factory associated with physics.
      *
      * @return Auxiliary factory for physics object.
@@ -68,18 +67,16 @@ protected:
     pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::bc::AbsorbingDampersAuxiliaryFactory* _auxiliaryFactory; ///< Factory for auxiliary subfields.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     AbsorbingDampers(const AbsorbingDampers&); ///< Not implemented.
     const AbsorbingDampers& operator=(const AbsorbingDampers&); ///< Not implemented.
-
 };
 
 // class AbsorbingDampers
+
 
 // End of file

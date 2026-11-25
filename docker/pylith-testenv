@@ -1,3 +1,13 @@
+# -*- dockerfile -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # docker build --build-arg BASE_IMAGE=${VARIABLE_NAME} --build-arg TEST_COVERAGE=yes/no --build-arg PYTHON_COVERAGE=${COVERAGE_EXECUTABLE} -f DOCKERFILE -t IMAGE_NAME .
 
 # BUILD CIG DEPENDENCIES ----------
@@ -84,3 +94,6 @@ RUN make check VERBOSE=1 -C tests/pytests && make coverage-pytests
 RUN make clean-coverage && make check VERBOSE=1 -C tests/fullscale && make coverage-fullscale
 
 CMD /bin/bash
+
+
+# End of file

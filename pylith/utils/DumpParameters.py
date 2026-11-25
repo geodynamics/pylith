@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from pythia.pyre.components.Component import Component
 
@@ -19,8 +19,7 @@ class DumpParameters(Component):
     """
 
     def __init__(self, name="dumpparameters"):
-        """Constructor.
-        """
+        """Constructor."""
         Component.__init__(self, name="dumpparamters", facility="dumpparameters")
         self.info = None
 
@@ -29,18 +28,17 @@ class DumpParameters(Component):
         return
 
     def write(self, app, using_mpi):
-        """Write parameters to file.
-        """
+        """Write parameters to file."""
         raise NotImplementedError()
 
     def collect(self, app):
-        """Collect version information and parameters.
-        """
+        """Collect version information and parameters."""
         from .CollectVersionInfo import CollectVersionInfo
         import datetime
+
         self.info = CollectVersionInfo.asDict()
         self.info["timestamp"] = datetime.datetime.now().isoformat()
-        (properties, components) = self._getPropertiesComponents(app)
+        properties, components = self._getPropertiesComponents(app)
         self.info["application"] = {
             "name": app.name,
             "class": str(app),
@@ -49,8 +47,7 @@ class DumpParameters(Component):
         }
 
     def _getPropertiesComponents(self, obj):
-        """Get objects properties and components.
-        """
+        """Get objects properties and components."""
         propertyNames = sorted(obj.inventory.propertyNames())
 
         facilityNames = obj.inventory.facilityNames()
@@ -70,7 +67,7 @@ class DumpParameters(Component):
             trait = obj.inventory.getTrait(name)
             descriptor = obj.inventory.getTraitDescriptor(name)
             try:
-                description = trait.meta['tip']
+                description = trait.meta["tip"]
             except KeyError:
                 description = "No description available."
             properties[name] = {
@@ -90,12 +87,11 @@ class DumpParameters(Component):
             trait = obj.inventory.getTrait(name)
             descriptor = obj.inventory.getTraitDescriptor(name)
             try:
-                description = trait.meta['tip']
+                description = trait.meta["tip"]
             except KeyError:
                 description = "No description available."
 
-            facilityProperties, facilityComponents = self._getPropertiesComponents(
-                descriptor.value)
+            facilityProperties, facilityComponents = self._getPropertiesComponents(descriptor.value)
             facilities[name] = {
                 "name": descriptor.value.name,
                 "class": str(descriptor.value),
@@ -117,8 +113,7 @@ class DumpParameters(Component):
         return (properties, facilities)
 
     def _createPath(self, filename):
-        """Create path for filename if it doesn't exist.
-        """
+        """Create path for filename if it doesn't exist."""
         import pathlib
 
         parentDir = pathlib.Path(filename).parent.resolve()

@@ -1,12 +1,13 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # @file pylith/__init__",
 #
 # @brief Python PyLith crustal dynamics problems module initialization
@@ -26,7 +27,7 @@ __all__ = [
     "SolnDispVelLagrange",
     "SolnDispVel",
     "SolnDispPresTracStrain",
-    "SolnDispPresTracStrainLagrange",    
+    "SolnDispPresTracStrainLagrange",
     "SolnDispPresTracStrainVelPdotTdot",
     "SolnDispPresTracStrainVelPdotTdotLagrange",
     "SolnDispPresVel",
@@ -34,11 +35,11 @@ __all__ = [
     "SubfieldDisplacement",
     "SubfieldLagrangeFault",
     "SubfieldPressure",
-    "SubfieldPressureDot",    
+    "SubfieldPressureDot",
     "SubfieldTemperature",
     "SubfieldVelocity",
     "SubfieldTraceStrain",
-    "SubfieldTraceStrainDot",    
+    "SubfieldTraceStrainDot",
     "SingleObserver",
 ]
 

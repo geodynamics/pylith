@@ -1,5 +1,16 @@
+# -*- yaml -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 commands:
   - ./generate_gmsh.py --write
   - pylith step01_slip.cfg
   - pylith step01_slip_cubit.cfg
   - pylith step02_varslip.cfg
+
+# End of file

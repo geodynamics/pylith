@@ -1,6 +1,15 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 5: Time-Dependent Shear Displacement and Tractions
 
-% Meatadata extracted from parameter files
+% Metadata extracted from parameter files
 ```{include} step05_sheardisptractrate-synopsis.md
 ```
 
@@ -18,7 +27,7 @@ The parameters specific to this example are in `step05_sheardisptractrate.cfg`.
 Boundary conditions for shear deformation.
 We constrain the x and y displacements on the +x and -x boundaries.
 We apply tangential (shear) tractions on the +y and -y boundaries.
-At a time of 1 year we increase the amplitude at a constrant rate $b$ ($H(t)$ corresponds to the heavyside step function).
+At a time of 1 year we increase the amplitude at a constant rate $b$ ($H(t)$ corresponds to the heavyside step function).
 :::
 
 This is a time-dependent problem, so we must specify the start and end times of the simulation along with the initial time step.
@@ -135,3 +144,5 @@ Solution for Step 5 at a time of 5.0 years.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 1000.
 The undeformed configuration is shown by the gray wireframe.
 :::
+
+% End of file

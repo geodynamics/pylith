@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -16,20 +16,20 @@
 #include "pylith/meshio/DataWriterVTK.hh" // USES DataWriterVTK
 #include "pylith/meshio/MeshBuilder.hh" // USES MeshBuilder
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
-#include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
-#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
-#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/geocoords/Converter.hh" // USES Converter
 #include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/geocoords/Converter.hh" // USES Converter
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
 #include <cassert> // USES assert()
 
@@ -62,8 +62,10 @@ pylith::meshio::OutputSolnPoints::deallocate(void) {
         PylithCallPetsc(DMInterpolationDestroy(&_interpolator));
     } // if
 
-    delete _pointMesh;_pointMesh = NULL;
-    delete _pointSoln;_pointSoln = NULL;
+    delete _pointMesh;
+    _pointMesh = NULL;
+    delete _pointSoln;
+    _pointSoln = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -106,10 +108,14 @@ pylith::meshio::OutputSolnPoints::_writeSolnStep(const PylithReal t,
                                                  const PylithInt tindex,
                                                  const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "_writeSolnStep(t=" << t << ", tindex=" << tindex << ", solution=" << solution.getLabel()
+                                               << ")");
 
     if (dynamic_cast<pylith::meshio::DataWriterVTK*>(_writer)) {
-        PYLITH_ERROR(pylith::exceptions::InternalLogicError, "PETSc VTK writer using the VTU format does not support output at points. Use the default DataWriterHDF5 writer.");
+        PYLITH_ERROR(pylith::exceptions::InternalLogicError,
+                     "PETSc VTK writer using the VTU format does not support output at points. Use the default "
+                     "DataWriterHDF5 writer.");
     } // if
 
     if (!_interpolator) {
@@ -121,14 +127,17 @@ pylith::meshio::OutputSolnPoints::_writeSolnStep(const PylithReal t,
 
     const bool writePointNames = !_writer->isOpen();
     _openSolnStep(t, *_pointMesh);
-    if (writePointNames) { _writePointNames(); }
+    if (writePointNames) {
+        _writePointNames();
+    }
 
     const pylith::string_vector& subfieldNames = pylith::topology::FieldOps::getSubfieldNamesDomain(solution);
 
     const size_t numSubfieldNames = subfieldNames.size();
     for (size_t iField = 0; iField < numSubfieldNames; iField++) {
         OutputSubfield* subfield = NULL;
-        subfield = this->_getSubfield(*_pointSoln, *_pointMesh, subfieldNames[iField].c_str());assert(subfield);
+        subfield = this->_getSubfield(*_pointSoln, *_pointMesh, subfieldNames[iField].c_str());
+        assert(subfield);
 
         const pylith::topology::Field::SubfieldInfo& info = solution.getSubfieldInfo(subfieldNames[iField].c_str());
         subfield->extractSubfield(*_pointSoln, info.index);
@@ -148,7 +157,9 @@ pylith::meshio::OutputSolnPoints::_getSubfield(const pylith::topology::Field& fi
                                                const pylith::topology::Mesh& submesh,
                                                const char* name) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_getSubfield(field="<<field.getLabel()<<", name="<<name<<", submesh="<<typeid(submesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "_getSubfield(field=" << field.getLabel() << ", name=" << name
+                                                 << ", submesh=" << typeid(submesh).name() << ")");
 
     if (_subfields.count(name) == 0) {
         _subfields[name] = OutputSubfield::create(field, submesh, name);
@@ -169,17 +180,19 @@ pylith::meshio::OutputSolnPoints::_setupInterpolator(const pylith::topology::Fie
     } // if
     assert(!_interpolator);
 
-    const spatialdata::geocoords::CoordSys* csMesh = solution.getMesh().getCoordSys();assert(csMesh);
+    const spatialdata::geocoords::CoordSys* csMesh = solution.getMesh().getCoordSys();
+    assert(csMesh);
     const int spaceDim = csMesh->getSpaceDim();
 
     MPI_Comm comm = solution.getMesh().getComm();
 
     // Setup interpolator object
-    PetscDM dmSoln = solution.getDM();assert(dmSoln);
+    PetscDM dmSoln = solution.getDM();
+    assert(dmSoln);
 
     PylithCallPetsc(DMInterpolationCreate(comm, &_interpolator));
     PylithCallPetsc(DMInterpolationSetDim(_interpolator, spaceDim));
-    PylithCallPetsc(DMInterpolationAddPoints(_interpolator, _pointNames.size(), (PetscReal*) &_pointCoords[0]));
+    PylithCallPetsc(DMInterpolationAddPoints(_interpolator, _pointNames.size(), (PetscReal*)&_pointCoords[0]));
     const PetscBool pointsAllProcs = PETSC_TRUE;
     const PetscBool ignoreOutsideDomain = PETSC_FALSE;
     PylithCallPetsc(DMInterpolationSetUp(_interpolator, dmSoln, pointsAllProcs, ignoreOutsideDomain));
@@ -194,10 +207,11 @@ pylith::meshio::OutputSolnPoints::_setupInterpolator(const pylith::topology::Fie
 
     const spatialdata::geocoords::CoordSys* cs = solution.getMesh().getCoordSys();
     const char* componentName = this->getFullIdentifier();
-    delete _pointMesh;_pointMesh = pylith::topology::MeshOps::createFromPoints(
-        pointsLocal, numPointsLocal, cs, lengthScale, comm, componentName);
+    delete _pointMesh;
+    _pointMesh =
+        pylith::topology::MeshOps::createFromPoints(pointsLocal, numPointsLocal, cs, lengthScale, comm, componentName);
 
-    // Upate point names to only local points.
+    // Update point names to only local points.
     pylith::string_vector pointNamesLocal(numPointsLocal);
     const size_t numPoints = _pointNames.size();
     for (size_t iPointLocal = 0; iPointLocal < numPointsLocal; ++iPointLocal) {
@@ -206,7 +220,7 @@ pylith::meshio::OutputSolnPoints::_setupInterpolator(const pylith::topology::Fie
             const PylithReal tolerance = 1.0e-6;
             PylithReal dist = 0.0;
             for (int iDim = 0; iDim < spaceDim; ++iDim) {
-                dist += pow(_pointCoords[iPoint*spaceDim+iDim] - pointsLocal[iPointLocal*spaceDim+iDim], 2);
+                dist += pow(_pointCoords[iPoint * spaceDim + iDim] - pointsLocal[iPointLocal * spaceDim + iDim], 2);
             } // for
             if (sqrt(dist) < tolerance) {
                 pointNamesLocal[iPointLocal] = _pointNames[iPoint];
@@ -231,7 +245,8 @@ pylith::meshio::OutputSolnPoints::_setupInterpolator(const pylith::topology::Fie
     } // for
     PylithCallPetsc(DMInterpolationSetDof(_interpolator, numDof));
 
-    delete _pointSoln;_pointSoln = new pylith::topology::Field(*_pointMesh);
+    delete _pointSoln;
+    _pointSoln = new pylith::topology::Field(*_pointMesh);
     for (size_t i = 0; i < subfieldNames.size(); ++i) {
         const pylith::topology::Field::SubfieldInfo& sinfo = solution.getSubfieldInfo(subfieldNames[i].c_str());
         pylith::topology::Field::Discretization discretization = sinfo.fe;
@@ -255,7 +270,9 @@ pylith::meshio::OutputSolnPoints::_interpolateField(const pylith::topology::Fiel
     PYLITH_METHOD_BEGIN;
     assert(_pointSoln);
 
-    PylithCallPetsc(DMInterpolationEvaluate(_interpolator, solution.getDM(), solution.getLocalVector(),
+    PylithCallPetsc(DMInterpolationEvaluate(_interpolator,
+                                            solution.getDM(),
+                                            solution.getLocalVector(),
                                             _pointSoln->getOutputVector()));
 
     PYLITH_METHOD_END;

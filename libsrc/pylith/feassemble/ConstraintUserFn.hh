@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/feassemble/Constraint.hh" // ISA Constraint
@@ -22,8 +23,7 @@ class pylith::feassemble::ConstraintUserFn : public pylith::feassemble::Constrai
     friend class _ConstraintUserFn; /// private utility class
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /** Constructor
      *
      * @param[in] physics Physics implemented by constraint.
@@ -49,8 +49,7 @@ public:
      *
      * @param[in] solution Solution field (layout).
      */
-    virtual
-    void initialize(const pylith::topology::Field& solution);
+    virtual void initialize(const pylith::topology::Field& solution);
 
     /** Set constrained values in solution field.
      *
@@ -59,18 +58,17 @@ public:
     void setSolution(pylith::feassemble::IntegrationData* integrationData);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     PetscUserFieldFunc _fn; ///< Function for computing constrained values.
     PetscUserFieldFunc _fnDot; ///< Function for computing constrained values.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     ConstraintUserFn(void); /// Not implemented.
-    ConstraintUserFn(const Constraint &); ///< Not implemented
+    ConstraintUserFn(const Constraint&); ///< Not implemented
     const ConstraintUserFn& operator=(const ConstraintUserFn&); ///< Not implemented
 
 }; // class ConstraintUserFn
+
 
 // End of file

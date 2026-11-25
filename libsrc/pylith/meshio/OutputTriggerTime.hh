@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/meshio/meshiofwd.hh" // forward declarations
@@ -17,8 +18,7 @@ class pylith::meshio::OutputTriggerTime : public pylith::meshio::OutputTrigger {
     friend class TestOutputTriggerTime; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     OutputTriggerTime(void);
 
@@ -47,19 +47,17 @@ public:
     double getTimeSkip(void) const;
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     PylithReal _timeSkip; ///< Elapsed (dimensional) time between writes.
     PylithReal _timeNondimWrote; ///< Time (nondimensional) when data was previously written.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     OutputTriggerTime(const OutputTriggerTime&); ///< Not implemented.
     const OutputTriggerTime& operator=(const OutputTriggerTime&); ///< Not implemented
-
 };
 
 // OutputTriggerTime
+
 
 // End of file

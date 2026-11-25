@@ -1,10 +1,19 @@
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
+//
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 /*
  * ================================================================================================
  * This code is part of PyLith, developed through the Computational Infrastructure
  * for Geodynamics (https://github.com/geodynamics/pylith).
  *
- * Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
- * All rights reserved.
+ * Copyright (c) 2010-2026 All rights reserved.
  *
  * See https://mit-license.org/ and LICENSE.md and for license information.
  * =================================================================================================
@@ -19,8 +28,7 @@
 
 class pylith::fekernels::Solution {
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /** Kernel interface.
      *
      * @param[in] dim Spatial dimension.
@@ -47,36 +55,37 @@ public:
      *
      * We pass through the solution to the resulting field. The auxiliary field is ignored.
      */
-    static inline
-    void passThruSubfield(const PylithInt dim,
-                          const PylithInt numS,
-                          const PylithInt numA,
-                          const PylithInt sOff[],
-                          const PylithInt sOff_x[],
-                          const PylithScalar s[],
-                          const PylithScalar s_t[],
-                          const PylithScalar s_x[],
-                          const PylithInt aOff[],
-                          const PylithInt aOff_x[],
-                          const PylithScalar a[],
-                          const PylithScalar a_t[],
-                          const PylithScalar a_x[],
-                          const PylithReal t,
-                          const PylithScalar x[],
-                          const PylithInt numConstants,
-                          const PylithScalar constants[],
-                          PylithScalar field[]) {
+    static inline void
+    passThruSubfield(const PylithInt dim,
+                     const PylithInt numS,
+                     const PylithInt numA,
+                     const PylithInt sOff[],
+                     const PylithInt sOff_x[],
+                     const PylithScalar s[],
+                     const PylithScalar s_t[],
+                     const PylithScalar s_x[],
+                     const PylithInt aOff[],
+                     const PylithInt aOff_x[],
+                     const PylithScalar a[],
+                     const PylithScalar a_t[],
+                     const PylithScalar a_x[],
+                     const PylithReal t,
+                     const PylithScalar x[],
+                     const PylithInt numConstants,
+                     const PylithScalar constants[],
+                     PylithScalar field[]) {
         assert(s);
         assert(sOff);
         assert(field);
         const PetscInt subfieldIndex = PetscInt(t); // :KLUDGE: Easiest way to get subfield to extract into fn.
 
-        const PylithInt sEnd = sOff[subfieldIndex+1];
+        const PylithInt sEnd = sOff[subfieldIndex + 1];
         for (PylithInt iS = sOff[subfieldIndex], iF = 0; iS < sEnd; ++iS, ++iF) {
             field[iF] = s[iS];
         } // for
     } // passThruSubfield
 
 }; // Solution
+
 
 // End of file

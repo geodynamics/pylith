@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-developer-workflow)=
 # Overview
 
@@ -38,3 +47,5 @@ The commits are pushed to your repository on GitHub for backup or syncing across
 Once the task is completed, you submit a pull request to have the changes merged to the `main` branch in the community repository.
 Once the pull request is merged, you update your local `main` branch from the community repository and then push the changes to your repository on GitHub.
 :::
+
+% End of file

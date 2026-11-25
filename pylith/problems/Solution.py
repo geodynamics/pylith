@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from pylith.petsc.Component import Component
 
@@ -39,6 +39,7 @@ class Solution(Component):
         from pylith.topology.Field import Field
 
         from pylith.mpi.Communicator import mpi_is_root
+
         isRoot = mpi_is_root()
         if isRoot:
             self._debug.log("Performing minimal initialization of solution.")
@@ -54,10 +55,7 @@ class Solution(Component):
                     % (subfield.fieldName, subfield.userAlias, subfield.componentNames)
                 )
             descriptor = subfield.getTraitDescriptor("quadrature_order")
-            if (
-                hasattr(descriptor.locator, "source")
-                and descriptor.locator.source == "default"
-            ):
+            if hasattr(descriptor.locator, "source") and descriptor.locator.source == "default":
                 quadOrder = problem.defaults.quadOrder
             else:
                 quadOrder = subfield.quadOrder

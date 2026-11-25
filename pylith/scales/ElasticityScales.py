@@ -1,12 +1,12 @@
-# =================================================================================================
-# This code is part of SpatialData, developed through the Computational Infrastructure
-# for Geodynamics (https://github.com/geodynamics/spatialdata).
+# -*- python -*-
+# -*- coding: utf-8 -*-
 #
-# Copyright (c) 2010-2026, University of California, Davis and the SpatialData Development Team.
-# All rights reserved.
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from .scales import ElasticityScales as ModuleElasticityScales
 
@@ -24,17 +24,11 @@ class ElasticityScales(ModuleElasticityScales):
 
     @staticmethod
     def setQuasistaticElasticity(scales, lengthScale=1.0 * km, timeScale=year):
-        ModuleElasticityScales.setQuasistaticElasticity(
-            scales, lengthScale.value, timeScale.value
-        )
+        ModuleElasticityScales.setQuasistaticElasticity(scales, lengthScale.value, timeScale.value)
 
     @staticmethod
-    def setDynamicElasticity(
-        scales, lengthScale=1.0 * km, velocityScale=3.0 * km / second
-    ):
-        ModuleElasticityScales.setDynamicElasticity(
-            scales, lengthScale.value, velocityScale.value
-        )
+    def setDynamicElasticity(scales, lengthScale=1.0 * km, velocityScale=3.0 * km / second):
+        ModuleElasticityScales.setDynamicElasticity(scales, lengthScale.value, velocityScale.value)
 
     @staticmethod
     def setQuasistaticPoroelasticity(

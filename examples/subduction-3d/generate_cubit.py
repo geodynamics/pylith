@@ -1,4 +1,14 @@
 #!python3
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 """WARNING: This script only works with the Python supplied with Cubit.
 
 To run this script outside the Cubit GUI, you will need to run it like:
@@ -158,9 +168,7 @@ def _calculate_local_strike(contour):
         values_smoothed = numpy.convolve(values_padded, window, mode="valid")
         return values_smoothed[0:-1]
 
-    contour_smooth = numpy.stack(
-        (_smooth_values(contour[:, 0]), _smooth_values(contour[:, 1]))
-    ).T
+    contour_smooth = numpy.stack((_smooth_values(contour[:, 0]), _smooth_values(contour[:, 1]))).T
 
     sx = contour_smooth[:-1, 0] - contour_smooth[1:, 0]
     sy = contour_smooth[:-1, 1] - contour_smooth[1:, 1]
@@ -224,9 +232,7 @@ def _create_slab_top_surface():
 
     # Extend the slab to the topography
     contours_up_dip = _create_extended_contours(contours)
-    contours_all = dict(
-        sorted(list(contours_up_dip.items()) + list(contours.items()))
-    )  # merge dicts and sort
+    contours_all = dict(sorted(list(contours_up_dip.items()) + list(contours.items())))  # merge dicts and sort
 
     # Generate the top surface of the slab
     splines = []
@@ -371,14 +377,20 @@ cubit.cmd("merge all")
 # idless = cubit.get_idless_signatures("surface", [29, 43, 49, 56])
 s_north_str = "Surface ( at -171362 400000 -73929.7 ordinal 1 )  Surface ( at -25000 400000 -215000 ordinal 1 )  Surface ( at -347063 400000 -6763 ordinal 1 )  Surface ( at 32505.5 400000 -15000 ordinal 1 )"
 s_north_noslab_str = "Surface ( at -25000 400000 -215000 ordinal 1 )  Surface ( at -347063 400000 -6763 ordinal 1 )  Surface ( at 32505.5 400000 -15000 ordinal 1 )"
-s_north_noslab_nosplay_str = "Surface ( at -25000 400000 -215000 ordinal 1 )  Surface ( at 32505.5 400000 -15000 ordinal 1 )"
+s_north_noslab_nosplay_str = (
+    "Surface ( at -25000 400000 -215000 ordinal 1 )  Surface ( at 32505.5 400000 -15000 ordinal 1 )"
+)
 # idless = cubit.get_idless_signatures("surface", [28, 36])
-s_west_str = "Surface ( at -425000 8.73115e-11 -23145.1 ordinal 1 )  Surface ( at -425000 8.73115e-11 -220874 ordinal 1 )"
+s_west_str = (
+    "Surface ( at -425000 8.73115e-11 -23145.1 ordinal 1 )  Surface ( at -425000 8.73115e-11 -220874 ordinal 1 )"
+)
 s_west_noslab_str = "Surface ( at -425000 8.73115e-11 -220874 ordinal 1 )"
 # idless = cubit.get_idless_signatures("surface", [26, 46, 51, 54])
 s_south_str = "Surface ( at -140909 -400000 -73929.7 ordinal 1 )  Surface ( at -25000 -400000 -215000 ordinal 1 )  Surface ( at -186041 -400000 -6439.4 ordinal 1 )  Surface ( at 114076 -400000 -15000 ordinal 1 ) "
 s_south_noslab_str = "Surface ( at -25000 -400000 -215000 ordinal 1 )  Surface ( at -186041 -400000 -6439.4 ordinal 1 )  Surface ( at 114076 -400000 -15000 ordinal 1 ) "
-s_south_noslab_nosplay_str = "Surface ( at -25000 -400000 -215000 ordinal 1 )  Surface ( at 114076 -400000 -15000 ordinal 1 ) "
+s_south_noslab_nosplay_str = (
+    "Surface ( at -25000 -400000 -215000 ordinal 1 )  Surface ( at 114076 -400000 -15000 ordinal 1 ) "
+)
 # idless = cubit.get_idless_signatures("surface", [40, 44])
 s_east_str = "Surface ( at 375000 0 -15000 ordinal 1 )  Surface ( at 375000 0 -215000 ordinal 1 )"
 # idless = cubit.get_idless_signatures("surface", [2])
@@ -393,7 +405,9 @@ s_fault_slabbot_str = "Surface ( at -218964 43022.7 -55511.1 ordinal 1 )"
 # idless = cubit.get_idless_signatures("surface", [47])
 s_fault_splay_str = "Surface ( at -178906 -634.119 3000 ordinal 1 )"
 # idless = cubit.get_idless_signatures("surface", [61, 65])
-s_fault_slabtop_patch_str = "Surface ( at -262020 10520.6 -998.027 ordinal 3 )  Surface ( at -178716 -14836.1 -11135 ordinal 1 )"
+s_fault_slabtop_patch_str = (
+    "Surface ( at -262020 10520.6 -998.027 ordinal 3 )  Surface ( at -178716 -14836.1 -11135 ordinal 1 )"
+)
 
 # Create lists of curve ids for fault buried edges
 # idless = cubit.get_idless_signatures("curve", [87])
@@ -419,9 +433,7 @@ cubit.cmd("volume all sizing function none")
 # Set size on faults
 cubit.cmd(f"surface {s_fault_slabtop_str} size {DX_MIN}")
 
-cubit.cmd(
-    f"volume all sizing function skeleton min_size {DX_MIN} max_gradient {DX_BIAS} max_size 50e+3"
-)
+cubit.cmd(f"volume all sizing function skeleton min_size {DX_MIN} max_gradient {DX_BIAS} max_size 50e+3")
 
 # cubit.cmd("preview mesh volume all")
 cubit.cmd("set tetmesher optimize sliver on")
@@ -556,3 +568,6 @@ cubit.cmd("nodeset 133 name 'fault_splay_edge'")
 
 # Write mesh as ExodusII file
 cubit.cmd(f"export mesh 'input/mesh_{CELL}.exo' dimension 3 overwrite")
+
+
+# End of file

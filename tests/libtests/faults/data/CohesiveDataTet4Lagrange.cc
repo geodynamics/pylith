@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 /* Original mesh
  *
@@ -35,33 +35,22 @@ const int pylith::faults::CohesiveDataTet4Lagrange::_numCells = 3;
 
 const int pylith::faults::CohesiveDataTet4Lagrange::_cellDim = 3;
 
-const int pylith::faults::CohesiveDataTet4Lagrange::_numCorners[3] = {
-    4,
-    4,
-    6
-};
+const int pylith::faults::CohesiveDataTet4Lagrange::_numCorners[3] = {4, 4, 6};
 
-const int pylith::faults::CohesiveDataTet4Lagrange::_materialIds[3] = {
-    0,  0,
-    1
-};
+const int pylith::faults::CohesiveDataTet4Lagrange::_materialIds[3] = {0, 0, 1};
 
 const int pylith::faults::CohesiveDataTet4Lagrange::_numGroups = 2;
 
 const int pylith::faults::CohesiveDataTet4Lagrange::_groupSizes[2] = {
-    5+4+1, 6+6+2, // vertices+edges+faces
+    5 + 4 + 1,
+    6 + 6 + 2, // vertices+edges+faces
 };
 
-const char* pylith::faults::CohesiveDataTet4Lagrange::_groupNames[2] = {
-    "output", "fault"
-};
+const char* pylith::faults::CohesiveDataTet4Lagrange::_groupNames[2] = {"output", "fault"};
 
-const char* pylith::faults::CohesiveDataTet4Lagrange::_groupTypes[2] = {
-    "vertex", "vertex"
-};
+const char* pylith::faults::CohesiveDataTet4Lagrange::_groupTypes[2] = {"vertex", "vertex"};
 
-const char* pylith::faults::CohesiveDataTet4Lagrange::_filename =
-    "data/tet4.mesh";
+const char* pylith::faults::CohesiveDataTet4Lagrange::_filename = "data/tet4.mesh";
 
 pylith::faults::CohesiveDataTet4Lagrange::CohesiveDataTet4Lagrange(void) { // constructor
     numVertices = _numVertices;
@@ -78,7 +67,8 @@ pylith::faults::CohesiveDataTet4Lagrange::CohesiveDataTet4Lagrange(void) { // co
 } // constructor
 
 
-pylith::faults::CohesiveDataTet4Lagrange::~CohesiveDataTet4Lagrange(void) {}
+pylith::faults::CohesiveDataTet4Lagrange::~CohesiveDataTet4Lagrange(void) {
+}
 
 
 // End of file

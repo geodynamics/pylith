@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/initializers/initializersfwd.hh" // forward declarations
@@ -22,8 +23,7 @@ class pylith::initializers::Initializer : public pylith::utils::PyreComponent {
     friend class TestInitializer;
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     Initializer(void);
 
@@ -49,16 +49,15 @@ public:
 
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     std::vector<pylith::initializers::InitializePhase*> _phases; ///< Array of phases.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     Initializer(const Initializer&); ///< Not implemented
     const Initializer& operator=(const Initializer&); ///< Not implemented
 
 }; // Initializer
+
 
 // End of file

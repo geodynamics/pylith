@@ -1,4 +1,14 @@
 #!/usr/bin/env nemesis
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 """Generate a tri or quad mesh of a strike-slip fault using Gmsh, making use of the
 built-in geometry engine.
 
@@ -17,7 +27,8 @@ Run `generate_gmsh.py --write` to generate the mesh.
 import gmsh
 
 # Import the gmsh_utils Python module supplied with PyLith.
-from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup, GenerateMesh)
+from pylith.meshio.gmsh_utils import BoundaryGroup, MaterialGroup, GenerateMesh
+
 
 class App(GenerateMesh):
     """
@@ -44,22 +55,22 @@ class App(GenerateMesh):
     |       |      |
     p1-----p5-----p2
     """
-    DOMAIN_X = 100.0e+3
-    DOMAIN_Y = 150.0e+3
 
-    DX_FAULT = 8.0e+3
+    DOMAIN_X = 100.0e3
+    DOMAIN_Y = 150.0e3
+
+    DX_FAULT = 8.0e3
     DX_BIAS = 1.1
 
     def __init__(self):
-        """Constructor.
-        """
+        """Constructor."""
         # Set the cell choices available through command line options.
         # The default cell type `tri` and filename match the mesh used
         # in the PyLith parameter files.
         self.cell_choices = {
             "default": "tri",
             "choices": ["tri", "quad"],
-            }
+        }
         self.filename = "mesh_tri.msh"
 
     def create_geometry(self):
@@ -76,12 +87,12 @@ class App(GenerateMesh):
 
         # Create points.
         p1 = gmsh.model.geo.add_point(x1, y1, 0.0)
-        p2 = gmsh.model.geo.add_point(x1+lx, y1, 0.0)
-        p3 = gmsh.model.geo.add_point(x1+lx, y1+ly, 0.0)
-        p4 = gmsh.model.geo.add_point(x1, y1+ly, 0.0)
+        p2 = gmsh.model.geo.add_point(x1 + lx, y1, 0.0)
+        p3 = gmsh.model.geo.add_point(x1 + lx, y1 + ly, 0.0)
+        p4 = gmsh.model.geo.add_point(x1, y1 + ly, 0.0)
 
-        p5 = gmsh.model.geo.add_point(x1+0.5*lx, y1, 0.0)
-        p6 = gmsh.model.geo.add_point(x1+0.5*lx, y1+ly, 0.0)
+        p5 = gmsh.model.geo.add_point(x1 + 0.5 * lx, y1, 0.0)
+        p6 = gmsh.model.geo.add_point(x1 + 0.5 * lx, y1 + ly, 0.0)
 
         # Create curves. We store the curve tag as a data member
         # so that we can refer to them later.
@@ -142,7 +153,7 @@ class App(GenerateMesh):
         in our local App class.
         """
         # Set discretization size with geometric progression from distance to the fault.
-        
+
         # We turn off the default sizing methods.
         gmsh.option.set_number("Mesh.MeshSizeFromPoints", 0)
         gmsh.option.set_number("Mesh.MeshSizeFromCurvature", 0)
@@ -155,7 +166,7 @@ class App(GenerateMesh):
         # Second, we setup a field `field_size`, which is the mathematical expression
         # for the cell size as a function of the cell size on the fault, the distance from
         # the fault (as given by `field_size`, and the bias factor.
-        # The `GenerateMesh` class includes a special function `get_math_progression` 
+        # The `GenerateMesh` class includes a special function `get_math_progression`
         # for creating the string with the mathematical function.
         field_size = gmsh.model.mesh.field.add("MathEval")
         math_exp = GenerateMesh.get_math_progression(field_distance, min_dx=self.DX_FAULT, bias=self.DX_BIAS)

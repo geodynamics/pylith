@@ -1,21 +1,21 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "TestSubmesh.hh" // Implementation of class methods
 
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES createLowerDimMesh()
 #include "pylith/topology/Stratum.hh" // USES Stratum
-#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
@@ -23,8 +23,7 @@
 
 // ------------------------------------------------------------------------------------------------
 // Constructor.
-pylith::topology::TestSubmesh::TestSubmesh(TestSubmesh_Data* data) :
-    _data(data) {
+pylith::topology::TestSubmesh::TestSubmesh(TestSubmesh_Data* data) : _data(data) {
     PYLITH_METHOD_BEGIN;
     REQUIRE(data);
 
@@ -40,9 +39,12 @@ pylith::topology::TestSubmesh::TestSubmesh(TestSubmesh_Data* data) :
 pylith::topology::TestSubmesh::~TestSubmesh(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _domainMesh;_domainMesh = NULL;
-    delete _testMesh;_testMesh = NULL;
-    delete _data;_data = NULL;
+    delete _domainMesh;
+    _domainMesh = NULL;
+    delete _testMesh;
+    _testMesh = NULL;
+    delete _data;
+    _data = NULL;
 
     PYLITH_METHOD_END;
 } // destructor
@@ -59,7 +61,9 @@ pylith::topology::TestSubmesh::testAccessors(void) {
 
     _buildMesh();
     const int labelValue = 1;
-    delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue, "testAccessors");REQUIRE(_testMesh);
+    delete _testMesh;
+    _testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue, "testAccessors");
+    REQUIRE(_testMesh);
     REQUIRE(_testMesh->getCoordSys());
 
     REQUIRE(_data->topology->dimension == _testMesh->getCoordSys()->getSpaceDim());
@@ -86,10 +90,12 @@ pylith::topology::TestSubmesh::testSizes(void) {
 
     _buildMesh();
     const int labelValue = 1;
-    delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue, "testSizes");REQUIRE(_testMesh);
+    delete _testMesh;
+    _testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue, "testSizes");
+    REQUIRE(_testMesh);
     REQUIRE(_testMesh);
 
-    CHECK(_data->topology->dimension-1 == size_t(_testMesh->getDimension()));
+    CHECK(_data->topology->dimension - 1 == size_t(_testMesh->getDimension()));
 
     PYLITH_METHOD_END;
 } // testSizes
@@ -105,16 +111,19 @@ pylith::topology::TestSubmesh::testCreateLowerDimMesh(void) {
 
     _buildMesh();
     const int labelValue = 1;
-    delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue, "testCreateLowerDimMesh");REQUIRE(_testMesh);
+    delete _testMesh;
+    _testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue, "testCreateLowerDimMesh");
+    REQUIRE(_testMesh);
 
-    REQUIRE(_data->topology->dimension-1 == size_t(_testMesh->getDimension()));
+    REQUIRE(_data->topology->dimension - 1 == size_t(_testMesh->getDimension()));
 
     int result = 0;
     MPI_Comm_compare(PETSC_COMM_WORLD, _testMesh->getComm(), &result);
     CHECK(int(MPI_CONGRUENT) == result);
 
     // Check vertices
-    const PetscDM dmMesh = _testMesh->getDM();REQUIRE(dmMesh);
+    const PetscDM dmMesh = _testMesh->getDM();
+    REQUIRE(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
     const PetscInt vStart = depthStratum.begin();
     const PetscInt vEnd = depthStratum.end();
@@ -136,9 +145,12 @@ pylith::topology::TestSubmesh::testCreateLowerDimMesh(void) {
         CHECK(_data->submeshCells[iC] == c);
     } // for
 
-    delete _testMesh;_testMesh = NULL;
-    REQUIRE_THROWS_AS(MeshOps::createLowerDimMesh(*_domainMesh, "zzyyxx", labelValue, "testFail1"), pylith::exceptions::ValueError);
-    REQUIRE_THROWS_AS(MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue+99, "testFail2"), pylith::exceptions::ValueError);
+    delete _testMesh;
+    _testMesh = NULL;
+    REQUIRE_THROWS_AS(MeshOps::createLowerDimMesh(*_domainMesh, "zzyyxx", labelValue, "testFail1"),
+                      pylith::exceptions::ValueError);
+    REQUIRE_THROWS_AS(MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue + 99, "testFail2"),
+                      pylith::exceptions::ValueError);
 } // testCreateLowerDimMesh
 
 
@@ -151,7 +163,9 @@ pylith::topology::TestSubmesh::testCreateSubdomainMesh(void) {
     REQUIRE(_data->geometry);
 
     _buildMesh();
-    delete _testMesh;_testMesh = MeshOps::createSubdomainMesh(*_domainMesh, _data->subdomainLabel, _data->subdomainLabelValue, "Test subdomain");
+    delete _testMesh;
+    _testMesh =
+        MeshOps::createSubdomainMesh(*_domainMesh, _data->subdomainLabel, _data->subdomainLabelValue, "Test subdomain");
     REQUIRE(_testMesh);
 
     REQUIRE(_data->topology->dimension == size_t(_testMesh->getDimension()));
@@ -161,7 +175,8 @@ pylith::topology::TestSubmesh::testCreateSubdomainMesh(void) {
     CHECK(int(MPI_CONGRUENT) == result);
 
     // Check vertices
-    const PetscDM dmMesh = _testMesh->getDM();REQUIRE(dmMesh);
+    const PetscDM dmMesh = _testMesh->getDM();
+    REQUIRE(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
     const PetscInt vStart = depthStratum.begin();
     const PetscInt vEnd = depthStratum.end();
@@ -183,9 +198,12 @@ pylith::topology::TestSubmesh::testCreateSubdomainMesh(void) {
         CHECK(_data->subdomainCells[iC] == c);
     } // for
 
-    delete _testMesh;_testMesh = NULL;
-    CHECK_THROWS_AS(MeshOps::createSubdomainMesh(*_domainMesh, "material-id", -9, "Test subdomain"), pylith::exceptions::ValueError);
-    CHECK_THROWS_AS(MeshOps::createSubdomainMesh(*_domainMesh, "zzyyxx", -9, "Test subdomain"), pylith::exceptions::ValueError);
+    delete _testMesh;
+    _testMesh = NULL;
+    CHECK_THROWS_AS(MeshOps::createSubdomainMesh(*_domainMesh, "material-id", -9, "Test subdomain"),
+                    pylith::exceptions::ValueError);
+    CHECK_THROWS_AS(MeshOps::createSubdomainMesh(*_domainMesh, "zzyyxx", -9, "Test subdomain"),
+                    pylith::exceptions::ValueError);
 } // testCreateLowerDimMesh
 
 
@@ -199,21 +217,24 @@ pylith::topology::TestSubmesh::_buildMesh(void) {
     REQUIRE(!_domainMesh);
     REQUIRE(!_testMesh);
 
-    delete _domainMesh;_domainMesh = new pylith::topology::Mesh();REQUIRE(_domainMesh);
+    delete _domainMesh;
+    _domainMesh = new pylith::topology::Mesh();
+    REQUIRE(_domainMesh);
     pylith::meshio::MeshBuilder::buildMesh(_domainMesh, *_data->topology, *_data->geometry);
 
     spatialdata::geocoords::CSCart cs;
     cs.setSpaceDim(_data->geometry->spaceDim);
     _domainMesh->setCoordSys(&cs);
 
-    pylith::meshio::MeshBuilder::shape_t faceShape = pylith::meshio::MeshBuilder::faceShapeFromCellShape(_data->topology->cellShape);
+    pylith::meshio::MeshBuilder::shape_t faceShape =
+        pylith::meshio::MeshBuilder::faceShapeFromCellShape(_data->topology->cellShape);
     pylith::int_array faceValues(_data->faceGroup, _data->faceGroupSize);
     pylith::meshio::MeshBuilder::setFaceGroupFromCellVertices(_domainMesh, _data->faceGroupName, faceValues, faceShape);
 
     // Create "subdomain" by setting label of subdomain cells.
     for (size_t c = 0; c < _data->topology->numCells; ++c) {
-        PylithCallPetscRequire(DMSetLabelValue(_domainMesh->getDM(), _data->subdomainLabel, c,
-                                               _data->subdomainLabelValues[c]));
+        PylithCallPetscRequire(
+            DMSetLabelValue(_domainMesh->getDM(), _data->subdomainLabel, c, _data->subdomainLabelValues[c]));
     } // for
 
     PYLITH_METHOD_END;
@@ -240,14 +261,17 @@ pylith::topology::TestSubmesh_Data::TestSubmesh_Data(void) :
     subdomainNumVertices(0),
     subdomainVertices(NULL),
     subdomainNumCells(0),
-    subdomainCells(NULL) {}
+    subdomainCells(NULL) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
 // Destructor
 pylith::topology::TestSubmesh_Data::~TestSubmesh_Data(void) {
-    delete topology;topology = NULL;
-    delete geometry;geometry = NULL;
+    delete topology;
+    topology = NULL;
+    delete geometry;
+    geometry = NULL;
 }
 
 

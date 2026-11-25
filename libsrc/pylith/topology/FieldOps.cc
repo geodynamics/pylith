@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -16,19 +16,20 @@
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
+#include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/VisitorSubmesh.hh" // USES VecVisitorSubmesh
-#include "pylith/topology/Stratum.hh" // USES Stratum
 
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES journal macros
-#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
 #include "petscdm.h" // USES PetscDM
 
-std::map<pylith::topology::FieldBase::Discretization, pylith::topology::FE> pylith::topology::FieldOps::feStore = std::map<pylith::topology::FieldBase::Discretization, pylith::topology::FE>();
+std::map<pylith::topology::FieldBase::Discretization, pylith::topology::FE> pylith::topology::FieldOps::feStore =
+    std::map<pylith::topology::FieldBase::Discretization, pylith::topology::FE>();
 
 void
 pylith::topology::FieldOps::deallocate(void) {
@@ -48,24 +49,35 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
     PetscInt dim;
 
     PylithCallPetsc(DMGetDimension(dm, &dim));
-    dim = (feinfo.dimension < 0) ? dim : feinfo.dimension;assert(dim > 0);
-    FieldBase::Discretization feKey = FieldBase::Discretization(feinfo.basisOrder, feinfo.quadOrder, dim, numComponents,
-                                                                feinfo.isFaultOnly, feinfo.cellBasis, feinfo.feSpace,
+    dim = (feinfo.dimension < 0) ? dim : feinfo.dimension;
+    assert(dim > 0);
+    FieldBase::Discretization feKey = FieldBase::Discretization(feinfo.basisOrder,
+                                                                feinfo.quadOrder,
+                                                                dim,
+                                                                numComponents,
+                                                                feinfo.isFaultOnly,
+                                                                feinfo.cellBasis,
+                                                                feinfo.feSpace,
                                                                 feinfo.isBasisContinuous);
-    std::map<FieldBase::Discretization, pylith::topology::FE>::const_iterator hasFE = pylith::topology::FieldOps::feStore.find(feKey);
+    std::map<FieldBase::Discretization, pylith::topology::FE>::const_iterator hasFE =
+        pylith::topology::FieldOps::feStore.find(feKey);
 
     if (hasFE == pylith::topology::FieldOps::feStore.end()) {
         const int basisOrder = PetscMax(feKey.basisOrder, 0);
         const int quadOrder = PetscMax(feKey.quadOrder > 0 ? feKey.quadOrder : basisOrder, 0);
-        const PetscBool simplexBasis = pylith::topology::FieldBase::SIMPLEX_BASIS == feKey.cellBasis ? PETSC_TRUE : PETSC_FALSE;
-        const PetscBool useTensor = pylith::topology::FieldBase::TENSOR_BASIS == feKey.cellBasis ? PETSC_TRUE : PETSC_FALSE;
+        const PetscBool simplexBasis =
+            pylith::topology::FieldBase::SIMPLEX_BASIS == feKey.cellBasis ? PETSC_TRUE : PETSC_FALSE;
+        const PetscBool useTensor =
+            pylith::topology::FieldBase::TENSOR_BASIS == feKey.cellBasis ? PETSC_TRUE : PETSC_FALSE;
         const PetscBool basisContinuity = feKey.isBasisContinuous ? PETSC_TRUE : PETSC_FALSE;
 
         // Create space
         PetscSpace space = NULL;
-        PylithCallPetsc(PetscSpaceCreate(PETSC_COMM_SELF, &space));assert(space);
-        PylithCallPetsc(PetscSpaceSetType(space, feKey.feSpace == FieldBase::POLYNOMIAL_SPACE ?
-                                          PETSCSPACEPOLYNOMIAL : PETSCSPACEPOINT));
+        PylithCallPetsc(PetscSpaceCreate(PETSC_COMM_SELF, &space));
+        assert(space);
+        PylithCallPetsc(
+            PetscSpaceSetType(space,
+                              feKey.feSpace == FieldBase::POLYNOMIAL_SPACE ? PETSCSPACEPOLYNOMIAL : PETSCSPACEPOINT));
         PylithCallPetsc(PetscSpaceSetNumComponents(space, numComponents));
         PylithCallPetsc(PetscSpaceSetDegree(space, basisOrder, PETSC_DETERMINE));
         if (feKey.feSpace == FieldBase::POLYNOMIAL_SPACE) {
@@ -78,7 +90,8 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
         PetscDualSpace dualspace = NULL;
         PetscDM dmCell = NULL;
         PylithCallPetsc(PetscDualSpaceCreate(PETSC_COMM_SELF, &dualspace));
-        PylithCallPetsc(DMPlexCreateReferenceCell(PETSC_COMM_SELF, DMPolytopeTypeSimpleShape(dim, simplexBasis), &dmCell));
+        PylithCallPetsc(
+            DMPlexCreateReferenceCell(PETSC_COMM_SELF, DMPolytopeTypeSimpleShape(dim, simplexBasis), &dmCell));
         PylithCallPetsc(PetscDualSpaceSetDM(dualspace, dmCell));
         PylithCallPetsc(DMDestroy(&dmCell));
         PylithCallPetsc(PetscDualSpaceSetNumComponents(dualspace, numComponents));
@@ -103,10 +116,18 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
         PetscQuadrature faceQuadrature = NULL;
         DMPolytopeType ct;
         switch (dim) {
-        case 0: ct = DM_POLYTOPE_POINT;break;
-        case 1: ct = DM_POLYTOPE_SEGMENT;break;
-        case 2: ct = useTensor ? DM_POLYTOPE_QUADRILATERAL : DM_POLYTOPE_TRIANGLE;break;
-        case 3: ct = useTensor ? DM_POLYTOPE_HEXAHEDRON : DM_POLYTOPE_TETRAHEDRON;break;
+        case 0:
+            ct = DM_POLYTOPE_POINT;
+            break;
+        case 1:
+            ct = DM_POLYTOPE_SEGMENT;
+            break;
+        case 2:
+            ct = useTensor ? DM_POLYTOPE_QUADRILATERAL : DM_POLYTOPE_TRIANGLE;
+            break;
+        case 3:
+            ct = useTensor ? DM_POLYTOPE_HEXAHEDRON : DM_POLYTOPE_TETRAHEDRON;
+            break;
         default:
             PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unknown dimension " << dim << ".");
         }
@@ -117,12 +138,13 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
         PylithCallPetsc(PetscQuadratureDestroy(&faceQuadrature));
 
         assert(feKey.feSpace == FieldBase::POLYNOMIAL_SPACE);
-        pylith::topology::FieldOps::feStore.insert(std::pair<FieldBase::Discretization, pylith::topology::FE>(feKey, fe));
+        pylith::topology::FieldOps::feStore.insert(
+            std::pair<FieldBase::Discretization, pylith::topology::FE>(feKey, fe));
     } else {
         PYLITH_ERROR(pylith::exceptions::InternalLogicError,
                      ":KLUDGE: Can't reuse PetscFE due to naming of fields, so make a deep copy of fe.");
         fe = hasFE->second._fe;
-        PylithCallPetsc(PetscObjectReference((PetscObject) fe));
+        PylithCallPetsc(PetscObjectReference((PetscObject)fe));
     }
 
     PYLITH_METHOD_RETURN(fe);
@@ -153,9 +175,10 @@ pylith::topology::FieldOps::checkDiscretization(const pylith::topology::Field& t
             if (quadOrder > 0) {
                 if (quadOrder != sinfo.fe.quadOrder) {
                     PYLITH_ERROR(pylith::exceptions::InvalidParameterError,
-                                 "Quadrature order of subfields in target field '" << target.getLabel()
-                                                                                   << "' must all be the same. Expected quadrature order of " << quadOrder << ", but subfield '"
-                                                                                   << subfieldNames[i] << "' has a quadrature order of " << sinfo.fe.quadOrder << ".");
+                                 "Quadrature order of subfields in target field '"
+                                     << target.getLabel() << "' must all be the same. Expected quadrature order of "
+                                     << quadOrder << ", but subfield '" << subfieldNames[i]
+                                     << "' has a quadrature order of " << sinfo.fe.quadOrder << ".");
                 } // if
             } else {
                 quadOrder = sinfo.fe.quadOrder;
@@ -172,10 +195,12 @@ pylith::topology::FieldOps::checkDiscretization(const pylith::topology::Field& t
             if (quadOrder > 0) {
                 if (quadOrder != sinfo.fe.quadOrder) {
                     PYLITH_ERROR(pylith::exceptions::InvalidParameterError,
-                                 "Quadrature order of subfields in auxiliary field '" << auxiliary.getLabel()
-                                                                                      << "' must all match the quadrature order in the target subfields '" << target.getLabel()
-                                                                                      << "'. Expected quadrature order of " << quadOrder << ", but subfield '" << subfieldNames[i]
-                                                                                      << "' has a quadrature order of " << sinfo.fe.quadOrder << ".");
+                                 "Quadrature order of subfields in auxiliary field '"
+                                     << auxiliary.getLabel()
+                                     << "' must all match the quadrature order in the target subfields '"
+                                     << target.getLabel() << "'. Expected quadrature order of " << quadOrder
+                                     << ", but subfield '" << subfieldNames[i] << "' has a quadrature order of "
+                                     << sinfo.fe.quadOrder << ".");
                 } // if
             } else {
                 quadOrder = sinfo.fe.quadOrder;
@@ -198,7 +223,7 @@ pylith::topology::FieldOps::checkSubfieldsExist(const pylith::string_vector& req
     const size_t numRequired = requiredFields.size();
     for (size_t i = 0; i < numRequired; ++i) {
         if (!field.hasSubfield(requiredFields[i].c_str())) {
-            missingFields.resize(numMissing+1);
+            missingFields.resize(numMissing + 1);
             missingFields[numMissing++] = requiredFields[i];
         } // if
     } // for
@@ -209,14 +234,14 @@ pylith::topology::FieldOps::checkSubfieldsExist(const pylith::string_vector& req
         msg << "Could not find";
         for (size_t i = 0; i < numMissing; ++i) {
             msg << " '" << missingFields[i] << "'";
-            if (i+1 < numMissing) {
+            if (i + 1 < numMissing) {
                 msg << ",";
             }
         }
         msg << " in " << field.getLabel() << " field. Field contains: ";
         for (size_t i = 0; i < subfieldNames.size(); ++i) {
             msg << "'" << subfieldNames[i] << "'";
-            if (i+1 < subfieldNames.size()) {
+            if (i + 1 < subfieldNames.size()) {
                 msg << ",";
             }
         } // for
@@ -267,13 +292,19 @@ pylith::topology::FieldOps::layoutsMatch(const pylith::topology::Field& fieldA,
     bool isMatch = true;
 
     // Check to see if fields have same chart and section sizes.
-    if (fieldA.getChartSize() != fieldB.getChartSize()) { isMatch = false; }
-    if (fieldA.getStorageSize() != fieldB.getStorageSize()) { isMatch = false; }
+    if (fieldA.getChartSize() != fieldB.getChartSize()) {
+        isMatch = false;
+    }
+    if (fieldA.getStorageSize() != fieldB.getStorageSize()) {
+        isMatch = false;
+    }
 
     // Check to see if number of subfields match.
     const pylith::string_vector& subfieldNamesA = fieldA.getSubfieldNames();
     const pylith::string_vector& subfieldNamesB = fieldB.getSubfieldNames();
-    if (subfieldNamesA.size() != subfieldNamesB.size()) { isMatch = false; }
+    if (subfieldNamesA.size() != subfieldNamesB.size()) {
+        isMatch = false;
+    }
 
     // Check to see if subfields have same number of components and discretizations.
     const size_t numSubfields = subfieldNamesA.size();
@@ -282,9 +313,15 @@ pylith::topology::FieldOps::layoutsMatch(const pylith::topology::Field& fieldA,
             const pylith::topology::Field::SubfieldInfo& infoA = fieldA.getSubfieldInfo(subfieldNamesA[i].c_str());
             const pylith::topology::Field::SubfieldInfo& infoB = fieldB.getSubfieldInfo(subfieldNamesB[i].c_str());
 
-            if (infoA.description.numComponents != infoB.description.numComponents) { isMatch = false; }
-            if (infoA.fe.cellBasis != infoB.fe.cellBasis) { isMatch = false; }
-            if (infoA.fe.basisOrder != infoB.fe.basisOrder) { isMatch = false; }
+            if (infoA.description.numComponents != infoB.description.numComponents) {
+                isMatch = false;
+            }
+            if (infoA.fe.cellBasis != infoB.fe.cellBasis) {
+                isMatch = false;
+            }
+            if (infoA.fe.basisOrder != infoB.fe.basisOrder) {
+                isMatch = false;
+            }
         } // for
     } // if
 

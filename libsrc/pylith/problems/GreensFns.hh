@@ -1,26 +1,26 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
-#include "pylith/problems/Problem.hh" // ISA Problem
-#include "pylith/testing/testingfwd.hh" // USES MMSTest
 #include "pylith/faults/faultsfwd.hh" // HOLDSA FaultCohesiveImpulses
 #include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Integrator
+#include "pylith/problems/Problem.hh" // ISA Problem
+#include "pylith/testing/testingfwd.hh" // USES MMSTest
 
 class pylith::problems::GreensFns : public pylith::problems::Problem {
     friend class TestGreensFns; // unit testing
     friend class pylith::testing::MMSTest; // Testing with Method of Manufactured Solutions
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     GreensFns(void);
 
@@ -115,11 +115,10 @@ public:
      * @param[out] residualvec PetscVec for residual.
      * @param[in] context User context (GreensFns).
      */
-    static
-    PetscErrorCode computeResidual(PetscSNES snes,
-                                   PetscVec solutionVec,
-                                   PetscVec residualVec,
-                                   void* context);
+    static PetscErrorCode computeResidual(PetscSNES snes,
+                                          PetscVec solutionVec,
+                                          PetscVec residualVec,
+                                          void* context);
 
     /* Callback static method for computing Jacobian.
      *
@@ -129,12 +128,11 @@ public:
      * @param[in] solutionVec PETSc Vec with current trial solution.
      * @param[in] context User context (GreensFns).
      */
-    static
-    PetscErrorCode computeJacobian(PetscSNES snes,
-                                   PetscVec solutionVec,
-                                   PetscMat jacobianMat,
-                                   PetscMat precondMat,
-                                   void* context);
+    static PetscErrorCode computeJacobian(PetscSNES snes,
+                                          PetscVec solutionVec,
+                                          PetscMat jacobianMat,
+                                          PetscMat precondMat,
+                                          void* context);
 
     // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
 
@@ -143,8 +141,7 @@ public:
 
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     std::string _faultLabelName; ///< Name of label for fault with impulses.
     PylithInt _faultLabelValue; ///< Value of label for fault with impulses.
     pylith::faults::FaultCohesiveImpulses* _faultImpulses; ///< Fault interface with Green's functions impulses.
@@ -154,5 +151,6 @@ private:
     pylith::problems::ProgressMonitorStep* _monitor; ///< Monitor for simulation progress.
 
 }; // GreensFns
+
 
 // End of file

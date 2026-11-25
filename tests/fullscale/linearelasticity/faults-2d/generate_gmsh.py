@@ -1,7 +1,17 @@
 #!/usr/bin/env nemesis
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 import gmsh
-from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup, GenerateMesh)
+from pylith.meshio.gmsh_utils import BoundaryGroup, MaterialGroup, GenerateMesh
+
 
 class App(GenerateMesh):
     """
@@ -15,37 +25,37 @@ class App(GenerateMesh):
     |   |   |        |
     p1--p7--p5------p2
     """
-    DOMAIN_X = DOMAIN_Y = 8.0e+3
-    DX = 1.0e+3
+
+    DOMAIN_X = DOMAIN_Y = 8.0e3
+    DX = 1.0e3
 
     def __init__(self):
         self.cell_choices = {
             "required": True,
             "choices": ["tri", "quad"],
-            }
+        }
         self.filename = "mesh.msh"
 
     def create_geometry(self):
-        """Create geometry.
-        """
+        """Create geometry."""
         lx = self.DOMAIN_X
         ly = self.DOMAIN_Y
         x0 = -0.5 * lx
         y0 = -0.5 * ly
 
         p1 = gmsh.model.geo.add_point(x0, y0, 0.0)
-        p2 = gmsh.model.geo.add_point(x0+lx, y0, 0.0)
-        p3 = gmsh.model.geo.add_point(x0+lx, y0+ly, 0.0)
-        p4 = gmsh.model.geo.add_point(x0, y0+ly, 0.0)
+        p2 = gmsh.model.geo.add_point(x0 + lx, y0, 0.0)
+        p3 = gmsh.model.geo.add_point(x0 + lx, y0 + ly, 0.0)
+        p4 = gmsh.model.geo.add_point(x0, y0 + ly, 0.0)
 
-        p5 = gmsh.model.geo.add_point(x0+0.5*lx, y0, 0.0)
-        p6 = gmsh.model.geo.add_point(x0+0.5*lx, y0+ly, 0.0)
+        p5 = gmsh.model.geo.add_point(x0 + 0.5 * lx, y0, 0.0)
+        p6 = gmsh.model.geo.add_point(x0 + 0.5 * lx, y0 + ly, 0.0)
 
-        p7 = gmsh.model.geo.add_point(x0+0.25*lx, y0, 0.0)
-        p8 = gmsh.model.geo.add_point(x0+0.25*lx, y0+ly, 0.0)
+        p7 = gmsh.model.geo.add_point(x0 + 0.25 * lx, y0, 0.0)
+        p8 = gmsh.model.geo.add_point(x0 + 0.25 * lx, y0 + ly, 0.0)
 
-        p9 = gmsh.model.geo.add_point(x0+0.5*lx, y0+0.5*ly, 0.0)
-        p10 = gmsh.model.geo.add_point(x0+lx, y0+0.5*ly, 0.0)
+        p9 = gmsh.model.geo.add_point(x0 + 0.5 * lx, y0 + 0.5 * ly, 0.0)
+        p10 = gmsh.model.geo.add_point(x0 + lx, y0 + 0.5 * ly, 0.0)
 
         self.xmid_corners = [p5, p6, p8, p7]
 
@@ -75,8 +85,7 @@ class App(GenerateMesh):
         gmsh.model.geo.synchronize()
 
     def mark(self):
-        """Mark geometry for materials, boundary conditions, faults, etc.
-        """
+        """Mark geometry for materials, boundary conditions, faults, etc."""
         materials = (
             MaterialGroup(tag=1, entities=[self.s_xneg]),
             MaterialGroup(tag=2, entities=[self.s_xmid]),
@@ -96,20 +105,17 @@ class App(GenerateMesh):
         )
         for group in face_groups:
             group.create_physical_group()
-        patch_groups = (
-            BoundaryGroup(name="patch_xmid", tag=30, dim=2, entities=[self.s_xmid]),
-        )
+        patch_groups = (BoundaryGroup(name="patch_xmid", tag=30, dim=2, entities=[self.s_xmid]),)
         for group in patch_groups:
             group.create_physical_group(recursive=True)
 
     def generate_mesh(self, cell):
-        """Generate the mesh. Should also include optimizing the mesh quality.
-        """
+        """Generate the mesh. Should also include optimizing the mesh quality."""
         gmsh.option.setNumber("Mesh.MeshSizeMin", self.DX)
         gmsh.option.setNumber("Mesh.MeshSizeMax", self.DX)
         if cell == "quad":
             gmsh.model.mesh.set_transfinite_automatic(recombine=True)
-            nnodes = 3 + int(self.DOMAIN_Y/self.DX + 0.5)
+            nnodes = 3 + int(self.DOMAIN_Y / self.DX + 0.5)
             gmsh.model.mesh.set_transfinite_curve(self.l_xneg, nnodes)
             gmsh.model.mesh.set_transfinite_curve(self.l_split0, nnodes)
             gmsh.model.mesh.set_transfinite_surface(self.s_xmid, cornerTags=self.xmid_corners)

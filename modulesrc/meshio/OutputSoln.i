@@ -1,27 +1,19 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
 
-/**
- * @file modulesrc/meshio/OutputSoln.i
- *
- * @brief Python interface to C++ OutputSoln object.
- */
 
 namespace pylith {
     namespace meshio {
-        class pylith::meshio::OutputSoln:
-        public pylith::problems::ObserverSoln,
-        public pylith::meshio::OutputObserver {
+        class pylith::meshio::OutputSoln : public pylith::problems::ObserverSoln,
+                                           public pylith::meshio::OutputObserver {
             // PUBLIC METHODS ///////////////////////////////////////////////
-public:
-
+          public:
             /// Constructor
             OutputSoln(void);
 
@@ -29,22 +21,21 @@ public:
             virtual ~OutputSoln(void);
 
             /// Deallocate PETSc and local data structures.
-            virtual
-            void deallocate(void);
+            virtual void deallocate(void);
 
             /** Set names of solution subfields requested for output.
              *
              * @param[in] names Array of subfield names.
              * @param[in] numNames Length of array.
              */
-            %apply(const char* const* string_list, const int list_len) {
-                (const char* names[],
-                 const int numNames)
-            };
+            %apply(const char* const* string_list,
+                    const int list_len){(const char* names[],
+                                         const int numNames)};
             void setOutputSubfields(const char* names[],
                                     const int numNames);
 
-            %clear(const char* names[], const int numNames);
+            %clear(const char* names[],
+                    const int numNames);
 
             /** Get names of solution subfields requested for output.
              *
@@ -62,8 +53,7 @@ public:
              *
              * @param[in] solution Solution field.
              */
-            virtual
-            void verifyConfiguration(const pylith::topology::Field& solution) const;
+            virtual void verifyConfiguration(const pylith::topology::Field& solution) const;
 
             /** Receive update (subject of observer).
              *
@@ -79,7 +69,8 @@ public:
 
         }; // OutputSoln
 
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
+
 
 // End of file

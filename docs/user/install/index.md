@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-install)=
 # Installation
 
@@ -238,3 +247,5 @@ Pyre contains support for the LSF, PBS, SGE, and Globus batch systems.
 Properly configured, Pyre can handle job submissions automatically, insulating users from the details of the batch system and the site configuration.
 
 See {ref}`sec-run-pylith-cluster` for more information on how to use PyLith on a cluster with a job scheduling system.
+
+% End of file

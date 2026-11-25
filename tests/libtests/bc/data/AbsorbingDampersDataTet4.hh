@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "AbsorbingDampersData.hh"
@@ -14,20 +15,18 @@
 namespace pylith {
     namespace bc {
         class AbsorbingDampersDataTet4;
-    } // pylith
-} // bc
+    } // namespace bc
+} // namespace pylith
 
 class pylith::bc::AbsorbingDampersDataTet4 : public AbsorbingDampersData {
-public:
-
+  public:
     /// Constructor
     AbsorbingDampersDataTet4(void);
 
     /// Destructor
     ~AbsorbingDampersDataTet4(void);
 
-private:
-
+  private:
     static const char* _meshFilename;
 
     static const int _numBasis;
@@ -56,7 +55,7 @@ private:
     static const PylithScalar _dampingConsts[];
     static const PylithScalar _valsResidual[];
     static const PylithScalar _valsJacobian[];
-
 };
+
 
 // End of file

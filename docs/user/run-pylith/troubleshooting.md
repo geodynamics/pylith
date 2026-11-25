@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-run-pylith-troubleshooting)=
 # Troubleshooting
 
@@ -98,7 +107,7 @@ Please report these cases so that we can fix these problems (either trap the err
 If this occurs with any of the problems distributed with PyLith, simply submit a bug report (see {ref}`sec-getting-help`) indicating which problem you ran and your platform.
 
 :::{important}
-PETSc will often report errors as semgentation faults even if the underlying problem is not an invalid read/write.
+PETSc will often report errors as segmentation faults even if the underlying problem is not an invalid read/write.
 If you see PETSc reporting a segmentation fault, examine the output carefully for other error messages that indicate the real issue is something else.
 :::
 
@@ -144,3 +153,5 @@ The following steps can help diagnose the source of the problem.
 1. If using `preonly` for the KSP type (often the default), then try switching to `gmres` with a KSP tolerance of `1.0e-12`.
   If that works, then try backing off on the tolerance.
   Helpful PETSc settings include `--petsc.ksp_view=true`, `--petsc.ksp_type=gmres` and `--petsc.ksp_rtol=1.0e-12`.
+
+% End of file

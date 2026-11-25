@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "petscfwd.hh" // forward declarations
@@ -18,8 +19,7 @@ class pylith::petsc::TSMonitor : public pylith::utils::PyreComponent {
     friend class TestTSMonitor; // unit testing
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TSMonitor(void);
 
@@ -43,20 +43,19 @@ public:
      * @param[in] u Current iterate.
      * @param[inout] context User defined context.
      */
-    static
-    PetscErrorCode PylithTSMonitor(PetscTS ts,
-                                   PetscInt i_step,
-                                   PetscReal time,
-                                   PetscVec u,
-                                   PetscCtx context);
+    static PetscErrorCode PylithTSMonitor(PetscTS ts,
+                                          PetscInt i_step,
+                                          PetscReal time,
+                                          PetscVec u,
+                                          PetscCtx context);
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     TSMonitor(const TSMonitor&) = delete;
 
     const TSMonitor& operator=(const TSMonitor&) = delete;
 
 }; // TSMonitor
+
 
 // End of file

@@ -1,12 +1,13 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # Application for searching PyLith .cfg files.
 
 import sys
@@ -18,13 +19,12 @@ import os
 from pylith.utils.converters import string_to_list
 from pylith.utils.SimulationMetadata import fromFile
 
-class ConfigSearchApp():
-    """Application for searching PyLith .cfg files.
-    """
+
+class ConfigSearchApp:
+    """Application for searching PyLith .cfg files."""
 
     def __init__(self):
-        """Constructor.
-        """
+        """Constructor."""
         self.filters = {}
 
     def main(self, **kwargs):
@@ -44,11 +44,12 @@ class ConfigSearchApp():
             version (str), default: None
                 PyLith version for filtering search results.
         """
-        args = argparse.Namespace(
-            **kwargs) if kwargs else self._parse_command_line()
+        args = argparse.Namespace(**kwargs) if kwargs else self._parse_command_line()
         self._set_filters(args)
 
-        display_fn = self._display_metadata_markdown if args.output_format == "markdown" else self._display_metadata_text
+        display_fn = (
+            self._display_metadata_markdown if args.output_format == "markdown" else self._display_metadata_text
+        )
         for filename in sorted(pathlib.Path(args.searchpath).glob("**/*.cfg")):
             metadata = fromFile(filename)
             if metadata:
@@ -86,7 +87,7 @@ class ConfigSearchApp():
         Args:
             metadata (pylith.utils.SimulationMetadata)
                 Simulation metadata.
-        
+
         Returns: (bool)
             True if metadata meets filter requirements, False otherwise.
         """
@@ -119,7 +120,7 @@ class ConfigSearchApp():
         Args:
             metadata (pylith.utils.SimulationMetadata)
                 Simulation metadata.
-        
+
         Returns: (bool)
             True if metadata is incompatible with filter requirements, False otherwise.
         """
@@ -151,7 +152,7 @@ class ConfigSearchApp():
             options (list of str)
                 List of metadata to display.
         """
-        INDENT = " "*4
+        INDENT = " " * 4
 
         show_all = "all" in options
         options = string_to_list(options)
@@ -254,31 +255,58 @@ class ConfigSearchApp():
         Returns (argparse.Namespace)
            Command line arguments.
         """
-        DESCRIPTION = (
-            "Application for searching PyLith .cfg parameter files."
+        DESCRIPTION = "Application for searching PyLith .cfg parameter files."
+
+        parser = argparse.ArgumentParser(
+            description=DESCRIPTION, formatter_class=argparse.ArgumentDefaultsHelpFormatter
         )
+        parser.add_argument(
+            "--path", action="store", dest="searchpath", default=".", help="Search path for .cfg files."
+        )
+        parser.add_argument(
+            "--display",
+            action="store",
+            dest="display",
+            default="all",
+            help="List of metadata to display in search results.",
+        )
+        parser.add_argument("--verbose", action="store_true", dest="verbose", help="Report missing metadata.")
 
-        parser = argparse.ArgumentParser(description=DESCRIPTION,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-        parser.add_argument("--path", action="store",
-                            dest="searchpath", default=".", help="Search path for .cfg files.")
-        parser.add_argument("--display", action="store",
-                            dest="display", default="all", help="List of metadata to display in search results.")
-        parser.add_argument("--verbose", action="store_true", dest="verbose",
-                            help="Report missing metadata.")
-
-        parser.add_argument("--keywords", action="store", dest="keywords",
-                            help="Comma delimited list of keywords for filtering search results.")
-        parser.add_argument("--features", action="store", dest="features",
-                            help="Comma delimited list of features for filtering search results.")
-        parser.add_argument("--authors", action="store", dest="authors",
-                            help="Comma delimited list of authors for filtering search results.")
-        parser.add_argument("--version", action="store", dest="version",
-                            help="PyLith version for filtering search results.")
-        parser.add_argument("--incompatible", action="store_true", dest="incompatible",
-                            help="Filter search results to show incompatible parameter files.")
-        parser.add_argument("--output-format", action="store", dest="output_format", 
-                            help="Output format", default="txt", choices=["text", "markdown"])
+        parser.add_argument(
+            "--keywords",
+            action="store",
+            dest="keywords",
+            help="Comma delimited list of keywords for filtering search results.",
+        )
+        parser.add_argument(
+            "--features",
+            action="store",
+            dest="features",
+            help="Comma delimited list of features for filtering search results.",
+        )
+        parser.add_argument(
+            "--authors",
+            action="store",
+            dest="authors",
+            help="Comma delimited list of authors for filtering search results.",
+        )
+        parser.add_argument(
+            "--version", action="store", dest="version", help="PyLith version for filtering search results."
+        )
+        parser.add_argument(
+            "--incompatible",
+            action="store_true",
+            dest="incompatible",
+            help="Filter search results to show incompatible parameter files.",
+        )
+        parser.add_argument(
+            "--output-format",
+            action="store",
+            dest="output_format",
+            help="Output format",
+            default="txt",
+            choices=["text", "markdown"],
+        )
 
         args = parser.parse_args()
 

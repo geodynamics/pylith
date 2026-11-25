@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 2: Magma inflation with evolution of porosity
 
 *New in v4.0.0.*
@@ -140,3 +149,5 @@ The colors of the shaded surface indicate the fluid pressure, and the deformatio
 The reference state gives rise to greater vertical deformation compared to Step 1.
 The choice of material properties does not lead to significant changes in porosity in either material during the simulation (not shown in the figure).
 :::
+
+% End of file

@@ -1,30 +1,30 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 /// Namespace for pylith package
 namespace pylith {
     namespace meshio {
         class FieldFactory;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
-#include "pylith/topology/topologyfwd.hh" // HOLDSA Field
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::Descretization
+#include "pylith/topology/topologyfwd.hh" // HOLDSA Field
 
 class pylith::meshio::FieldFactory {
     friend class TestFieldFactory; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /** Default constructor.
      *
      * @param[inout] fields Container with fields.
@@ -65,16 +65,15 @@ public:
     void setValues(PetscUserFieldFunc fieldFn);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::topology::Field& _field; ///< Field with subfields.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
-private:
-
-    FieldFactory(const FieldFactory &); ///< Not implemented.
+  private:
+    FieldFactory(const FieldFactory&); ///< Not implemented.
     const FieldFactory& operator=(const FieldFactory&); ///< Not implemented
 
 }; // class FieldFactory
+
 
 // End of file

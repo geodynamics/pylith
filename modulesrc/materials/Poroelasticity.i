@@ -1,24 +1,18 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
 
-/** @file modulesrc/materials/Poroelasticity.i
- *
- * Python interface to C++ Poroelasticity.
- */
 
 namespace pylith {
     namespace materials {
-        class Poroelasticity: public pylith::materials::Material {
+        class Poroelasticity : public pylith::materials::Material {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             /// Default constructor.
             Poroelasticity(void);
 
@@ -117,11 +111,10 @@ public:
              * @returns PETSc solver options.
              */
             pylith::petsc::Options* getSolverDefaults(const bool isParallel,
-                                                           const bool hasFault) const;
+                                                      const bool hasFault) const;
 
             // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+          protected:
             /** Get auxiliary factory associated with physics.
              *
              * @return Auxiliary factory for physics object.
@@ -142,7 +135,8 @@ protected:
 
         }; // class Poroelasticity
 
-    } // materials
-} // pylith
+    } // namespace materials
+} // namespace pylith
+
 
 // End of file

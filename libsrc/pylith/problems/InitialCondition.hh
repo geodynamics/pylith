@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/problems/problemsfwd.hh" // forward declarations
@@ -15,15 +16,14 @@
 
 #include "pylith/utils/arrayfwd.hh" // USES string_vector
 
-#include "pylith/topology/topologyfwd.hh" // USES Field
 #include "pylith/scales/scalesfwd.hh" // HASA Scales
+#include "pylith/topology/topologyfwd.hh" // USES Field
 
 class pylith::problems::InitialCondition : public pylith::utils::PyreComponent {
     friend class TestInitialCondition; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     InitialCondition(void);
 
@@ -45,29 +45,26 @@ public:
      *
      * @param[in] solution Solution field.
      */
-    virtual
-    void verifyConfiguration(const pylith::topology::Field& solution) const;
+    virtual void verifyConfiguration(const pylith::topology::Field& solution) const;
 
     /** Set solution to values for initial condition.
      *
      * @param[out] solution Solution field.
      * @param[in] scales Nondimensionalization.
      */
-    virtual
-    void setValues(pylith::topology::Field* solution,
-                   const pylith::scales::Scales& scales) = 0;
+    virtual void setValues(pylith::topology::Field* solution,
+                           const pylith::scales::Scales& scales) = 0;
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     pylith::string_vector _subfields; ///< Names of fields for initial conditions.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     InitialCondition(const InitialCondition&); ///< Not implemented
     const InitialCondition& operator=(const InitialCondition&); ///< Not implemented
 
 }; // InitialCondition
+
 
 // End of file

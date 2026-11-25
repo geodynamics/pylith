@@ -1,22 +1,22 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "TestDataWriterHDF5ExtMaterial.hh" // Implementation of class methods
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
 #include "pylith/meshio/DataWriterHDF5Ext.hh" // USES DataWriterHDF5Ext
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
-#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include "catch2/catch_test_macros.hpp"
 
@@ -33,7 +33,8 @@ pylith::meshio::TestDataWriterHDF5ExtMaterial::TestDataWriterHDF5ExtMaterial(Tes
 pylith::meshio::TestDataWriterHDF5ExtMaterial::~TestDataWriterHDF5ExtMaterial(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _data;_data = nullptr;
+    delete _data;
+    _data = nullptr;
 
     PYLITH_METHOD_END;
 } // tearDown
@@ -92,7 +93,8 @@ pylith::meshio::TestDataWriterHDF5ExtMaterial::testWriteVertexField(void) {
         REQUIRE(subfield);
         subfield->project(vertexField.getOutputVector());
         writer.writeVertexField(t, *subfield);
-        delete subfield;subfield = NULL;
+        delete subfield;
+        subfield = NULL;
     } // for
     writer.closeTimeStep();
     writer.close();
@@ -133,7 +135,8 @@ pylith::meshio::TestDataWriterHDF5ExtMaterial::testWriteCellField(void) {
         REQUIRE(subfield);
         subfield->project(cellField.getOutputVector());
         writer.writeCellField(t, *subfield);
-        delete subfield;subfield = NULL;
+        delete subfield;
+        subfield = NULL;
     } // for
     writer.closeTimeStep();
     writer.close();

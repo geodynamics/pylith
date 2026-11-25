@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -14,14 +14,14 @@
 
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 
-#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
-#include "pylith/utils/journals.hh" // USES pythia::journal_t
 #include "pylith/petsc/petsc_types.h" // USES PetscVec
+#include "pylith/utils/array.hh" // USES scalar_array
+#include "pylith/utils/journals.hh" // USES pythia::journal_t
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
-#include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
+#include <sstream> // USES std::ostringstream
 
 // ------------------------------------------------------------------------------------------------
 const char* pylith::topology::Mesh::cells_label_name = "material-id";
@@ -30,7 +30,8 @@ const char* pylith::topology::Mesh::cells_label_name = "material-id";
 // Default constructor
 pylith::topology::Mesh::Mesh(void) :
     _coordSys(NULL),
-    _dm(NULL) {}
+    _dm(NULL) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -44,7 +45,7 @@ pylith::topology::Mesh::Mesh(const int dim,
     PylithCallPetsc(DMCreate(comm, &_dm));
     PylithCallPetsc(DMSetType(_dm, DMPLEX));
     PylithCallPetsc(DMSetDimension(_dm, dim));
-    PylithCallPetsc(PetscObjectSetName((PetscObject) _dm, "domain"));
+    PylithCallPetsc(PetscObjectSetName((PetscObject)_dm, "domain"));
 
     PYLITH_METHOD_END;
 } // constructor
@@ -68,8 +69,8 @@ pylith::topology::Mesh::Mesh(const PetscDM dm,
     PylithCallPetsc(DMPlexSetScale(_dm, PETSC_UNIT_LENGTH, lengthScale));
 
     const char* name = nullptr;
-    PylithCallPetsc(PetscObjectGetName((PetscObject) meshOrig._dm, &name));
-    PylithCallPetsc(PetscObjectSetName((PetscObject) _dm, name));
+    PylithCallPetsc(PetscObjectGetName((PetscObject)meshOrig._dm, &name));
+    PylithCallPetsc(PetscObjectSetName((PetscObject)_dm, name));
 
     PYLITH_METHOD_END;
 } // constructor
@@ -88,7 +89,8 @@ void
 pylith::topology::Mesh::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _coordSys;_coordSys = NULL;
+    delete _coordSys;
+    _coordSys = NULL;
     PylithCallPetsc(DMDestroy(&_dm));
 
     PYLITH_METHOD_END;
@@ -101,7 +103,8 @@ pylith::topology::Mesh*
 pylith::topology::Mesh::clone(void) const {
     PYLITH_METHOD_BEGIN;
 
-    Mesh* mesh = new Mesh();assert(mesh);
+    Mesh* mesh = new Mesh();
+    assert(mesh);
     mesh->setCoordSys(this->getCoordSys());
 
     if (this->_dm) {
@@ -111,7 +114,7 @@ pylith::topology::Mesh::clone(void) const {
 
         const char* name = NULL;
         PylithCallPetsc(PetscObjectGetName((PetscObject)this->_dm, &name));
-        PylithCallPetsc(PetscObjectSetName((PetscObject)mesh->_dm,  name));
+        PylithCallPetsc(PetscObjectSetName((PetscObject)mesh->_dm, name));
     } // if
 
     PYLITH_METHOD_RETURN(mesh);
@@ -136,7 +139,7 @@ pylith::topology::Mesh::setDM(PetscDM dm,
     PylithCallPetsc(DMDestroy(&_dm));
     _dm = dm;
     if (_dm && label) {
-        PylithCallPetsc(PetscObjectSetName((PetscObject) _dm, label));
+        PylithCallPetsc(PetscObjectSetName((PetscObject)_dm, label));
     } // if
 
     PYLITH_METHOD_END;
@@ -157,7 +160,8 @@ void
 pylith::topology::Mesh::setCoordSys(const spatialdata::geocoords::CoordSys* cs) {
     PYLITH_METHOD_BEGIN;
 
-    delete _coordSys;_coordSys = (cs) ? cs->clone() : NULL;
+    delete _coordSys;
+    _coordSys = (cs) ? cs->clone() : NULL;
 
     PYLITH_METHOD_END;
 } // setCoordSys
@@ -186,7 +190,7 @@ pylith::topology::Mesh::getComm(void) const {
 
     MPI_Comm comm;
     if (_dm) {
-        PetscObjectGetComm((PetscObject) _dm, &comm);
+        PetscObjectGetComm((PetscObject)_dm, &comm);
     } else {
         comm = PETSC_COMM_WORLD;
     } // if/else
@@ -219,7 +223,7 @@ pylith::topology::Mesh::view(const char* viewOption) const {
 
     if (strlen(viewOption) > 0) {
         const char* label = 0;
-        PylithCallPetsc(PetscObjectGetName((PetscObject) _dm, &label));
+        PylithCallPetsc(PetscObjectGetName((PetscObject)_dm, &label));
 
         if (strlen(label) > 0) {
             std::ostringstream optionname, optionprefix;

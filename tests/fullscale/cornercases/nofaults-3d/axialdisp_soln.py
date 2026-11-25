@@ -1,12 +1,13 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # @file tests/fullscale/cornercases/3d/axialdisp_soln.py
 #
 # @brief Analytical solution to axial extension in x-direction.
@@ -21,7 +22,6 @@
 
 import numpy
 
-
 # Physical properties
 p_density = 2500.0
 p_vs = 3000.0
@@ -31,7 +31,7 @@ p_mu = p_density * p_vs**2
 p_lambda = p_density * p_vp**2 - 2 * p_mu
 
 # Uniform stress field
-sxx = +5.0e+6
+sxx = +5.0e6
 syy = 0.0
 szz = 0.0
 sxy = 0.0
@@ -50,8 +50,8 @@ exz = 1.0 / (2 * p_mu) * (sxz)
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
-    """Analytical solution to axial extension problem.
-    """
+    """Analytical solution to axial extension problem."""
+
     SPACE_DIM = 3
     TENSOR_SIZE = 6
 
@@ -71,9 +71,8 @@ class AnalyticalSoln(object):
         return self.fields[name](pts)
 
     def displacement(self, locs):
-        """Compute displacement field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute displacement field at locations."""
+        npts, dim = locs.shape
         disp = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
         disp[0, :, 0] = exx * locs[:, 0] + exy * locs[:, 1] + exz * locs[:, 2]
         disp[0, :, 1] = exy * locs[:, 0] + eyy * locs[:, 1] + eyz * locs[:, 2]
@@ -81,30 +80,26 @@ class AnalyticalSoln(object):
         return disp
 
     def density(self, locs):
-        """Compute density field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute density field at locations."""
+        npts, dim = locs.shape
         density = p_density * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return density
 
     def shear_modulus(self, locs):
-        """Compute shear modulus field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute shear modulus field at locations."""
+        npts, dim = locs.shape
         shear_modulus = p_mu * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return shear_modulus
 
     def bulk_modulus(self, locs):
-        """Compute bulk modulus field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute bulk modulus field at locations."""
+        npts, dim = locs.shape
         bulk_modulus = (p_lambda + 2.0 / 3.0 * p_mu) * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return bulk_modulus
 
     def strain(self, locs):
-        """Compute strain field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute strain field at locations."""
+        npts, dim = locs.shape
         strain = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
         strain[0, :, 0] = exx
         strain[0, :, 1] = eyy
@@ -115,9 +110,8 @@ class AnalyticalSoln(object):
         return strain
 
     def stress(self, locs):
-        """Compute stress field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute stress field at locations."""
+        npts, dim = locs.shape
         stress = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
         stress[0, :, 0] = sxx
         stress[0, :, 1] = syy

@@ -1,20 +1,20 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "Options.hh" // implementation of object methods
 
+#include "pylith/materials/Material.hh" // USES Material
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/materials/Material.hh" // USES Material
 
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
@@ -25,67 +25,57 @@
 namespace pylith {
     namespace petsc {
         class _Options {
-public:
-
+          public:
             /// Write options to journal;
-            static
-            void write(pythia::journal::info_t& info,
-                       const char* heading,
-                       const Options& options);
+            static void write(pythia::journal::info_t& info,
+                              const char* heading,
+                              const Options& options);
 
             /** Check if simulation is running in parallel.
              *
              * @param[in] solution Solution field for problem.
              * @returns True if solving problem in parallel, False if in serial.
              */
-            static
-            bool isParallel(void);
+            static bool isParallel(void);
 
             /** Add debugging options.
              *
              * @param[in] options PETSc options.
              */
-            static
-            void addTesting(Options* options);
+            static void addTesting(Options* options);
 
             /** Add monitoring options.
              *
              * @param[in] options PETSc options.
              */
-            static
-            void addMonitoring(Options* options);
+            static void addMonitoring(Options* options);
 
             /** Add collective I/O options.
              *
              * @param[in] options PETSc options.
              */
-            static
-            void addCollectiveIO(Options* options);
+            static void addCollectiveIO(Options* options);
 
             /** Add default solver tolerances to options.
              *
              * @param[in] options PETSc options.
              */
-            static
-            void addSolverTolerances(Options* options);
+            static void addSolverTolerances(Options* options);
 
             /** Add initial guess options.
              *
              * @param[in] options PETSc options.
              */
-            static
-            void addInitialGuess(Options* options);
+            static void addInitialGuess(Options* options);
 
             /** Add adaptive time stepping options.
              *
              * @param[in] options PETSc options.
              */
-            static
-            void addAdaptiveTimeStepping(Options* options);
-
+            static void addAdaptiveTimeStepping(Options* options);
         };
-    }
-}
+    } // namespace petsc
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 const int pylith::petsc::Defaults::NONE = 0x0;
@@ -139,7 +129,8 @@ pylith::petsc::Defaults::set(const pylith::materials::Material* material,
     } // if
 
     options->set();
-    delete options;options = NULL;
+    delete options;
+    options = NULL;
 
     PYLITH_METHOD_END;
 } // set
@@ -154,7 +145,8 @@ pylith::petsc::Options::Options(void) {
 
 // ------------------------------------------------------------------------------------------------
 // Destructor
-pylith::petsc::Options::~Options(void) {}
+pylith::petsc::Options::~Options(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -222,7 +214,7 @@ pylith::petsc::Options::set(void) {
 // ------------------------------------------------------------------------------------------------
 // Set PETSc options, overriding any previously set options with the same name.
 void
-pylith::petsc::Options::override (void) {
+pylith::petsc::Options::override(void) {
     PYLITH_METHOD_BEGIN;
 
     for (options_t::iterator iter = _options.begin(); iter != _options.end(); ++iter) {
@@ -248,8 +240,7 @@ pylith::petsc::_Options::write(pythia::journal::info_t& info,
                                const Options& options) {
     PYLITH_METHOD_BEGIN;
 
-    info << pythia::journal::at(__HERE__)
-         << heading << "\n";
+    info << pythia::journal::at(__HERE__) << heading << "\n";
     const Options::options_t::const_iterator begin = options._options.begin();
     const Options::options_t::const_iterator end = options._options.end();
     for (Options::options_t::const_iterator iter = begin; iter != end; ++iter) {

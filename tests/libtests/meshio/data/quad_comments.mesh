@@ -1,12 +1,22 @@
+// -*- mesh -*-
+// -*- coding: utf-8 -*-
+//
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
+//
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 // Put some comments at the top
 // Add a second line
 mesh = { // begin mesh
   // a comment here
   dimension = 2 // comment there
   use-index-zero = true
-  // coment 1
-  // ^^^^^^ mispelled word
-  vertices = { // begin vertics
+  // comment 1
+  // ^^^^^^ misspelled word
+  vertices = { // begin vertices
     dimension = 2
   // 9 vertices for this mesh
     count = 9
@@ -88,3 +98,6 @@ mesh = { // begin mesh
     }
   }
 }
+
+
+// End of file

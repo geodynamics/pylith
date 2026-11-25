@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from pylith.petsc.Component import Component
 
@@ -23,14 +23,14 @@ class SingleRupture(Component):
     import pythia.pyre.inventory
 
     from .KinSrcStep import KinSrcStep
+
     rupture = pythia.pyre.inventory.facility("rupture", family="eq_kinematic_src", factory=KinSrcStep)
-    rupture.meta['tip'] = "Kinematic slip source (for example, an earthquake rupture) for fault."
+    rupture.meta["tip"] = "Kinematic slip source (for example, an earthquake rupture) for fault."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="singlerupture"):
-        """Constructor.
-        """
+        """Constructor."""
         Component.__init__(self, name, facility="rupture")
         return
 

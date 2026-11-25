@@ -1,109 +1,121 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "Gravity2D.hh" // Implementation of cases
 
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
-#include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
-#include "pylith/utils/journals.hh" // USES PYLITH_DEBUG
-#include "pylith/utils/constants.hh" // USES pylith::g_acc
-#include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
+#include "pylith/utils/constants.hh" // USES pylith::g_acc
+#include "pylith/utils/journals.hh" // USES PYLITH_DEBUG
+#include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
 #include "catch2/catch_test_macros.hpp"
 
 namespace pylith {
     class _Gravity2D;
-} // pylith
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::_Gravity2D {
-private:
-
+  private:
     static pylith::scales::Scales scales;
     static const double Y_MAX; // dimensioned
 
     // Density
-    static double density(const double x,
-                          const double y) {
+    static double
+    density(const double x,
+            const double y) {
         return 2500.0;
     } // density
 
-    static const char* density_units(void) {
+    static const char*
+    density_units(void) {
         return "kg/m**3";
     } // density_units
 
     // Vs
-    static double vs(const double x,
-                     const double y) {
+    static double
+    vs(const double x,
+       const double y) {
         return 3000.0;
     } // vs
 
-    static const char* vs_units(void) {
+    static const char*
+    vs_units(void) {
         return "m/s";
     } // vs_units
 
     // Vp
-    static double vp(const double x,
-                     const double y) {
+    static double
+    vp(const double x,
+       const double y) {
         return 1.0e+15;
     } // vp
 
-    static const char* vp_units(void) {
+    static const char*
+    vp_units(void) {
         return "m/s";
     } // vp_units
 
-    static double setGravityAcc_x(const double x,
-                                  const double y) {
+    static double
+    setGravityAcc_x(const double x,
+                    const double y) {
         return 0.0;
     } // setGravityAcc_x
 
-    static double setGravityAcc_y(const double x,
-                                  const double y) {
+    static double
+    setGravityAcc_y(const double x,
+                    const double y) {
         return -pylith::g_acc;
     } // setGravityAcc_y
 
-    static const char* acc_units(void) {
+    static const char*
+    acc_units(void) {
         return "m/s**2";
     } // acc_units
 
     // Solution fields (nondimensional)
 
     // Displacement
-    static double disp_x(const double x,
-                         const double y) {
+    static double
+    disp_x(const double x,
+           const double y) {
         return 0.0;
     } // disp_x
 
-    static double disp_y(const double x,
-                         const double y) {
+    static double
+    disp_y(const double x,
+           const double y) {
         return 0.0;
     } // disp_y
 
     // Pressure
-    static double pressure(const double x,
-                           const double y) {
+    static double
+    pressure(const double x,
+             const double y) {
         const double lengthScale = scales.getLengthScale();
         const double bodyForceScale = pylith::scales::ElasticityScales::getBodyForceScale(scales);
 
-        return density(x,y) * pylith::g_acc / bodyForceScale * (Y_MAX/lengthScale-y);
+        return density(x, y) * pylith::g_acc / bodyForceScale * (Y_MAX / lengthScale - y);
     } // pressure
 
-    static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
-                                          PetscReal t,
-                                          const PetscReal x[],
-                                          PetscInt numComponents,
-                                          PetscScalar* s,
-                                          void* context) {
+    static PetscErrorCode
+    solnkernel_disp(PetscInt spaceDim,
+                    PetscReal t,
+                    const PetscReal x[],
+                    PetscInt numComponents,
+                    PetscScalar* s,
+                    void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(2 == numComponents);
         REQUIRE(s);
@@ -115,12 +127,13 @@ private:
         return PETSC_SUCCESS;
     } // solnkernel_disp
 
-    static PetscErrorCode solnkernel_pressure(PetscInt spaceDim,
-                                              PetscReal t,
-                                              const PetscReal x[],
-                                              PetscInt numComponents,
-                                              PetscScalar* s,
-                                              void* context) {
+    static PetscErrorCode
+    solnkernel_pressure(PetscInt spaceDim,
+                        PetscReal t,
+                        const PetscReal x[],
+                        PetscInt numComponents,
+                        PetscScalar* s,
+                        void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(x);
         REQUIRE(1 == numComponents);
@@ -131,11 +144,11 @@ private:
         return PETSC_SUCCESS;
     } // solnkernel_pressure
 
-public:
-
-    static
-    TestIncompressibleElasticity_Data* createData(void) {
-        TestIncompressibleElasticity_Data* data = new TestIncompressibleElasticity_Data();REQUIRE(data);
+  public:
+    static TestIncompressibleElasticity_Data*
+    createData(void) {
+        TestIncompressibleElasticity_Data* data = new TestIncompressibleElasticity_Data();
+        REQUIRE(data);
 
         data->journalName = "Gravity2D";
 
@@ -143,7 +156,8 @@ public:
 
         scales = data->scales;
 
-        delete data->gravityField;data->gravityField = new spatialdata::spatialdb::GravityField();
+        delete data->gravityField;
+        data->gravityField = new spatialdata::spatialdb::GravityField();
         data->gravityField->setGravityDir(0.0, -1.0, 0.0);
         data->gravityField->setGravityAcc(pylith::g_acc);
 
@@ -181,7 +195,8 @@ public:
         { // disp
             static const PylithInt constrainedDOF[2] = {0, 1};
             static const PylithInt numConstrainedDOF = 2;
-            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
+            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
+            REQUIRE(bc);
             bc->setSubfieldName("displacement");
             bc->setLabelName("boundary");
             bc->setLabelValue(1);
@@ -193,7 +208,8 @@ public:
         { // pressure
             static const PylithInt constrainedDOF[1] = {0};
             static const PylithInt numConstrainedDOF = 1;
-            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
+            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
+            REQUIRE(bc);
             bc->setSubfieldName("pressure");
             bc->setLabelName("boundary");
             bc->setLabelValue(1);
@@ -219,7 +235,8 @@ const double pylith::_Gravity2D::Y_MAX = +4.0e+3;
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::Gravity2D::TriP1(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_Gravity2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_Gravity2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -245,7 +262,8 @@ pylith::Gravity2D::TriP1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::Gravity2D::TriP2(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_Gravity2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_Gravity2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -271,7 +289,8 @@ pylith::Gravity2D::TriP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::Gravity2D::TriP3(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_Gravity2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_Gravity2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -297,7 +316,8 @@ pylith::Gravity2D::TriP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::Gravity2D::QuadQ2(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_Gravity2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_Gravity2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -323,7 +343,8 @@ pylith::Gravity2D::QuadQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::Gravity2D::QuadQ3(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_Gravity2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_Gravity2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 

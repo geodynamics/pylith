@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include <cppunit/extensions/HelperMacros.h>
@@ -18,8 +19,8 @@
 namespace pylith {
     namespace problems {
         class TestPhysics;
-    } // problems
-} // pylith
+    } // namespace problems
+} // namespace pylith
 
 class pylith::problems::TestPhysics : public CppUnit::TestFixture {
     // CPPUNIT TEST SUITE //////////////////////////////////////////////////////////////////////////////////////////////
@@ -39,8 +40,7 @@ class pylith::problems::TestPhysics : public CppUnit::TestFixture {
     CPPUNIT_TEST_SUITE_END();
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Setup testing data.
     void setUp(void);
 
@@ -78,12 +78,12 @@ public:
     void testCreateDerivedField(void);
 
     // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::problems::Physics* _physics; ///< Test subject.
     pylith::topology::Mesh* _mesh; // Mesh for test subject.
     pylith::topology::Field* _solution; ///< Solution field for test subject.
 
 }; // class TestPhysics
+
 
 // End of file

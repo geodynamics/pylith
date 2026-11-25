@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "CohesiveData.hh"
@@ -14,13 +15,12 @@
 namespace pylith {
     namespace faults {
         class CohesiveDataHex8Lagrange;
-    } // pylith
-} // faults
+    } // namespace faults
+} // namespace pylith
 
 class pylith::faults::CohesiveDataHex8Lagrange : public CohesiveData {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     CohesiveDataHex8Lagrange(void);
 
@@ -28,8 +28,7 @@ public:
     ~CohesiveDataHex8Lagrange(void);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     static const int _numVertices; ///< Number of vertices
     static const int _spaceDim; ///< Number of dimensions in vertex coordinates
     static const int _numCells; ///< Number of cells
@@ -45,5 +44,6 @@ private:
 
     static const char* _filename; ///< Filename of input mesh
 };
+
 
 // End of file

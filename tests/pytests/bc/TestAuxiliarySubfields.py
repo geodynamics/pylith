@@ -1,12 +1,13 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # @file tests/pytests/bc/TestAuxiliarySubfields.py
 #
 # @brief Unit testing of Python AuxSubfieldsTimeDependent and AuxSubfieldsAbsorbingDampers object.
@@ -19,15 +20,15 @@ import pylith.bc.AuxSubfieldsAbsorbingDampers
 
 
 class TestAuxSubfieldsTimeDependent(TestComponent):
-    """Unit testing of AuxSubfieldsTimeDependent object.
-    """
+    """Unit testing of AuxSubfieldsTimeDependent object."""
+
     _class = pylith.bc.AuxSubfieldsTimeDependent.AuxSubfieldsTimeDependent
     _factory = pylith.bc.AuxSubfieldsTimeDependent.auxiliary_subfields
 
 
 class TestAuxSubfieldsAbsorbingDampers(TestComponent):
-    """Unit testing of AuxSubfieldsAbsorbingDampers object.
-    """
+    """Unit testing of AuxSubfieldsAbsorbingDampers object."""
+
     _class = pylith.bc.AuxSubfieldsAbsorbingDampers.AuxSubfieldsAbsorbingDampers
     _factory = pylith.bc.AuxSubfieldsAbsorbingDampers.auxiliary_subfields
 

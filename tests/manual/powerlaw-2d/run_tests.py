@@ -1,14 +1,13 @@
 #!/usr/bin/env nemesis
-
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 import subprocess
 import importlib
@@ -19,20 +18,19 @@ from pylith.apps.PyLithApp import PyLithApp
 import axialtraction_powerlaw_n1_gendb as gendb
 
 
-class RunnerApp():
+class RunnerApp:
 
     SIMS = {
-        'axialtraction_powerlaw': ['axialtraction_powerlaw.cfg'],
-        'axialtraction_powerlaw_n1': ['axialtraction_powerlaw_n1.cfg'],
-        'sheartraction_powerlaw': ['sheartraction_powerlaw.cfg'],
+        "axialtraction_powerlaw": ["axialtraction_powerlaw.cfg"],
+        "axialtraction_powerlaw_n1": ["axialtraction_powerlaw_n1.cfg"],
+        "sheartraction_powerlaw": ["sheartraction_powerlaw.cfg"],
     }
     TIMESTEPS = [0.01, 0.05, 0.1, 0.5, 1.0, 5.0]
 
     def main(self):
-        """Application entry point.
-        """
+        """Application entry point."""
         args = self._parse_command_line()
-        if args.sim == 'all':
+        if args.sim == "all":
             sims = self.SIMS
         else:
             sims = {args.sim: self.SIMS[args.sim]}
@@ -51,9 +49,9 @@ class RunnerApp():
         self.axes = axes.reshape(nrows, nsims)
 
     def _run_sims(self, sims, test_jacobian):
-        ARGS_JACOBIAN = ['--petsc.snes_test_jacobian', '--petsc.snes_test_jacobian_view']
+        ARGS_JACOBIAN = ["--petsc.snes_test_jacobian", "--petsc.snes_test_jacobian_view"]
         args_jacobian = ARGS_JACOBIAN if test_jacobian else []
-        pylith_run = ['pylith']
+        pylith_run = ["pylith"]
 
         for isim, sim in enumerate(sims.keys()):
             for dt in self.TIMESTEPS:
@@ -83,9 +81,19 @@ class RunnerApp():
 
     def _parse_command_line(self):
         import argparse
+
         parser = argparse.ArgumentParser()
-        parser.add_argument("--sim", action="store", dest="sim", default="all", choices=list(self.SIMS.keys()), help="Simulations to run")
-        parser.add_argument("--test_jacobian", action="store_true", dest="test_jacobian", default=False, help="Test PyLith Jacobian")
+        parser.add_argument(
+            "--sim",
+            action="store",
+            dest="sim",
+            default="all",
+            choices=list(self.SIMS.keys()),
+            help="Simulations to run",
+        )
+        parser.add_argument(
+            "--test_jacobian", action="store_true", dest="test_jacobian", default=False, help="Test PyLith Jacobian"
+        )
 
         return parser.parse_args()
 

@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Savage and Prescott Benchmark
 
 This benchmark problem computes the viscoelastic (Maxwell) relaxation of stresses from repeated infinite, strike-slip earthquakes in 3D without
@@ -122,3 +131,5 @@ Also note that the agreement between analytical and numerical solutions is poor 
 
 Displacement profiles perpendicular to the fault for a PyLith simulation with hex8 cells and the analytical solution for earthquake cycle 10.
 :::
+
+% End of file

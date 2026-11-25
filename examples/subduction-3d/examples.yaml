@@ -1,3 +1,12 @@
+# -*- yaml -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 commands:
   - ./generate_gmsh.py --write --filename=mesh_tet.msh
   - pylith step01_axialdisp.cfg mat_elastic.cfg
@@ -23,3 +32,5 @@ commands:
   - pylith step08b_gravity_incompressible.cfg step08b_gravity_incompressible_cubit.cfg mat_elastic_incompressible.cfg
   - pylith step08c_gravity_viscoelastic.cfg
   - pylith step08c_gravity_viscoelastic.cfg step08c_gravity_viscoelastic_cubit.cfg
+
+# End of file

@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -20,29 +20,28 @@
 namespace pylith {
     namespace meshio {
         class TestOutputTriggerStep;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestOutputTriggerStep : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test setNumStepsSkip() and getNumStepsSkip().
-    static
-    void testNumStepsSkip(void);
+    static void testNumStepsSkip(void);
 
     /// Test shouldWrite().
-    static
-    void testShouldWrite(void);
+    static void testShouldWrite(void);
 
 }; // TestOutputTriggerStep
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestOutputTriggerStep::testNumStepsSkip", "[TestOutputTriggerStep][testNumStepsSkip]") {
+TEST_CASE("TestOutputTriggerStep::testNumStepsSkip",
+          "[TestOutputTriggerStep][testNumStepsSkip]") {
     pylith::meshio::TestOutputTriggerStep::testNumStepsSkip();
 }
-TEST_CASE("TestOutputTriggerStep::testShouldWrite", "[TestOutputTriggerStep][testShouldWrite]") {
+TEST_CASE("TestOutputTriggerStep::testShouldWrite",
+          "[TestOutputTriggerStep][testShouldWrite]") {
     pylith::meshio::TestOutputTriggerStep::testShouldWrite();
 }
 
@@ -70,27 +69,44 @@ pylith::meshio::TestOutputTriggerStep::testShouldWrite(void) {
     const PylithReal dt = 0.1;
     PylithReal t = 0.0;
     PylithInt tindex = 0;
-    CHECK(true == trigger.shouldWrite(t, tindex++));t += dt;
-    CHECK(true == trigger.shouldWrite(t, tindex++));t += dt;
-    CHECK(true == trigger.shouldWrite(t, tindex++));t += dt;
+    CHECK(true == trigger.shouldWrite(t, tindex++));
+    t += dt;
+    CHECK(true == trigger.shouldWrite(t, tindex++));
+    t += dt;
+    CHECK(true == trigger.shouldWrite(t, tindex++));
+    t += dt;
 
     trigger.setNumStepsSkip(1);
-    CHECK(false == trigger.shouldWrite(t, tindex++));t += dt;
-    CHECK(true == trigger.shouldWrite(t, tindex++));t += dt;
-    CHECK(false == trigger.shouldWrite(t, tindex++));t += dt;
-    CHECK(true == trigger.shouldWrite(t, tindex++));t += dt;
-    CHECK(false == trigger.shouldWrite(t, tindex++));t += dt;
+    CHECK(false == trigger.shouldWrite(t, tindex++));
+    t += dt;
+    CHECK(true == trigger.shouldWrite(t, tindex++));
+    t += dt;
+    CHECK(false == trigger.shouldWrite(t, tindex++));
+    t += dt;
+    CHECK(true == trigger.shouldWrite(t, tindex++));
+    t += dt;
+    CHECK(false == trigger.shouldWrite(t, tindex++));
+    t += dt;
 
     trigger.setNumStepsSkip(2);
-    CHECK(false == trigger.shouldWrite(t, tindex++));t += dt;
-    CHECK(true == trigger.shouldWrite(t, tindex++));t += dt;
-    CHECK(false == trigger.shouldWrite(t, tindex++));t += dt;
-    CHECK(false == trigger.shouldWrite(t, tindex++));t += dt;
-    CHECK(true == trigger.shouldWrite(t, tindex++));t += dt;
-    CHECK(false == trigger.shouldWrite(t, tindex++));t += dt;
-    CHECK(false == trigger.shouldWrite(t, tindex++));t += dt;
-    CHECK(true == trigger.shouldWrite(t, tindex++));t += dt;
-    CHECK(false == trigger.shouldWrite(t, tindex++));t += dt;
+    CHECK(false == trigger.shouldWrite(t, tindex++));
+    t += dt;
+    CHECK(true == trigger.shouldWrite(t, tindex++));
+    t += dt;
+    CHECK(false == trigger.shouldWrite(t, tindex++));
+    t += dt;
+    CHECK(false == trigger.shouldWrite(t, tindex++));
+    t += dt;
+    CHECK(true == trigger.shouldWrite(t, tindex++));
+    t += dt;
+    CHECK(false == trigger.shouldWrite(t, tindex++));
+    t += dt;
+    CHECK(false == trigger.shouldWrite(t, tindex++));
+    t += dt;
+    CHECK(true == trigger.shouldWrite(t, tindex++));
+    t += dt;
+    CHECK(false == trigger.shouldWrite(t, tindex++));
+    t += dt;
 } // testShouldWrite
 
 

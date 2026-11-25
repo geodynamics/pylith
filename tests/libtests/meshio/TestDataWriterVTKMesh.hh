@@ -1,16 +1,17 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
-#include "TestDataWriterVTK.hh" // ISA TestDataWriterVTK
 #include "TestDataWriterMesh.hh" // ISA TestDataWriterMesh
+#include "TestDataWriterVTK.hh" // ISA TestDataWriterVTK
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 
@@ -19,14 +20,13 @@ namespace pylith {
     namespace meshio {
         class TestDataWriterVTKMesh;
         class TestDataWriterVTKMesh_Data;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterVTKMesh : public TestDataWriterVTK, public TestDataWriterMesh {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestDataWriterVTKMesh(TestDataWriterVTKMesh_Data* data);
 
@@ -34,12 +34,10 @@ public:
     ~TestDataWriterVTKMesh(void);
 
     /// Test filename(), timeFormat(), timeConstant(), precision()
-    static
-    void testAccessors(void);
+    static void testAccessors(void);
 
     /// Test vtkFilename.
-    static
-    void testVtkFilename(void);
+    static void testVtkFilename(void);
 
     /// Test openTimeStep() and closeTimeStep()
     void testTimeStep(void);
@@ -51,8 +49,7 @@ public:
     void testWriteCellField(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get test data.
      *
      * @returns Test data.
@@ -60,13 +57,13 @@ protected:
     TestDataWriter_Data* _getData(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     TestDataWriterVTKMesh_Data* _data; ///< Data for testing.
 
 }; // class TestDataWriterVTKMesh
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterVTKMesh_Data : public TestDataWriterVTK_Data, public TestDataWriter_Data {};
+
 
 // End of file

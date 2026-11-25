@@ -1,12 +1,13 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # @file pylith/problems/SubfieldPressureDot.py
 #
 # @brief Python object for pressure_t subfield.
@@ -24,13 +25,11 @@ class SubfieldPressureDot(SolutionSubfield):
     Implements `SolutionSubfield`.
     """
 
-    DOC_CONFIG = {
-        "cfg": """
+    DOC_CONFIG = {"cfg": """
         [pylithapp.problems.solution.subfields.pressure_t]
         alias = pressure_t
         basis_order = 1
-        """
-    }
+        """}
 
     fieldName = "pressure_t"
 
@@ -50,9 +49,7 @@ class SubfieldPressureDot(SolutionSubfield):
         from pylith.topology.Field import Field
 
         self.vectorFieldType = Field.SCALAR
-        self.scale = (
-            ElasticityScales.getFluidPressureScale(scales) / scales.getTimeScale()
-        )
+        self.scale = ElasticityScales.getFluidPressureScale(scales) / scales.getTimeScale()
         self._setComponents(spaceDim)
 
     def _configure(self):

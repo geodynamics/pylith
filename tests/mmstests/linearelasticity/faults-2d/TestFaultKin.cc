@@ -1,47 +1,46 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "TestFaultKin.hh" // Implementation of class methods
 
 #include "pylith/bc/BoundaryCondition.hh" // HASA BoundaryCondition
-#include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 #include "pylith/faults/KinSrc.hh" // USES KinSrc
 #include "pylith/materials/Elasticity.hh" // USES Elasticity
-#include "pylith/materials/RheologyElasticity.hh" // USES RheologyElasticity
 #include "pylith/materials/Query.hh" // USES Query
+#include "pylith/materials/RheologyElasticity.hh" // USES RheologyElasticity
+#include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
-#include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
-#include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/meshio/MeshIOPetsc.hh" // USES MeshIOPetsc
-#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/utils/journals.hh" // pythia::journal
 
-#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
-#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 
 #include "catch2/catch_test_macros.hpp"
 
 // ------------------------------------------------------------------------------------------------
-// Constuctor.
-pylith::TestFaultKin::TestFaultKin(TestFaultKin_Data* data) :
-    _data(data) {
+// Constructor.
+pylith::TestFaultKin::TestFaultKin(TestFaultKin_Data* data) : _data(data) {
     REQUIRE(_data);
 
     GenericComponent::setName(_data->journalName);
@@ -55,7 +54,8 @@ pylith::TestFaultKin::TestFaultKin(TestFaultKin_Data* data) :
 // ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::TestFaultKin::~TestFaultKin(void) {
-    delete _data;_data = nullptr;
+    delete _data;
+    _data = nullptr;
 } // destructor
 
 
@@ -70,14 +70,16 @@ pylith::TestFaultKin::_initialize(void) {
     if (_data->useAsciiMesh) {
         pylith::meshio::MeshIOAscii iohandler;
         iohandler.setFilename(_data->meshFilename);
-        iohandler.read(_mesh);REQUIRE(_mesh);
+        iohandler.read(_mesh);
+        REQUIRE(_mesh);
     } else {
         if (_data->meshOptions) {
             PylithCallPetsc(PetscOptionsInsertString(nullptr, _data->meshOptions));
         } // if
         pylith::meshio::MeshIOPetsc iohandler;
         iohandler.setFilename(_data->meshFilename);
-        iohandler.read(_mesh);REQUIRE(_mesh);
+        iohandler.read(_mesh);
+        REQUIRE(_mesh);
     } // if/else
 
     REQUIRE(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
@@ -94,8 +96,13 @@ pylith::TestFaultKin::_initialize(void) {
 
         for (size_t iSubfield = 0; iSubfield < _data->matNumAuxSubfields; ++iSubfield) {
             const pylith::topology::FieldBase::Discretization& info = _data->matAuxDiscretizations[iSubfield];
-            _data->materials[iMat]->setAuxiliarySubfieldDiscretization(_data->matAuxSubfields[iSubfield], info.basisOrder, info.quadOrder,
-                                                                       _data->spaceDim, info.cellBasis, info.feSpace, info.isBasisContinuous);
+            _data->materials[iMat]->setAuxiliarySubfieldDiscretization(_data->matAuxSubfields[iSubfield],
+                                                                       info.basisOrder,
+                                                                       info.quadOrder,
+                                                                       _data->spaceDim,
+                                                                       info.cellBasis,
+                                                                       info.feSpace,
+                                                                       info.isBasisContinuous);
         } // for
     } // for
 
@@ -103,14 +110,20 @@ pylith::TestFaultKin::_initialize(void) {
     for (size_t iFault = 0; iFault < _data->faults.size(); ++iFault) {
         REQUIRE(_data->faults[iFault]);
         pylith::topology::Mesh* meshNew = _data->faults[iFault]->transformTopology(_mesh);
-        delete _mesh;_mesh = meshNew;
+        delete _mesh;
+        _mesh = meshNew;
 
         REQUIRE(_data->kinSrc);
         _data->kinSrc->auxFieldDB(&_data->faultAuxDB);
         for (size_t i = 0; i < _data->faultNumAuxSubfields; ++i) {
             const pylith::topology::FieldBase::Discretization& info = _data->faultAuxDiscretizations[i];
-            _data->faults[iFault]->setAuxiliarySubfieldDiscretization(_data->faultAuxSubfields[i], info.basisOrder, info.quadOrder,
-                                                                      _data->spaceDim-1, info.cellBasis, info.feSpace, info.isBasisContinuous);
+            _data->faults[iFault]->setAuxiliarySubfieldDiscretization(_data->faultAuxSubfields[i],
+                                                                      info.basisOrder,
+                                                                      info.quadOrder,
+                                                                      _data->spaceDim - 1,
+                                                                      info.cellBasis,
+                                                                      info.feSpace,
+                                                                      info.isBasisContinuous);
         } // for
     } // for
 
@@ -122,13 +135,14 @@ pylith::TestFaultKin::_initialize(void) {
     _problem->setInterfaces(_data->faults.data(), _data->faults.size());
     _problem->setBoundaryConditions(_data->bcs.data(), _data->bcs.size());
     _problem->setStartTime(_data->t);
-    _problem->setEndTime(_data->t+_data->dt);
+    _problem->setEndTime(_data->t + _data->dt);
     _problem->setInitialTimeStep(_data->dt);
     _problem->setFormulation(_data->formulation);
 
     // Set up solution field.
     REQUIRE(!_solution);
-    _solution = new pylith::topology::Field(*_mesh);REQUIRE(_solution);
+    _solution = new pylith::topology::Field(*_mesh);
+    REQUIRE(_solution);
     _solution->setLabel("solution");
     pylith::problems::SolutionFactory factory(*_solution, _data->scales);
     int iField = 0;
@@ -155,7 +169,8 @@ void
 pylith::TestFaultKin::_setExactSolution(void) {
     REQUIRE(_data->exactSolnFns);
 
-    const pylith::topology::Field* solution = _problem->getSolution();REQUIRE(solution);
+    const pylith::topology::Field* solution = _problem->getSolution();
+    REQUIRE(solution);
 
     PetscDM dm = solution->getDM();
     PetscDS ds = nullptr;
@@ -234,17 +249,22 @@ pylith::TestFaultKin_Data::TestFaultKin_Data(void) :
 // Destructor
 pylith::TestFaultKin_Data::~TestFaultKin_Data(void) {
     for (size_t i = 0; i < materials.size(); ++i) {
-        delete materials[i];materials[i] = nullptr;
+        delete materials[i];
+        materials[i] = nullptr;
     } // for
     for (size_t i = 0; i < faults.size(); ++i) {
-        delete faults[i];faults[i] = nullptr;
+        delete faults[i];
+        faults[i] = nullptr;
     } // for
     for (size_t i = 0; i < bcs.size(); ++i) {
-        delete bcs[i];bcs[i] = nullptr;
+        delete bcs[i];
+        bcs[i] = nullptr;
     } // for
-    delete kinSrc;kinSrc = nullptr;
+    delete kinSrc;
+    kinSrc = nullptr;
 
-    delete gravityField;gravityField = nullptr;
+    delete gravityField;
+    gravityField = nullptr;
 } // destructor
 
 

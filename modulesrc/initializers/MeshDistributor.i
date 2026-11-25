@@ -1,19 +1,18 @@
-// =================================================================================================
-// This code is part of SpatialData, developed through the Computational Infrastructure
-// for Geodynamics (https://github.com/geodynamics/spatialdata).
+// -*- swig -*-
+// -*- coding: utf-8 -*-
 //
-// Copyright (c) 2010-2026, University of California, Davis and the SpatialData Development Team.
-// All rights reserved.
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 namespace pylith {
     namespace initializers {
         class MeshDistributor : public pylith::initializers::InitializePhase {
             // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             /// Default constructor.
             MeshDistributor(void);
 
@@ -40,7 +39,8 @@ public:
 
         }; // MeshDistributor
 
-    } // initializers
-} // pylith
+    } // namespace initializers
+} // namespace pylith
+
 
 // End of file

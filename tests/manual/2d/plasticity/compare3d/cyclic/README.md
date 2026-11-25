@@ -1,0 +1,38 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
+The tests in this directory involve time-varying displacements applied to a
+model consisting of a single cell. The dof are all constrained, so there are
+no variables for which to solve.
+
+* Plane strain axial displacement problem
+
+  + 2-D
+    pylith onecell_2d.cfg quasistatic.cfg cycle_cont2d.cfg
+
+  + 3-D with z displacements constrained
+    pylith onecell_3d.cfg quasistatic.cfg cycle_cont3d.cfg
+
+
+* Plane strain axial displacement problem, sinusoidal displacements
+  over multiple cycles.
+
+  + 2-D quasistatic
+    pylith onecell_2d.cfg quasistatic.cfg sin2d.cfg sin2d_quasistatic.cfg
+
+  + 2-D dynamic
+    pylith onecell_2d.cfg dynamic.cfg sin2d.cfg sin2d_dynamic.cfg
+
+  + 3-D quasistatic
+    pylith onecell_3d.cfg quasistatic.cfg sin3d.cfg sin3d_quasistatic.cfg
+
+  + 3-D dynamic
+    pylith onecell_3d.cfg dynamic.cfg sin3d.cfg sin3d_dynamic.cfg
+
+% End of file

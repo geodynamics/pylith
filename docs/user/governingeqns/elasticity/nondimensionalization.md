@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Nondimensionalization
 
 Starting with the elasticity equation,
@@ -138,3 +147,5 @@ Consequently, the solver is relatively insensitive to the length scale for elast
 Our default preconditioner for elasticity with prescribed slip requires that the length scale match the discretization size.
 If your discretization size differs substantially from the default length scale (1.0 km), then you will need to set the length scale.
 :::
+
+% End of file

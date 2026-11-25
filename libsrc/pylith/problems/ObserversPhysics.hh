@@ -1,20 +1,21 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/problems/problemsfwd.hh" // forward declarations
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
-#include "pylith/problems/ObserverPhysics.hh" // USES ObserverPhysics
 #include "pylith/feassemble/feassemblefwd.hh" // USES PhysicsImplementation
+#include "pylith/problems/ObserverPhysics.hh" // USES ObserverPhysics
 #include "pylith/topology/topologyfwd.hh" // USES Field
 #include "pylith/utils/types.hh" // USES PylithReal, PylithInt
 
@@ -23,8 +24,7 @@
 class pylith::problems::ObserversPhysics : public pylith::utils::GenericComponent {
     friend class TestObserversPhysics; // unit testing
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     ObserversPhysics(void);
 
@@ -32,8 +32,7 @@ public:
     virtual ~ObserversPhysics(void);
 
     /// Deallocate PETSc and local data structures.
-    virtual
-    void deallocate(void);
+    virtual void deallocate(void);
 
     /** Register observer to receive notifications.
      *
@@ -86,19 +85,17 @@ public:
                          const pylith::problems::Observer::NotificationType notification);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     typedef std::set<pylith::problems::ObserverPhysics*>::iterator iterator; ///< Iterator.
     std::set<pylith::problems::ObserverPhysics*> _observers; ///< Subscribers of updates.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     ObserversPhysics(const ObserversPhysics&); ///< Not implemented.
     const ObserversPhysics& operator=(const ObserversPhysics&); ///< Not implemented
-
 };
 
 // ObserversPhysics
+
 
 // End of file

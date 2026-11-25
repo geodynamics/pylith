@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Suggested Exercises
 
 1. Increase the contrast in the shear modulus across the fault. How does this affect the solution?
@@ -8,3 +17,5 @@
 6. Change the distribution of slip in Step 4. How does this affect the inversion results?
 7. Create Cubit Journal files that build up the geometry from points and curves, analogous to the Gmsh Python script.
 8. Create a Gmsh Python script that generates the geometry from a cross-section of a 3D block, analogous to the provided Cubit Journal files.
+
+% End of file

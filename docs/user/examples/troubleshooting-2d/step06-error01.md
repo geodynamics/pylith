@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 6: Error 1
 
 In troubleshooting Step 1 we resolved all of the errors associated with `pylithapp.cfg`.
@@ -52,3 +61,5 @@ caption: Correct error in `step06_twofaults.cfg`.
 ...
 db_auxiliary_field.description = Fault rupture for main fault
 ```
+
+% End of file

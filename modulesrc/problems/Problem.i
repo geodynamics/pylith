@@ -1,33 +1,25 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
 
-/**
- * @file modulesrc/problems/Problem.hh
- *
- * @brief Python interface to C++ Problem.
- */
 
 namespace pylith {
     namespace problems {
-        class Problem: public pylith::utils::PyreComponent {
+        class Problem : public pylith::utils::PyreComponent {
             // PUBLIC ENUM /////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             enum SolverTypeEnum {
                 LINEAR, // Linear solver.
                 NONLINEAR, // Nonlinear solver.
             }; // SolverType
 
             // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             /// Constructor
             Problem(void);
 
@@ -127,20 +119,18 @@ public:
              *
              * @param mesh Finite-element mesh.
              */
-            virtual
-            void preinitialize(const pylith::topology::Mesh& mesh);
+            virtual void preinitialize(const pylith::topology::Mesh& mesh);
 
             /// Verify configuration.
-            virtual
-            void verifyConfiguration(void) const;
+            virtual void verifyConfiguration(void) const;
 
             /// Initialize problem.
-            virtual
-            void initialize(void);
+            virtual void initialize(void);
 
         }; // Problem
 
-    } // problems
-} // pylith
+    } // namespace problems
+} // namespace pylith
+
 
 // End of file

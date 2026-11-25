@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # SolutionSubfield
 
 % WARNING: Do not edit; this is a generated file!
@@ -33,3 +42,4 @@ Base class for defining attributes of a subfield within a field.
   - **default value**: -1
   - **current value**: -1, from {default}
 
+% End of file

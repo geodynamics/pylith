@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include <cppunit/extensions/HelperMacros.h>
@@ -15,13 +16,14 @@
 namespace pylith {
     namespace meshio {
         class TestVertexFilterVecNorm;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 /// C++ unit testing for VertexFilterVecNorm
-class pylith::meshio::TestVertexFilterVecNorm : public CppUnit::TestFixture { // class TestVertexFilterVecNorm
-                                                                              // CPPUNIT TEST SUITE
-                                                                              // /////////////////////////////////////////////////
+class pylith::meshio::TestVertexFilterVecNorm
+    : public CppUnit::TestFixture { // class TestVertexFilterVecNorm
+                                    // CPPUNIT TEST SUITE
+                                    // /////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestVertexFilterVecNorm);
 
     CPPUNIT_TEST(testConstructor);
@@ -30,8 +32,7 @@ class pylith::meshio::TestVertexFilterVecNorm : public CppUnit::TestFixture { //
     CPPUNIT_TEST_SUITE_END();
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test constructor
     void testConstructor(void);
 
@@ -39,5 +40,6 @@ public:
     void testFilter(void);
 
 }; // class TestVertexFilterVecNorm
+
 
 // End of file

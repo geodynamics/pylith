@@ -1,20 +1,20 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/petsc/EventLogger.hh" // Implementation of class methods
 
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES journal macros
-#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include <cassert> // USES assert()
 
@@ -22,12 +22,14 @@
 // Constructor
 pylith::petsc::EventLogger::EventLogger(void) :
     _className(""),
-    _classId(0) {}
+    _classId(0) {
+}
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::petsc::EventLogger::~EventLogger(void) {}
+pylith::petsc::EventLogger::~EventLogger(void) {
+}
 
 
 // ----------------------------------------------------------------------
@@ -81,8 +83,7 @@ pylith::petsc::EventLogger::registerStage(const char* name) {
     PetscLogStage id = 0;
     PetscErrorCode err = PetscLogStageRegister(name, &id);
     if (err) {
-        PYLITH_ERROR(pylith::exceptions::PetscError,
-                     "Could not register logging stage '" << name << "'.");
+        PYLITH_ERROR(pylith::exceptions::PetscError, "Could not register logging stage '" << name << "'.");
     } // if
     _stages[name] = id;
 

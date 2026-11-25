@@ -1,23 +1,18 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
-/** @file modulesrc/bc/NeumannTimeDependent.i
- *
- * @brief Python interface to C++ NeumannTimeDependent object.
- */
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 namespace pylith {
     namespace bc {
-        class NeumannTimeDependent: public pylith::bc::BoundaryCondition {
+        class NeumannTimeDependent : public pylith::bc::BoundaryCondition {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             /// Default constructor.
             NeumannTimeDependent(void);
 
@@ -100,7 +95,7 @@ public:
              * @param[in] solution Solution field.
              * @returns Constraint if applicable, otherwise NULL.
              */
-            std::vector < pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
+            std::vector<pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
 
             /** Create auxiliary field.
              *
@@ -122,8 +117,7 @@ public:
 
             // PROTECTED METHODS
             // ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+          protected:
             /** Get auxiliary factory associated with physics.
              *
              * @return Auxiliary factory for physics object.
@@ -135,12 +129,12 @@ protected:
              * @param[in] dt Current time step.
              */
             void _updateKernelConstants(const PylithReal dt);
-
         };
 
         // NeumannTimeDependent
 
-    } // bc
-} // pylith
+    } // namespace bc
+} // namespace pylith
+
 
 // End of file

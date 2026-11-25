@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Derivation of Elasticity Equation
 
 For completeness we start our discussion of the governing equations with a derivation of the elasticity equation.
@@ -50,3 +59,5 @@ Because the domain $\Omega$ is arbitrary, the integrand must be the zero vector 
 \end{gather}
 %
 We specify tractions, $\vec{\tau}$, on boundary $\Gamma_{f}$, displacements, $\vec{u^{o}}$, on boundary $\Gamma_{u}$, and slip, $\vec{d}$, on fault interface $\Gamma_{f}$.
+
+% End of file

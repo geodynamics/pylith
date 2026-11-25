@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-developer-design-application-flow)=
 # PyLith Application Flow
 
@@ -37,3 +46,5 @@ In a time-dependent problem the PETSc `TS` object (relabeled `PetscTS` within Py
 Within each time step, the `PetscTS` object calls the PETSc linear and nonlinear solvers as needed, which call the following methods of the C++ `pylith::problems::TimeDependent` object as needed: `computeRHSResidual()`, `computeLHSResidual()`, and `computeLHSJacobian()`.
 The `pylith::problems::TimeDependent` object calls the corresponding methods in the boundary conditions, constraints, and materials objects.
 At the end of each time step, it calls `problems::TimeDependent::poststep()`.  
+
+% End of file

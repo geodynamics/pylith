@@ -1,17 +1,18 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
-#include <portinfo>
-#include "pythia/journal/diagnostics.h"
 #include "pylith/utils/mpi.hh"
+#include "pythia/journal/diagnostics.h"
+#include <portinfo>
 
 #undef PYLITH_FUNCTION_NAME
 #if defined(__func__)
@@ -22,84 +23,75 @@
 
 
 // Component --------------------------------------------------------------------------------------
-#define PYLITH_COMPONENT_INFO_ROOT(channel, msg) \
-        do { \
-            if (pylith::utils::MPI::isRoot()) { \
-                pythia::journal::info_t info(channel); \
-                info << pythia::journal::at(__HERE__) \
-                     << "Component '"<<PyreComponent::getFullIdentifier()<<"': " \
-                     << msg << pythia::journal::endl; } \
-        } while (0)
+#define PYLITH_COMPONENT_INFO_ROOT(channel, msg)                                                                       \
+    do {                                                                                                               \
+        if (pylith::utils::MPI::isRoot()) {                                                                            \
+            pythia::journal::info_t info(channel);                                                                     \
+            info << pythia::journal::at(__HERE__) << "Component '" << PyreComponent::getFullIdentifier()               \
+                 << "': " << msg << pythia::journal::endl;                                                             \
+        }                                                                                                              \
+    } while (0)
 
-#define PYLITH_COMPONENT_INFO(channel, msg) \
-        do { \
-            pythia::journal::info_t info(channel); \
-            info << pythia::journal::at(__HERE__) \
-                 << "Component '"<<PyreComponent::getFullIdentifier()<<"': " \
-                 << msg << pythia::journal::endl; \
-        } while (0)
+#define PYLITH_COMPONENT_INFO(channel, msg)                                                                            \
+    do {                                                                                                               \
+        pythia::journal::info_t info(channel);                                                                         \
+        info << pythia::journal::at(__HERE__) << "Component '" << PyreComponent::getFullIdentifier() << "': " << msg   \
+             << pythia::journal::endl;                                                                                 \
+    } while (0)
 
-#define PYLITH_COMPONENT_DEBUG(channel, msg) \
-        do { \
-            pythia::journal::debug_t debug(channel); \
-            debug << pythia::journal::at(__HERE__) \
-                  << "Component '"<<PyreComponent::getFullIdentifier()<<"': " \
-                  << msg << pythia::journal::endl; \
-        } while (0)
+#define PYLITH_COMPONENT_DEBUG(channel, msg)                                                                           \
+    do {                                                                                                               \
+        pythia::journal::debug_t debug(channel);                                                                       \
+        debug << pythia::journal::at(__HERE__) << "Component '" << PyreComponent::getFullIdentifier() << "': " << msg  \
+              << pythia::journal::endl;                                                                                \
+    } while (0)
 
-#define PYLITH_COMPONENT_WARNING(channel, msg) \
-        do { \
-            pythia::journal::warning_t warning(channel); \
-            warning << pythia::journal::at(__HERE__) \
-                    << "Component '"<<PyreComponent::getFullIdentifier()<<"': " \
-                    << msg << pythia::journal::endl; \
-        } while (0)
+#define PYLITH_COMPONENT_WARNING(channel, msg)                                                                         \
+    do {                                                                                                               \
+        pythia::journal::warning_t warning(channel);                                                                   \
+        warning << pythia::journal::at(__HERE__) << "Component '" << PyreComponent::getFullIdentifier()                \
+                << "': " << msg << pythia::journal::endl;                                                              \
+    } while (0)
 
-#define PYLITH_COMPONENT_ERROR(ExceptionType, msg) \
-        do { \
-            throw ExceptionType((pylith::exceptions::ErrorMessage() \
-                                 << "Component '" << PyreComponent::getFullIdentifier() << ": " \
-                                 << msg), \
-                                __HERE__); \
-        } while (0)
+#define PYLITH_COMPONENT_ERROR(ExceptionType, msg)                                                                     \
+    do {                                                                                                               \
+        throw ExceptionType((pylith::exceptions::ErrorMessage()                                                        \
+                             << "Component '" << PyreComponent::getFullIdentifier() << ": " << msg),                   \
+                            __HERE__);                                                                                 \
+    } while (0)
 
 
 // General ----------------------------------------------------------------------------------------
-#define PYLITH_INFO_ROOT(channel, msg) \
-        do { \
-            if (pylith::utils::MPI::isRoot()) { \
-                pythia::journal::info_t info(channel); \
-                info << pythia::journal::at(__HERE__) \
-                     << msg << pythia::journal::endl; } \
-        } while (0)
+#define PYLITH_INFO_ROOT(channel, msg)                                                                                 \
+    do {                                                                                                               \
+        if (pylith::utils::MPI::isRoot()) {                                                                            \
+            pythia::journal::info_t info(channel);                                                                     \
+            info << pythia::journal::at(__HERE__) << msg << pythia::journal::endl;                                     \
+        }                                                                                                              \
+    } while (0)
 
-#define PYLITH_INFO(channel, msg) \
-        do { \
-            pythia::journal::info_t info(channel); \
-            info << pythia::journal::at(__HERE__) \
-                 << msg << pythia::journal::endl; \
-        } while (0)
+#define PYLITH_INFO(channel, msg)                                                                                      \
+    do {                                                                                                               \
+        pythia::journal::info_t info(channel);                                                                         \
+        info << pythia::journal::at(__HERE__) << msg << pythia::journal::endl;                                         \
+    } while (0)
 
-#define PYLITH_DEBUG(channel, msg) \
-        do { \
-            pythia::journal::debug_t debug(channel); \
-            debug << pythia::journal::at(__HERE__) \
-                  << msg << pythia::journal::endl; \
-        } while (0)
+#define PYLITH_DEBUG(channel, msg)                                                                                     \
+    do {                                                                                                               \
+        pythia::journal::debug_t debug(channel);                                                                       \
+        debug << pythia::journal::at(__HERE__) << msg << pythia::journal::endl;                                        \
+    } while (0)
 
-#define PYLITH_WARNING(channel, msg) \
-        do { \
-            pythia::journal::warning_t warning(channel); \
-            warning << pythia::journal::at(__HERE__) \
-                    << msg << pythia::journal::endl; \
-        } while (0)
+#define PYLITH_WARNING(channel, msg)                                                                                   \
+    do {                                                                                                               \
+        pythia::journal::warning_t warning(channel);                                                                   \
+        warning << pythia::journal::at(__HERE__) << msg << pythia::journal::endl;                                      \
+    } while (0)
 
-#define PYLITH_ERROR(ExceptionType, msg) \
-        do { \
-            throw ExceptionType((pylith::exceptions::ErrorMessage() \
-                                 << msg), \
-                                __HERE__); \
-        } while (0)
+#define PYLITH_ERROR(ExceptionType, msg)                                                                               \
+    do {                                                                                                               \
+        throw ExceptionType((pylith::exceptions::ErrorMessage() << msg), __HERE__);                                    \
+    } while (0)
 
 // Channel names ----------------------------------------------------------------------------------
 namespace pylith {
@@ -138,7 +130,8 @@ namespace pylith {
         static const std::string mesh = "mesh";
         static const std::string mesh_detail3 = "mesh-detail-3";
         static const std::string mesh_detail5 = "mesh-detail-5";
-    } // namespace
-}
+    } // namespace journal
+} // namespace pylith
+
 
 // End of file

@@ -1,4 +1,13 @@
 #!/usr/bin/env nemesis
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 # This python script extracts the changes in fault tractions from
 # step01 and combines them with background depth-dependent fault
@@ -16,9 +25,9 @@ import numpy
 import h5py
 
 # Load in change in tractions from coseismic simulation
-h5 = h5py.File("output/step01_coseismic-fault.h5", 'r')
-vertices = h5['geometry/vertices'][:]
-tractions_change = h5['vertex_fields/traction_change'][0,:,:]
+h5 = h5py.File("output/step01_coseismic-fault.h5", "r")
+vertices = h5["geometry/vertices"][:]
+tractions_change = h5["vertex_fields/traction_change"][0, :, :]
 h5.close()
 
 # Parameters for tractions associated with background stress field
@@ -46,14 +55,16 @@ cs.setSpaceDim(2)
 
 # Create writer for spatial database file
 writer = createWriter("afterslip_tractions.spatialdb")
-writer.write({'points': vertices,
-              'coordsys': cs,
-              'data_dim': 1,
-              'values': [{'name': "initial_amplitude_tangential",
-                          'units': "Pa",
-                          'data': tractions_shear},
-                         {'name': "initial_amplitude_normal",
-                          'units': "Pa",
-                          'data': tractions_normal}]})
+writer.write(
+    {
+        "points": vertices,
+        "coordsys": cs,
+        "data_dim": 1,
+        "values": [
+            {"name": "initial_amplitude_tangential", "units": "Pa", "data": tractions_shear},
+            {"name": "initial_amplitude_normal", "units": "Pa", "data": tractions_normal},
+        ],
+    }
+)
 
 # End of file

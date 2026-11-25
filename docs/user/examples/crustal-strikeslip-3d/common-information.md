@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Common Information
 
 In addition to the finite-element mesh, PyLith requires files to specify the simulation parameters.
@@ -191,3 +200,5 @@ constrained_dof = [2]
 db_auxiliary_field = pylith.bc.ZeroDB
 db_auxiliary_field.description = Dirichlet BC on bottom boundary
 ```
+
+% End of file

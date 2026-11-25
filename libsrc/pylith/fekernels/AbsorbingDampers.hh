@@ -1,10 +1,19 @@
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
+//
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 /*
  * ================================================================================================
  * This code is part of PyLith, developed through the Computational Infrastructure
  * for Geodynamics (https://github.com/geodynamics/pylith).
  *
- * Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
- * All rights reserved.
+ * Copyright (c) 2010-2026 All rights reserved.
  *
  * See https://mit-license.org/ and LICENSE.md and for license information.
  * =================================================================================================
@@ -35,8 +44,7 @@
 #include <cassert> // USES assert()
 
 class pylith::fekernels::AbsorbingDampers {
-public:
-
+  public:
     /** Kernel interface.
      *
      * @param[in] dim Spatial dimension.
@@ -64,26 +72,26 @@ public:
      *
      * g_0(x)
      */
-    static inline
-    void g0(const PylithInt dim,
-            const PylithInt numS,
-            const PylithInt numA,
-            const PylithInt sOff[],
-            const PylithInt sOff_x[],
-            const PylithScalar s[],
-            const PylithScalar s_t[],
-            const PylithScalar s_x[],
-            const PylithInt aOff[],
-            const PylithInt aOff_x[],
-            const PylithScalar a[],
-            const PylithScalar a_t[],
-            const PylithScalar a_x[],
-            const PylithReal t,
-            const PylithReal x[],
-            const PylithReal n[],
-            const PylithInt numConstants,
-            const PylithScalar constants[],
-            PylithScalar g0[]) {
+    static inline void
+    g0(const PylithInt dim,
+       const PylithInt numS,
+       const PylithInt numA,
+       const PylithInt sOff[],
+       const PylithInt sOff_x[],
+       const PylithScalar s[],
+       const PylithScalar s_t[],
+       const PylithScalar s_x[],
+       const PylithInt aOff[],
+       const PylithInt aOff_x[],
+       const PylithScalar a[],
+       const PylithScalar a_t[],
+       const PylithScalar a_x[],
+       const PylithReal t,
+       const PylithReal x[],
+       const PylithReal n[],
+       const PylithInt numConstants,
+       const PylithScalar constants[],
+       PylithScalar g0[]) {
         assert(2 == dim || 3 == dim);
 
         const PylithInt _numA = 3;
@@ -108,13 +116,13 @@ public:
         PylithScalar velT[3];
         PylithScalar velNMag = 0;
         for (PylithInt i = 0; i < dim; ++i) {
-            velNMag += s[i_vel+i] * n[i];
+            velNMag += s[i_vel + i] * n[i];
         } // for
         for (PylithInt i = 0; i < dim; ++i) {
             velN[i] = velNMag * n[i];
         } // for
         for (PylithInt i = 0; i < dim; ++i) {
-            velT[i] = s[i_vel+i] - velN[i];
+            velT[i] = s[i_vel + i] - velN[i];
         } // for
 
         for (PylithInt i = 0; i < dim; ++i) {
@@ -123,5 +131,6 @@ public:
     } // g0
 
 }; // AbsorbingDampers
+
 
 // End of file

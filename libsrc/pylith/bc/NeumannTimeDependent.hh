@@ -1,13 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
-//
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 /*
@@ -36,8 +36,7 @@ class pylith::bc::NeumannTimeDependent : public pylith::bc::BoundaryCondition {
     friend class TestNeumannTimeDependent; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     NeumannTimeDependent(void);
 
@@ -141,8 +140,7 @@ public:
                               const double t);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get auxiliary factory associated with physics.
      *
      * @return Auxiliary factory for physics object.
@@ -150,8 +148,7 @@ protected:
     pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     spatialdata::spatialdb::TimeHistory* _dbTimeHistory; ///< Time history database.
     pylith::bc::TimeDependentAuxiliaryFactory* _auxiliaryFactory; ///< Factory for auxiliary subfields.
     std::string _scaleName; ///< Name of scale associated with Neumann boundary condition.
@@ -162,11 +159,11 @@ private:
 
     // NOT IMPLEMENTED
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     NeumannTimeDependent(const NeumannTimeDependent&); ///< Not implemented.
     const NeumannTimeDependent& operator=(const NeumannTimeDependent&); ///< Not implemented.
 
 }; // class NeumannTimeDependent
+
 
 // End of file

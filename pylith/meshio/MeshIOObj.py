@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from pylith.petsc.Component import Component
 from .meshio import MeshIO as ModuleMeshIO
@@ -16,12 +16,12 @@ class MeshIOObj(Component, ModuleMeshIO):
     """
     Abstract base class for finite-element mesh readers.
     """
+
     READ = "read_mode"
     WRITE = "write_mode"
 
     def __init__(self, mode=READ, name="meshio"):
-        """Constructor.
-        """
+        """Constructor."""
         Component.__init__(self, name, facility="mesh_io")
         self.coordsys = None
         self.mode = mode
@@ -42,6 +42,7 @@ class MeshIOObj(Component, ModuleMeshIO):
 
         from pylith.mpi.Communicator import petsc_comm_world
         from pylith.topology.Mesh import Mesh
+
         mesh = Mesh(dim=self.coordsys.getSpaceDim(), comm=petsc_comm_world())
         mesh.setCoordSys(self.coordsys)
 
@@ -55,18 +56,17 @@ class MeshIOObj(Component, ModuleMeshIO):
         @param mesh PETSc mesh object containing finite-element mesh
         """
         from pylith.mpi.Communicator import mpi_is_root
+
         if mpi_is_root():
             self._flow.log("Writing finite-element mesh")
         ModuleMeshIO.write(self, mesh)
 
     def _configure(self):
-        """Set members using inventory.
-        """
+        """Set members using inventory."""
         Component._configure(self)
 
     def _createModuleObj(self):
-        """Create C++ MeshIO object.
-        """
+        """Create C++ MeshIO object."""
         raise NotImplementedError("MeshIO is an abstract base class.")
 
 

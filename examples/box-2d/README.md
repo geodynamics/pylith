@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Axial and Shear Deformation in a 2D Box
 
 This suite of examples demonstrates some basic concepts of using PyLith to solve the static and quasistatic boundary elasticity equation in a 2D box with uniform material properties.
@@ -110,3 +119,5 @@ pylith step05_sheardisptractrate.cfg
 6. In Step04 change the initial conditions so that only one of the components is equal to the solution.
 
 7. In Step05 adjust the rate and/or time when the rate dependence starts.
+
+% End of file

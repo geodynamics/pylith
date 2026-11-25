@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -24,12 +24,11 @@
 namespace pylith {
     namespace problems {
         class TestProgressMonitorStep;
-    } // problems
-} // pylith
+    } // namespace problems
+} // namespace pylith
 
 class pylith::problems::TestProgressMonitorStep : public pylith::utils::GenericComponent {
-public:
-
+  public:
     /// Constructor.
     TestProgressMonitorStep(void);
 
@@ -42,31 +41,34 @@ public:
     /// Test update().
     void testUpdate(void);
 
-private:
-
+  private:
     pylith::problems::ProgressMonitorStep* _monitor; ///< Test subject.
 
 }; // class TestProgressMonitorStep
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestProgressMonitorStep::testOpenClose", "[TestProgressMonitorStep]") {
+TEST_CASE("TestProgressMonitorStep::testOpenClose",
+          "[TestProgressMonitorStep]") {
     pylith::problems::TestProgressMonitorStep().testOpenClose();
 }
-TEST_CASE("TestProgressMonitorStep::testUpdate", "[TestProgressMonitorStep]") {
+TEST_CASE("TestProgressMonitorStep::testUpdate",
+          "[TestProgressMonitorStep]") {
     pylith::problems::TestProgressMonitorStep().testUpdate();
 }
 
 // ------------------------------------------------------------------------------------------------
 // Constructor.
 pylith::problems::TestProgressMonitorStep::TestProgressMonitorStep(void) {
-    _monitor = new ProgressMonitorStep();REQUIRE(_monitor);
+    _monitor = new ProgressMonitorStep();
+    REQUIRE(_monitor);
 } // setUp
 
 
 // ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::problems::TestProgressMonitorStep::~TestProgressMonitorStep(void) {
-    delete _monitor;_monitor = NULL;
+    delete _monitor;
+    _monitor = NULL;
 } // tearDown
 
 
@@ -95,9 +97,9 @@ pylith::problems::TestProgressMonitorStep::testUpdate(void) {
     const size_t start = 2;
     const size_t stop = 52;
     const int numUpdateCalls = 7;
-    const size_t current[numUpdateCalls] = { 2, 5, 7, 8, 10, 11, 15 };
+    const size_t current[numUpdateCalls] = {2, 5, 7, 8, 10, 11, 15};
     const int numUpdates = 5;
-    const double percentComplete[numUpdates] = { 0.0, 6.0, 10.0, 16.0, 26.0 };
+    const double percentComplete[numUpdates] = {0.0, 6.0, 10.0, 16.0, 26.0};
     const double tolerance = 1.0e-6;
     const char* filename = "progress_step.txt";
 

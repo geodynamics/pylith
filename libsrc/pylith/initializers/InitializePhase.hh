@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/initializers/initializersfwd.hh" // forward declarations
@@ -16,8 +17,7 @@
 
 class pylith::initializers::InitializePhase {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     InitializePhase(void);
 
@@ -37,11 +37,11 @@ public:
                                         const pylith::problems::Problem& problem) = 0;
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     InitializePhase(const InitializePhase&); ///< Not implemented
     const InitializePhase& operator=(const InitializePhase&); ///< Not implemented
 
 }; // InitializePhase
+
 
 // End of file

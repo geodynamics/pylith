@@ -1,4 +1,14 @@
 #!python
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # CUBIT script to generate simple Exodus files for testing ExodusII
 # and MeshIOCubit.
 
@@ -6,13 +16,13 @@ import cubit
 
 cubit.cmd("reset")
 
-DX = 1.0 # mesh size
+DX = 1.0  # mesh size
 
 # Create geometry
-v1 = cubit.create_vertex(-1.0,  0.0,  0.0)
-v2 = cubit.create_vertex(+1.0,  0.0,  0.0)
-v3 = cubit.create_vertex(+1.0, +1.0,  0.0)
-v4 = cubit.create_vertex(-1.0, +1.0,  0.0)
+v1 = cubit.create_vertex(-1.0, 0.0, 0.0)
+v2 = cubit.create_vertex(+1.0, 0.0, 0.0)
+v3 = cubit.create_vertex(+1.0, +1.0, 0.0)
+v4 = cubit.create_vertex(-1.0, +1.0, 0.0)
 
 c1 = cubit.create_curve(v1, v2)
 c2 = cubit.create_curve(v2, v3)
@@ -54,3 +64,6 @@ cubit.cmd("sideset 21 name 'boundary_yneg'")
 version = cubit.get_version().split(".")[0]
 filename = f"smalltri_v{version}.exo"
 cubit.cmd(f"export mesh '{filename}' dimension 2 overwrite")
+
+
+# End of file

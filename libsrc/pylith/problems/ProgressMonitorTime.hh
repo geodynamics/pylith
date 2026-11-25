@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/problems/ProgressMonitor.hh" // ISA ProgressMonitor
@@ -17,8 +18,7 @@ class pylith::problems::ProgressMonitorTime : public pylith::problems::ProgressM
     friend class TestProgressMonitorTime; // unit testing
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     ProgressMonitorTime(void);
 
@@ -51,8 +51,7 @@ public:
                 const double stop);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Open progress monitor.
     void _open(void);
 
@@ -72,18 +71,17 @@ protected:
                  const char* finished);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     double _baseTime; ///< Units of time as seconds.
     std::string _baseUnit; ///< Unit of time.
     std::ofstream _sout; ///< Output stream.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     ProgressMonitorTime(const ProgressMonitorTime&); ///< Not implemented.
     const ProgressMonitorTime& operator=(const ProgressMonitorTime&); ///< Not implemented.
 
 }; // ProgressMonitorTime
+
 
 // End of file

@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -14,14 +14,14 @@
 
 #include "pylith/meshio/HDF5.hh" // USES HDF5
 
-#include "pylith/topology/Mesh.hh" /// USES Mesh
-#include "pylith/topology/Field.hh" /// USES Field
-#include "pylith/topology/Stratum.hh" /// USES StratumIS
-#include "pylith/topology/MeshOps.hh" /// USES isCohesiveCell
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
+#include "pylith/topology/Field.hh" /// USES Field
+#include "pylith/topology/Mesh.hh" /// USES Mesh
+#include "pylith/topology/MeshOps.hh" /// USES isCohesiveCell
+#include "pylith/topology/Stratum.hh" /// USES StratumIS
 
-#include "pylith/utils/journals.hh" // USES journal macros
 #include "pylith/exceptions/Exceptions.hh" // USES Exceptio
+#include "pylith/utils/journals.hh" // USES journal macros
 
 #include "spatialdata/geocoords/CoordSys.hh" /// USES CoordSys
 
@@ -42,7 +42,8 @@ pylith::meshio::DataWriterHDF5Ext::DataWriterHDF5Ext(void) :
 // ----------------------------------------------------------------------
 // Destructor
 pylith::meshio::DataWriterHDF5Ext::~DataWriterHDF5Ext(void) {
-    delete _h5;_h5 = 0;
+    delete _h5;
+    _h5 = 0;
     deallocate();
 } // destructor
 
@@ -56,9 +57,7 @@ pylith::meshio::DataWriterHDF5Ext::deallocate(void) {
     DataWriter::deallocate();
 
     const dataset_type::const_iterator& dEnd = _datasets.end();
-    for (dataset_type::iterator d_iter = _datasets.begin();
-         d_iter != dEnd;
-         ++d_iter) {
+    for (dataset_type::iterator d_iter = _datasets.begin(); d_iter != dEnd; ++d_iter) {
         PylithCallPetsc(PetscViewerDestroy(&d_iter->second.viewer));
     } // for
 
@@ -72,7 +71,8 @@ pylith::meshio::DataWriterHDF5Ext::DataWriterHDF5Ext(const DataWriterHDF5Ext& w)
     DataWriter(w),
     _filename(w._filename),
     _h5(new HDF5),
-    _tstampIndex(0) {}
+    _tstampIndex(0) {
+}
 
 
 // ----------------------------------------------------------------------
@@ -88,9 +88,10 @@ pylith::meshio::DataWriterHDF5Ext::open(const pylith::topology::Mesh& mesh,
     try {
         DataWriter::open(mesh, isInfo);
 
-        PetscDM dmMesh = mesh.getDM();assert(dmMesh);
+        PetscDM dmMesh = mesh.getDM();
+        assert(dmMesh);
         MPI_Comm comm;
-        PylithCallPetsc(PetscObjectGetComm((PetscObject) dmMesh, &comm));
+        PylithCallPetsc(PetscObjectGetComm((PetscObject)dmMesh, &comm));
 
         PetscViewer viewer;
 
@@ -107,11 +108,9 @@ pylith::meshio::DataWriterHDF5Ext::open(const pylith::topology::Mesh& mesh,
         err.addContext(pylith::exceptions::ErrorMessage() << "Error while opening HDF5 file " << _filename << ".\n");
         throw;
     } catch (const std::exception& err) {
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Error while opening HDF5 file " << _filename << ".\n" << err.what());
+        PYLITH_ERROR(pylith::exceptions::IOError, "Error while opening HDF5 file " << _filename << ".\n" << err.what());
     } catch (...) {
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Unknown error while opening HDF5 file " << _filename << ".");
+        PYLITH_ERROR(pylith::exceptions::IOError, "Unknown error while opening HDF5 file " << _filename << ".");
     } // try/catch
 
     PYLITH_METHOD_END;
@@ -148,11 +147,12 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
 
     const char* name = subfield.getDescription().label.c_str();
     try {
-        PetscDM dmMesh = subfield.getOutputDM();assert(dmMesh);
+        PetscDM dmMesh = subfield.getOutputDM();
+        assert(dmMesh);
 
         MPI_Comm comm;
         PetscMPIInt commRank;
-        PylithCallPetsc(PetscObjectGetComm((PetscObject) dmMesh, &comm));
+        PylithCallPetsc(PetscObjectGetComm((PetscObject)dmMesh, &comm));
         PylithCallPetsc(MPI_Comm_rank(comm, &commRank));
         const bool isMPIRoot = 0 == commRank;
 
@@ -162,7 +162,8 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
         if (_datasets.find(name) != _datasets.end()) {
             binaryViewer = _datasets[name].viewer;
         } else {
-            PylithCallPetsc(PetscViewerBinaryOpen(comm, _datasetFilename(name).c_str(), FILE_MODE_WRITE, &binaryViewer));
+            PylithCallPetsc(
+                PetscViewerBinaryOpen(comm, _datasetFilename(name).c_str(), FILE_MODE_WRITE, &binaryViewer));
             PylithCallPetsc(PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE));
             ExternalDataset dataset;
             dataset.numTimeSteps = 0;
@@ -173,7 +174,8 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
         } // else
         assert(binaryViewer);
 
-        PetscVec vector = subfield.getOutputVector();assert(vector);
+        PetscVec vector = subfield.getOutputVector();
+        assert(vector);
         DataWriter::_writeVec(vector, binaryViewer);
 
         ExternalDataset& datasetInfo = _datasets[name];
@@ -183,7 +185,7 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
         if (isMPIRoot) {
             _h5->open(hdf5Filename().c_str(), H5F_ACC_RDWR);
 
-            if (_tstampIndex+1 == datasetInfo.numTimeSteps) {
+            if (_tstampIndex + 1 == datasetInfo.numTimeSteps) {
                 _writeTimeStamp(t);
             } // if
         } // if
@@ -195,18 +197,22 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
             PetscInt dof = 0, n, numVerticesLocal = 0, numVertices, vStart;
             PetscIS globalVertexNumbers = NULL;
 
-            PylithCallPetsc(VecGetDM(vector, &dm));assert(dm);
-            PylithCallPetsc(DMGetLocalSection(dm, &section));assert(section);
+            PylithCallPetsc(VecGetDM(vector, &dm));
+            assert(dm);
+            PylithCallPetsc(DMGetLocalSection(dm, &section));
+            assert(section);
 
             PylithCallPetsc(DMPlexGetDepthStratum(dmMesh, 0, &vStart, NULL));
             PylithCallPetsc(DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers));
             PylithCallPetsc(ISGetLocalSize(globalVertexNumbers, &n));
             if (n > 0) {
-                const PetscInt *indices = NULL;
+                const PetscInt* indices = NULL;
                 PylithCallPetsc(ISGetIndices(globalVertexNumbers, &indices));
                 PylithCallPetsc(PetscSectionGetDof(section, vStart, &dof));
                 for (PetscInt v = 0; v < n; ++v) {
-                    if (indices[v] >= 0) {++numVerticesLocal;}
+                    if (indices[v] >= 0) {
+                        ++numVerticesLocal;
+                    }
                 } // for
                 PylithCallPetsc(ISRestoreIndices(globalVertexNumbers, &indices));
             } // if
@@ -214,7 +220,8 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
             int numComponents = 0;
             PylithCallPetsc(MPI_Allreduce(&numComponentsLocal, &numComponents, 1, MPI_INT, MPI_MAX, comm));
             PylithCallPetsc(MPI_Allreduce(&numVerticesLocal, &numVertices, 1, MPI_INT, MPI_SUM, comm));
-            assert(numComponents > 0);assert(numVertices > 0);
+            assert(numComponents > 0);
+            assert(numVertices > 0);
 
             datasetInfo.numPoints = numVertices;
             datasetInfo.numComponents = numComponents;
@@ -240,9 +247,14 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
 
                 // PETSc writes binary data as big endian
                 const hid_t scalarType = (sizeof(double) == sizeof(PylithScalar)) ? H5T_IEEE_F64BE : H5T_IEEE_F32BE;
-                _h5->createDatasetRawExternal("/vertex_fields", name, _datasetFilename(name).c_str(), maxDims, scalarType);
+                _h5->createDatasetRawExternal("/vertex_fields",
+                                              name,
+                                              _datasetFilename(name).c_str(),
+                                              maxDims,
+                                              scalarType);
                 std::string fullName = std::string("/vertex_fields/") + name;
-                const char* sattr = pylith::topology::FieldBase::vectorFieldString(subfield.getDescription().vectorFieldType);
+                const char* sattr =
+                    pylith::topology::FieldBase::vectorFieldString(subfield.getDescription().vectorFieldType);
                 _h5->writeAttributeString(fullName.c_str(), "vector_field_type", sattr);
             } // if
         } else if (isMPIRoot) {
@@ -260,17 +272,18 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
             _h5->close();
         } // if
     } catch (pylith::exceptions::Error& err) {
-        err.addContext(pylith::exceptions::ErrorMessage() << "Error while writing field '" << name << "' at time "
-                                                          << t << " for HDF5 file '" << _filename << "'.\n");
+        err.addContext(pylith::exceptions::ErrorMessage() << "Error while writing field '" << name << "' at time " << t
+                                                          << " for HDF5 file '" << _filename << "'.\n");
         throw;
     } catch (const std::exception& err) {
         PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Error while writing field '" << name << "' at time "
-                                                   << t << " for HDF5 file '" << _filename << "'.\n" << err.what());
+                     "Error while writing field '" << name << "' at time " << t << " for HDF5 file '" << _filename
+                                                   << "'.\n"
+                                                   << err.what());
     } catch (...) {
         PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Error while writing field '" << name << "' at time "
-                                                   << t << " for HDF5 file '" << _filename << "'.");
+                     "Error while writing field '" << name << "' at time " << t << " for HDF5 file '" << _filename
+                                                   << "'.");
     } // try/catch
 
     PYLITH_METHOD_END;
@@ -287,10 +300,11 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
 
     const char* name = subfield.getDescription().label.c_str();
     try {
-        PetscDM dmMesh = subfield.getOutputDM();assert(dmMesh);
+        PetscDM dmMesh = subfield.getOutputDM();
+        assert(dmMesh);
         MPI_Comm comm;
         PetscMPIInt commRank;
-        PylithCallPetsc(PetscObjectGetComm((PetscObject) dmMesh, &comm));
+        PylithCallPetsc(PetscObjectGetComm((PetscObject)dmMesh, &comm));
         PylithCallPetsc(MPI_Comm_rank(comm, &commRank));
         const bool isMPIRoot = 0 == commRank;
 
@@ -300,7 +314,8 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
         if (_datasets.find(name) != _datasets.end()) {
             binaryViewer = _datasets[name].viewer;
         } else {
-            PylithCallPetsc(PetscViewerBinaryOpen(comm, _datasetFilename(name).c_str(), FILE_MODE_WRITE, &binaryViewer));
+            PylithCallPetsc(
+                PetscViewerBinaryOpen(comm, _datasetFilename(name).c_str(), FILE_MODE_WRITE, &binaryViewer));
             PylithCallPetsc(PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE));
             ExternalDataset dataset;
             dataset.numTimeSteps = 0;
@@ -311,7 +326,8 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
         } // else
         assert(binaryViewer);
 
-        PetscVec vector = subfield.getOutputVector();assert(vector);
+        PetscVec vector = subfield.getOutputVector();
+        assert(vector);
         DataWriter::_writeVec(vector, binaryViewer);
 
         ExternalDataset& datasetInfo = _datasets[name];
@@ -321,7 +337,7 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
         if (isMPIRoot) {
             _h5->open(hdf5Filename().c_str(), H5F_ACC_RDWR);
 
-            if (_tstampIndex+1 == datasetInfo.numTimeSteps) {
+            if (_tstampIndex + 1 == datasetInfo.numTimeSteps) {
                 _writeTimeStamp(t);
             } // if
         } // if
@@ -330,7 +346,8 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
         if (createdExternalDataset) {
             // Get cell information
             PetscSection section = NULL;
-            PylithCallPetsc(DMGetLocalSection(subfield.getOutputDM(), &section));assert(section);
+            PylithCallPetsc(DMGetLocalSection(subfield.getOutputDM(), &section));
+            assert(section);
             PetscInt dof = 0, numLocalCells = 0, numCells, cellHeight, cStart, cEnd;
             PetscIS globalCellNumbers;
 
@@ -339,11 +356,13 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
             PylithCallPetsc(DMPlexGetCellNumbering(dmMesh, &globalCellNumbers));
             PylithCallPetsc(ISGetLocalSize(globalCellNumbers, &numCells));
             if (numCells > 0) {
-                const PetscInt *indices = NULL;
+                const PetscInt* indices = NULL;
                 PylithCallPetsc(ISGetIndices(globalCellNumbers, &indices));
                 PylithCallPetsc(PetscSectionGetDof(section, cStart, &dof));
                 for (PetscInt v = 0; v < numCells; ++v) {
-                    if (indices[v] >= 0) {++numLocalCells;}
+                    if (indices[v] >= 0) {
+                        ++numLocalCells;
+                    }
                 } // for
                 PylithCallPetsc(ISRestoreIndices(globalCellNumbers, &indices));
             } // if
@@ -351,7 +370,8 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
             int numComponents = 0;
             MPI_Allreduce(&numComponentsLocal, &numComponents, 1, MPI_INT, MPI_MAX, comm);
             PylithCallPetsc(MPI_Allreduce(&numLocalCells, &numCells, 1, MPI_INT, MPI_SUM, comm));
-            assert(numComponents > 0);assert(numCells > 0);
+            assert(numComponents > 0);
+            assert(numCells > 0);
 
             datasetInfo.numPoints = numCells;
             datasetInfo.numComponents = numComponents;
@@ -377,9 +397,14 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
 
                 // PETSc writes binary data as big endian
                 const hid_t scalarType = (sizeof(double) == sizeof(PylithScalar)) ? H5T_IEEE_F64BE : H5T_IEEE_F32BE;
-                _h5->createDatasetRawExternal("/cell_fields", name, _datasetFilename(name).c_str(), maxDims, scalarType);
+                _h5->createDatasetRawExternal("/cell_fields",
+                                              name,
+                                              _datasetFilename(name).c_str(),
+                                              maxDims,
+                                              scalarType);
                 std::string fullName = std::string("/cell_fields/") + name;
-                const char* sattr = pylith::topology::FieldBase::vectorFieldString(subfield.getDescription().vectorFieldType);
+                const char* sattr =
+                    pylith::topology::FieldBase::vectorFieldString(subfield.getDescription().vectorFieldType);
                 _h5->writeAttributeString(fullName.c_str(), "vector_field_type", sattr);
             } // if
 
@@ -397,17 +422,18 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
             _h5->close();
         } // if
     } catch (pylith::exceptions::Error& err) {
-        err.addContext(pylith::exceptions::ErrorMessage() << "Error while writing field '" << name << "' at time "
-                                                          << t << " for HDF5 file '" << _filename << "'.\n");
+        err.addContext(pylith::exceptions::ErrorMessage() << "Error while writing field '" << name << "' at time " << t
+                                                          << " for HDF5 file '" << _filename << "'.\n");
         throw;
     } catch (const std::exception& err) {
         PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Error while writing field '" << name << "' at time "
-                                                   << t << " for HDF5 file '" << _filename << "'.\n" << err.what());
+                     "Error while writing field '" << name << "' at time " << t << " for HDF5 file '" << _filename
+                                                   << "'.\n"
+                                                   << err.what());
     } catch (...) {
         PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Error while writing field '" << name << "' at time "
-                                                   << t << " for HDF5 file '" << _filename << "'.");
+                     "Error while writing field '" << name << "' at time " << t << " for HDF5 file '" << _filename
+                                                   << "'.");
     } // try/catch
 
     PYLITH_METHOD_END;
@@ -433,12 +459,14 @@ pylith::meshio::DataWriterHDF5Ext::writePointNames(const pylith::string_vector& 
         const int commRoot = 0;
         const bool isMPIRoot = commRoot == commRank;
         int nprocs = 0;
-        mpierr = MPI_Comm_size(comm, &nprocs);assert(MPI_SUCCESS == mpierr);
+        mpierr = MPI_Comm_size(comm, &nprocs);
+        assert(MPI_SUCCESS == mpierr);
 
         // Number of names on each process.
         const int numNamesLocal = names.size();
         int_array numNamesArray(nprocs);
-        mpierr = MPI_Allgather((void*)&numNamesLocal, 1, MPI_INT, &numNamesArray[0], 1, MPI_INT, comm);assert(MPI_SUCCESS == mpierr);
+        mpierr = MPI_Allgather((void*)&numNamesLocal, 1, MPI_INT, &numNamesArray[0], 1, MPI_INT, comm);
+        assert(MPI_SUCCESS == mpierr);
         const int numNames = numNamesArray.sum();
 
         // Get maximum string length.
@@ -448,21 +476,24 @@ pylith::meshio::DataWriterHDF5Ext::writePointNames(const pylith::string_vector& 
             maxStringLengthLocal = std::max(maxStringLengthLocal, int(names[i].length()));
         } // for
         maxStringLengthLocal += 1; // add space for null terminator.
-        mpierr = MPI_Allreduce(&maxStringLengthLocal, &maxStringLength, 1, MPI_INT, MPI_MAX, comm);assert(MPI_SUCCESS == mpierr);
+        mpierr = MPI_Allreduce(&maxStringLengthLocal, &maxStringLength, 1, MPI_INT, MPI_MAX, comm);
+        assert(MPI_SUCCESS == mpierr);
 
-        char_array namesFixedLengthLocal(numNamesLocal*maxStringLength);
+        char_array namesFixedLengthLocal(numNamesLocal * maxStringLength);
         for (int i = 0; i < numNamesLocal; ++i) {
-            const int index = i*maxStringLength;
-            strncpy(&namesFixedLengthLocal[index], names[i].c_str(), maxStringLength-1);
-            namesFixedLengthLocal[index+maxStringLength-1] = '\0';
+            const int index = i * maxStringLength;
+            strncpy(&namesFixedLengthLocal[index], names[i].c_str(), maxStringLength - 1);
+            namesFixedLengthLocal[index + maxStringLength - 1] = '\0';
             // Fill remaining portion of string with null characters.
             for (int j = names[i].length(); j < maxStringLength; ++j) {
-                namesFixedLengthLocal[index+j] = '\0';
+                namesFixedLengthLocal[index + j] = '\0';
             } // for
         } // for
 
         char_array namesFixedLength;
-        if (isMPIRoot) {namesFixedLength.resize(numNames*maxStringLength);}
+        if (isMPIRoot) {
+            namesFixedLength.resize(numNames * maxStringLength);
+        }
         // Convert numNames array from number of names to total size of names array.
         numNamesArray *= maxStringLength;
         int_array offsets;
@@ -470,10 +501,18 @@ pylith::meshio::DataWriterHDF5Ext::writePointNames(const pylith::string_vector& 
             offsets.resize(nprocs);
             offsets[0] = 0;
             for (int i = 1; i < nprocs; ++i) {
-                offsets[i] = offsets[i-1] + numNamesArray[i-1];
+                offsets[i] = offsets[i - 1] + numNamesArray[i - 1];
             } // for
         } // if
-        mpierr = MPI_Gatherv(&namesFixedLengthLocal[0], numNamesLocal*maxStringLength, MPI_CHAR, &namesFixedLength[0], &numNamesArray[0], &offsets[0], MPI_CHAR, commRoot, comm);
+        mpierr = MPI_Gatherv(&namesFixedLengthLocal[0],
+                             numNamesLocal * maxStringLength,
+                             MPI_CHAR,
+                             &namesFixedLength[0],
+                             &numNamesArray[0],
+                             &offsets[0],
+                             MPI_CHAR,
+                             commRoot,
+                             comm);
 
         if (isMPIRoot) {
             _h5->open(hdf5Filename().c_str(), H5F_ACC_RDWR);
@@ -482,11 +521,13 @@ pylith::meshio::DataWriterHDF5Ext::writePointNames(const pylith::string_vector& 
         } // if
 
     } catch (pylith::exceptions::Error& err) {
-        err.addContext(pylith::exceptions::ErrorMessage() << "Error while writing stations to HDF5 file '" << hdf5Filename() << "'.\n");
+        err.addContext(pylith::exceptions::ErrorMessage()
+                       << "Error while writing stations to HDF5 file '" << hdf5Filename() << "'.\n");
         throw;
     } catch (const std::exception& err) {
         PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Error while writing stations to HDF5 file '" << hdf5Filename() << "'.\n" << err.what());
+                     "Error while writing stations to HDF5 file '" << hdf5Filename() << "'.\n"
+                                                                   << err.what());
     } catch (...) {
         PYLITH_ERROR(pylith::exceptions::IOError,
                      "Error while writing stations to HDF5 file '" << hdf5Filename() << "'.");
@@ -557,7 +598,7 @@ pylith::meshio::DataWriterHDF5Ext::_writeTimeStamp(const PylithScalar t) {
     // Write time stamp as chunk to HDF5 file.
     HDF5::ChunkInfo chunk;
     chunk.fullDims.resize(ndims);
-    chunk.fullDims[0] = _tstampIndex+1;
+    chunk.fullDims[0] = _tstampIndex + 1;
     chunk.fullDims[1] = 1;
     chunk.fullDims[2] = 1;
     chunk.chunkDims = shape.chunkDims;

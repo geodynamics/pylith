@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 /* Mesh: meshTri3.txt
  *
@@ -29,20 +29,17 @@ const char* pylith::bc::DirichletDataTri3::_label = "bc";
 
 const int pylith::bc::DirichletDataTri3::_numDOF = 2;
 const int pylith::bc::DirichletDataTri3::_numFixedDOF = 1;
-const int pylith::bc::DirichletDataTri3::_fixedDOF[] = { 1 };
+const int pylith::bc::DirichletDataTri3::_fixedDOF[] = {1};
 
 const int pylith::bc::DirichletDataTri3::_numConstrainedPts = 2;
-const int pylith::bc::DirichletDataTri3::_constrainedPoints[] = { 1, 3 };
+const int pylith::bc::DirichletDataTri3::_constrainedPoints[] = {1, 3};
 
 const PylithScalar pylith::bc::DirichletDataTri3::_tRef = 0.7;
 const PylithScalar pylith::bc::DirichletDataTri3::_valueRate = -0.2;
-const PylithScalar pylith::bc::DirichletDataTri3::_valuesInitial[] =
-{ 0.3, 0.7 };
+const PylithScalar pylith::bc::DirichletDataTri3::_valuesInitial[] = {0.3, 0.7};
 
-const char* pylith::bc::DirichletDataTri3::_meshFilename =
-    "data/tri3.mesh";
-const char* pylith::bc::DirichletDataTri3::_dbFilename =
-    "data/tri3_disp.spatialdb";
+const char* pylith::bc::DirichletDataTri3::_meshFilename = "data/tri3.mesh";
+const char* pylith::bc::DirichletDataTri3::_dbFilename = "data/tri3_disp.spatialdb";
 
 pylith::bc::DirichletDataTri3::DirichletDataTri3(void) { // constructor
     id = _id;
@@ -64,7 +61,8 @@ pylith::bc::DirichletDataTri3::DirichletDataTri3(void) { // constructor
 } // constructor
 
 
-pylith::bc::DirichletDataTri3::~DirichletDataTri3(void) {}
+pylith::bc::DirichletDataTri3::~DirichletDataTri3(void) {
+}
 
 
 // End of file

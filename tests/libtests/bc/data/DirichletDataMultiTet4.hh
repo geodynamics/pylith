@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "DirichletDataMulti.hh"
@@ -14,13 +15,12 @@
 namespace pylith {
     namespace bc {
         class DirichletDataMultiTet4;
-    } // pylith
-} // bc
+    } // namespace bc
+} // namespace pylith
 
 class pylith::bc::DirichletDataMultiTet4 : public DirichletDataMulti {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     DirichletDataMultiTet4(void);
 
@@ -28,8 +28,7 @@ public:
     ~DirichletDataMultiTet4(void);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     static const int _numDOF; ///< Number of degrees of freedom at each point.
 
     static const int _numFixedDOFA; ///< Number of fixedDOF at constrained points.
@@ -69,5 +68,6 @@ private:
 
     static const char* _meshFilename; ///< Filename of input mesh.
 };
+
 
 // End of file

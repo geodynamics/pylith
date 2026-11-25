@@ -1,4 +1,14 @@
 #!python3
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 """WARNING: This script only works with Python supplied with Cubit.
 
 To run this script outside the Cubit GUI, you will need to run it like:
@@ -7,6 +17,8 @@ PATH_TO_CUBIT/Cubit.app/Contents/Frameworks/Python.framework/Versions/Current/bi
 
 where you replace 'PATH_TO_CUBIT' with the absolute path.
 """
+
+
 # -------------------------------------------------------------------------------------------------
 # Utility functions. No edits should be needed.
 # -------------------------------------------------------------------------------------------------
@@ -14,23 +26,32 @@ def setup_cubit():
     """Detect if we are running outside Cubit. If so, then we parse command line arguments and setup
     Cubit."""
     import sys
+
     if not "cubit" in sys.modules:
         import argparse
         import pathlib
 
         parser = argparse.ArgumentParser()
-        parser.add_argument("--cubit-directory", action="store", dest="cubit_dir", required=True, help="Directory containing cubit executable.")
+        parser.add_argument(
+            "--cubit-directory",
+            action="store",
+            dest="cubit_dir",
+            required=True,
+            help="Directory containing cubit executable.",
+        )
         args = parser.parse_args()
 
         # Initialize cubit
         cubit_absdir = pathlib.Path(args.cubit_dir).expanduser().resolve()
         sys.path.append(str(cubit_absdir))
         import cubit
-        cubit.init(['cubit','-nojournal'])
+
+        cubit.init(["cubit", "-nojournal"])
+
 
 def get_last_entity(entity_type: str):
     """Get last entry of type 'entity_type'.
-    
+
     Example:
         domain = get_last_entity("volume")
     """
@@ -51,16 +72,16 @@ def get_last_entity(entity_type: str):
 # -10 km <= x <= +10 km
 # -20 km <= y <= 0
 km = 1000.0
-LENGTH = 20*km
-DEPTH = 20*km
+LENGTH = 20 * km
+DEPTH = 20 * km
 
 # Magma conduit
-CONDUIT_LENGTH = 1.0*km
-CONDUIT_DEPTH = 6.0*km
+CONDUIT_LENGTH = 1.0 * km
+CONDUIT_DEPTH = 6.0 * km
 
 # Magma reservoir
-MAJOR_AXIS = 5.0*km
-MINOR_AXIS = 1.0*km
+MAJOR_AXIS = 5.0 * km
+MINOR_AXIS = 1.0 * km
 
 # Discretization size in reservoir
 DX_RES = 250
@@ -83,20 +104,20 @@ cubit.cmd(f"create surface rectangle width {LENGTH} height {DEPTH} ZPLANE")
 s_domain = get_last_entity("surface")
 s_domain.set_entity_name("domain")
 v_domain = get_last_entity("volume")
-cubit.move(v_domain, [LENGTH/2, -DEPTH/2, 0])
+cubit.move(v_domain, [LENGTH / 2, -DEPTH / 2, 0])
 
 # Chamber
 cubit.cmd(f"create surface ellipse major radius {MAJOR_AXIS} minor radius {MINOR_AXIS} on surface domain")
 s_chamber = get_last_entity("surface")
 s_chamber.set_entity_name("reservoir")
 b_chamber = get_last_entity("body")
-cubit.move(b_chamber, [LENGTH/2, -DEPTH*(2/3), 0])
+cubit.move(b_chamber, [LENGTH / 2, -DEPTH * (2 / 3), 0])
 
 # Conduit
 cubit.cmd(f"create surface rectangle width {CONDUIT_LENGTH} height {CONDUIT_DEPTH} on surface domain")
 b_conduit = get_last_entity("body")
 b_conduit.set_entity_name("conduit")
-cubit.move(b_conduit, [LENGTH/2, -DEPTH + CONDUIT_DEPTH/2, 0])
+cubit.move(b_conduit, [LENGTH / 2, -DEPTH + CONDUIT_DEPTH / 2, 0])
 
 # Combine conduit and chamber into reservoir
 cubit.unite([b_chamber, b_conduit])
@@ -239,3 +260,6 @@ if True:
 
 # Write mesh as ExodusII file
 cubit.cmd(f"export mesh 'mesh_{cell}.exo' dimension 2 overwrite")
+
+
+# End of file

@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Examples: 2D Magma Reservoir Using Poroelasticity
 
 This example demonstrates the use of poroelasticity. It includes a magma reservoir with
@@ -28,3 +37,5 @@ To run the example:
 ```bash
 pylith step02_inflation_statevars.cfg
 ```
+
+% End of file

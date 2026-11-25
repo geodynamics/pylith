@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Quastistatic
 
 If we neglect the inertial term ($\rho \frac{\partial \vec{v}}{\partial t} \approx \vec{0}$), then time dependence only arises from history-dependent constitutive equations and boundary conditions.
@@ -71,3 +80,5 @@ J_F^{pp} &= \frac{\partial F^p}{\partial p}  + s_\mathit{tshift} \frac{\partial 
            \int_\Omega {\psi_\mathit{trial}^{p}}{\color{blue}\underbrace{\color{black}\frac{1} {K}}_{\color{blue}{J_{f0}^{pp}}}} {\psi_\mathit{basis}^{p}} \, d\Omega
 \end{align}
 %
+
+% End of file

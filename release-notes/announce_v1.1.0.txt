@@ -1,7 +1,7 @@
 Greetings,
 
 I am pleased to announce the release of PyLith 1.1.0, a finite element
-code designed to solve dynamic elastic problems ans quasi-static
+code designed to solve dynamic elastic problems and quasi-static
 viscoelastic problems in tectonic deformation.
 
 This release adds a number of new features, including Neumann

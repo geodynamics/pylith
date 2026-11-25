@@ -1,22 +1,22 @@
-// =================================================================================================
-// This code is part of SpatialData, developed through the Computatdistributornal Infrastructure
-// for Geodynamics (https://github.com/geodynamics/spatialdata).
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
 //
-// Copyright (c) 2010-2026, University of California, Davis and the SpatialData Development Team.
-// All rights reserved.
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// See https://mit-license.org/ and LICENSE.md and for license informatdistributorn.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/initializers/MeshDistributor.hh" // USES MeshDistributor
 
-#include "pylith/topology/Distributor.hh" // USES Distributor
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/problems/Problem.hh" // USES Problem
+#include "pylith/topology/Distributor.hh" // USES Distributor
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
-#include "pylith/problems/Problem.hh" // USES Problem
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
@@ -28,35 +28,34 @@
 namespace pylith {
     namespace initializers {
         class TestMeshDistributor;
-    } // initializers
-} // pylith
+    } // namespace initializers
+} // namespace pylith
 
 class pylith::initializers::TestMeshDistributor {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test constructors.
-    static
-    void testConstructors(void);
+    static void testConstructors(void);
 
     /// Test accessors.
-    static
-    void testAccessors(void);
+    static void testAccessors(void);
 
     /// Test run().
-    static
-    void testRun(void);
+    static void testRun(void);
 
 }; // class TestMeshDistributor
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestMeshDistributor::testConstructors", "[TestMeshDistributor]") {
+TEST_CASE("TestMeshDistributor::testConstructors",
+          "[TestMeshDistributor]") {
     pylith::initializers::TestMeshDistributor::testConstructors();
 }
-TEST_CASE("TestMeshDistributor::testAccessors", "[TestMeshDistributor]") {
+TEST_CASE("TestMeshDistributor::testAccessors",
+          "[TestMeshDistributor]") {
     pylith::initializers::TestMeshDistributor::testAccessors();
 }
-TEST_CASE("TestMeshDistributor::testRun", "[TestMeshDistributor]") {
+TEST_CASE("TestMeshDistributor::testRun",
+          "[TestMeshDistributor]") {
     pylith::initializers::TestMeshDistributor::testRun();
 }
 
@@ -110,7 +109,8 @@ pylith::initializers::TestMeshDistributor::testRun(void) {
     CHECK(numCells == pylith::topology::MeshOps::getNumCells(*meshNew));
     CHECK(numVertices == pylith::topology::MeshOps::getNumVertices(*meshNew));
 
-    delete meshNew;meshNew = nullptr;
+    delete meshNew;
+    meshNew = nullptr;
 } // testRun
 
 

@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
@@ -17,14 +18,13 @@ namespace pylith {
     namespace topology {
         class TestRefineUniform;
         class TestRefineUniform_Data; // test data
-    } // topology
-} // pylith
+    } // namespace topology
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::topology::TestRefineUniform : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestRefineUniform(TestRefineUniform_Data* data);
 
@@ -35,8 +35,7 @@ public:
     void testRefine(void);
 
     // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     /// Setup mesh.
     void _initialize(void);
 
@@ -48,8 +47,7 @@ private:
 // ------------------------------------------------------------------------------------------------
 class pylith::topology::TestRefineUniform_Data {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestRefineUniform_Data(void);
 
@@ -57,8 +55,7 @@ public:
     ~TestRefineUniform_Data(void);
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// @defgroup Input information
     /// @{
     const char* filename; ///< Filename of mesh file.
@@ -88,7 +85,7 @@ public:
     const char** faceGroupNames; ///< Array of face group names
     size_t numFaceGroups; ///< Number of groups
     /// @}
-
 };
+
 
 // End of file

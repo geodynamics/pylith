@@ -1,12 +1,13 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # Application for searching for and running PyLith .cfg files.
 
 import sys
@@ -18,9 +19,9 @@ import os
 from pylith.utils.SimulationMetadata import fromFile
 from pylith.apps.PyLithApp import PyLithApp
 
-class RunnerApp():
-    """Application for searching for and running PyLith .cfg files.
-    """
+
+class RunnerApp:
+    """Application for searching for and running PyLith .cfg files."""
 
     def main(self, **kwargs):
         """Main entry point.
@@ -54,6 +55,7 @@ class RunnerApp():
                 Command line arguments.
         """
         import sys
+
         workdir = filename.parent
         cwd = os.getcwd()
 
@@ -75,18 +77,23 @@ class RunnerApp():
         Returns (argparse.Namespace)
            Command line arguments.
         """
-        DESCRIPTION = (
-            "Application for searching for and running PyLith simulations."
-        )
+        DESCRIPTION = "Application for searching for and running PyLith simulations."
 
-        parser = argparse.ArgumentParser(description=DESCRIPTION,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-        parser.add_argument("--path", action="store",
-                            dest="searchpath", default=".", help="Search path for .cfg files.")
-        parser.add_argument("--verbose", action="store_true",
-                            dest="verbose", help="Report missing metadata.")
-        parser.add_argument("--nodes", action="store", default=1, type=int,
-                            dest="nodes", help="Number of processes to use when running PyLith.")
+        parser = argparse.ArgumentParser(
+            description=DESCRIPTION, formatter_class=argparse.ArgumentDefaultsHelpFormatter
+        )
+        parser.add_argument(
+            "--path", action="store", dest="searchpath", default=".", help="Search path for .cfg files."
+        )
+        parser.add_argument("--verbose", action="store_true", dest="verbose", help="Report missing metadata.")
+        parser.add_argument(
+            "--nodes",
+            action="store",
+            default=1,
+            type=int,
+            dest="nodes",
+            help="Number of processes to use when running PyLith.",
+        )
 
         args = parser.parse_args()
         return args

@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 3: Quasistatic Earthquake Cycle
 
 % Features extracted from simulation parameter files.
@@ -114,3 +123,5 @@ pylith_viz --filename=output/step03_eqcycle-domain.h5 warp_grid --component=x
 Solution for Step 3 at t=200 yr.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 1000.
 :::
+
+% End of file

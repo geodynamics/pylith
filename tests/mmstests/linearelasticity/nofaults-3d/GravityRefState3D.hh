@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -17,8 +17,7 @@ namespace pylith {
 }
 
 class pylith::GravityRefState3D {
-public:
-
+  public:
     // Data factory methods
 
     static TestLinearElasticity_Data* TetP1(void);
@@ -33,9 +32,9 @@ public:
 
     static TestLinearElasticity_Data* HexQ3(void);
 
-private:
-
+  private:
     GravityRefState3D(void); ///< Not implemented
 }; // GravityRefState3D
+
 
 // End of file

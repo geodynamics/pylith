@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Types of Simulations
 
 PyLith currently supports two types of problems:
@@ -90,3 +99,5 @@ PyLith currently requires that impulses be applied to a single fault of type `Fa
 :class: seealso
 See [`GreensFns` Component](../components/problems/GreensFns.md) for Pyre properties and facilities and configuration examples.
 :::
+
+% End of file

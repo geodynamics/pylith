@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -15,25 +15,26 @@
 #include "pylith/materials/IsotropicLinearGenMaxwell3D.hh" // USES IsotropicLinearGenMaxwell3D
 #include "pylith/materials/Query.hh" // USES Query
 
-#include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/Fields.hh" // USES Fields
-#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
+#include "pylith/topology/Fields.hh" // USES Fields
 
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES JournalingComponent
 
-#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "pylith/scales/Scales.hh" // USES Scales
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::materials::TestIsotropicLinearGenMaxwell3D::setUp(void) {
     TestMaterial::setUp();
-    _mymaterial = new IsotropicLinearGenMaxwell3D();CPPUNIT_ASSERT(_mymaterial);
+    _mymaterial = new IsotropicLinearGenMaxwell3D();
+    CPPUNIT_ASSERT(_mymaterial);
     _mydata = NULL;
 
     GenericComponent::setName("TestIsotropicLinearGenMaxwell3D");
@@ -49,8 +50,10 @@ void
 pylith::materials::TestIsotropicLinearGenMaxwell3D::tearDown(void) {
     TestMaterial::tearDown();
 
-    delete _mymaterial;_mymaterial = NULL;
-    delete _mydata;_mydata = NULL;
+    delete _mymaterial;
+    _mymaterial = NULL;
+    delete _mydata;
+    _mydata = NULL;
 } // tearDown
 
 
@@ -103,7 +106,9 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::test_auxiliaryFieldSetup(voi
     const PylithReal accelerationScale = pylith::scales::ElasticityScales::getAccelerationScale(*_mydata->scales);
     const PylithReal bodybodyForceScale = pylith::scales::ElasticityScales::getBodybodyForceScale(*_mydata->scales);
 
-    delete _mymaterial->_auxiliaryField;_mymaterial->_auxiliaryField = new topology::Field(*_mesh);CPPUNIT_ASSERT(_mymaterial->_auxiliaryField);
+    delete _mymaterial->_auxiliaryField;
+    _mymaterial->_auxiliaryField = new topology::Field(*_mesh);
+    CPPUNIT_ASSERT(_mymaterial->_auxiliaryField);
     _mymaterial->_auxiliaryFieldSetup();
 
     // Check discretizations
@@ -267,7 +272,8 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
     CPPUNIT_ASSERT(_mydata->scales);
     const PylithReal lengthScale = _mydata->scales->getLengthScale();
 
-    const pylith::topology::Field* auxField = _mymaterial->auxField();CPPUNIT_ASSERT(auxField);
+    const pylith::topology::Field* auxField = _mymaterial->auxField();
+    CPPUNIT_ASSERT(auxField);
     { // Test getting density field.
         pylith::topology::Field density(*_mesh);
         density.copySubfield(*auxField, "density");
@@ -284,12 +290,22 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = density.dmMesh();CPPUNIT_ASSERT(dm);
-        err = DMPlexComputeL2DiffLocal(dm, t, queryDensity.functions(), (void**)queryDensity.contextPtrs(), density.localVector(), &norm);CPPUNIT_ASSERT(!err);
+        const PetscDM dm = density.dmMesh();
+        CPPUNIT_ASSERT(dm);
+        err = DMPlexComputeL2DiffLocal(dm,
+                                       t,
+                                       queryDensity.functions(),
+                                       (void**)queryDensity.contextPtrs(),
+                                       density.localVector(),
+                                       &norm);
+        CPPUNIT_ASSERT(!err);
         queryDensity.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting density subfield from auxiliary field failed.", 0.0, norm, tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting density subfield from auxiliary field failed.",
+                                             0.0,
+                                             norm,
+                                             tolerance);
     } // Test getting density field
 
     { // Test getting bulk_modulus field.
@@ -308,12 +324,22 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = bulkModulus.dmMesh();CPPUNIT_ASSERT(dm);
-        err = DMPlexComputeL2DiffLocal(dm, t, queryBulkModulus.functions(), (void**)queryBulkModulus.contextPtrs(), bulkModulus.localVector(), &norm);CPPUNIT_ASSERT(!err);
+        const PetscDM dm = bulkModulus.dmMesh();
+        CPPUNIT_ASSERT(dm);
+        err = DMPlexComputeL2DiffLocal(dm,
+                                       t,
+                                       queryBulkModulus.functions(),
+                                       (void**)queryBulkModulus.contextPtrs(),
+                                       bulkModulus.localVector(),
+                                       &norm);
+        CPPUNIT_ASSERT(!err);
         queryBulkModulus.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting bulk modulus subfield from auxiliary field failed.", 0.0, norm, tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting bulk modulus subfield from auxiliary field failed.",
+                                             0.0,
+                                             norm,
+                                             tolerance);
     } // Test getting bulk_modulus field
 
     { // Test getting maxwell_time field.
@@ -332,12 +358,22 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = maxwellTime.dmMesh();CPPUNIT_ASSERT(dm);
-        err = DMPlexComputeL2DiffLocal(dm, t, queryMaxwellTime.functions(), (void**)queryMaxwellTime.contextPtrs(), maxwellTime.localVector(), &norm);CPPUNIT_ASSERT(!err);
+        const PetscDM dm = maxwellTime.dmMesh();
+        CPPUNIT_ASSERT(dm);
+        err = DMPlexComputeL2DiffLocal(dm,
+                                       t,
+                                       queryMaxwellTime.functions(),
+                                       (void**)queryMaxwellTime.contextPtrs(),
+                                       maxwellTime.localVector(),
+                                       &norm);
+        CPPUNIT_ASSERT(!err);
         queryMaxwellTime.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting Maxwell time subfield from auxiliary field failed.", 0.0, norm, tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting Maxwell time subfield from auxiliary field failed.",
+                                             0.0,
+                                             norm,
+                                             tolerance);
     } // Test getting maxwell_time field
 
     { // Test getting shear_modulus_ratio field.
@@ -356,12 +392,23 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = shearModulusRatio.dmMesh();CPPUNIT_ASSERT(dm);
-        err = DMPlexComputeL2DiffLocal(dm, t, queryShearModulusRatio.functions(), (void**)queryShearModulusRatio.contextPtrs(), shearModulusRatio.localVector(), &norm);CPPUNIT_ASSERT(!err);
+        const PetscDM dm = shearModulusRatio.dmMesh();
+        CPPUNIT_ASSERT(dm);
+        err = DMPlexComputeL2DiffLocal(dm,
+                                       t,
+                                       queryShearModulusRatio.functions(),
+                                       (void**)queryShearModulusRatio.contextPtrs(),
+                                       shearModulusRatio.localVector(),
+                                       &norm);
+        CPPUNIT_ASSERT(!err);
         queryShearModulusRatio.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting shear modulus ratio subfield from auxiliary field failed.", 0.0, norm, tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(
+            "Test extracting shear modulus ratio subfield from auxiliary field failed.",
+            0.0,
+            norm,
+            tolerance);
     } // Test getting shear_modulus_ratio field
 
     { // Test getting viscous_strain field.
@@ -380,12 +427,22 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = viscousStrain.dmMesh();CPPUNIT_ASSERT(dm);
-        err = DMPlexComputeL2DiffLocal(dm, t, queryViscousStrain.functions(), (void**)queryViscousStrain.contextPtrs(), viscousStrain.localVector(), &norm);CPPUNIT_ASSERT(!err);
+        const PetscDM dm = viscousStrain.dmMesh();
+        CPPUNIT_ASSERT(dm);
+        err = DMPlexComputeL2DiffLocal(dm,
+                                       t,
+                                       queryViscousStrain.functions(),
+                                       (void**)queryViscousStrain.contextPtrs(),
+                                       viscousStrain.localVector(),
+                                       &norm);
+        CPPUNIT_ASSERT(!err);
         queryViscousStrain.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting viscous strain subfield from auxiliary field failed.", 0.0, norm, tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting viscous strain subfield from auxiliary field failed.",
+                                             0.0,
+                                             norm,
+                                             tolerance);
     } // Test getting viscous_strain field
 
     { // Test getting total_strain field.
@@ -404,12 +461,22 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = totalStrain.dmMesh();CPPUNIT_ASSERT(dm);
-        err = DMPlexComputeL2DiffLocal(dm, t, queryTotalStrain.functions(), (void**)queryTotalStrain.contextPtrs(), totalStrain.localVector(), &norm);CPPUNIT_ASSERT(!err);
+        const PetscDM dm = totalStrain.dmMesh();
+        CPPUNIT_ASSERT(dm);
+        err = DMPlexComputeL2DiffLocal(dm,
+                                       t,
+                                       queryTotalStrain.functions(),
+                                       (void**)queryTotalStrain.contextPtrs(),
+                                       totalStrain.localVector(),
+                                       &norm);
+        CPPUNIT_ASSERT(!err);
         queryTotalStrain.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting total strain subfield from auxiliary field failed.", 0.0, norm, tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting total strain subfield from auxiliary field failed.",
+                                             0.0,
+                                             norm,
+                                             tolerance);
     } // Test getting total_strain field
 
     if (_mymaterial->_useReferenceState) { // Test getting reference_stress field.
@@ -428,12 +495,22 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = referenceStress.dmMesh();CPPUNIT_ASSERT(dm);
-        err = DMPlexComputeL2DiffLocal(dm, t, queryRefStress.functions(), (void**)queryRefStress.contextPtrs(), referenceStress.localVector(), &norm);CPPUNIT_ASSERT(!err);
+        const PetscDM dm = referenceStress.dmMesh();
+        CPPUNIT_ASSERT(dm);
+        err = DMPlexComputeL2DiffLocal(dm,
+                                       t,
+                                       queryRefStress.functions(),
+                                       (void**)queryRefStress.contextPtrs(),
+                                       referenceStress.localVector(),
+                                       &norm);
+        CPPUNIT_ASSERT(!err);
         queryRefStress.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting reference stress subfield from auxiliary field failed.", 0.0, norm, tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting reference stress subfield from auxiliary field failed.",
+                                             0.0,
+                                             norm,
+                                             tolerance);
     } // Test getting reference_stress field
 
     if (_mymaterial->_useReferenceState) { // Test getting reference_strain field.
@@ -452,12 +529,22 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = referenceStrain.dmMesh();CPPUNIT_ASSERT(dm);
-        err = DMPlexComputeL2DiffLocal(dm, t, queryRefStrain.functions(), (void**)queryRefStrain.contextPtrs(), referenceStrain.localVector(), &norm);CPPUNIT_ASSERT(!err);
+        const PetscDM dm = referenceStrain.dmMesh();
+        CPPUNIT_ASSERT(dm);
+        err = DMPlexComputeL2DiffLocal(dm,
+                                       t,
+                                       queryRefStrain.functions(),
+                                       (void**)queryRefStrain.contextPtrs(),
+                                       referenceStrain.localVector(),
+                                       &norm);
+        CPPUNIT_ASSERT(!err);
         queryRefStrain.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting reference strain subfield from auxiliary field failed.", 0.0, norm, tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting reference strain subfield from auxiliary field failed.",
+                                             0.0,
+                                             norm,
+                                             tolerance);
     } // Test getting reference_strain field
 
     PYLITH_METHOD_END;
@@ -488,8 +575,8 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::_setupSolutionFields(void) {
 
     CPPUNIT_ASSERT(_solutionFields);
 
-    CPPUNIT_ASSERT( (!_mydata->isExplicit && 1 == _mydata->numSolnSubfields) ||
-                    (_mydata->isExplicit && 2 == _mydata->numSolnSubfields) );
+    CPPUNIT_ASSERT((!_mydata->isExplicit && 1 == _mydata->numSolnSubfields) ||
+                   (_mydata->isExplicit && 2 == _mydata->numSolnSubfields));
     CPPUNIT_ASSERT(_mydata->solnDiscretizations);
     CPPUNIT_ASSERT(_mydata->scales);
 
@@ -553,11 +640,13 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D_Data::TestIsotropicLinearGenM
     gravityVector[1] = 0.0;
     gravityVector[2] = 0.0;
 
-    cs = new spatialdata::geocoords::CSCart;CPPUNIT_ASSERT(cs);
+    cs = new spatialdata::geocoords::CSCart;
+    CPPUNIT_ASSERT(cs);
     cs->setSpaceDim(dimension);
 
     // Some auxiliary subfields get updated in updateStateVars().
-    auxUpdateDB = new spatialdata::spatialdb::UserFunctionDB;CPPUNIT_ASSERT(auxUpdateDB);
+    auxUpdateDB = new spatialdata::spatialdb::UserFunctionDB;
+    CPPUNIT_ASSERT(auxUpdateDB);
 
     solnDB->setCoordSys(*cs);
     perturbDB->setCoordSys(*cs);
@@ -568,7 +657,8 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D_Data::TestIsotropicLinearGenM
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::materials::TestIsotropicLinearGenMaxwell3D_Data::~TestIsotropicLinearGenMaxwell3D_Data(void) {}
+pylith::materials::TestIsotropicLinearGenMaxwell3D_Data::~TestIsotropicLinearGenMaxwell3D_Data(void) {
+}
 
 
 // End of file

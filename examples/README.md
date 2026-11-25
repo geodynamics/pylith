@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Examples
 
 This directory contains a large suite of examples demonstrating most
@@ -138,7 +147,7 @@ Concepts:
       - constant rate BC
     + Initial conditions
     + Elasticity
-      - Referense state
+      - Reference state
       - Body forces
       - Gravitational body forces
       - Rheologies
@@ -154,3 +163,5 @@ Concepts:
       + Prescribed slip step function + creep, multiple ruptures
   * Order of basis functions
     - gravity w/1st order vs 2nd order
+
+% End of file

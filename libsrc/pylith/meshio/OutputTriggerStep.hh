@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/meshio/meshiofwd.hh" // forward declarations
@@ -17,8 +18,7 @@ class pylith::meshio::OutputTriggerStep : public pylith::meshio::OutputTrigger {
     friend class TestOutputTriggerStep; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Construlibctor
     OutputTriggerStep(void);
 
@@ -47,19 +47,17 @@ public:
     int getNumStepsSkip(void) const;
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     PylithInt _numStepsSkip; ///< Number of steps to skip between writes.
     PylithInt _stepWrote; ///< Step when data was previously written.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     OutputTriggerStep(const OutputTriggerStep&); ///< Not implemented.
     const OutputTriggerStep& operator=(const OutputTriggerStep&); ///< Not implemented
-
 };
 
 // OutputTriggerStep
+
 
 // End of file

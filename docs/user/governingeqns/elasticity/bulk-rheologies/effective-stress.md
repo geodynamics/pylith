@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-governingeqns-elasticity-effective-stress)=
 # Effective Stress Formulation for Viscoelastic Materials
 
@@ -67,3 +76,5 @@ and
 :label: eqn:effstress:effstresstau
 \overline{\sigma}(\tau) = (1 - \alpha) \overline{\sigma}(ref, t) + \alpha \overline{\sigma}(ref, t + \Delta t) + \overline{\sigma}^{ref} = \sqrt{3 J_{2}^{\prime}(\tau)}.
 ```
+
+% End of file

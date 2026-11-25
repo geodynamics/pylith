@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
@@ -24,13 +25,11 @@ class pylith::topology::Mesh {
     friend class TestMesh; // unit testing
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     static const char* cells_label_name; ///< Name of label covering all cells.
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     Mesh(void);
 
@@ -40,7 +39,7 @@ public:
      * @param comm MPI communicator for mesh.
      */
     Mesh(const int dim,
-         const MPI_Comm& comm=PETSC_COMM_WORLD);
+         const MPI_Comm& comm = PETSC_COMM_WORLD);
 
     /** Constructor with new PETSc DM and original mesh.
      *
@@ -74,7 +73,7 @@ public:
      * @param label Label for mesh.
      */
     void setDM(PetscDM dm,
-               const char* label=NULL);
+               const char* label = NULL);
 
     /** Set coordinate system.
      *
@@ -121,20 +120,19 @@ public:
      *   HDF5 XDMF hdf5:mesh.h5:hdf5_xdmf
      *   PyVista pyvista:myscript.py
      */
-    void view(const char* viewOption="::ascii_info_detail") const;
+    void view(const char* viewOption = "::ascii_info_detail") const;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     spatialdata::geocoords::CoordSys* _coordSys; ///< Coordinate system.
     PetscDM _dm; ///< PETSc DM with topology.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
-private:
-
+  private:
     Mesh(const Mesh&); ///< Not implemented
     const Mesh& operator=(const Mesh&); ///< Not implemented
 
 }; // Mesh
+
 
 // End of file

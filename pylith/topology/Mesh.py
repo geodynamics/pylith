@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from .topology import Mesh as ModuleMesh
 
@@ -17,8 +17,7 @@ class Mesh(ModuleMesh):
     """
 
     def __init__(self, dim=None, comm=None, mesh=None):
-        """Constructor.
-        """
+        """Constructor."""
         if comm is None and dim is None:
             ModuleMesh.__init__(self)
         elif comm is None:
@@ -31,22 +30,21 @@ class Mesh(ModuleMesh):
         self.memLoggingStage = "Mesh"
 
     def comm(self):
-        """Get communicator.
-        """
+        """Get communicator."""
         # Use Communicator object to wrap C++ MPI_Comm* returned by
         # module.
         from pylith.mpi.Communicator import Communicator
+
         return Communicator(ModuleMesh.getComm(self))
 
     def checkMaterialIds(self, materialIds):
-        """Check material ids for consistency with mesh.
-        """
+        """Check material ids for consistency with mesh."""
         from .topology import MeshOps_checkMaterialIds
+
         MeshOps_checkMaterialIds(self, materialIds)
 
     def groupSizes(self):
-        """Return the name and number of vertices for each group
-        """
+        """Return the name and number of vertices for each group"""
         groups = []
         names = ModuleMesh.groups(self)
         for name in names:
@@ -54,8 +52,7 @@ class Mesh(ModuleMesh):
         return groups
 
     def cleanup(self):
-        """Deallocate locally managed data structures.
-        """
+        """Deallocate locally managed data structures."""
         self.deallocate()
 
 

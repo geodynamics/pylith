@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 /* Mesh: quad4.mesh
  *
@@ -29,8 +29,7 @@
 
 #include "NeumannDataQuad4.hh"
 
-const char* pylith::bc::NeumannDataQuad4::_meshFilename =
-    "data/quad4.mesh";
+const char* pylith::bc::NeumannDataQuad4::_meshFilename = "data/quad4.mesh";
 
 const int pylith::bc::NeumannDataQuad4::_numBasis = 2;
 const int pylith::bc::NeumannDataQuad4::_numQuadPts = 2;
@@ -55,8 +54,7 @@ const PylithScalar pylith::bc::NeumannDataQuad4::_basisDerivRef[] = {
     0.5,
 };
 
-const char* pylith::bc::NeumannDataQuad4::_spatialDBFilename =
-    "data/quad4_tractions.spatialdb";
+const char* pylith::bc::NeumannDataQuad4::_spatialDBFilename = "data/quad4_tractions.spatialdb";
 const int pylith::bc::NeumannDataQuad4::_id = 0;
 const char* pylith::bc::NeumannDataQuad4::_label = "bc3";
 
@@ -67,23 +65,35 @@ const int pylith::bc::NeumannDataQuad4::_numCells = 2;
 const int pylith::bc::NeumannDataQuad4::_numCorners = 2;
 /* Now vertices are renumbered in the submesh */
 const int pylith::bc::NeumannDataQuad4::_cells[] = {
-    2 /*2*/, 3 /*4*/,
-    3 /*4*/, 4 /*6*/,
+    2 /*2*/,
+    3 /*4*/,
+    3 /*4*/,
+    4 /*6*/,
 };
 
 const PylithScalar pylith::bc::NeumannDataQuad4::_tractionsCell[] = {
-    0.0, -0.1056624327,
-    0.0, -0.3943375673,
-    0.0, -0.6056624327,
-    0.0, -0.8943375673,
+    0.0,
+    -0.1056624327,
+    0.0,
+    -0.3943375673,
+    0.0,
+    -0.6056624327,
+    0.0,
+    -0.8943375673,
 };
 const PylithScalar pylith::bc::NeumannDataQuad4::_valsResidual[] = {
-    0.0, -0.08333333333,
-    0.0,  0.0,
-    0.0, -0.5,
-    0.0,  0.0,
-    0.0, -0.41666666667,
-    0.0,  0.0,
+    0.0,
+    -0.08333333333,
+    0.0,
+    0.0,
+    0.0,
+    -0.5,
+    0.0,
+    0.0,
+    0.0,
+    -0.41666666667,
+    0.0,
+    0.0,
 };
 
 pylith::bc::NeumannDataQuad4::NeumannDataQuad4(void) { // constructor
@@ -113,7 +123,8 @@ pylith::bc::NeumannDataQuad4::NeumannDataQuad4(void) { // constructor
 } // constructor
 
 
-pylith::bc::NeumannDataQuad4::~NeumannDataQuad4(void) {}
+pylith::bc::NeumannDataQuad4::~NeumannDataQuad4(void) {
+}
 
 
 // End of file

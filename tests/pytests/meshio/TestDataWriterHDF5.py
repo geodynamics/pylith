@@ -1,22 +1,22 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 import unittest
 
 from pylith.testing.TestCases import TestComponent, make_suite
-from pylith.meshio.DataWriterHDF5 import (DataWriterHDF5, data_writer)
+from pylith.meshio.DataWriterHDF5 import DataWriterHDF5, data_writer
 
 
 class TestDataWriterHDF5(TestComponent):
-    """Unit testing of DataWriterHDF5 object.
-    """
+    """Unit testing of DataWriterHDF5 object."""
+
     _class = DataWriterHDF5
     _factory = data_writer
 

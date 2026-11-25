@@ -1,13 +1,13 @@
-# =================================================================================================
+# -*- journal -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
-#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # Cubit journal file with geometry for example showing how to import
 # several surfaces (topography, subduction interface, splay fault), and
 # mesh the resulting volumes.
@@ -76,5 +76,6 @@ delete body 4
 # ----------------------------------------------------------------------
 imprint all with volume all
 merge all
+
 
 # End of file

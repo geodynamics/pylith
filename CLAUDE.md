@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # PyLith
 
 PyLith is an application for parallel numerical modeling of crustal deformation with a focus on earthquake faulting.
@@ -56,7 +65,7 @@ The essential repo guidance is embedded below.
 - Begin every class method with `PYLITH_METHOD_BEGIN;` and end with `PYLITH_METHOD_END;` for void functions and `PYLITH_METHOD_RETURN(value);` for functions returning values.
 - For `PetscErrorCode` functions, return `PetscFunctionReturn(PETSC_SUCCESS)` on success.
 - Wrap PETSc calls with `PyLithCallPetsc(...)`.
-- Use the macros in `journals.hh` for printing to stdout for informational messages, debugging messages, and warnings. Use the `PYLITH_COMPONENT_*` version for `PyreComponent` objects. Use the simpler version such as `PYLITH_WARNING` for other obejcts. 
+- Use the macros in `journals.hh` for printing to stdout for informational messages, debugging messages, and warnings. Use the `PYLITH_COMPONENT_*` version for `PyreComponent` objects. Use the simpler version such as `PYLITH_WARNING` for other objects.
 - Do not leave commented-out code or dead `#ifdef` blocks in source files.
 - Use `/* ... */` for multiline comments and `// ...` for short single-line comments.
 - Decorate multiline comments with leading `*` on each line.
@@ -105,3 +114,5 @@ External links are for human convenience only; do not assume linked Markdown fil
 
 - Release docs: https://pylith.readthedocs.io
 - GitLab project: https://github.com/geodynamics/pylith
+
+% End of file

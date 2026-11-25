@@ -1,18 +1,17 @@
-# =================================================================================================
+# -*- makefile -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
-#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 EXTRA_DIST = \
 	Makefile.am \
-	README \
-	materials/README \
+	README.md \
+	materials/README.md \
 	materials/configure.ac \
 	materials/Makefile.am \
 	materials/PlaneStrainState.hh \
@@ -29,7 +28,7 @@ EXTRA_DIST = \
 	materials/m4/cit_python.m4 \
 	materials/m4/cit_mpi.m4 \
 	materials/m4/cit_petsc.m4 \
-	friction/README \
+	friction/README.md \
 	friction/configure.ac \
 	friction/Makefile.am \
 	friction/ViscousFriction.hh \
@@ -48,4 +47,4 @@ EXTRA_DIST = \
 	friction/m4/cit_petsc.m4
 
 
-# End of file 
+# End of file

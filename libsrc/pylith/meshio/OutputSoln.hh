@@ -1,29 +1,27 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/meshio/meshiofwd.hh" // forward declarations
 
-#include "pylith/problems/ObserverSoln.hh" // ISA Observer
 #include "pylith/meshio/OutputObserver.hh" // ISA OutputObserver
+#include "pylith/problems/ObserverSoln.hh" // ISA Observer
 
 #include "pylith/utils/array.hh" // HASA string_vector
 
-class pylith::meshio::OutputSoln :
-    public pylith::problems::ObserverSoln,
-    public pylith::meshio::OutputObserver {
+class pylith::meshio::OutputSoln : public pylith::problems::ObserverSoln, public pylith::meshio::OutputObserver {
     friend class TestOutputSoln; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     OutputSoln(void);
 
@@ -31,8 +29,7 @@ public:
     virtual ~OutputSoln(void);
 
     /// Deallocate PETSc and local data structures.
-    virtual
-    void deallocate(void) override;
+    virtual void deallocate(void) override;
 
     /** Set names of solution subfields requested for output.
      *
@@ -58,8 +55,7 @@ public:
      *
      * @param[in] solution Solution field.
      */
-    virtual
-    void verifyConfiguration(const pylith::topology::Field& solution) const override;
+    virtual void verifyConfiguration(const pylith::topology::Field& solution) const override;
 
     /** Receive update from subject.
      *
@@ -74,31 +70,26 @@ public:
                 const NotificationType notification) override;
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Prepare for output.
      *
      * @param[in] mesh Finite-element mesh object.
      */
-    virtual
-    void _open(const pylith::topology::Mesh& mesh);
+    virtual void _open(const pylith::topology::Mesh& mesh);
 
     /// Close output files.
-    virtual
-    void _close(void);
+    virtual void _close(void);
 
     /** Prepare for output at this solution step.
      *
      * @param[in] t Time associated with solution step.
      * @param[in] mesh Mesh for output.
      */
-    virtual
-    void _openSolnStep(const PylithReal t,
-                       const pylith::topology::Mesh& mesh);
+    virtual void _openSolnStep(const PylithReal t,
+                               const pylith::topology::Mesh& mesh);
 
     /// Finalize output at this solution step.
-    virtual
-    void _closeSolnStep(void);
+    virtual void _closeSolnStep(void);
 
     /** Write output for step in solution.
      *
@@ -106,22 +97,20 @@ protected:
      * @param[in] tindex Current time step.
      * @param[in] solution Solution at time t.
      */
-    virtual
-    void _writeSolnStep(const PylithReal t,
-                        const PylithInt tindex,
-                        const pylith::topology::Field& solution);
+    virtual void _writeSolnStep(const PylithReal t,
+                                const PylithInt tindex,
+                                const pylith::topology::Field& solution);
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     pylith::string_vector _subfieldNames;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     OutputSoln(const OutputSoln&); ///< Not implemented.
     const OutputSoln& operator=(const OutputSoln&); ///< Not implemented
 
 }; // OutputSoln
+
 
 // End of file

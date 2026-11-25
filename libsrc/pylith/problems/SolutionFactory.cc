@@ -1,31 +1,31 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/problems/SolutionFactory.hh" // implementation of object methods
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
 
-#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "pylith/scales/Scales.hh" // USES Scales
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
-#include <typeinfo> // USES "<<typeid()
 #include <cassert>
+#include <typeinfo> // USES "<<typeid()
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -41,7 +41,8 @@ pylith::problems::SolutionFactory::SolutionFactory(pylith::topology::Field& solu
 
 // ------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::problems::SolutionFactory::~SolutionFactory(void) {}
+pylith::problems::SolutionFactory::~SolutionFactory(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -49,10 +50,11 @@ pylith::problems::SolutionFactory::~SolutionFactory(void) {}
 void
 pylith::problems::SolutionFactory::addDisplacement(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "addDisplacement(discretization="<<typeid(discretization).name()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 "addDisplacement(discretization=" << typeid(discretization).name() << ")");
 
     const char* fieldName = "displacement";
-    const char* componentNames[3] = { "displacement_x", "displacement_y", "displacement_z" };
+    const char* componentNames[3] = {"displacement_x", "displacement_y", "displacement_z"};
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -77,10 +79,11 @@ pylith::problems::SolutionFactory::addDisplacement(const pylith::topology::Field
 void
 pylith::problems::SolutionFactory::addVelocity(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "addVelocity(discretization="<<typeid(discretization).name()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 "addVelocity(discretization=" << typeid(discretization).name() << ")");
 
     const char* fieldName = "velocity";
-    const char* componentNames[3] = { "velocity_x", "velocity_y", "velocity_z" };
+    const char* componentNames[3] = {"velocity_x", "velocity_y", "velocity_z"};
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -105,10 +108,11 @@ pylith::problems::SolutionFactory::addVelocity(const pylith::topology::Field::Di
 void
 pylith::problems::SolutionFactory::addPressure(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "addPressure(discretization="<<typeid(discretization).name()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 "addPressure(discretization=" << typeid(discretization).name() << ")");
 
     const char* fieldName = "pressure";
-    const char* componentNames[1] = { "pressure" };
+    const char* componentNames[1] = {"pressure"};
     const PylithReal fluidPressureScale = pylith::scales::ElasticityScales::getFluidPressureScale(_scales);
 
     pylith::topology::Field::Description description;
@@ -132,10 +136,11 @@ pylith::problems::SolutionFactory::addPressure(const pylith::topology::Field::Di
 void
 pylith::problems::SolutionFactory::addPressureDot(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "addPressureDot(discretization="<<typeid(discretization).name()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 "addPressureDot(discretization=" << typeid(discretization).name() << ")");
 
     const char* fieldName = "pressure_t";
-    const char* componentNames[1] = { "pressure_t" };
+    const char* componentNames[1] = {"pressure_t"};
     const PylithReal timeScale = _scales.getTimeScale();
     const PylithReal fluidPressureScale = pylith::scales::ElasticityScales::getFluidPressureScale(_scales);
 
@@ -160,10 +165,11 @@ pylith::problems::SolutionFactory::addPressureDot(const pylith::topology::Field:
 void
 pylith::problems::SolutionFactory::addTraceStrain(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "addTraceStrain(discretization="<<typeid(discretization).name()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 "addTraceStrain(discretization=" << typeid(discretization).name() << ")");
 
     const char* fieldName = "trace_strain";
-    const char* componentNames[1] = { "trace_strain" };
+    const char* componentNames[1] = {"trace_strain"};
     const PylithReal strainScale = pylith::scales::ElasticityScales::getStrainScale(_scales);
 
     pylith::topology::Field::Description description;
@@ -187,10 +193,11 @@ pylith::problems::SolutionFactory::addTraceStrain(const pylith::topology::Field:
 void
 pylith::problems::SolutionFactory::addTraceStrainDot(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "addTraceStrain(discretization="<<typeid(discretization).name()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 "addTraceStrain(discretization=" << typeid(discretization).name() << ")");
 
     const char* fieldName = "trace_strain_t";
-    const char* componentNames[1] = { "trace_strain_t" };
+    const char* componentNames[1] = {"trace_strain_t"};
     const PylithReal timeScale = _scales.getTimeScale();
     const PylithReal strainScale = pylith::scales::ElasticityScales::getStrainScale(_scales);
 
@@ -213,9 +220,11 @@ pylith::problems::SolutionFactory::addTraceStrainDot(const pylith::topology::Fie
 // ------------------------------------------------------------------------------------------------
 // Add fault Lagrange multiplier subfield to solution field.
 void
-pylith::problems::SolutionFactory::addLagrangeMultiplierFault(const pylith::topology::Field::Discretization& discretization) {
+pylith::problems::SolutionFactory::addLagrangeMultiplierFault(
+    const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "addLagrangeMultiplierFault(discretization="<<typeid(discretization).name()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 "addLagrangeMultiplierFault(discretization=" << typeid(discretization).name() << ")");
 
     const char* fieldName = "lagrange_multiplier_fault";
     const char* componentNames[3] = {
@@ -247,10 +256,11 @@ pylith::problems::SolutionFactory::addLagrangeMultiplierFault(const pylith::topo
 void
 pylith::problems::SolutionFactory::addTemperature(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "addTemperature(discretization="<<typeid(discretization).name()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow,
+                 "addTemperature(discretization=" << typeid(discretization).name() << ")");
 
     const char* fieldName = "temperature";
-    const char* componentNames[1] = { "temperature" };
+    const char* componentNames[1] = {"temperature"};
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -272,7 +282,7 @@ pylith::problems::SolutionFactory::addTemperature(const pylith::topology::Field:
 void
 pylith::problems::SolutionFactory::setValues(spatialdata::spatialdb::SpatialDB* db) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_DEBUG(pylith::journal::application_flow, "setValues(db="<<typeid(*db).name()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "setValues(db=" << typeid(*db).name() << ")");
 
     // Set solution field to zero.
     _solution.zeroLocal();

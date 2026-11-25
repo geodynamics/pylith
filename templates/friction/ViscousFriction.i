@@ -1,13 +1,12 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
-//
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 // SWIG interface to C++ ViscousFriction object.
 
@@ -23,11 +22,11 @@
 
 namespace contrib {
     namespace friction {
-        class ViscousFriction: public pylith::friction::FrictionModel
-        { // class ViscousFriction
-          // PUBLIC METHODS /////////////////////////////////////////////////
-public:
-
+        class ViscousFriction
+            : public pylith::friction::FrictionModel { // class ViscousFriction
+                                                       // PUBLIC METHODS
+                                                       // /////////////////////////////////////////////////
+          public:
             /// Default constructor.
             ViscousFriction(void);
 
@@ -35,8 +34,7 @@ public:
             ~ViscousFriction(void);
 
             // PROTECTED METHODS //////////////////////////////////////////////
-protected:
-
+          protected:
             /** Compute properties from values in spatial database.
              *
              * @param propValues Array of property values.
@@ -106,7 +104,8 @@ protected:
 
         }; // class ViscousFriction
 
-    } // friction
-} // pylith
+    } // namespace friction
+} // namespace contrib
+
 
 // End of file

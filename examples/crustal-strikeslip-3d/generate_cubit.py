@@ -1,4 +1,14 @@
 #!python3
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 """WARNING: This script only works with Python supplied with Cubit.
 
 To run this script outside the Cubit GUI, you will need to run it like:
@@ -7,6 +17,8 @@ PATH_TO_CUBIT/Cubit.app/Contents/Frameworks/Python.framework/Versions/Current/bi
 
 where you replace 'PATH_TO_CUBIT' with the absolute path.
 """
+
+
 # -------------------------------------------------------------------------------------------------
 # Utility functions. No edits should be needed.
 # -------------------------------------------------------------------------------------------------
@@ -14,24 +26,32 @@ def setup_cubit():
     """Detect if we are running outside Cubit. If so, then we parse command line arguments and setup
     Cubit."""
     import sys
+
     if not "cubit" in sys.modules:
         import argparse
         import pathlib
 
         parser = argparse.ArgumentParser()
-        parser.add_argument("--cubit-directory", action="store", dest="cubit_dir", required=True, help="Directory containing cubit executable.")
+        parser.add_argument(
+            "--cubit-directory",
+            action="store",
+            dest="cubit_dir",
+            required=True,
+            help="Directory containing cubit executable.",
+        )
         args = parser.parse_args()
 
         # Initialize cubit
         cubit_absdir = pathlib.Path(args.cubit_dir).expanduser().resolve()
         sys.path.append(str(cubit_absdir))
         import cubit
-        cubit.init(['cubit','-nojournal'])
+
+        cubit.init(["cubit", "-nojournal"])
 
 
 def get_last_entity(entity_type: str):
     """Get last entry of type 'entity_type'.
-    
+
     Example:
         domain = get_last_entity("volume")
     """
@@ -93,10 +113,10 @@ import numpy
 # Locations defining domain
 km = 1000.0
 DOMAIN_CENTER = (453700.0, 3947000.0)
-DOMAIN_X = 80*km
-DOMAIN_Y = 60*km
-DOMAIN_Z = 40*km
-FAULT_DEPTH = 15.0*km
+DOMAIN_X = 80 * km
+DOMAIN_Y = 60 * km
+DOMAIN_Z = 40 * km
+FAULT_DEPTH = 15.0 * km
 
 # Files with coordinates of fault traces in UTM zone 11
 FILENAME_MAINTRACE = "faulttrace_main_utm.txt"
@@ -104,7 +124,7 @@ FILENAME_WESTTRACE = "faulttrace_west_utm.txt"
 FILENAME_STRANDETRACE = "faulttrace_east_utm.txt"
 
 # Discretization size on faults and bias (rate of cell size increase away from fault)
-DX_FAULT = 2.5*km
+DX_FAULT = 2.5 * km
 DX_BIAS = 1.07
 
 CELL = "tet"
@@ -120,7 +140,7 @@ cubit.reset()
 # -------------------------------------------------------------------------------------------------
 # Create domain
 domain = cubit.brick(DOMAIN_X, DOMAIN_Y, DOMAIN_Z)
-cubit.move(domain, (DOMAIN_CENTER[0], DOMAIN_CENTER[1], -0.5*DOMAIN_Z))
+cubit.move(domain, (DOMAIN_CENTER[0], DOMAIN_CENTER[1], -0.5 * DOMAIN_Z))
 
 
 # Create main fault
@@ -167,39 +187,43 @@ del domain_east
 domain_ids = ids_from_entities([domain_nw, domain_sw, domain_se, domain_ne])
 
 # Imprint/merge
-fault_curve_ids = ids_from_entities(surface_fault_main.curves() + surface_fault_west.curves() + surface_fault_east.curves())
+fault_curve_ids = ids_from_entities(
+    surface_fault_main.curves() + surface_fault_west.curves() + surface_fault_east.curves()
+)
 cubit.cmd(f"imprint volume {domain_ids} with curve {fault_curve_ids}")
 cubit.cmd(f"delete surface {surface_fault_main.id()} {surface_fault_west.id()} {surface_fault_east.id()}")
 cubit.cmd("imprint all")
 cubit.cmd("merge all")
 
 # Manually get surface ids from GUI
-#idless = cubit.get_idless_signatures("surface", [17, 31, 36])
+# idless = cubit.get_idless_signatures("surface", [17, 31, 36])
 surfaces_north_str = "Surface ( at 427180 3.977e+06 -20000 ordinal 1 )  Surface ( at 455807 3.977e+06 -20000 ordinal 1 )  Surface ( at 482327 3.977e+06 -20000 ordinal 1 )"
-#idless = cubit.get_idless_signatures("surface", [4])
+# idless = cubit.get_idless_signatures("surface", [4])
 surfaces_west_str = "Surface ( at 413700 3.947e+06 -20000 ordinal 1 )"
-#idless = cubit.get_idless_signatures("surface", [12, 21, 26])
+# idless = cubit.get_idless_signatures("surface", [12, 21, 26])
 surfaces_south_str = "Surface ( at 487831 3.917e+06 -20000 ordinal 1 )  Surface ( at 417569 3.917e+06 -20000 ordinal 1 )  Surface ( at 451700 3.917e+06 -20000 ordinal 1 )"
-#idless = cubit.get_idless_signatures("surface", [6])
+# idless = cubit.get_idless_signatures("surface", [6])
 surfaces_east_str = "Surface ( at 493700 3.947e+06 -20000 ordinal 1 )"
-#idless = cubit.get_idless_signatures("surface", [24, 27, 32, 39])
+# idless = cubit.get_idless_signatures("surface", [24, 27, 32, 39])
 surfaces_bottom_str = "Surface ( at 433718 3.947e+06 -40000 ordinal 1 )  Surface ( at 451700 3.93223e+06 -40000 ordinal 1 )  Surface ( at 455807 3.96223e+06 -40000 ordinal 1 )  Surface ( at 473718 3.947e+06 -40000 ordinal 1 )"
-#idless = cubit.get_idless_signatures("surface", [22, 29, 34, 37])
+# idless = cubit.get_idless_signatures("surface", [22, 29, 34, 37])
 surfaces_top_str = "Surface ( at 433718 3.947e+06 0 ordinal 1 )  Surface ( at 451700 3.93223e+06 0 ordinal 1 )  Surface ( at 455807 3.96223e+06 0 ordinal 1 )  Surface ( at 473718 3.947e+06 0 ordinal 1 )"
 
-#idless = cubit.get_idless_signatures("surface", [43, 51])
-surfaces_fault_main_str = "Surface ( at 444628 3.96154e+06 -20000 ordinal 2 )  Surface ( at 468984 3.93314e+06 -20000 ordinal 2 )"
-#idless = cubit.get_idless_signatures("surface", [46])
+# idless = cubit.get_idless_signatures("surface", [43, 51])
+surfaces_fault_main_str = (
+    "Surface ( at 444628 3.96154e+06 -20000 ordinal 2 )  Surface ( at 468984 3.93314e+06 -20000 ordinal 2 )"
+)
+# idless = cubit.get_idless_signatures("surface", [46])
 surfaces_fault_west_str = "Surface ( at 437634 3.93218e+06 -20000 ordinal 2 )"
-#idless = cubit.get_idless_signatures("surface", [40])
+# idless = cubit.get_idless_signatures("surface", [40])
 surfaces_fault_east_str = "Surface ( at 462524 3.96213e+06 -20000 ordinal 1 )"
 
 # Create lists of curve ids for fault buried edges
-#idless = cubit.get_idless_signatures("curve", [77, 80, 97, 100])
+# idless = cubit.get_idless_signatures("curve", [77, 80, 97, 100])
 fault_main_edges_str = "Curve ( at 444204 3.96317e+06 -7500 ordinal 1 )  Curve ( at 447417 3.95436e+06 -15000 ordinal 1 )  Curve ( at 466418 3.93633e+06 -7500 ordinal 1 )  Curve ( at 460642 3.94255e+06 -15000 ordinal 1 )"
-#idless = cubit.get_idless_signatures("curve", [83, 86, 75])
+# idless = cubit.get_idless_signatures("curve", [83, 86, 75])
 fault_west_edges_str = "Curve ( at 445031 3.93911e+06 -7500 ordinal 1 )  Curve ( at 449604 3.94307e+06 -15000 ordinal 1 )  Curve ( at 453735 3.94746e+06 -7500 ordinal 1 )"
-#idless = cubit.get_idless_signatures("curve", [73, 75, 76])
+# idless = cubit.get_idless_signatures("curve", [73, 75, 76])
 fault_east_edges_str = "Curve ( at 457036 3.95244e+06 -7500 ordinal 1 )  Curve ( at 453735 3.94746e+06 -7500 ordinal 1 )  Curve ( at 455387 3.94994e+06 -15000 ordinal 1 )"
 
 
@@ -226,8 +250,8 @@ cubit.cmd("mesh volume all")
 # Smooth the mesh to improve mesh quality
 # :NOTE: We have commented out smoothing the mesh, because there is a bug in Cubit v16.16 which
 # causes Cubit to crash for some commands after smoothing.
-#cubit.cmd("volume all smooth scheme condition number beta 1.7 cpu 10")
-#cubit.cmd("smooth volume all")
+# cubit.cmd("volume all smooth scheme condition number beta 1.7 cpu 10")
+# cubit.cmd("smooth volume all")
 
 
 # -------------------------------------------------------------------------------------------------
@@ -274,7 +298,6 @@ if False:
     cubit.cmd(f"group 'boundary_top' add node in {surfaces_top_str}")
     cubit.cmd("nodeset 15 group boundary_top")
     cubit.cmd("nodeset 15 name 'boundary_top'")
-
 
     # Create nodeset for fault 'main'
     cubit.cmd(f"group 'fault_main' add node in {surfaces_fault_main_str}")
@@ -341,7 +364,6 @@ if True:
     cubit.cmd("sideset 15 group boundary_top")
     cubit.cmd("sideset 15 name 'boundary_top'")
 
-
     # Create sideset for fault 'main'
     cubit.cmd(f"group 'fault_main' add {surfaces_fault_main_str}")
     cubit.cmd("sideset 20 group fault_main")
@@ -358,7 +380,7 @@ if True:
     cubit.cmd("sideset 22 name 'fault_east'")
 
     # Buried edges (nodesets)
-    
+
     # Create nodeset for fault 'main' edges
     cubit.cmd(f"group 'fault_main_edges' add node in {fault_main_edges_str}")
     cubit.cmd("nodeset 30 group fault_main_edges")
@@ -377,3 +399,6 @@ if True:
 
 # Write mesh as ExodusII file
 cubit.cmd(f"export mesh 'mesh_{CELL}.exo' dimension 3 overwrite")
+
+
+# End of file

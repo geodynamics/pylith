@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # MyST Quick reference
 
 ## Style guide
@@ -170,7 +179,7 @@ Raster graphics should be provided in either PNG or JPG formats (whichever is mo
 
 ## Math
 
-For unlabled equations you can use AMSTex environments, such as `equation`, `gather` and `align`.
+For unlabeled equations you can use AMSTex environments, such as `equation`, `gather` and `align`.
 Unfortunately, Sphinx does not currently support labeled equations using AMSTex environments.
 Labeled equations must use the Markdown syntax as in equation {math:numref}`eqn:quickref:example`.
 
@@ -228,3 +237,5 @@ one.md
 two.md
 :::
 ```
+
+% End of file

@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -21,13 +21,15 @@
 // Constructor.
 pylith::feassemble::PhysicsImplementationStub::PhysicsImplementationStub(void) :
     PhysicsImplementation(NULL),
-    _mesh(new pylith::topology::Mesh) {}
+    _mesh(new pylith::topology::Mesh) {
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor
 pylith::feassemble::PhysicsImplementationStub::~PhysicsImplementationStub(void) {
-    delete _mesh;_mesh = NULL;
+    delete _mesh;
+    _mesh = NULL;
 } // destructor
 
 

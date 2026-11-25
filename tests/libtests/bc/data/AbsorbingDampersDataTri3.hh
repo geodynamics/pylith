@@ -1,28 +1,27 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
-  namespace bc {
-        class AbsorbingDampersDataTri3;
-    } // pylith
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
+namespace bc {
+    class AbsorbingDampersDataTri3;
+} // pylith
 } // bc
 
 class pylith::bc::AbsorbingDampersDataTri3 : public AbsorbingDampersData {
-public:
-
+  public:
     /// Constructor
     AbsorbingDampersDataTri3(void);
 
     /// Destructor
     ~AbsorbingDampersDataTri3(void);
 
-private:
-
+  private:
     static const char* _meshFilename;
 
     static const int _numBasis;
@@ -51,9 +50,9 @@ private:
     static const PylithScalar _dampingConsts[];
     static const PylithScalar _valsResidual[];
     static const PylithScalar _valsJacobian[];
-
 };
 
 #endif // pylith_bc_absorbingdampersdatatri3_hh
+
 
 // End of file

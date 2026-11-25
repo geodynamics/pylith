@@ -1,13 +1,14 @@
 #!/usr/bin/env nemesis
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 """Simple inversion script that uses PyLith-generated Green's functions.
 
 This script is used as part of example step07. To perform the inversion you
@@ -58,25 +59,19 @@ class SlipInvert(Application):
     aPrioriValue = inventory.float("a_priori_value", default=0.0)
     aPrioriValue.meta["tip"] = "A priori value for parameters."
 
-    penaltyWeightVals = inventory.list(
-        "penalty_weight_vals", default=[0.1, 0.5, 1.0, 5.0, 10.0]
-    )
+    penaltyWeightVals = inventory.list("penalty_weight_vals", default=[0.1, 0.5, 1.0, 5.0, 10.0])
     penaltyWeightVals.meta["tip"] = "List of penalty weights."
 
     dataScale = inventory.float("data_scale", default=1.0)
     dataScale.meta["tip"] = "Scaling factor to apply to data and stdDev."
 
-    resultSummaryFile = inventory.str(
-        "result_summary_file", default="result_summary.txt"
-    )
+    resultSummaryFile = inventory.str("result_summary_file", default="result_summary.txt")
     resultSummaryFile.meta["tip"] = "Text file summarizing inversion results."
 
     slipOutputFile = inventory.str("slip_output_file", default="predicted_slip.h5")
     slipOutputFile.meta["tip"] = "HDF5 file with predicted slip results."
 
-    displacementOutputFile = inventory.str(
-        "displacement_output_file", default="predicted_displacement.h5"
-    )
+    displacementOutputFile = inventory.str("displacement_output_file", default="predicted_displacement.h5")
     displacementOutputFile.meta["tip"] = "HDF5 file with predicted displacements."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -139,38 +134,26 @@ class SlipInvert(Application):
         h5Slip = h5py.File(self.slipOutputFile, "w")
 
         # Write fault mesh and time info.
-        summaryInfo = numpy.zeros(
-            (self.numPenaltyWeights, self.numSummaryCols), dtype=numpy.float64
-        )
+        summaryInfo = numpy.zeros((self.numPenaltyWeights, self.numSummaryCols), dtype=numpy.float64)
         cellDimF = 2
         timesF = self.penaltyWeights.reshape((self.numPenaltyWeights, 1, 1))
         timesF = h5Slip.create_dataset("time", data=timesF, maxshape=(None, 1, 1))
         vertsF = h5Slip.create_dataset("geometry/vertices", data=self.faultVertCoords)
-        topoF = h5Slip.create_dataset(
-            "viz/topology/cells", data=self.faultCells, dtype="d"
-        )
+        topoF = h5Slip.create_dataset("viz/topology/cells", data=self.faultCells, dtype="d")
         topoF.attrs["cell_dim"] = numpy.int64(cellDimF)
-        slipVec = numpy.zeros(
-            (self.numPenaltyWeights, self.numFaultVerts, 3), dtype=numpy.float64
-        )
-        slipAlongRake = numpy.zeros(
-            (self.numPenaltyWeights, self.numFaultVerts, 1), dtype=numpy.float64
-        )
+        slipVec = numpy.zeros((self.numPenaltyWeights, self.numFaultVerts, 3), dtype=numpy.float64)
+        slipAlongRake = numpy.zeros((self.numPenaltyWeights, self.numFaultVerts, 1), dtype=numpy.float64)
 
         # Write data mesh and time info.
         cellDimD = 0
-        topolD = numpy.arange(self.numDataPoints, dtype=numpy.int64).reshape(
-            self.numDataPoints, 1
-        )
+        topolD = numpy.arange(self.numDataPoints, dtype=numpy.int64).reshape(self.numDataPoints, 1)
         timesD = self.penaltyWeights.reshape((self.numPenaltyWeights, 1, 1))
         timesD = h5Disp.create_dataset("time", data=timesD, maxshape=(None, 1, 1))
         vertsD = h5Disp.create_dataset("geometry/vertices", data=self.dataCoords)
         topoD = h5Disp.create_dataset("viz/topology/cells", data=topolD, dtype="d")
         topoD.attrs["cell_dim"] = numpy.int64(cellDimD)
 
-        predictedDisp = numpy.zeros(
-            (self.numPenaltyWeights, self.numDataPoints, 3), dtype=numpy.float64
-        )
+        predictedDisp = numpy.zeros((self.numPenaltyWeights, self.numDataPoints, 3), dtype=numpy.float64)
 
         # Rescale equations using data standard deviations.
         dataStdDev = numpy.sqrt(self.dataCov)
@@ -192,9 +175,7 @@ class SlipInvert(Application):
             designMat = numpy.vstack((dataScaledDesign, paramScaledDesign))
             dataVec = numpy.hstack((dataScaledVals, paramScaledData))
             designMatTrans = numpy.transpose(designMat)
-            genInv = numpy.dot(
-                numpy.linalg.inv(numpy.dot(designMatTrans, designMat)), designMatTrans
-            )
+            genInv = numpy.dot(numpy.linalg.inv(numpy.dot(designMatTrans, designMat)), designMatTrans)
             solution = numpy.dot(genInv, dataVec)
 
             # Compute residuals, etc.
@@ -220,15 +201,9 @@ class SlipInvert(Application):
             summaryInfo[i_penalty, 6] = totalWeightResidualNorm
 
             slipAlongRake[i_penalty, :, 0] = numpy.dot(solution, self.impulseSlip)
-            slipVec[i_penalty, :, 0] = self.llComp * numpy.dot(
-                solution, self.impulseSlip
-            )
-            slipVec[i_penalty, :, 1] = self.rvComp * numpy.dot(
-                solution, self.impulseSlip
-            )
-            predictedDisp[i_penalty, :, :] = predicted.reshape(
-                (self.numDataPoints, 3), order="F"
-            )
+            slipVec[i_penalty, :, 0] = self.llComp * numpy.dot(solution, self.impulseSlip)
+            slipVec[i_penalty, :, 1] = self.rvComp * numpy.dot(solution, self.impulseSlip)
+            predictedDisp[i_penalty, :, :] = predicted.reshape((self.numDataPoints, 3), order="F")
 
             print(f"    Data residual:              {dataResidualNorm:e}")
             print(f"    Weighted data residual:     {dataWeightResidualNorm:e}")
@@ -237,9 +212,7 @@ class SlipInvert(Application):
             print(f"    Total residual:             {totalResidualNorm:e}")
             print(f"    Weighted total residual:    {totalWeightResidualNorm:e}")
 
-        numpy.savetxt(
-            self.resultSummaryFile, summaryInfo, delimiter="\t", header=self.summaryHead
-        )
+        numpy.savetxt(self.resultSummaryFile, summaryInfo, delimiter="\t", header=self.summaryHead)
 
         # Write results to HDF5 files.
         rakeSlip = h5Slip.create_dataset("vertex_fields/rake_slip", data=slipAlongRake)
@@ -267,9 +240,7 @@ class SlipInvert(Application):
         h5LLImpulses = h5py.File(self.gfImpulsesLLFile, "r")
         self.faultVertCoords = h5LLImpulses["geometry/vertices"][:]
         self.numFaultVerts = self.faultVertCoords.shape[0]
-        self.faultCells = numpy.array(
-            h5LLImpulses["viz/topology/cells"][:], dtype=numpy.int64
-        )
+        self.faultCells = numpy.array(h5LLImpulses["viz/topology/cells"][:], dtype=numpy.int64)
         llSlip = h5LLImpulses["vertex_fields/slip"][:, :, 1]
         self.numImpulses = llSlip.shape[0]
         h5LLImpulses.close()
@@ -307,15 +278,9 @@ class SlipInvert(Application):
         nE = self.numDataPoints
         nN = self.numDataPoints
         nU = self.numDataPoints
-        self.design = numpy.zeros(
-            (self.numDesignRows, self.numImpulses), dtype=numpy.float64
-        )
-        self.design[0:nE, :] = numpy.transpose(
-            self.llComp * llResponsesEast + self.rvComp * rvResponsesEast
-        )
-        self.design[nE : nE + nN, :] = numpy.transpose(
-            self.llComp * llResponsesNorth + self.rvComp * rvResponsesNorth
-        )
+        self.design = numpy.zeros((self.numDesignRows, self.numImpulses), dtype=numpy.float64)
+        self.design[0:nE, :] = numpy.transpose(self.llComp * llResponsesEast + self.rvComp * rvResponsesEast)
+        self.design[nE : nE + nN, :] = numpy.transpose(self.llComp * llResponsesNorth + self.rvComp * rvResponsesNorth)
         self.design[nE + nN : nE + nN + nU, :] = numpy.transpose(
             self.llComp * llResponsesUp + self.rvComp * rvResponsesUp
         )
@@ -348,14 +313,9 @@ class SlipInvert(Application):
         )
         self.dataNames = data["Station"]
         self.dataCoords = numpy.stack((data["X"], data["Y"], data["Z"])).T
-        self.dataVals = (
-            self.dataScale * numpy.stack((data["UEast"], data["UNorth"], data["UUp"]))
-        ).ravel()
+        self.dataVals = (self.dataScale * numpy.stack((data["UEast"], data["UNorth"], data["UUp"]))).ravel()
         self.dataCov = (
-            self.dataScale
-            * numpy.stack(
-                (data["SigEast"] ** 2, data["SigNorth"] ** 2, data["SigUp"] ** 2)
-            )
+            self.dataScale * numpy.stack((data["SigEast"] ** 2, data["SigNorth"] ** 2, data["SigUp"] ** 2))
         ).ravel()
 
         self.numDataPoints = data.shape[0]
@@ -369,3 +329,6 @@ class SlipInvert(Application):
 if __name__ == "__main__":
     app = SlipInvert()
     app.run()
+
+
+# End of file

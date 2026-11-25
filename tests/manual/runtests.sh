@@ -1,4 +1,13 @@
 #!/bin/bash
+# -*- sh -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 # Run several full-scale tests. Execute this script from the tests
 # directory.
@@ -51,3 +60,6 @@ pylith fieldsplit.cfg --nodes=5 >& fielssplit_np5.log
 cd ${tests_dir}
   
 exit 0
+
+
+# End of file

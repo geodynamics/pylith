@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
@@ -15,8 +16,7 @@
 
 class pylith::topology::RefineMesh : public pylith::utils::PyreComponent {
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     RefineMesh(void);
 
@@ -31,15 +31,14 @@ public:
      * @param mesh Mesh to refine.
      * @returns Mesh after refinement.
      */
-    virtual
-    pylith::topology::Mesh* refine(const pylith::topology::Mesh& mesh) = 0;
+    virtual pylith::topology::Mesh* refine(const pylith::topology::Mesh& mesh) = 0;
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
-private:
-
+  private:
     RefineMesh(const RefineMesh&); ///< Not implemented
     const RefineMesh& operator=(const RefineMesh&); ///< Not implemented
 
 }; // RefineMesh
+
 
 // End of file

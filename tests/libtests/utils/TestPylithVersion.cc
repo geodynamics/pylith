@@ -1,20 +1,19 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
-//
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/utils/PylithVersion.hh" // Test subject
 
-#include <string> // USES std::string()
 #include <string.h> // USES strlen()
+#include <string> // USES std::string()
 
 #include "catch2/catch_test_macros.hpp"
 
@@ -23,55 +22,54 @@ namespace pylith {
     namespace utils {
         class TestPylithVersion;
     }
-}
+} // namespace pylith
 
 class pylith::utils::TestPylithVersion {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test isRelease()
-    static
-    void testIsRelease(void);
+    static void testIsRelease(void);
 
     /// Test version()
-    static
-    void testVersion(void);
+    static void testVersion(void);
 
     /// Test gitRevision()
-    static
-    void testGitRevision(void);
+    static void testGitRevision(void);
 
     /// Test gitHash()
-    static
-    void testGitHash(void);
+    static void testGitHash(void);
 
     /// Test gitDate()
-    static
-    void testGitDate(void);
+    static void testGitDate(void);
 
     /// Test gitBranch()
-    static
-    void testGitBranch(void);
+    static void testGitBranch(void);
 
 }; // class TestPylithVersion
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestPylithVersion::testIsRelease", "[TestPylithVersion]") {
+TEST_CASE("TestPylithVersion::testIsRelease",
+          "[TestPylithVersion]") {
     pylith::utils::TestPylithVersion::testIsRelease();
 }
-TEST_CASE("TestPylithVersion::testVersion", "[TestPylithVersion]") {
+TEST_CASE("TestPylithVersion::testVersion",
+          "[TestPylithVersion]") {
     pylith::utils::TestPylithVersion::testVersion();
 }
-TEST_CASE("TestPylithVersion::testGitRevision", "[TestPylithVersion]") {
+TEST_CASE("TestPylithVersion::testGitRevision",
+          "[TestPylithVersion]") {
     pylith::utils::TestPylithVersion::testGitRevision();
 }
-TEST_CASE("TestPylithVersion::testGitHash", "[TestPylithVersion]") {
+TEST_CASE("TestPylithVersion::testGitHash",
+          "[TestPylithVersion]") {
     pylith::utils::TestPylithVersion::testGitHash();
 }
-TEST_CASE("TestPylithVersion::testGitDate", "[TestPylithVersion]") {
+TEST_CASE("TestPylithVersion::testGitDate",
+          "[TestPylithVersion]") {
     pylith::utils::TestPylithVersion::testGitDate();
 }
-TEST_CASE("TestPylithVersion::testGitBranch", "[TestPylithVersion]") {
+TEST_CASE("TestPylithVersion::testGitBranch",
+          "[TestPylithVersion]") {
     pylith::utils::TestPylithVersion::testGitBranch();
 }
 

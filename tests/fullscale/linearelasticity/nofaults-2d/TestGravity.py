@@ -1,13 +1,13 @@
 #!/usr/bin/env nemesis
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from pylith.testing.FullTestApp import FullTestCase, TestDriver, Check
 
@@ -17,8 +17,8 @@ import gravity_soln
 
 # -------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
-    """Test suite for testing PyLith with gravitational body forces (no initial stress).
-    """
+    """Test suite for testing PyLith with gravitational body forces (no initial stress)."""
+
     def setUp(self):
         defaults = {
             "filename": "output/{name}-{mesh_entity}.h5",
@@ -34,12 +34,12 @@ class TestCase(FullTestCase):
             Check(
                 mesh_entities=["elastic_xpos", "elastic_xneg"],
                 filename="output/{name}-{mesh_entity}_info.h5",
-                cell_fields = ["density", "bulk_modulus", "shear_modulus", "gravitational_acceleration"],
+                cell_fields=["density", "bulk_modulus", "shear_modulus", "gravitational_acceleration"],
                 defaults=defaults,
             ),
             Check(
                 mesh_entities=["elastic_xpos", "elastic_xneg"],
-                vertex_fields = ["displacement", "cauchy_strain", "cauchy_stress"],
+                vertex_fields=["displacement", "cauchy_strain", "cauchy_stress"],
                 defaults=defaults,
             ),
             Check(

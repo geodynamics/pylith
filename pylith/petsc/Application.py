@@ -1,12 +1,13 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # @file pylith/petsc/Application.py
 #
 # @brief Python PETSc application for creating an MPI application
@@ -17,33 +18,31 @@ from pylith.petsc.petsc import Application as ModuleApplication
 
 
 class Application(MPIApplication):
-    """Python PETSc application for creating an MPI application that uses PETSc.
-    """
+    """Python PETSc application for creating an MPI application that uses PETSc."""
 
     import pythia.pyre.inventory
 
     # Dummy facility for passing options to PETSc
     from pylith.petsc.Manager import Manager
-    petsc = pythia.pyre.inventory.facility(
-        "petsc", family="petsc_manager", factory=Manager)
-    petsc.meta['tip'] = "Manager for PETSc options."
 
-    includeCitations = pythia.pyre.inventory.bool(
-        "include-citations", default=False)
-    includeCitations.meta['tip'] = "At end of simulation, display information on how to cite PyLith and components used."
+    petsc = pythia.pyre.inventory.facility("petsc", family="petsc_manager", factory=Manager)
+    petsc.meta["tip"] = "Manager for PETSc options."
+
+    includeCitations = pythia.pyre.inventory.bool("include-citations", default=False)
+    includeCitations.meta["tip"] = (
+        "At end of simulation, display information on how to cite PyLith and components used."
+    )
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="petscapp"):
-        """Constructor.
-        """
+        """Constructor."""
         MPIApplication.__init__(self, name)
 
     def onComputeNodes(self, *args, **kwds):
-        """Run the application in parallel on the compute nodes.
-        """
+        """Run the application in parallel on the compute nodes."""
         self.petsc.initialize()
-        
+
         if self.inventory.includeCitations:
             for entry in self.citations():
                 ModuleApplication.registerCitation(entry)
@@ -56,13 +55,11 @@ class Application(MPIApplication):
 
             self.cleanup()  # Attempt to clean up memory.
             frames = traceback.extract_tb(err.__traceback__)
-            python_tb = (
-                "\nPython traceback:\n" +
-                "".join(traceback.format_list(reversed(frames)))
-            )
+            python_tb = "\nPython traceback:\n" + "".join(traceback.format_list(reversed(frames)))
             self._error.log(str(err) + python_tb)
             sys.stdout.flush()
             from pylith.mpi import mpi
+
             errorCode = -1
             mpi.mpi_abort(mpi.petsc_comm_world(), errorCode)
 
@@ -70,9 +67,9 @@ class Application(MPIApplication):
         self.petsc.finalize()
 
     def cleanup(self):
-        """Deallocate data structures.
-        """
+        """Deallocate data structures."""
         from pylith.petsc.Component import Component
+
         for component in self.components():
             if isinstance(component, Component):
                 component.cleanup()
@@ -86,20 +83,17 @@ class Application(MPIApplication):
         self._cleanup()
 
     def citations(self):
-        """Register BibTeX entries for citing software.
-        """
+        """Register BibTeX entries for citing software."""
         return []
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """Setup members using inventory.
-        """
+        """Setup members using inventory."""
         MPIApplication._configure(self)
 
     def _cleanup(self):
-        """Deallocate locally managed data structures.
-        """
+        """Deallocate locally managed data structures."""
 
 
 # End of file

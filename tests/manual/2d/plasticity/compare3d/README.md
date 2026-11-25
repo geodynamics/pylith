@@ -1,0 +1,37 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
+This is a simple test of the DruckerPragerPlaneStrain elastoplastic model.
+The results may be compared against the results from a 3D model with the
+z-displacements constrained to zero.  There are two sets of models:  cyclic
+and static. The cyclic models involve time-varying displacement BC applied
+to a single cell. The static models involve initial displacements (either
+axial or shear), followed by yield occurring in the time-dependent solution.
+
+Plane strain axial displacement problem:
+pylith planestrain2d.cfg axialdisp2d.cfg
+
+Plane strain shear displacement problem:
+pylith planestrain2d.cfg sheardisp2d.cfg
+
+3D simulated plane strain axial displacement problem:
+pylith planestrain3d.cfg axialdisp3d.cfg
+
+3D simulated plane strain shear displacement problem:
+pylith planestrain3d.cfg sheardisp3d.cfg
+
+The 2D and 3D problems should yield the same displacements, strains,
+stresses, and plastic strains when the appropriate components are compared.
+
+At present, the amount of displacement applied for the shear problem is
+extremely small. Otherwise, there is additional plastic deformation after
+the first time step. It remains to be seen whether this is an issue with
+the code, or whether this behavior is to be expected.
+
+% End of file

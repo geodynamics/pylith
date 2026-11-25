@@ -1,4 +1,13 @@
 #!/bin/bash
+# -*- sh -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 subdirs=("box-2d" "box-3d" "reverse-2d" "strikeslip-2d" "crustal-strikeslip-2d" "crustal-strikeslip-3d" "subduction-2d" "subduction-3d" "magma-2d" "poroelastic-outerrise-2d")
 
@@ -21,3 +30,6 @@ rm crustal-strikeslip-3d/step01_slip_cubit-synopsis.md
 rm subduction-3d/step07b_reverse-synopsis.md
 rm subduction-3d/step08b_gravity_incompressible-synopsis.md
 rm subduction-3d/step08c_gravity_viscoelastic-synopsis.md
+
+
+# End of file

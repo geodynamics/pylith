@@ -1,25 +1,24 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 // Make copy of this object.
-inline
-pylith::meshio::DataWriter*
+inline pylith::meshio::DataWriter*
 pylith::meshio::DataWriterHDF5Ext::clone(void) const {
     return new DataWriterHDF5Ext(*this);
 }
 
 
 // Set filename for HDF5 file.
-inline
-void
+inline void
 pylith::meshio::DataWriterHDF5Ext::filename(const char* filename) {
     _filename = filename;
 }

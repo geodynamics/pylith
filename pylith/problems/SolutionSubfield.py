@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from pylith.topology.Subfield import Subfield
 
@@ -61,13 +61,9 @@ class SolutionSubfield(Subfield):
             self.componentNames = [self.fieldName]
         elif self.vectorFieldType == Field.VECTOR:
             labels = ["x", "y", "z"]
-            self.componentNames = [
-                "{}_{}".format(self.userAlias, label) for label in labels[:spaceDim]
-            ]
+            self.componentNames = ["{}_{}".format(self.userAlias, label) for label in labels[:spaceDim]]
         else:
-            raise NotImplementedError(
-                "Not implemented for vector field type %d" % self.vectorFieldType
-            )
+            raise NotImplementedError("Not implemented for vector field type %d" % self.vectorFieldType)
 
 
 # ITEM FACTORIES ///////////////////////////////////////////////////////

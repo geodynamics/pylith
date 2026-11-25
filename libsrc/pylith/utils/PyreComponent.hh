@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/utils/utilsfwd.hh" // forward declarations
@@ -23,8 +24,7 @@ class pylith::utils::PyreComponent {
     friend class TestPyreComponent; // unit testing
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     PyreComponent(void);
 
@@ -62,18 +62,17 @@ public:
     const char* getFullIdentifier(void) const;
 
     // PRIVATE METHODS //////////////////////////////////////////////////////
-private:
-
+  private:
     std::string _name; ///< Name of component (used in journals).
     std::string _identifier; ///< Identifier for object in component hierarchy.
     std::string _fullIdentifier; ///< Full name of component.
 
     // PRIVATE METHODS //////////////////////////////////////////////////////
-private:
-
+  private:
     PyreComponent(const PyreComponent&); ///< Not implemented
     const PyreComponent& operator=(const PyreComponent&); ///< Not implemented
 
 }; // PyreComponent
+
 
 // End of file

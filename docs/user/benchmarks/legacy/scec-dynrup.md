@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # SCEC Dynamic Rupture Benchmarks
 
 The SCEC website <https://strike.scec.org/cvws/cgi-bin/cvws.cgi> includes a graphical user interface for examining the benchmark results.
@@ -5,3 +14,5 @@ Benchmark results for PyLith are available for TPV205-2D (horizontal slice throu
 
 The benchmark results indicate that triangular and tetrahedral cells generate less numerical noise than quadrilateral or hexahedral cells.
 The input files in the repository are updated for PyLith v2.0.0, so you will need to modify them if you use another version of PyLith.
+
+% End of file

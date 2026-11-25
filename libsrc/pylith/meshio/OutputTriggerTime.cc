@@ -1,19 +1,19 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/meshio/OutputTriggerTime.hh" // Implementation of class methods
 
-#include "pylith/utils/constants.hh" // USES pylith::max_real
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/constants.hh" // USES pylith::max_real
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -27,14 +27,15 @@ pylith::meshio::OutputTriggerTime::OutputTriggerTime(void) :
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor
-pylith::meshio::OutputTriggerTime::~OutputTriggerTime(void) {}
+pylith::meshio::OutputTriggerTime::~OutputTriggerTime(void) {
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Set elapsed time between writes.
 void
 pylith::meshio::OutputTriggerTime::setTimeSkip(const double value) {
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputTriggerTime::setTimeSkip(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputTriggerTime::setTimeSkip(value=" << value << ")");
 
     _timeSkip = (value >= 0.0) ? value : 0.0;
 } // setTimeSkip
@@ -54,7 +55,8 @@ bool
 pylith::meshio::OutputTriggerTime::shouldWrite(const PylithReal t,
                                                const PylithInt timeStep) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputTriggerTime::shouldWrite(t="<<t<<", timeStep="<<timeStep<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "OutputTriggerTime::shouldWrite(t=" << t << ", timeStep=" << timeStep << ")");
 
     bool isWrite = false;
     if (t - _timeNondimWrote >= _timeSkip / _timeScale) {

@@ -1,3 +1,13 @@
+# -*- journal -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # ----------------------------------------------------------------------
 # Create block
 # ----------------------------------------------------------------------
@@ -85,3 +95,5 @@ nodeset 20 name "face_zpos"
 # ----------------------------------------------------------------------
 export mesh "tet4k.exo" dimension 3 overwrite
 
+
+# End of file

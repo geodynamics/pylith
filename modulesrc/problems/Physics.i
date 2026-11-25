@@ -1,25 +1,19 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
 
-/** @file modulesrc/problems/Physics.i
- *
- * Python interface to C++ abstract base class Physics.
- */
 
 namespace pylith {
     namespace problems {
-        class Physics: public pylith::utils::PyreComponent {
+        class Physics : public pylith::utils::PyreComponent {
             // PUBLIC ENUM
             // /////////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             enum FormulationEnum {
                 QUASISTATIC, // Without inertia; implicit time stepping.
                 DYNAMIC, // With inertia; explicit time stepping).
@@ -27,8 +21,7 @@ public:
             }; // FormulationEnum
 
             // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             /// Constructor
             Physics(void);
 
@@ -36,8 +29,7 @@ public:
             virtual ~Physics(void);
 
             /// Deallocate PETSc and local data structures.
-            virtual
-            void deallocate(void);
+            virtual void deallocate(void);
 
             /** Set name of label marking material.
              *
@@ -83,7 +75,7 @@ public:
 
             /** Set spatial database for populating auxiliary field.
              *
-             * @param[in] value Spatial database with iniital values for auxiliary field.
+             * @param[in] value Spatial database with initial values for auxiliary field.
              */
             void setAuxiliaryFieldDB(spatialdata::spatialdb::SpatialDB* const value);
 
@@ -156,24 +148,22 @@ public:
              *
              * @param[in] solution Solution field.
              */
-            virtual
-            void verifyConfiguration(const pylith::topology::Field& solution) const = 0;
+            virtual void verifyConfiguration(const pylith::topology::Field& solution) const = 0;
 
             /** Create integrator and set kernels.
              *
              * @param[in] solution Solution field.
              * @returns Integrator if applicable, otherwise NULL.
              */
-            virtual
-            pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution) = 0;
+            virtual pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution) = 0;
 
             /** Create constraint and set kernels.
              *
              * @param[in] solution Solution field.
              * @returns Constraint if applicable, otherwise NULL.
              */
-            virtual
-            std::vector < pylith::feassemble::Constraint* > createConstraints(const pylith::topology::Field& solution) = 0;
+            virtual std::vector<pylith::feassemble::Constraint*>
+            createConstraints(const pylith::topology::Field& solution) = 0;
 
             /** Create auxiliary field.
              *
@@ -182,9 +172,8 @@ public:
              *
              * @returns Auxiliary field if applicable, otherwise NULL.
              */
-            virtual
-            pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
-                                                          const pylith::topology::Mesh& physicsMesh) = 0;
+            virtual pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
+                                                                  const pylith::topology::Mesh& physicsMesh) = 0;
 
             /** Create diagnostic field.
              *
@@ -193,9 +182,8 @@ public:
              *
              * @returns Auxiliary field if applicable, otherwise NULL.
              */
-            virtual
-            pylith::topology::Field* createDiagnosticField(const pylith::topology::Field& solution,
-                                                           const pylith::topology::Mesh& physicsMesh);
+            virtual pylith::topology::Field* createDiagnosticField(const pylith::topology::Field& solution,
+                                                                   const pylith::topology::Mesh& physicsMesh);
 
             /** Create derived field.
              *
@@ -204,48 +192,42 @@ public:
              *
              * @returns Derived field if applicable, otherwise NULL.
              */
-            virtual
-            pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
-                                                        const pylith::topology::Mesh& physicsMesh);
+            virtual pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
+                                                                const pylith::topology::Mesh& physicsMesh);
 
             /** Update time-dependent auxiliary field.
              *
              * @param[inout] auxiliaryField Auxiliary field.
              * @param[in] t Current time.
              */
-            virtual
-            void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
-                                      const double t);
+            virtual void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
+                                              const double t);
 
             // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+          protected:
             /** Get auxiliary factory associated with physics.
              *
              * @return Auxiliary factory for physics object.
              */
-            virtual
-            pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void) = 0;
+            virtual pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void) = 0;
 
             /** Get derived factory associated with physics.
              *
              * @return Derived factory for physics object.
              */
-            virtual
-            pylith::topology::FieldFactory* _getDerivedFactory(void);
+            virtual pylith::topology::FieldFactory* _getDerivedFactory(void);
 
             /** Update kernel constants.
              *
              * @param[in] dt Current time step.
              */
-            virtual
-            void _updateKernelConstants(const PylithReal dt);
-
+            virtual void _updateKernelConstants(const PylithReal dt);
         };
 
         // class Physics
 
-    } // problems
-} // pylith
+    } // namespace problems
+} // namespace pylith
+
 
 // End of file

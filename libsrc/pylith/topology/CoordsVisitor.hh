@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
@@ -21,8 +22,7 @@ class pylith::topology::CoordsVisitor { // CoordsVisitor
     friend class TestCoordsVisitor; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /** Default constructor (includes initialization).
      *
      * @param dmMesh PETSc DM for finite-element mesh.
@@ -94,25 +94,23 @@ public:
      *
      * @param dmMesh PETSc DM to optimize closure on coordinates field.
      */
-    static
-    void optimizeClosure(PetscDM dmMesh);
+    static void optimizeClosure(PetscDM dmMesh);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     const PetscDM _dm; ///< Cached PETSc dm for mesh.
     PetscSection _section; ///< Cached PETSc section.
     PetscVec _localVec; ///< Cached local PETSc Vec.
     PetscScalar* _localArray; ///< Cached local array.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
-private:
-
+  private:
     CoordsVisitor(const CoordsVisitor&); ///< Not implemented
     const CoordsVisitor& operator=(const CoordsVisitor&); ///< Not implemented
 
 }; // CoordsVisitor
 
 #include "CoordsVisitor.icc"
+
 
 // End of file

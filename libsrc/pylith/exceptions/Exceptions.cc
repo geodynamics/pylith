@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include "Exceptions.hh"
 
@@ -14,13 +14,13 @@
 #include "cpptrace/cpptrace.hpp"
 #else
 #if defined(HAVE_BACKTRACE)
-#include <execinfo.h>
 #include <cstdlib> // USES std::free
+#include <execinfo.h>
 #endif
 #endif
 
-#include <sstream> // USES std::ostringstream
 #include <cstring> // USES std::strlen
+#include <sstream> // USES std::ostringstream
 
 // ------------------------------------------------------------------------------------------------
 pylith::exceptions::Error::Error(const pylith::exceptions::ErrorMessage& message,
@@ -78,11 +78,8 @@ pylith::exceptions::Error::_captureTraceback() {
 
     for (const auto& frame : trace.frames) {
         std::ostringstream oss;
-        oss << (frame.symbol.empty() ? "??" : frame.symbol)
-            << " at "
-            << (frame.filename.empty() ? "??" : frame.filename)
-            << ":"
-            << frame.line.value_or(0);
+        oss << (frame.symbol.empty() ? "??" : frame.symbol) << " at "
+            << (frame.filename.empty() ? "??" : frame.filename) << ":" << frame.line.value_or(0);
 
         _traceback.push_back(oss.str());
     } // for
@@ -94,10 +91,14 @@ pylith::exceptions::Error::_captureTraceback() {
     const size_t skipFrames = 3; // Skip exception lines in traceback
 
     numFrames = ::backtrace(frames, MAX_FRAMES);
-    if (numFrames <= 0) {return;}
+    if (numFrames <= 0) {
+        return;
+    }
 
     char** symbols = ::backtrace_symbols(frames, numFrames);
-    if (!symbols) {return;}
+    if (!symbols) {
+        return;
+    }
 
     _traceback.reserve(numFrames);
     for (size_t i = skipFrames; i < numFrames; ++i) {
@@ -129,9 +130,9 @@ pylith::exceptions::Error::_captureTraceback() {
             } // if/else
         } // for
         if (last > first) {
-            size_t newSize = numFrames - (last-first) - 1;
+            size_t newSize = numFrames - (last - first) - 1;
             for (size_t i = first; i < newSize; ++i) {
-                _traceback[i] = _traceback[last + 1 + (i-first)];
+                _traceback[i] = _traceback[last + 1 + (i - first)];
             } // for
             _traceback.resize(newSize);
         } // if
@@ -153,3 +154,6 @@ pylith::exceptions::Error::_formatTraceback() const {
     }
     return oss.str();
 } // formatTraceback
+
+
+// End of file

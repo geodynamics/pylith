@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/feassemble/feassemblefwd.hh"
@@ -18,15 +19,14 @@
 
 #include "pylith/problems/Observer.hh" // USES Observer
 
-#include "pylith/utils/array.hh" // HASA int_array
 #include "pylith/petsc/petscfwd.hh" // HOLDSA Logger
+#include "pylith/utils/array.hh" // HASA int_array
 
 class pylith::feassemble::PhysicsImplementation : public pylith::utils::GenericComponent {
     friend class TestPhysicsImplementation; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /** Constructor
      *
      * @param[in] physics Physics implemented by constraint.
@@ -37,15 +37,13 @@ public:
     virtual ~PhysicsImplementation(void);
 
     /// Deallocate PETSc and local data structures.
-    virtual
-    void deallocate(void);
+    virtual void deallocate(void);
 
     /** Get mesh associated with domain governed by specified physics.
      *
      * @returns Mesh associated with constrained domain.
      */
-    virtual
-    const pylith::topology::Mesh& getPhysicsDomainMesh(void) const = 0;
+    virtual const pylith::topology::Mesh& getPhysicsDomainMesh(void) const = 0;
 
     /** Get name of label marking material.
      *
@@ -89,8 +87,7 @@ public:
                          const pylith::problems::Observer::NotificationType notification);
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     pylith::problems::Physics* const _physics;
     pylith::topology::Field* _auxiliaryField;
     pylith::topology::Field* _diagnosticField;
@@ -100,12 +97,12 @@ protected:
     pylith::petsc::EventLogger* _logger;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     PhysicsImplementation(void); /// Not implemented.
-    PhysicsImplementation(const PhysicsImplementation &); ///< Not implemented
+    PhysicsImplementation(const PhysicsImplementation&); ///< Not implemented
     const PhysicsImplementation& operator=(const PhysicsImplementation&); ///< Not implemented
 
 }; // class PhysicsImplementation
+
 
 // End of file

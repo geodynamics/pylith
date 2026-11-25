@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 2: Earthquake Rupture and Postseismic Relaxation
 
 This example involves a quasi-static simulation for coseismic earthquake rupture and postseismic relaxation.
@@ -116,7 +125,7 @@ viewer_hdf5_collective = true
 ```
 
 At the beginning of the output written to the terminal, we see that PyLith is reading the mesh using the `MeshIOPetsc` reader.
-We also see the PETSc solver options, which show use of the variable point-block Jacobi and GAMG (algebriac multigrid) preconditioner settings.
+We also see the PETSc solver options, which show use of the variable point-block Jacobi and GAMG (algebraic multigrid) preconditioner settings.
 
 At the end of the output written to the terminal, we see that the solver advanced the solution 10 time steps.
 The linear solve converged after 14 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
@@ -147,3 +156,5 @@ pylith_viz --filename=output/step02_coseismic-domain.h5 warp_grid --component=x 
 Solution for Step 2 at t=200 yr.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 10,000.
 :::
+
+% End of file

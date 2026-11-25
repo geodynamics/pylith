@@ -1,12 +1,13 @@
-// =================================================================================================
-// This code is part of SpatialData, developed through the Computational Infrastructure
-// for Geodynamics (https://github.com/geodynamics/spatialdata).
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
 //
-// Copyright (c) 2010-2026, University of California, Davis and the SpatialData Development Team.
-// All rights reserved.
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "scalesfwd.hh"
@@ -17,8 +18,7 @@
 class pylith::scales::Scales {
     friend class TestScales; // Unit testing
 
-public:
-
+  public:
     // PUBLIC METHODS /////////////////////////////////////////////////////
 
     /// Default constructor
@@ -38,7 +38,7 @@ public:
      * @param dim Object to copy.
      * @returns Copy of this.
      */
-    const Scales& operator = (const Scales& dim);
+    const Scales& operator=(const Scales& dim);
 
     /** Set value to nondimensionalize position.
      *
@@ -158,8 +158,7 @@ public:
                         const size_t nvalues,
                         const double scale) const;
 
-private:
-
+  private:
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
 
     double _length; ///< Length scale
@@ -171,5 +170,6 @@ private:
 }; // class Scales
 
 #include "Scales.icc" // inline methods
+
 
 // End of file

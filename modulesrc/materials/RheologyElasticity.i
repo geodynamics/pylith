@@ -1,24 +1,18 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
 
-/** @file modulesrc/materials/RheologyElasticity.i
- *
- * Python interface to C++ abstract base class RheologyElasticity.
- */
 
 namespace pylith {
     namespace materials {
-        class RheologyElasticity: public pylith::utils::PyreComponent {
+        class RheologyElasticity : public pylith::utils::PyreComponent {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             /// Default constructor.
             RheologyElasticity(void);
 
@@ -32,12 +26,10 @@ public:
              *
              * @return Auxiliary factory for physics object.
              */
-            virtual
-            pylith::materials::AuxiliaryFactoryElasticity* getAuxiliaryFactory(void) = 0;
+            virtual pylith::materials::AuxiliaryFactoryElasticity* getAuxiliaryFactory(void) = 0;
 
             /// Add rheology subfields to auxiliary field.
-            virtual
-            void addAuxiliarySubfields(void) = 0;
+            virtual void addAuxiliarySubfields(void) = 0;
 
             /** Get stress kernel for RHS residual, G(t,s).
              *
@@ -45,8 +37,7 @@ public:
              *
              * @return RHS residual kernel for stress.
              */
-            virtual
-            PetscPointFnWrapper getKernelf1v(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+            virtual PetscPointFnWrapper getKernelf1v(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
             /** Get elastic constants kernel for RHS Jacobian G(t,s).
              *
@@ -54,8 +45,7 @@ public:
              *
              * @return RHS Jacobian kernel for elastic constants.
              */
-            virtual
-            PetscPointJacFnWrapper getKernelJf3vu(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+            virtual PetscPointJacFnWrapper getKernelJf3vu(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
             /** Get f0 kernel for LHS interface residual, F(t,s,dot{s}), for negative fault face.
              *
@@ -63,8 +53,7 @@ public:
              *
              * @return LHS residual f0 kernel.
              */
-            virtual
-            PetscBdPointFnWrapper getKernelf0Neg(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+            virtual PetscBdPointFnWrapper getKernelf0Neg(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
             /** Get f0 kernel for LHS interface residual, F(t,s,dot{s}), for positive fault face.
              *
@@ -72,8 +61,7 @@ public:
              *
              * @return LHS residual f0 kernel.
              */
-            virtual
-            PetscBdPointFnWrapper getKernelf0Pos(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+            virtual PetscBdPointFnWrapper getKernelf0Pos(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
             /** Get stress kernel for derived field.
              *
@@ -81,32 +69,31 @@ public:
              *
              * @return Project kernel for computing stress subfield in derived field.
              */
-            virtual
-            PetscPointFnWrapper getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+            virtual PetscPointFnWrapper
+            getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
             /** Add kernels for updating state variables.
              *
              * @param[inout] kernels Array of kernels for updating state variables.
              * @param[in] coordsys Coordinate system.
              */
-            virtual
-            void addKernelsUpdateStateVars(std::vector < pylith::feassemble::IntegratorDomain::ProjectKernels > * kernels,
-                                           const spatialdata::geocoords::CoordSys* coordsys) const;
+            virtual void
+            addKernelsUpdateStateVars(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
+                                      const spatialdata::geocoords::CoordSys* coordsys) const;
 
             /** Update kernel constants.
              *
              * @param[inout] kernelConstants Array of constants used in integration kernels.
              * @param[in] dt Current time step.
              */
-            virtual
-            void updateKernelConstants(pylith::real_array* kernelConstants,
-                                       const PylithReal dt) const;
-
+            virtual void updateKernelConstants(pylith::real_array* kernelConstants,
+                                               const PylithReal dt) const;
         };
 
         // class RheologyElasticity
 
-    } // materials
-} // pylith
+    } // namespace materials
+} // namespace pylith
+
 
 // End of file

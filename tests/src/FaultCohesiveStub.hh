@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/testing/testingfwd.hh" // forward declarations
@@ -17,8 +18,7 @@ class pylith::faults::FaultCohesiveStub : public pylith::faults::FaultCohesive {
     friend class TestFaultCohesiveStub; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     FaultCohesiveStub(void);
 
@@ -51,8 +51,7 @@ public:
                                                      const std::vector<pylith::materials::Material*>& materials);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get auxiliary factory associated with physics.
      *
      * @return Auxiliary factory for physics object.
@@ -80,11 +79,11 @@ protected:
                              const std::vector<pylith::materials::Material*>& materials) const;
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     FaultCohesiveStub(const FaultCohesiveStub&); ///< Not implemented.
     const FaultCohesiveStub& operator=(const FaultCohesiveStub&); ///< Not implemented.
 
 }; // class FaultCohesiveStub
+
 
 // End of file

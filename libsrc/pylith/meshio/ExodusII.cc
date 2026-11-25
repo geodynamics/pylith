@@ -1,24 +1,24 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/meshio/ExodusII.hh" // implementation of class methods
 
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES journal macros
-#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "petsc.h" // USES MPI_Comm
 
-// :KLUDGE: Prevent NetCDF from definining MPI types
+// :KLUDGE: Prevent NetCDF from defining MPI types
 #define MPI_INCLUDED
 #include <netcdf.h> // USES netcdf
 
@@ -86,8 +86,7 @@ pylith::meshio::ExodusII::open(void) { // open
 
     const int err = nc_open(_filename.c_str(), NC_NOWRITE, &_file);
     if (err != NC_NOERR) {
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Could not open ExodusII file '" << _filename << "' for reading.");
+        PYLITH_ERROR(pylith::exceptions::IOError, "Could not open ExodusII file '" << _filename << "' for reading.");
     } // if
 
     PYLITH_METHOD_END;
@@ -101,10 +100,10 @@ pylith::meshio::ExodusII::close(void) { // close
     PYLITH_METHOD_BEGIN;
 
     if (_file) {
-        int err = nc_close(_file);_file = 0;
+        int err = nc_close(_file);
+        _file = 0;
         if (err != NC_NOERR) {
-            PYLITH_ERROR(pylith::exceptions::IOError,
-                         "Could not close ExodusII file '" << _filename << "'.");
+            PYLITH_ERROR(pylith::exceptions::IOError, "Could not close ExodusII file '" << _filename << "'.");
         } // if
     } // if
 
@@ -113,7 +112,7 @@ pylith::meshio::ExodusII::close(void) { // close
 
 
 // ----------------------------------------------------------------------
-// Check if Cubit Exodus file constains dimension.
+// Check if Cubit Exodus file contains dimension.
 bool
 pylith::meshio::ExodusII::hasDim(const char* name,
                                  int* id) const { // hasDim
@@ -139,7 +138,7 @@ pylith::meshio::ExodusII::hasDim(const char* name,
 
 
 // ----------------------------------------------------------------------
-// Check if Cubit Exodus file constains attribute.
+// Check if Cubit Exodus file contains attribute.
 bool
 pylith::meshio::ExodusII::hasAttr(const char* name,
                                   const char* varName,
@@ -171,7 +170,7 @@ pylith::meshio::ExodusII::hasAttr(const char* name,
 
 
 // ----------------------------------------------------------------------
-// Check if Cubit Exodus file constains variable.
+// Check if Cubit Exodus file contains variable.
 bool
 pylith::meshio::ExodusII::hasVar(const char* name,
                                  int* id) const {
@@ -206,15 +205,13 @@ pylith::meshio::ExodusII::getDim(const char* name) const { // getDim
 
     int id = -1;
     if (!hasDim(name, &id)) {
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Missing dimension '" << name << "'.");
+        PYLITH_ERROR(pylith::exceptions::IOError, "Missing dimension '" << name << "'.");
     } // if
 
     size_t dimSize = 0;
     int err = nc_inq_dimlen(_file, id, &dimSize);
     if (err != NC_NOERR) {
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Could not get dimension '" << name << "'.");
+        PYLITH_ERROR(pylith::exceptions::IOError, "Could not get dimension '" << name << "'.");
     } // if
 
     PYLITH_METHOD_RETURN(dimSize);
@@ -241,8 +238,7 @@ pylith::meshio::ExodusII::getAttr(std::string* value,
 
     int attrId = -1;
     if (!hasAttr(name, varName, &attrId)) {
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Missing string attribute '" << name << "'.");
+        PYLITH_ERROR(pylith::exceptions::IOError, "Missing string attribute '" << name << "'.");
     } // if
 
     int err = NC_NOERR;
@@ -252,7 +248,7 @@ pylith::meshio::ExodusII::getAttr(std::string* value,
         PYLITH_ERROR(pylith::exceptions::IOError,
                      "Could not get length of string attribute '" << name << "' for variable '" << varName << "'.");
     } // if
-    char* cValue = stringLen > 0 ? new char[stringLen+1] : nullptr;
+    char* cValue = stringLen > 0 ? new char[stringLen + 1] : nullptr;
     if (cValue) {
         err = nc_get_att_text(_file, varId, name, cValue);
         if (err != NC_NOERR) {
@@ -260,7 +256,8 @@ pylith::meshio::ExodusII::getAttr(std::string* value,
                          "Could not read string attribute '" << name << "' for variable '" << varName << "'.");
         } // if
         *value = cValue;
-        delete[] cValue;cValue = nullptr;
+        delete[] cValue;
+        cValue = nullptr;
     } // if
 
     PYLITH_METHOD_END;
@@ -281,53 +278,52 @@ pylith::meshio::ExodusII::getVar(PylithScalar* values,
 
     int vid = -1;
     if (!hasVar(name, &vid)) {
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Missing real variable '" << name << "'.");
+        PYLITH_ERROR(pylith::exceptions::IOError, "Missing real variable '" << name << "'.");
     } // if
 
     int vndims = 0;
     int err = nc_inq_varndims(_file, vid, &vndims);
     if (ndims != vndims) {
         PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Expecting " << ndims << " dimensions for variable '" << name
-                                  << "' but variable only has " << vndims << " dimensions.");
+                     "Expecting " << ndims << " dimensions for variable '" << name << "' but variable only has "
+                                  << vndims << " dimensions.");
     } // if
 
     int* dimIds = (ndims > 0) ? new int[ndims] : 0;
     err = nc_inq_vardimid(_file, vid, dimIds);
     if (err != NC_NOERR) {
-        delete[] dimIds;dimIds = 0;
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Could not get dimensions for variable '" << name << "'.");
+        delete[] dimIds;
+        dimIds = 0;
+        PYLITH_ERROR(pylith::exceptions::IOError, "Could not get dimensions for variable '" << name << "'.");
     } // if
 
     for (int iDim = 0; iDim < ndims; ++iDim) {
         size_t dimSize = 0;
         err = nc_inq_dimlen(_file, dimIds[iDim], &dimSize);
         if (err != NC_NOERR) {
-            delete[] dimIds;dimIds = 0;
+            delete[] dimIds;
+            dimIds = 0;
             PYLITH_ERROR(pylith::exceptions::IOError,
                          "Could not get dimension '" << iDim << "' for variable '" << name << "'.");
         } // if
         if (size_t(dims[iDim]) != dimSize) {
-            delete[] dimIds;dimIds = 0;
+            delete[] dimIds;
+            dimIds = 0;
             PYLITH_ERROR(pylith::exceptions::IOError,
-                         "Expecting dimension " << iDim << " of variable '" << name
-                                                << "' to be " << dims[iDim] << ", but dimension is " << dimSize
-                                                << ".");
+                         "Expecting dimension " << iDim << " of variable '" << name << "' to be " << dims[iDim]
+                                                << ", but dimension is " << dimSize << ".");
         } // if
     } // for
-    delete[] dimIds;dimIds = 0;
+    delete[] dimIds;
+    dimIds = 0;
 
     if (sizeof(PylithScalar) == sizeof(double)) {
         err = nc_get_var_double(_file, vid, values);
     } else {
-        PYLITH_ERROR(pylith::exceptions::InternalLogicError,
-                     "Unknown size of PylithScalar in ExodusII::getVar().");
+        PYLITH_ERROR(pylith::exceptions::InternalLogicError, "Unknown size of PylithScalar in ExodusII::getVar().");
     } // if/else
     if (err != NC_NOERR) {
-        PYLITH_ERROR(pylith::exceptions::InternalLogicError,
-                     "Could not get values for variable '" << name << ".");
+        PYLITH_ERROR(pylith::exceptions::InternalLogicError, "Could not get values for variable '" << name << ".");
     } // if
 
     PYLITH_METHOD_END;
@@ -348,48 +344,48 @@ pylith::meshio::ExodusII::getVar(int* values,
 
     int vid = -1;
     if (!hasVar(name, &vid)) {
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Missing integer variable '" << name << "'.");
+        PYLITH_ERROR(pylith::exceptions::IOError, "Missing integer variable '" << name << "'.");
     } // if
 
     int vndims = 0;
     int err = nc_inq_varndims(_file, vid, &vndims);
     if (ndims != vndims) {
         PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Expecting " << ndims << " dimensions for variable '" << name
-                                  << "' but variable only has " << vndims << " dimensions.");
+                     "Expecting " << ndims << " dimensions for variable '" << name << "' but variable only has "
+                                  << vndims << " dimensions.");
     } // if
 
     int* dimIds = (ndims > 0) ? new int[ndims] : 0;
     err = nc_inq_vardimid(_file, vid, dimIds);
     if (err != NC_NOERR) {
-        delete[] dimIds;dimIds = 0;
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Could not get dimensions for variable '" << name << "'.");
+        delete[] dimIds;
+        dimIds = 0;
+        PYLITH_ERROR(pylith::exceptions::IOError, "Could not get dimensions for variable '" << name << "'.");
     } // if
 
     for (int iDim = 0; iDim < ndims; ++iDim) {
         size_t dimSize = 0;
         err = nc_inq_dimlen(_file, dimIds[iDim], &dimSize);
         if (err != NC_NOERR) {
-            delete[] dimIds;dimIds = 0;
+            delete[] dimIds;
+            dimIds = 0;
             PYLITH_ERROR(pylith::exceptions::IOError,
                          "Could not get dimension '" << iDim << "' for variable '" << name << "'.");
         } // if
         if (size_t(dims[iDim]) != dimSize) {
-            delete[] dimIds;dimIds = 0;
+            delete[] dimIds;
+            dimIds = 0;
             PYLITH_ERROR(pylith::exceptions::IOError,
-                         "Expecting dimension " << iDim << " of variable '" << name
-                                                << "' to be " << dims[iDim] << ", but dimension is " << dimSize
-                                                << ".");
+                         "Expecting dimension " << iDim << " of variable '" << name << "' to be " << dims[iDim]
+                                                << ", but dimension is " << dimSize << ".");
         } // if
     } // for
-    delete[] dimIds;dimIds = 0;
+    delete[] dimIds;
+    dimIds = 0;
 
     err = nc_get_var_int(_file, vid, values);
     if (err != NC_NOERR) {
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Could not get values for variable '" << name << ".");
+        PYLITH_ERROR(pylith::exceptions::IOError, "Could not get values for variable '" << name << ".");
     } // if
 
     PYLITH_METHOD_END;
@@ -409,8 +405,7 @@ pylith::meshio::ExodusII::getVar(string_vector* values,
 
     int vid = -1;
     if (!hasVar(name, &vid)) {
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Missing string variable '" << name << "'.");
+        PYLITH_ERROR(pylith::exceptions::IOError, "Missing string variable '" << name << "'.");
     } // if
 
     int vndims = 0;
@@ -418,15 +413,14 @@ pylith::meshio::ExodusII::getVar(string_vector* values,
     int err = nc_inq_varndims(_file, vid, &vndims);
     if (ndims != vndims) {
         PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Expecting " << ndims << " dimensions for variable '" << name
-                                  << "' but variable only has " << vndims << " dimensions.");
+                     "Expecting " << ndims << " dimensions for variable '" << name << "' but variable only has "
+                                  << vndims << " dimensions.");
     } // if
 
     int dimIds[ndims];
     err = nc_inq_vardimid(_file, vid, dimIds);
     if (err != NC_NOERR) {
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Could not get dimensions for variable '" << name << "'.");
+        PYLITH_ERROR(pylith::exceptions::IOError, "Could not get dimensions for variable '" << name << "'.");
     } // if
 
     int iDim = 0;
@@ -438,9 +432,8 @@ pylith::meshio::ExodusII::getVar(string_vector* values,
     } // if
     if (size_t(dim) != dimSize) {
         PYLITH_ERROR(pylith::exceptions::IOError,
-                     "Expecting dimension " << iDim << " of variable '" << name
-                                            << "' to be " << dim << ", but dimension is " << dimSize
-                                            << ".");
+                     "Expecting dimension " << iDim << " of variable '" << name << "' to be " << dim
+                                            << ", but dimension is " << dimSize << ".");
     } // if
 
     iDim = 1;
@@ -451,20 +444,21 @@ pylith::meshio::ExodusII::getVar(string_vector* values,
     } // if
     const size_t bufferSize = dimSize;
     char* buffer = (bufferSize > 0) ? new char[bufferSize] : 0;
-    size_t indices[2] = { 0, 0 };
-    size_t chunk[2] = { 1, bufferSize };
+    size_t indices[2] = {0, 0};
+    size_t chunk[2] = {1, bufferSize};
     for (int i = 0; i < dim; ++i) {
         indices[0] = i;
         err = nc_get_vara_text(_file, vid, indices, chunk, buffer);
         if (err != NC_NOERR) {
-            delete[] buffer;buffer = 0;
-            PYLITH_ERROR(pylith::exceptions::IOError,
-                         "Could not read string in variable '" << name << "'.");
+            delete[] buffer;
+            buffer = 0;
+            PYLITH_ERROR(pylith::exceptions::IOError, "Could not read string in variable '" << name << "'.");
         } // if
         (*values)[i] = buffer;
         // std::cout << "GROUP: '" << (*values)[i] << "'." << std::endl;
     } // for
-    delete[] buffer;buffer = nullptr;
+    delete[] buffer;
+    buffer = nullptr;
 
     PYLITH_METHOD_END;
 } // getVar

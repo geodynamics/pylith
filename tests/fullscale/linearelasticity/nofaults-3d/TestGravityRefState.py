@@ -1,13 +1,14 @@
 #!/usr/bin/env nemesis
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # @file tests/fullscale/linearelasticity/nofaults-3d/TestGravityRefState.py
 #
 # @brief Test suite for testing pylith with 3-D gravitational body forces with initial stress and no displacement.
@@ -17,6 +18,7 @@ from pylith.testing.FullTestApp import FullTestCase, TestDriver, Check
 import meshes
 import gravity_refstate_soln
 import gravity_refstate_gendb
+
 
 # -------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
@@ -36,14 +38,19 @@ class TestCase(FullTestCase):
             Check(
                 mesh_entities=["upper_crust", "lower_crust"],
                 filename="output/{name}-{mesh_entity}_info.h5",
-                cell_fields = ["density", "bulk_modulus", "shear_modulus",
-                              "gravitational_acceleration", "reference_strain"],
+                cell_fields=[
+                    "density",
+                    "bulk_modulus",
+                    "shear_modulus",
+                    "gravitational_acceleration",
+                    "reference_strain",
+                ],
                 defaults=defaults,
             ),
             Check(
                 mesh_entities=["upper_crust", "lower_crust"],
-                vertex_fields = ["displacement"],
-                cell_fields = ["cauchy_strain", "cauchy_stress"],
+                vertex_fields=["displacement"],
+                cell_fields=["cauchy_strain", "cauchy_stress"],
                 defaults=defaults,
             ),
             Check(

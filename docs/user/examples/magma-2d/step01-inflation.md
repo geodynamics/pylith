@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 1: Magma inflation
 
 ```{include} step01_inflation-synopsis.md
@@ -308,3 +317,5 @@ caption: Compare the results from Step 1 ad 1b using the `plot_compare.py` Pytho
 Vertical displacement and fluid pressure time histories for Step 1 and 1b at locations with the largest changes.
 We find very little difference between the solutions from uniform time stepping (51 time steps) and adaptive time stepping (20 time steps).
 :::
+
+% End of file

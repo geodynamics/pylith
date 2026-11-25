@@ -1,24 +1,25 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/initializers/MeshWriter.hh" // implementation of class methods
 
-#include "pylith/meshio/MeshIO.hh" // HOLDSA MeshIO
 #include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
+#include "pylith/meshio/MeshIO.hh" // HOLDSA MeshIO
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor
-pylith::initializers::MeshWriter::MeshWriter(void) : _writer(nullptr) {}
+pylith::initializers::MeshWriter::MeshWriter(void) : _writer(nullptr) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -58,9 +59,11 @@ pylith::initializers::MeshWriter::run(pylith::topology::Mesh* mesh,
 
     _writer->write(mesh);
 
-    PetscDM dmOrig = mesh->getDM();assert(dmOrig);
+    PetscDM dmOrig = mesh->getDM();
+    assert(dmOrig);
     PetscObjectReference(PetscObject(dmOrig));
-    pylith::topology::Mesh* meshNew = new pylith::topology::Mesh(dmOrig, *mesh);assert(meshNew);
+    pylith::topology::Mesh* meshNew = new pylith::topology::Mesh(dmOrig, *mesh);
+    assert(meshNew);
 
     PYLITH_METHOD_RETURN(meshNew);
 } // run

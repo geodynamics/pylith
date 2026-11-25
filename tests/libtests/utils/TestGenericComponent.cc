@@ -1,19 +1,19 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/utils/GenericComponent.hh" // Test subject
 
-#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 #include "catch2/catch_test_macros.hpp"
 
@@ -22,34 +22,33 @@ namespace pylith {
     namespace utils {
         class TestGenericComponent;
     }
-}
+} // namespace pylith
 
 class pylith::utils::TestGenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test constructor.
-    static
-    void testConstructor(void);
+    static void testConstructor(void);
 
     /// Test name().
-    static
-    void testName(void);
+    static void testName(void);
 
     /// Test PYLITH_JOURNAL_DEBUG(), PYLITH_JOURNAL_INFO(), PYLITH_JOURNAL_ERROR().
-    static
-    void testJournals(void);
+    static void testJournals(void);
 
 }; // class TestGenericComponent
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestGenericComponent::testConstructor", "[TestGenericComponent]") {
+TEST_CASE("TestGenericComponent::testConstructor",
+          "[TestGenericComponent]") {
     pylith::utils::TestGenericComponent::testConstructor();
 }
-TEST_CASE("TestGenericComponent::testName", "[TestGenericComponent]") {
+TEST_CASE("TestGenericComponent::testName",
+          "[TestGenericComponent]") {
     pylith::utils::TestGenericComponent::testName();
 }
-TEST_CASE("TestGenericComponent::testJournals", "[TestGenericComponent]") {
+TEST_CASE("TestGenericComponent::testJournals",
+          "[TestGenericComponent]") {
     pylith::utils::TestGenericComponent::testJournals();
 }
 
@@ -79,12 +78,18 @@ pylith::utils::TestGenericComponent::testName(void) {
 // ------------------------------------------------------------------------------------------------
 void
 pylith::utils::TestGenericComponent::testJournals(void) {
-    pythia::journal::info_t info(pylith::journal::application_flow);info.activate();
-    pythia::journal::info_t info2(pylith::journal::about);info2.activate();
-    pythia::journal::debug_t debug(pylith::journal::mms_test);debug.activate();
-    pythia::journal::warning_t warning(pylith::journal::deprecation);warning.activate();
-    pythia::journal::error_t error(pylith::journal::user_input);error.activate();
-    pythia::journal::error_t error2(pylith::journal::logic);error2.activate();
+    pythia::journal::info_t info(pylith::journal::application_flow);
+    info.activate();
+    pythia::journal::info_t info2(pylith::journal::about);
+    info2.activate();
+    pythia::journal::debug_t debug(pylith::journal::mms_test);
+    debug.activate();
+    pythia::journal::warning_t warning(pylith::journal::deprecation);
+    warning.activate();
+    pythia::journal::error_t error(pylith::journal::user_input);
+    error.activate();
+    pythia::journal::error_t error2(pylith::journal::logic);
+    error2.activate();
 
     PYLITH_INFO_ROOT(pylith::journal::application_flow, "CORRECT: This is an info message.");
     PYLITH_INFO(pylith::journal::about, "CORRECT: This is an info message.");
@@ -94,10 +99,12 @@ pylith::utils::TestGenericComponent::testJournals(void) {
     // CHECK_THROWS_AS() does not seem to work with PYLITH_COMPONENT* macros.
     try {
         PYLITH_ERROR(pylith::exceptions::IOError, "CORRECT: This is an error message.");
-    } catch (const pylith::exceptions::IOError& err) {}
+    } catch (const pylith::exceptions::IOError& err) {
+    }
     try {
         PYLITH_ERROR(pylith::exceptions::InternalLogicError, "CORRECT: This is an error message.");
-    } catch (const pylith::exceptions::InternalLogicError& err) {}
+    } catch (const pylith::exceptions::InternalLogicError& err) {
+    }
 } // testJournals
 
 

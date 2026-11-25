@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-developer-design-overview)=
 # Design overview
 
@@ -20,3 +29,5 @@ Objects that do not have user input, such as the integrators and constraints, ar
 :::{important}
 Consistent inheritance between C++ and Python is important in order for SWIG to generate a Python interface that is consistent with the C++ interface.
 :::
+
+% End of file

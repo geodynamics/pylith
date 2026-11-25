@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 1: Static Uniform Coseismic Slip
 
 % Metadata extracted from parameter files.
@@ -136,7 +145,7 @@ It writes results to a Python script for use in post-processing of simulation re
 The file `eqinfoapp.cfg` holds the parameters for `pylith_eqinfo` in this example.
 By default, `pylith_eqinfo` extracts information for the final time step in the output file.
 In order to compute the seismic moment and moment magnitude, we need the shear modulus, which in this case is uniform over the domain.
-Consquently, we specify the density and shear wave speed using a `UniformDB` in `eqinfoapp.cfg`.
+Consequently, we specify the density and shear wave speed using a `UniformDB` in `eqinfoapp.cfg`.
 
 ```{code-block} console
 ---
@@ -252,3 +261,5 @@ $ pylith step01_slip_cubit.cfg
  -- info (application-flow)
  -- Finalizing problem.
 ```
+
+% End of file

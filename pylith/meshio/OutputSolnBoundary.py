@@ -1,20 +1,19 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from .OutputSoln import OutputSoln
 from .meshio import OutputSolnBoundary as ModuleOutputSolnBoundary
 
 
 def validateLabel(value):
-    """Validate label for group/nodeset/pset.
-    """
+    """Validate label for group/nodeset/pset."""
     if not value.strip():
         raise ValueError("Label for group/nodeset/pset in mesh not specified.")
     return value
@@ -30,8 +29,8 @@ class OutputSolnBoundary(OutputSoln, ModuleOutputSolnBoundary):
 
     Implements `OutputSoln`.
     """
-    DOC_CONFIG = {
-        "cfg": """
+
+    DOC_CONFIG = {"cfg": """
             [observer]
             data_fields = [displacement]
 
@@ -46,25 +45,22 @@ class OutputSolnBoundary(OutputSoln, ModuleOutputSolnBoundary):
             writer.filename = boundary_xpos.h5
 
             output_basis_order = 1
-        """
-    }
+        """}
 
     import pythia.pyre.inventory
 
     labelName = pythia.pyre.inventory.str("label", default="", validator=validateLabel)
-    labelName.meta['tip'] = "Name of label identifier for external boundary."
+    labelName.meta["tip"] = "Name of label identifier for external boundary."
 
     labelValue = pythia.pyre.inventory.int("label_value", default=1)
-    labelValue.meta['tip'] = "Value of label identifier for external boundary (tag of physical group in Gmsh files)."
+    labelValue.meta["tip"] = "Value of label identifier for external boundary (tag of physical group in Gmsh files)."
 
     def __init__(self, name="outputsolnsubset"):
-        """Constructor.
-        """
+        """Constructor."""
         OutputSoln.__init__(self, name)
 
     def preinitialize(self, problem):
-        """Do minimal initialization.
-        """
+        """Do minimal initialization."""
         OutputSoln.preinitialize(self, problem)
         ModuleOutputSolnBoundary.setLabelName(self, self.labelName)
         ModuleOutputSolnBoundary.setLabelValue(self, self.labelValue)
@@ -73,21 +69,19 @@ class OutputSolnBoundary(OutputSoln, ModuleOutputSolnBoundary):
         self.writer.setFilename(problem.defaults.outputDir, problem.defaults.simName, identifier)
 
     def _configure(self):
-        """Set members using inventory.
-        """
+        """Set members using inventory."""
         OutputSoln._configure(self)
 
     def _createModuleObj(self):
-        """Create handle to C++ object.
-        """
+        """Create handle to C++ object."""
         ModuleOutputSolnBoundary.__init__(self)
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
+
 def observer():
-    """Factory associated with OutputSoln.
-    """
+    """Factory associated with OutputSoln."""
     return OutputSolnBoundary()
 
 

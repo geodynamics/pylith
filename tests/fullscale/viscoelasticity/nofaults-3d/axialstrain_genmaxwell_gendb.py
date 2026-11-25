@@ -1,13 +1,14 @@
 #!/usr/bin/env nemesis
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # @file tests/fullscale/viscoelasticity/nofaults-3d/axialstrain_genmaxwell_gendb.py
 #
 # @brief Python script to generate spatial database with displacement
@@ -22,19 +23,17 @@ class GenerateDB(object):
     """
 
     def __init__(self):
-        """Constructor.
-        """
+        """Constructor."""
         return
 
     def run(self):
-        """Generate the database.
-        """
+        """Generate the database."""
         # Domain
         # Extend beyond mesh boundaries to avoid problems with linear interpolations.
         x = numpy.arange(-6000.0, 6000.1, 2000.0)
         y = numpy.arange(-6000.0, 6000.1, 2000.0)
         z = numpy.arange(-10000.0, 2000.1, 2000.0)
-        (x3, y3, z3) = numpy.meshgrid(x, y, z)
+        x3, y3, z3 = numpy.meshgrid(x, y, z)
         nptsX = x.shape[0]
         nptsY = y.shape[0]
         nptsZ = z.shape[0]
@@ -45,31 +44,31 @@ class GenerateDB(object):
         xyz[:, 2] = z3.ravel()
 
         from axialstrain_genmaxwell_soln import AnalyticalSoln
+
         soln = AnalyticalSoln()
         disp = soln.initial_displacement(xyz)
 
         from spatialdata.geocoords.CSCart import CSCart
+
         cs = CSCart()
         cs.inventory.spaceDim = 3
         cs._configure()
         data = {
-            'x': x,
-            'y': y,
-            'z': z,
-            'points': xyz,
-            'coordsys': cs,
-            'data_dim': 3,
-            'values': [{'name': "initial_amplitude_x",
-                        'units': "m",
-                        'data': disp[0, :, 0].ravel()},
-                       {'name': "initial_amplitude_y",
-                        'units': "m",
-                        'data': disp[0, :, 1].ravel()},
-                       {'name': "initial_amplitude_z",
-                        'units': "m",
-                        'data': disp[0, :, 2].ravel()}]}
+            "x": x,
+            "y": y,
+            "z": z,
+            "points": xyz,
+            "coordsys": cs,
+            "data_dim": 3,
+            "values": [
+                {"name": "initial_amplitude_x", "units": "m", "data": disp[0, :, 0].ravel()},
+                {"name": "initial_amplitude_y", "units": "m", "data": disp[0, :, 1].ravel()},
+                {"name": "initial_amplitude_z", "units": "m", "data": disp[0, :, 2].ravel()},
+            ],
+        }
 
         from spatialdata.spatialdb.SimpleGridAscii import SimpleGridAscii
+
         io = SimpleGridAscii()
         io.inventory.filename = "axialstrain_genmaxwell_bc.spatialdb"
         io._configure()

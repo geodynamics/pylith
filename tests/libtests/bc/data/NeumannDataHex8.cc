@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 /* Mesh: hex8b.mesh
  *
@@ -21,50 +21,50 @@
 
 #include "NeumannDataHex8.hh"
 
-const char* pylith::bc::NeumannDataHex8::_meshFilename =
-    "data/hex8b.mesh";
+const char* pylith::bc::NeumannDataHex8::_meshFilename = "data/hex8b.mesh";
 
 const int pylith::bc::NeumannDataHex8::_numBasis = 4;
 const int pylith::bc::NeumannDataHex8::_numQuadPts = 4;
 const PylithScalar pylith::bc::NeumannDataHex8::_quadPts[] = {
-    -0.57735027, -0.57735027,
-    +0.57735027, -0.57735027,
-    +0.57735027, +0.57735027,
-    -0.57735027, +0.57735027,
+    -0.57735027,
+    -0.57735027,
+    +0.57735027,
+    -0.57735027,
+    +0.57735027,
+    +0.57735027,
+    -0.57735027,
+    +0.57735027,
 };
-const PylithScalar pylith::bc::NeumannDataHex8::_quadWts[] = {
-    1.0, 1.0, 1.0, 1.0
-};
+const PylithScalar pylith::bc::NeumannDataHex8::_quadWts[] = {1.0, 1.0, 1.0, 1.0};
 const PylithScalar pylith::bc::NeumannDataHex8::_basis[] = {
-    0.62200847,  0.16666667,  0.0446582,   0.16666667,
-    0.16666667,  0.62200847,  0.16666667,   0.0446582,
-    0.0446582,   0.16666667,  0.62200847,  0.16666667,
-    0.16666667,   0.0446582,  0.16666667,  0.62200847,
+    0.62200847,
+    0.16666667,
+    0.0446582,
+    0.16666667,
+    0.16666667,
+    0.62200847,
+    0.16666667,
+    0.0446582,
+    0.0446582,
+    0.16666667,
+    0.62200847,
+    0.16666667,
+    0.16666667,
+    0.0446582,
+    0.16666667,
+    0.62200847,
 };
 const PylithScalar pylith::bc::NeumannDataHex8::_basisDerivRef[] = {
-    -0.39433757, -0.39433757,
-    +0.39433757, -0.10566243,
-    +0.10566243, +0.10566243,
-    -0.10566243, +0.39433757,
+    -0.39433757, -0.39433757, +0.39433757, -0.10566243, +0.10566243, +0.10566243, -0.10566243, +0.39433757,
 
-    -0.39433757, -0.10566243,
-    +0.39433757, -0.39433757,
-    +0.10566243, +0.39433757,
-    -0.10566243, +0.10566243,
+    -0.39433757, -0.10566243, +0.39433757, -0.39433757, +0.10566243, +0.39433757, -0.10566243, +0.10566243,
 
-    -0.10566243, -0.10566243,
-    +0.10566243, -0.39433757,
-    +0.39433757, +0.39433757,
-    -0.39433757, +0.10566243,
+    -0.10566243, -0.10566243, +0.10566243, -0.39433757, +0.39433757, +0.39433757, -0.39433757, +0.10566243,
 
-    -0.10566243, -0.39433757,
-    +0.10566243, -0.10566243,
-    +0.39433757, +0.10566243,
-    -0.39433757, +0.39433757,
+    -0.10566243, -0.39433757, +0.10566243, -0.10566243, +0.39433757, +0.10566243, -0.39433757, +0.39433757,
 };
 
-const char* pylith::bc::NeumannDataHex8::_spatialDBFilename =
-    "data/hex8b_traction.spatialdb";
+const char* pylith::bc::NeumannDataHex8::_spatialDBFilename = "data/hex8b_traction.spatialdb";
 const int pylith::bc::NeumannDataHex8::_id = 0;
 const char* pylith::bc::NeumannDataHex8::_label = "tractionVerts";
 
@@ -75,30 +75,22 @@ const int pylith::bc::NeumannDataHex8::_numCells = 2;
 const int pylith::bc::NeumannDataHex8::_numCorners = 4;
 /* Now vertices are renumbered in the submesh */
 const int pylith::bc::NeumannDataHex8::_cells[] = {
-    3 /*4*/, 2 /*2*/, 4 /*6*/,  5 /*8*/,
-    5 /*8*/, 4 /*6*/, 6 /*10*/, 7 /*12*/,
+    3 /*4*/,
+    2 /*2*/,
+    4 /*6*/,
+    5 /*8*/,
+    5 /*8*/,
+    4 /*6*/,
+    6 /*10*/,
+    7 /*12*/,
 };
 
-const PylithScalar pylith::bc::NeumannDataHex8::_tractionsCell[] = { 4.0, 0.0, 0.0,
-                                                                     4.0, 0.0, 0.0,
-                                                                     4.0, 0.0, 0.0,
-                                                                     4.0, 0.0, 0.0,
-                                                                     4.0, 0.0, 0.0,
-                                                                     4.0, 0.0, 0.0,
-                                                                     4.0, 0.0, 0.0,
-                                                                     4.0, 0.0, 0.0};
-const PylithScalar pylith::bc::NeumannDataHex8::_valsResidual[] = { 4.0, 0.0, 0.0,
-                                                                    0.0, 0.0, 0.0,
-                                                                    4.0, 0.0, 0.0,
-                                                                    0.0, 0.0, 0.0,
-                                                                    8.0, 0.0, 0.0,
-                                                                    0.0, 0.0, 0.0,
-                                                                    8.0, 0.0, 0.0,
-                                                                    0.0, 0.0, 0.0,
-                                                                    4.0, 0.0, 0.0,
-                                                                    0.0, 0.0, 0.0,
-                                                                    4.0, 0.0, 0.0,
-                                                                    0.0, 0.0, 0.0};
+const PylithScalar pylith::bc::NeumannDataHex8::_tractionsCell[] = {4.0, 0.0, 0.0, 4.0, 0.0, 0.0, 4.0, 0.0,
+                                                                    0.0, 4.0, 0.0, 0.0, 4.0, 0.0, 0.0, 4.0,
+                                                                    0.0, 0.0, 4.0, 0.0, 0.0, 4.0, 0.0, 0.0};
+const PylithScalar pylith::bc::NeumannDataHex8::_valsResidual[] = {
+    4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 8.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    8.0, 0.0, 0.0, 0.0, 0.0, 0.0, 4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 4.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
 pylith::bc::NeumannDataHex8::NeumannDataHex8(void) { // constructor
     meshFilename = const_cast<char*>(_meshFilename);
@@ -127,7 +119,8 @@ pylith::bc::NeumannDataHex8::NeumannDataHex8(void) { // constructor
 } // constructor
 
 
-pylith::bc::NeumannDataHex8::~NeumannDataHex8(void) {}
+pylith::bc::NeumannDataHex8::~NeumannDataHex8(void) {
+}
 
 
 // End of file

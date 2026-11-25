@@ -1,25 +1,18 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
 
-/**
- * @file modulesrc/meshio/OutputSolnBoundary.i
- *
- * @brief Python interface to C++ OutputSolnBoundary object.
- */
 
 namespace pylith {
     namespace meshio {
-        class OutputSolnBoundary: public pylith::meshio::OutputSoln {
+        class OutputSolnBoundary : public pylith::meshio::OutputSoln {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             /// Constructor.
             OutputSolnBoundary(void);
 
@@ -45,8 +38,7 @@ public:
             void verifyConfiguration(const pylith::topology::Field& solution) const;
 
             // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+          protected:
             /** Write solution at time step.
              *
              * @param[in] t Current time.
@@ -59,7 +51,8 @@ protected:
 
         }; // OutputSolnBoundary
 
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
+
 
 // End of file

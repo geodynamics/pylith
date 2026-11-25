@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Rebuilding PETSc and PyLith
 
 For instructions on how to build PyLith from source, please see the [PyLith Installer Documentation](https://pylith-installer.readthedocs.io/en/latest/devenv/index.html).
@@ -130,3 +139,5 @@ make install -C pylith
 # Rerun Python unit tests.
 make check -C tests/pytests
 ```
+
+% End of file

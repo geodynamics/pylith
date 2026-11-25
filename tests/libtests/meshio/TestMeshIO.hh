@@ -1,18 +1,19 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
-#include "pylith/topology/topologyfwd.hh" // USES Mesh
 #include "pylith/meshio/meshiofwd.hh" // USES MeshIO
+#include "pylith/topology/topologyfwd.hh" // USES Mesh
 
 #include "pylith/meshio/MeshBuilder.hh" // HOLDSA Topology, Geometry
 
@@ -20,14 +21,13 @@ namespace pylith {
     namespace meshio {
         class TestMeshIO;
         class TestMeshIO_Data; // test data
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestMeshIO : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestMeshIO(TestMeshIO_Data* data);
 
@@ -41,8 +41,7 @@ public:
     void _checkVals(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     TestMeshIO_Data* _data; ///< Test data.
     pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
 
@@ -51,8 +50,7 @@ protected:
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestMeshIO_Data {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestMeshIO_Data(void);
 
@@ -60,8 +58,7 @@ public:
     ~TestMeshIO_Data(void);
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     pylith::meshio::MeshBuilder::Topology* topology;
     pylith::meshio::MeshBuilder::Geometry* geometry;
 
@@ -84,5 +81,6 @@ public:
 
     std::string filename;
 };
+
 
 // End of file

@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
@@ -20,8 +21,7 @@
 
 class pylith::testing::MMSTest : public pylith::utils::GenericComponent {
     // PUBLIC TYPEDEFS ////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     typedef PetscErrorCode (*solution_fn)(PetscInt /* dim */,
                                           PetscReal /* t */,
                                           const PetscReal /* x */[],
@@ -30,8 +30,7 @@ public:
                                           void* /* ctx */);
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     MMSTest(void);
 
@@ -57,8 +56,7 @@ public:
     void testJacobianFiniteDiff(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Initialize objects for test.
     virtual void _initialize(void);
 
@@ -66,8 +64,7 @@ protected:
     virtual void _setExactSolution(void) = 0;
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     pylith::problems::TimeDependent* _problem; ///< Time-dependent problem.
     pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
     pylith::topology::Field* _solution; ///< Solution field.
@@ -80,5 +77,6 @@ protected:
     bool _allowZeroResidual; ///< Allow residual to be exactly zero.
 
 }; // MMSTest
+
 
 // End of file

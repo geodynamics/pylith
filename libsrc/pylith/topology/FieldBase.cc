@@ -1,20 +1,20 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/topology/FieldBase.hh" // implementation of class methods
 
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/exceptions/error.hh" // USES std::logic_error
 #include "pylith/utils/journals.hh" // USES journal macros
-#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -50,8 +50,7 @@ pylith::topology::FieldBase::vectorFieldString(VectorFieldEnum value) { // vecto
     case MULTI_OTHER:
         return "multi_other";
     default:
-        PYLITH_ERROR(pylith::exceptions::SwitchLogicError,
-                     "Unknown vector field type " << value << ".");
+        PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unknown vector field type " << value << ".");
     } // switch
 } // vectorFieldString
 
@@ -79,8 +78,7 @@ pylith::topology::FieldBase::parseVectorFieldString(const char* value) { // pars
     } else if (0 == strcmp(value, "multi_other")) {
         valueEnum = MULTI_OTHER;
     } else {
-        PYLITH_ERROR(pylith::exceptions::SwitchLogicError,
-                     "Unrecognized vector field string '" << value << "'.");
+        PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unrecognized vector field string '" << value << "'.");
     } // else
 
     return valueEnum;

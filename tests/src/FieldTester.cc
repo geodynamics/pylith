@@ -1,20 +1,20 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "FieldTester.hh" // implementation of class methods
 
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
-#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
@@ -32,12 +32,17 @@ pylith::testing::FieldTester::checkFieldWithDB(const pylith::topology::Field& fi
     PylithReal norm = 0.0;
     PylithReal t = 0.0;
 
-    const PetscDM dmField = field.getDM();REQUIRE(dmField);
+    const PetscDM dmField = field.getDM();
+    REQUIRE(dmField);
     pylith::topology::FieldQuery fieldQuery(field);
     fieldQuery.initializeWithDefaultQueries();
     fieldQuery.openDB(fieldDB, lengthScale);
-    PylithCallPetscRequire(DMPlexComputeL2DiffLocal(dmField, t, fieldQuery._functions, (void**)fieldQuery._contextPtrs,
-                                                    field.getLocalVector(), &norm));
+    PylithCallPetscRequire(DMPlexComputeL2DiffLocal(dmField,
+                                                    t,
+                                                    fieldQuery._functions,
+                                                    (void**)fieldQuery._contextPtrs,
+                                                    field.getLocalVector(),
+                                                    &norm));
     fieldQuery.closeDB(fieldDB);
 
     PYLITH_METHOD_RETURN(norm);

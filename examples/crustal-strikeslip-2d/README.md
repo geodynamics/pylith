@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Examples: Crustal 2D strike-slip faults
 
 This suite of examples simulates 2D (plane strain) quasistatic coseismic deformation
@@ -59,3 +68,5 @@ To run the example:
 # Gmsh
 pylith step02_varslip.cfg
 ```
+
+% End of file

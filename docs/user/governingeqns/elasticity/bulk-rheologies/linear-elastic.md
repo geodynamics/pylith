@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-governingeqns-elasticity-isolinearelasticity)=
 # Linear Isotropic Elastic Models
 
@@ -72,3 +81,5 @@ C_{1122}^{dev} = C_{1133}^{dev} = C_{2233}^{dev} = -\frac{2}{3} \mu, \\
 C_{1212}^{dev} = C_{2323}^{dev} = C_{1313}^{dev} = \mu. \\
 \end{gathered}
 ```
+
+% End of file

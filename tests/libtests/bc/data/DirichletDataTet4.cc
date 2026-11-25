@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 /* Mesh: meshTet4.txt
  *
@@ -30,23 +30,24 @@ const char* pylith::bc::DirichletDataTet4::_label = "bc3";
 
 const int pylith::bc::DirichletDataTet4::_numDOF = 3;
 const int pylith::bc::DirichletDataTet4::_numFixedDOF = 2;
-const int pylith::bc::DirichletDataTet4::_fixedDOF[] = { 1, 2 };
+const int pylith::bc::DirichletDataTet4::_fixedDOF[] = {1, 2};
 
 const int pylith::bc::DirichletDataTet4::_numConstrainedPts = 3;
-const int pylith::bc::DirichletDataTet4::_constrainedPoints[] = { 1, 2, 3 };
+const int pylith::bc::DirichletDataTet4::_constrainedPoints[] = {1, 2, 3};
 
 const PylithScalar pylith::bc::DirichletDataTet4::_tRef = 1.2;
 const PylithScalar pylith::bc::DirichletDataTet4::_valueRate = 4.0;
 const PylithScalar pylith::bc::DirichletDataTet4::_valuesInitial[] = {
-    0.7, 0.2,
-    0.7, 0.2,
-    0.7, 0.2,
+    0.7,
+    0.2,
+    0.7,
+    0.2,
+    0.7,
+    0.2,
 };
 
-const char* pylith::bc::DirichletDataTet4::_meshFilename =
-    "data/tet4.mesh";
-const char* pylith::bc::DirichletDataTet4::_dbFilename =
-    "data/tet4_disp.spatialdb";
+const char* pylith::bc::DirichletDataTet4::_meshFilename = "data/tet4.mesh";
+const char* pylith::bc::DirichletDataTet4::_dbFilename = "data/tet4_disp.spatialdb";
 
 pylith::bc::DirichletDataTet4::DirichletDataTet4(void) { // constructor
     id = _id;
@@ -68,7 +69,8 @@ pylith::bc::DirichletDataTet4::DirichletDataTet4(void) { // constructor
 } // constructor
 
 
-pylith::bc::DirichletDataTet4::~DirichletDataTet4(void) {}
+pylith::bc::DirichletDataTet4::~DirichletDataTet4(void) {
+}
 
 
 // End of file

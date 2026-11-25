@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/initializers/InitializePhase.hh" // ISA InitializePhase
@@ -17,8 +18,7 @@ class pylith::initializers::MeshDistributor : public pylith::initializers::Initi
     friend class TestMeshDistributor;
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     MeshDistributor(void);
 
@@ -44,13 +44,11 @@ public:
                                 const pylith::problems::Problem& problem);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::topology::Distributor* _distributor; ///< Mesh distributor.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     MeshDistributor(const MeshDistributor&); ///< Not implemented
     const MeshDistributor& operator=(const MeshDistributor&); ///< Not implemented
 

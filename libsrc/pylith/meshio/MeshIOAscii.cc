@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -18,15 +18,15 @@
 #include "pylith/utils/array.hh" // USES scalar_array, int_array, string_vector
 #include "spatialdata/utils/LineParser.hh" // USES LineParser
 
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
-#include <iomanip> // USES setw(), setiosflags(), resetiosflags()
-#include <strings.h> // USES strcasecmp()
 #include <cassert> // USES assert()
 #include <fstream> // USES std::ifstream, std::ofstream
+#include <iomanip> // USES setw(), setiosflags(), resetiosflags()
 #include <sstream> // USES std::ostringstream
+#include <strings.h> // USES strcasecmp()
 #include <typeinfo> // USES std::typeid
 
 // ------------------------------------------------------------------------------------------------
@@ -118,9 +118,9 @@ namespace pylith {
                                 const pylith::meshio::MeshBuilder::shape_t faceShape,
                                 const char* name);
 
-        } // _MeshIOAscii
-    } // meshio
-} // pylith
+        } // namespace _MeshIOAscii
+    } // namespace meshio
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 // Constructor
@@ -248,9 +248,13 @@ pylith::meshio::MeshIOAscii::_read(void) {
 
                     std::string name;
                     int_array faceValues;
-                    pylith::meshio::MeshBuilder::shape_t faceShape = pylith::meshio::MeshBuilder::faceShapeFromCellShape(topology.cellShape);
+                    pylith::meshio::MeshBuilder::shape_t faceShape =
+                        pylith::meshio::MeshBuilder::faceShapeFromCellShape(topology.cellShape);
                     _MeshIOAscii::readFaceGroup(&faceValues, &name, parser, faceShape, _useIndexZero);
-                    pylith::meshio::MeshBuilder::setFaceGroupFromCellVertices(_mesh, name.c_str(), faceValues, faceShape);
+                    pylith::meshio::MeshBuilder::setFaceGroupFromCellVertices(_mesh,
+                                                                              name.c_str(),
+                                                                              faceValues,
+                                                                              faceShape);
                 } else {
                     PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError,
                                            "Could not parse '" << token << "' into a mesh setting.");
@@ -268,20 +272,19 @@ pylith::meshio::MeshIOAscii::_read(void) {
                 buffer >> token;
             } // while
             if (token != "}") {
-                PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError,
-                                       "I/O error occurred while parsing mesh tokens.");
+                PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError, "I/O error occurred while parsing mesh tokens.");
             }
         } catch (pylith::exceptions::Error& err) {
-            err.addContext(pylith::exceptions::ErrorMessage() << "Error occurred while reading PyLith mesh ASCII file '" << _filename << "'.\n");
+            err.addContext(pylith::exceptions::ErrorMessage()
+                           << "Error occurred while reading PyLith mesh ASCII file '" << _filename << "'.\n");
             throw;
         } catch (const std::exception& err) {
             PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError,
-                                   "Error occurred while reading PyLith mesh ASCII file '"
-                                   << _filename << "'.\n" << err.what());
+                                   "Error occurred while reading PyLith mesh ASCII file '" << _filename << "'.\n"
+                                                                                           << err.what());
         } catch (...) {
             PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError,
-                                   "Unknown I/O error while reading PyLith mesh ASCII file '"
-                                   << _filename << "'.");
+                                   "Unknown I/O error while reading PyLith mesh ASCII file '" << _filename << "'.");
         } // catch
         filein.close();
     } else {
@@ -308,10 +311,9 @@ pylith::meshio::MeshIOAscii::_write(void) const {
                                "Could not open mesh file '" << _filename << "' for writing.");
     } // if
 
-    fileout
-        << "mesh = {\n"
-        << "  dimension = " << _mesh->getDimension() << "\n"
-        << "  use-index-zero = " << (_useIndexZero ? "true" : "false") << "\n";
+    fileout << "mesh = {\n"
+            << "  dimension = " << _mesh->getDimension() << "\n"
+            << "  use-index-zero = " << (_useIndexZero ? "true" : "false") << "\n";
 
     pylith::meshio::MeshBuilder::Geometry geometry;
     pylith::meshio::MeshBuilder::getVertices(&geometry, *_mesh);
@@ -337,7 +339,8 @@ pylith::meshio::MeshIOAscii::_write(void) const {
     numGroups = groupNames.size();
     for (size_t i = 0; i < numGroups; ++i) {
         int_array faceValues;
-        pylith::meshio::MeshBuilder::shape_t faceShape = pylith::meshio::MeshBuilder::faceShapeFromCellShape(topology.cellShape);
+        pylith::meshio::MeshBuilder::shape_t faceShape =
+            pylith::meshio::MeshBuilder::faceShapeFromCellShape(topology.cellShape);
         pylith::meshio::MeshBuilder::getFaceGroup(&faceValues, *_mesh, groupNames[i].c_str());
         _MeshIOAscii::writeFaceGroup(fileout, faceValues, faceShape, groupNames[i].c_str());
     } // for
@@ -374,8 +377,7 @@ pylith::meshio::_MeshIOAscii::readVertices(pylith::meshio::MeshBuilder::Geometry
         } else if (0 == strcasecmp(token.c_str(), "coordinates")) {
             const int size = (geometry->numVertices) * (geometry->spaceDim);
             if (0 == size) {
-                PYLITH_ERROR(pylith::exceptions::IOError,
-                             "Tokens 'dimension' and 'count' must precede 'coordinates'.");
+                PYLITH_ERROR(pylith::exceptions::IOError, "Tokens 'dimension' and 'count' must precede 'coordinates'.");
             } // if
             geometry->vertices.resize(size);
             int label;
@@ -389,16 +391,14 @@ pylith::meshio::_MeshIOAscii::readVertices(pylith::meshio::MeshBuilder::Geometry
             } // for
             parser.ignore('}');
         } else {
-            PYLITH_ERROR(pylith::exceptions::IOError,
-                         "Could not parse '" << token << "' into a vertices setting.");
+            PYLITH_ERROR(pylith::exceptions::IOError, "Could not parse '" << token << "' into a vertices setting.");
         } // else
         buffer.str(parser.next());
         buffer.clear();
         buffer >> token;
     } // while
     if (token != "}") {
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     "I/O error while parsing vertices.");
+        PYLITH_ERROR(pylith::exceptions::IOError, "I/O error while parsing vertices.");
     } // if
 
     PYLITH_METHOD_END;
@@ -412,14 +412,11 @@ pylith::meshio::_MeshIOAscii::writeVertices(std::ostream& fileout,
                                             const pylith::meshio::MeshBuilder::Geometry& geometry) {
     PYLITH_METHOD_BEGIN;
 
-    fileout
-        << "  vertices = {\n"
-        << "    dimension = " << geometry.spaceDim << "\n"
-        << "    count = " << geometry.numVertices << "\n"
-        << "    coordinates = {\n"
-        << std::resetiosflags(std::ios::fixed)
-        << std::setiosflags(std::ios::scientific)
-        << std::setprecision(6);
+    fileout << "  vertices = {\n"
+            << "    dimension = " << geometry.spaceDim << "\n"
+            << "    count = " << geometry.numVertices << "\n"
+            << "    coordinates = {\n"
+            << std::resetiosflags(std::ios::fixed) << std::setiosflags(std::ios::scientific) << std::setprecision(6);
     for (size_t iVertex = 0, i = 0; iVertex < geometry.numVertices; ++iVertex) {
         fileout << "      ";
         fileout << std::setw(8) << iVertex;
@@ -428,9 +425,8 @@ pylith::meshio::_MeshIOAscii::writeVertices(std::ostream& fileout,
         }
         fileout << "\n";
     } // for
-    fileout
-        << "    }\n"
-        << "  }\n";
+    fileout << "    }\n"
+            << "  }\n";
 
     PYLITH_METHOD_END;
 } // writeVertices
@@ -464,8 +460,7 @@ pylith::meshio::_MeshIOAscii::readCells(pylith::meshio::MeshBuilder::Topology* t
         } else if (0 == strcasecmp(token.c_str(), "simplices")) {
             const int size = (topology->numCells) * (topology->numCorners);
             if (0 == size) {
-                PYLITH_ERROR(pylith::exceptions::IOError,
-                             "Tokens 'num-corners' and 'count' must precede 'cells'.");
+                PYLITH_ERROR(pylith::exceptions::IOError, "Tokens 'num-corners' and 'count' must precede 'cells'.");
             } // if
             topology->cells.resize(size);
             int label;
@@ -485,8 +480,7 @@ pylith::meshio::_MeshIOAscii::readCells(pylith::meshio::MeshBuilder::Topology* t
             parser.ignore('}');
         } else if (0 == strcasecmp(token.c_str(), "material-ids")) {
             if (0 == topology->numCells) {
-                PYLITH_ERROR(pylith::exceptions::IOError,
-                             "Token 'count' must precede 'material-ids'.");
+                PYLITH_ERROR(pylith::exceptions::IOError, "Token 'count' must precede 'material-ids'.");
             } // if
             materialIds->resize(topology->numCells);
             int label = 0;
@@ -501,16 +495,14 @@ pylith::meshio::_MeshIOAscii::readCells(pylith::meshio::MeshBuilder::Topology* t
 
             parser.ignore('}');
         } else {
-            PYLITH_ERROR(pylith::exceptions::IOError,
-                         "Could not parse '" << token << "' into an cells setting.");
+            PYLITH_ERROR(pylith::exceptions::IOError, "Could not parse '" << token << "' into an cells setting.");
         } // else
         buffer.str(parser.next());
         buffer.clear();
         buffer >> token;
     } // while
     if (token != "}") {
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     "I/O error while parsing cells.");
+        PYLITH_ERROR(pylith::exceptions::IOError, "I/O error while parsing cells.");
     } // if
     topology->cellShape = pylith::meshio::MeshBuilder::cellShapeFromCorners(topology->dimension, topology->numCorners);
 
@@ -533,11 +525,10 @@ pylith::meshio::_MeshIOAscii::writeCells(std::ostream& fileout,
                                          const int_array& materialIds) {
     PYLITH_METHOD_BEGIN;
 
-    fileout
-        << "  cells = {\n"
-        << "    count = " << topology.numCells << "\n"
-        << "    num-corners = " << topology.numCorners << "\n"
-        << "    simplices = {\n";
+    fileout << "  cells = {\n"
+            << "    count = " << topology.numCells << "\n"
+            << "    num-corners = " << topology.numCorners << "\n"
+            << "    simplices = {\n";
 
     for (size_t iCell = 0, i = 0; iCell < topology.numCells; ++iCell) {
         fileout << "      " << std::setw(8) << iCell;
@@ -594,8 +585,7 @@ pylith::meshio::_MeshIOAscii::readVertexGroup(int_array* points,
             buffer >> groupSize;
         } else if (0 == strcasecmp(token.c_str(), "indices")) {
             if (-1 == groupSize) {
-                PYLITH_ERROR(pylith::exceptions::IOError,
-                             "Tokens 'count' must precede 'indices'.");
+                PYLITH_ERROR(pylith::exceptions::IOError, "Tokens 'count' must precede 'indices'.");
             } // if
             points->resize(groupSize);
             buffer.str(parser.next());
@@ -611,16 +601,14 @@ pylith::meshio::_MeshIOAscii::readVertexGroup(int_array* points,
             } // while
             parser.ignore('}');
         } else {
-            PYLITH_ERROR(pylith::exceptions::IOError,
-                         "Could not parse '" << token << "' into a group setting.");
+            PYLITH_ERROR(pylith::exceptions::IOError, "Could not parse '" << token << "' into a group setting.");
         } // else
         buffer.str(parser.next());
         buffer.clear();
         buffer >> token;
     } // while
     if (token != "}") {
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     "I/O error while parsing group '" << *name << "'.");
+        PYLITH_ERROR(pylith::exceptions::IOError, "I/O error while parsing group '" << *name << "'.");
     } // if
 
     if (!useIndexZero) {
@@ -639,18 +627,16 @@ pylith::meshio::_MeshIOAscii::writeVertexGroup(std::ostream& fileout,
                                                const char* name) {
     PYLITH_METHOD_BEGIN;
 
-    fileout
-        << "  vertex-group = {\n"
-        << "    name = " << name << "\n"
-        << "    count = " << points.size() << "\n"
-        << "    indices = {\n";
+    fileout << "  vertex-group = {\n"
+            << "    name = " << name << "\n"
+            << "    count = " << points.size() << "\n"
+            << "    indices = {\n";
     for (size_t iPoint = 0; iPoint < points.size(); ++iPoint) {
         fileout << "    " << points[iPoint] << "\n";
     } // for
 
-    fileout
-        << "    }\n"
-        << "  }\n";
+    fileout << "    }\n"
+            << "  }\n";
 
     PYLITH_METHOD_END;
 } // writeVertexGroup
@@ -690,8 +676,7 @@ pylith::meshio::_MeshIOAscii::readFaceGroup(int_array* faceValues,
             buffer >> numFaces;
         } else if (0 == strcasecmp(token.c_str(), "indices")) {
             if (-1 == numFaces) {
-                PYLITH_ERROR(pylith::exceptions::IOError,
-                             "Tokens 'count' must precede 'indices'.");
+                PYLITH_ERROR(pylith::exceptions::IOError, "Tokens 'count' must precede 'indices'.");
             } // if
             const size_t size = numFaces * numFaceValues;
             faceValues->resize(size);
@@ -708,16 +693,14 @@ pylith::meshio::_MeshIOAscii::readFaceGroup(int_array* faceValues,
             } // while
             parser.ignore('}');
         } else {
-            PYLITH_ERROR(pylith::exceptions::IOError,
-                         "Could not parse '" << token << "' into a group setting.");
+            PYLITH_ERROR(pylith::exceptions::IOError, "Could not parse '" << token << "' into a group setting.");
         } // else
         buffer.str(parser.next());
         buffer.clear();
         buffer >> token;
     } // while
     if (token != "}") {
-        PYLITH_ERROR(pylith::exceptions::IOError,
-                     "I/O error while parsing group '" << *name << "'.");
+        PYLITH_ERROR(pylith::exceptions::IOError, "I/O error while parsing group '" << *name << "'.");
     } // if
 
     if (!useIndexZero) {
@@ -741,22 +724,20 @@ pylith::meshio::_MeshIOAscii::writeFaceGroup(std::ostream& fileout,
     assert(0 == faceValues.size() % numFaceValues);
     const size_t numFaces = faceValues.size() / numFaceValues;
 
-    fileout
-        << "  face-group = {\n"
-        << "    name = " << name << "\n"
-        << "    count = " << numFaces << "\n"
-        << "    indices = {\n";
+    fileout << "  face-group = {\n"
+            << "    name = " << name << "\n"
+            << "    count = " << numFaces << "\n"
+            << "    indices = {\n";
     for (size_t iFace = 0; iFace < numFaces; ++iFace) {
         fileout << "    ";
         for (size_t iValue = 0; iValue < numFaceValues; ++iValue) {
-            fileout << "  " << faceValues[numFaceValues*iFace+iValue];
+            fileout << "  " << faceValues[numFaceValues * iFace + iValue];
         } // for
         fileout << "\n";
     } // for
 
-    fileout
-        << "    }\n"
-        << "  }\n";
+    fileout << "    }\n"
+            << "  }\n";
 
     PYLITH_METHOD_END;
 } // writeFaceGroup

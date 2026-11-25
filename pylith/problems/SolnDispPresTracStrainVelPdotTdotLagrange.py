@@ -1,12 +1,13 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # @file pylith/problems/SolnDispPresTracStrainVelPdotTdotLagrange.py
 #
 # @brief Python subfields container with displacement, pore pressure, and trace strain subfields, along with their time derivatives.
@@ -17,54 +18,57 @@ from .Solution import Solution as SolutionBase
 
 class SolnDispPresTracStrainVelPdotTdotLagrange(Component):
     """
-        Python solution field with displacement, pressure, and trace strain subfields, along with their time derivatives, and a lagrange fault.
+    Python solution field with displacement, pressure, and trace strain subfields, along with their time derivatives, and a lagrange fault.
     """
-    DOC_CONFIG = {
-        "cfg": """
+
+    DOC_CONFIG = {"cfg": """
             [pylithapp.problem]
             solution = pylith.problems.SolnDispPresTracStrainVelPdotTdotLagrange
-        """
-    }
+        """}
 
     import pythia.pyre.inventory
 
     from .SubfieldDisplacement import SubfieldDisplacement
-    displacement = pythia.pyre.inventory.facility(
-        "displacement", family="soln_subfield", factory=SubfieldDisplacement)
-    displacement.meta['tip'] = "Displacement subfield."
+
+    displacement = pythia.pyre.inventory.facility("displacement", family="soln_subfield", factory=SubfieldDisplacement)
+    displacement.meta["tip"] = "Displacement subfield."
 
     from .SubfieldPressure import SubfieldPressure
-    pressure = pythia.pyre.inventory.facility(
-        "pressure", family="soln_subfield", factory=SubfieldPressure)
-    pressure.meta['tip'] = "Pressure subfield."
+
+    pressure = pythia.pyre.inventory.facility("pressure", family="soln_subfield", factory=SubfieldPressure)
+    pressure.meta["tip"] = "Pressure subfield."
 
     from .SubfieldTraceStrain import SubfieldTraceStrain
-    traceStrain = pythia.pyre.inventory.facility(
-        "trace_strain", family="soln_subfield", factory=SubfieldTraceStrain)
-    traceStrain.meta['tip'] = "Trace strain subfield."
+
+    traceStrain = pythia.pyre.inventory.facility("trace_strain", family="soln_subfield", factory=SubfieldTraceStrain)
+    traceStrain.meta["tip"] = "Trace strain subfield."
 
     from .SubfieldVelocity import SubfieldVelocity
-    velocity = pythia.pyre.inventory.facility(
-        "velocity", family="soln_subfield", factory=SubfieldVelocity)
-    velocity.meta['tip'] = "Velocity subfield."
+
+    velocity = pythia.pyre.inventory.facility("velocity", family="soln_subfield", factory=SubfieldVelocity)
+    velocity.meta["tip"] = "Velocity subfield."
 
     from .SubfieldPressureDot import SubfieldPressureDot
-    pressureT = pythia.pyre.inventory.facility(
-        "pressure_t", family="soln_subfield", factory=SubfieldPressureDot)
-    pressureT.meta['tip'] = "PressureT subfield."
+
+    pressureT = pythia.pyre.inventory.facility("pressure_t", family="soln_subfield", factory=SubfieldPressureDot)
+    pressureT.meta["tip"] = "PressureT subfield."
 
     from .SubfieldTraceStrainDot import SubfieldTraceStrainDot
+
     traceStrainT = pythia.pyre.inventory.facility(
-        "trace_strain_t", family="soln_subfield", factory=SubfieldTraceStrainDot)
-    traceStrainT.meta['tip'] = "TraceStrainT subfield."
+        "trace_strain_t", family="soln_subfield", factory=SubfieldTraceStrainDot
+    )
+    traceStrainT.meta["tip"] = "TraceStrainT subfield."
 
     from .SubfieldLagrangeFault import SubfieldLagrangeFault
-    lagrangeFault = pythia.pyre.inventory.facility("lagrange_multiplier_fault", family="soln_subfield", factory=SubfieldLagrangeFault)
-    lagrangeFault.meta['tip'] = "Fault Lagrange multiplier subfield."
+
+    lagrangeFault = pythia.pyre.inventory.facility(
+        "lagrange_multiplier_fault", family="soln_subfield", factory=SubfieldLagrangeFault
+    )
+    lagrangeFault.meta["tip"] = "Fault Lagrange multiplier subfield."
 
     def __init__(self, name="solndispprestracstrainvelpdottdotlagrange"):
-        """Constructor.
-        """
+        """Constructor."""
         Component.__init__(self, name, facility="soln_subfields")
 
     def _configure(self):
@@ -75,25 +79,36 @@ class SolnDispPresTracStrainVelPdotTdotLagrange(Component):
         components() to ensure order is [displacement, pressure, trace_strain, velocity, pressure_t, trace_strain_t, lagrange_multiplier_fault].
 
         """
-        return [self.displacement, self.pressure, self.traceStrain, self.velocity, self.pressureT, self.traceStrainT, self.lagrangeFault]
+        return [
+            self.displacement,
+            self.pressure,
+            self.traceStrain,
+            self.velocity,
+            self.pressureT,
+            self.traceStrainT,
+            self.lagrangeFault,
+        ]
 
 
 class Solution(SolutionBase):
-    """Python solution field with displacement, pressure, and trace strain subfields, along with their time derivatives, and a lagrange fault.
-    """
+    """Python solution field with displacement, pressure, and trace strain subfields, along with their time derivatives, and a lagrange fault."""
 
     import pythia.pyre.inventory
 
     from .SolutionSubfield import subfieldFactory
+
     subfields = pythia.pyre.inventory.facilityArray(
-        "subfields", family="soln_subfields", itemFactory=subfieldFactory, factory=SolnDispPresTracStrainVelPdotTdotLagrange)
-    subfields.meta['tip'] = "Subfields in solution."
+        "subfields",
+        family="soln_subfields",
+        itemFactory=subfieldFactory,
+        factory=SolnDispPresTracStrainVelPdotTdotLagrange,
+    )
+    subfields.meta["tip"] = "Subfields in solution."
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 def solution():
-    """Factory associated with Solution.
-    """
+    """Factory associated with Solution."""
     return Solution()
 
 

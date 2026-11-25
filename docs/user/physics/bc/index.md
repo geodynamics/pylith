@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-physics-boundary-conditions)=
 # Boundary Conditions
 
@@ -21,7 +30,7 @@ that is, surfaces must be connected and not contain holes.
 ## Arrays of boundary condition components
 
 A dynamic array of boundary condition components associates a name (string) with each boundary condition. The default boundary condition for each component in the array is `DirichletTimeDependent`.
-Other boundary conditions can be bound to the named items in the array by assining the component type to the named boundary condition.
+Other boundary conditions can be bound to the named items in the array by assigning the component type to the named boundary condition.
 
 ```{code-block} cfg
 ---
@@ -51,3 +60,5 @@ absorbing-dampers.md
 :::{seealso}
 See {ref}`sec-user-governing-eqns` for the derivation of the finite-element formulation for each of the boundary conditions.
 :::
+
+% End of file

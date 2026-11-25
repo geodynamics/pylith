@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 import unittest
 
@@ -20,51 +20,52 @@ import pylith.problems.SubfieldTemperature
 import pylith.problems.SubfieldTraceStrain
 import pylith.problems.SubfieldVelocity
 
+
 class TestSolutionSubfield(TestComponent):
-    """Unit testing of SolutionSubfield object.
-    """
+    """Unit testing of SolutionSubfield object."""
+
     _class = pylith.problems.SolutionSubfield.SolutionSubfield
     _factory = pylith.problems.SolutionSubfield.soln_subfield
 
 
 class TestSubfieldDisplacement(TestComponent):
-    """Unit testing of SubfieldDisplacement object.
-    """
+    """Unit testing of SubfieldDisplacement object."""
+
     _class = pylith.problems.SubfieldDisplacement.SubfieldDisplacement
     _factory = pylith.problems.SubfieldDisplacement.soln_subfield
 
 
 class TestSubfieldLagrangeFault(TestComponent):
-    """Unit testing of SubfieldLagrangeFault object.
-    """
+    """Unit testing of SubfieldLagrangeFault object."""
+
     _class = pylith.problems.SubfieldLagrangeFault.SubfieldLagrangeFault
     _factory = pylith.problems.SubfieldLagrangeFault.soln_subfield
 
 
 class TestSubfieldPressure(TestComponent):
-    """Unit testing of SubfieldPressure object.
-    """
+    """Unit testing of SubfieldPressure object."""
+
     _class = pylith.problems.SubfieldPressure.SubfieldPressure
     _factory = pylith.problems.SubfieldPressure.soln_subfield
 
 
 class TestSubfieldTemperature(TestComponent):
-    """Unit testing of SubfieldTemperature object.
-    """
+    """Unit testing of SubfieldTemperature object."""
+
     _class = pylith.problems.SubfieldTemperature.SubfieldTemperature
     _factory = pylith.problems.SubfieldTemperature.soln_subfield
 
 
 class TestSubfieldTraceStrain(TestComponent):
-    """Unit testing of SubfieldTraceStrain object.
-    """
+    """Unit testing of SubfieldTraceStrain object."""
+
     _class = pylith.problems.SubfieldTraceStrain.SubfieldTraceStrain
     _factory = pylith.problems.SubfieldTraceStrain.soln_subfield
 
 
 class TestSubfieldVelocity(TestComponent):
-    """Unit testing of SubfieldVelocity object.
-    """
+    """Unit testing of SubfieldVelocity object."""
+
     _class = pylith.problems.SubfieldVelocity.SubfieldVelocity
     _factory = pylith.problems.SubfieldVelocity.soln_subfield
 

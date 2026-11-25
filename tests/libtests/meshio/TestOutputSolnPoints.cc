@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -14,20 +14,20 @@
 
 #include "pylith/meshio/OutputSolnPoints.hh"
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/meshio/MeshIOCubit.hh" // USES MeshIOCubit
+#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VisitorMesh
-#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
-#include "pylith/meshio/MeshIOCubit.hh" // USES MeshIOCubit
 
-#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
-#include "data/OutputSolnPointsDataTri3.hh"
+#include "data/OutputSolnPointsDataHex8.hh"
 #include "data/OutputSolnPointsDataQuad4.hh"
 #include "data/OutputSolnPointsDataTet4.hh"
-#include "data/OutputSolnPointsDataHex8.hh"
+#include "data/OutputSolnPointsDataTri3.hh"
 
 #include <string.h> // USES strcmp()
 
@@ -169,7 +169,8 @@ pylith::meshio::TestOutputSolnPoints::testInterpolateHex8(void) { // testInterpo
 // ----------------------------------------------------------------------
 // Test setupInterpolator().
 void
-pylith::meshio::TestOutputSolnPoints::_testSetupInterpolator(const OutputSolnPointsData& data) { // _testSetupInterpolator
+pylith::meshio::TestOutputSolnPoints::_testSetupInterpolator(
+    const OutputSolnPointsData& data) { // _testSetupInterpolator
     PYLITH_METHOD_BEGIN;
 
     const int numPoints = data.numPoints;
@@ -193,7 +194,8 @@ pylith::meshio::TestOutputSolnPoints::_testSetupInterpolator(const OutputSolnPoi
     CPPUNIT_ASSERT(data.points);
     output.setupInterpolator(&mesh, data.points, numPoints, spaceDim, data.names, numPoints, scales);
 
-    PetscDM dmMesh = output.pointsMesh().dmMesh();CPPUNIT_ASSERT(dmMesh);
+    PetscDM dmMesh = output.pointsMesh().dmMesh();
+    CPPUNIT_ASSERT(dmMesh);
 
     // Check vertices
     topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
@@ -211,7 +213,7 @@ pylith::meshio::TestOutputSolnPoints::_testSetupInterpolator(const OutputSolnPoi
     const PetscInt cEnd = cellsStratum.end();
     CPPUNIT_ASSERT_EQUAL(numCellsE, cellsStratum.size());
     for (PetscInt c = cStart, index = 0; c < cEnd; ++c) {
-        const PetscInt *cone = NULL;
+        const PetscInt* cone = NULL;
         PetscInt coneSize = 0;
 
         PylithCallPetsc(DMPlexGetConeSize(dmMesh, c, &coneSize));
@@ -220,7 +222,7 @@ pylith::meshio::TestOutputSolnPoints::_testSetupInterpolator(const OutputSolnPoi
         CPPUNIT_ASSERT_EQUAL(numCornersE, coneSize);
 
         for (PetscInt p = 0; p < coneSize; ++p, ++index) {
-            const int coneE = numCellsE+index;
+            const int coneE = numCellsE + index;
             CPPUNIT_ASSERT_EQUAL(coneE, cone[p]);
         } // for
     } // for
@@ -275,9 +277,11 @@ pylith::meshio::TestOutputSolnPoints::_testInterpolate(const OutputSolnPointsDat
     fieldInterpE.allocate();
     this->_calcField(&fieldInterpE, data);
 
-    PetscDM pointsMeshDM = output.pointsMesh().dmMesh();CPPUNIT_ASSERT(pointsMeshDM);
+    PetscDM pointsMeshDM = output.pointsMesh().dmMesh();
+    CPPUNIT_ASSERT(pointsMeshDM);
     PylithCallPetsc(DMInterpolationSetDof(output._interpolator, fiberDim));
-    PylithCallPetsc(DMInterpolationEvaluate(output._interpolator, field.dmMesh(), field.localVector(), fieldInterp.localVector()));
+    PylithCallPetsc(
+        DMInterpolationEvaluate(output._interpolator, field.dmMesh(), field.localVector(), fieldInterp.localVector()));
 
     // Check interpolated field
     topology::Stratum verticesStratum(pointsMeshDM, topology::Stratum::DEPTH, 0);
@@ -285,10 +289,12 @@ pylith::meshio::TestOutputSolnPoints::_testInterpolate(const OutputSolnPointsDat
     const PetscInt vEnd = verticesStratum.end();
 
     topology::VecVisitorMesh fieldInterpVisitor(fieldInterp);
-    PetscScalar* fieldInterpArray = fieldInterpVisitor.localArray();CPPUNIT_ASSERT(fieldInterpArray);
+    PetscScalar* fieldInterpArray = fieldInterpVisitor.localArray();
+    CPPUNIT_ASSERT(fieldInterpArray);
 
     topology::VecVisitorMesh fieldInterpEVisitor(fieldInterpE);
-    PetscScalar* fieldInterpEArray = fieldInterpEVisitor.localArray();CPPUNIT_ASSERT(fieldInterpEArray);
+    PetscScalar* fieldInterpEArray = fieldInterpEVisitor.localArray();
+    CPPUNIT_ASSERT(fieldInterpEArray);
 
     const double tolerance = 1.0e-6;
     for (PetscInt v = vStart; v < vEnd; ++v) {
@@ -299,10 +305,10 @@ pylith::meshio::TestOutputSolnPoints::_testInterpolate(const OutputSolnPointsDat
         CPPUNIT_ASSERT_EQUAL(fiberDim, fieldInterpEVisitor.sectionDof(v));
 
         for (PetscInt d = 0; d < fiberDim; ++d) {
-            const PylithScalar valueE = fieldInterpEArray[offE+d];
-            const PylithScalar value = fieldInterpArray[off+d];
+            const PylithScalar valueE = fieldInterpEArray[offE + d];
+            const PylithScalar value = fieldInterpArray[off + d];
             if (fabs(valueE) > 1.0) {
-                CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0,  value / valueE, tolerance);
+                CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, value / valueE, tolerance);
             } else {
                 CPPUNIT_ASSERT_DOUBLES_EQUAL(valueE, value, tolerance);
             } // else
@@ -327,10 +333,12 @@ pylith::meshio::TestOutputSolnPoints::_calcField(pylith::topology::Field* field,
     const PetscInt vEnd = verticesStratum.end();
 
     pylith::topology::VecVisitorMesh fieldVisitor(*field);
-    PylithScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);
+    PylithScalar* fieldArray = fieldVisitor.localArray();
+    CPPUNIT_ASSERT(fieldArray);
 
     pylith::topology::CoordsVisitor coordsVisitor(mesh.dmMesh());
-    PylithScalar* coordsArray = coordsVisitor.localArray();CPPUNIT_ASSERT(coordsArray);
+    PylithScalar* coordsArray = coordsVisitor.localArray();
+    CPPUNIT_ASSERT(coordsArray);
 
     const PetscInt fiberDim = data.fiberDim;
     const PetscInt spaceDim = data.spaceDim;
@@ -345,10 +353,10 @@ pylith::meshio::TestOutputSolnPoints::_calcField(pylith::topology::Field* field,
         for (PetscInt d = 0; d < fiberDim; ++d, ++index) {
             PylithScalar value = 0.0;
             for (PetscInt iv = 0; iv < spaceDim; ++iv) {
-                const PetscInt ic = d*spaceDim + iv;
-                value += data.coefs[ic]*coordsArray[coff+iv];
+                const PetscInt ic = d * spaceDim + iv;
+                value += data.coefs[ic] * coordsArray[coff + iv];
             } // for
-            fieldArray[foff+d] = value;
+            fieldArray[foff + d] = value;
         } // for
     } // for
 

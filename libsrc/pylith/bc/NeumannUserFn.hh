@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/bc/BoundaryCondition.hh" // ISA BoundaryCondition
@@ -17,8 +18,7 @@ class pylith::bc::NeumannUserFn : public pylith::bc::BoundaryCondition {
     friend class TestNeumannUserFn; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     NeumannUserFn(void);
 
@@ -65,8 +65,7 @@ public:
                                                   const pylith::topology::Mesh& domainMesh);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get auxiliary factory associated with physics.
      *
      * @return Auxiliary factory for physics object.
@@ -74,16 +73,15 @@ protected:
     pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     PetscBdPointFn* _fn; ///< Kernel for boundary integration.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     NeumannUserFn(const NeumannUserFn&); ///< Not implemented.
     const NeumannUserFn& operator=(const NeumannUserFn&); ///< Not implemented.
 
 }; // class NeumannUserFn
+
 
 // End of file

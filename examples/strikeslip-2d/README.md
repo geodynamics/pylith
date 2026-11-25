@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Examples: 2D Strike-Slip Fault
 
 This suite of examples demonstrates some basic concepts of using
@@ -50,3 +59,5 @@ To run the example:
 ```bash
 pylith step03_multislip_velbc.cfg
 ```
+
+% End of file

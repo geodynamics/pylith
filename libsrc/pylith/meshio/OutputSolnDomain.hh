@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/meshio/meshiofwd.hh" // forward declarations
@@ -18,8 +19,7 @@ class pylith::meshio::OutputSolnDomain : public pylith::meshio::OutputSoln {
     friend class TestOutputSolnDomain; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     OutputSolnDomain(void);
 
@@ -27,8 +27,7 @@ public:
     virtual ~OutputSolnDomain(void);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Write solution at time step.
      *
      * @param[in] t Current time.
@@ -40,11 +39,11 @@ protected:
                         const pylith::topology::Field& solution);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     OutputSolnDomain(const OutputSolnDomain&); ///< Not implemented.
     const OutputSolnDomain& operator=(const OutputSolnDomain&); ///< Not implemented
 
 }; // OutputSolnDomain
+
 
 // End of file

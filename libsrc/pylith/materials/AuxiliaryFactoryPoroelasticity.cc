@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -17,8 +17,8 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
 
-#include "pylith/scales/Scales.hh" // USES Scales
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
@@ -35,7 +35,8 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::AuxiliaryFactoryPoroelasticit
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::materials::AuxiliaryFactoryPoroelasticity::~AuxiliaryFactoryPoroelasticity(void) {}
+pylith::materials::AuxiliaryFactoryPoroelasticity::~AuxiliaryFactoryPoroelasticity(void) {
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -46,11 +47,7 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addBodyForce(void) {
     PYLITH_DEBUG(pylith::journal::application_flow, "addBodyForce(void)");
 
     const char* subfieldName = "body_force";
-    const char* componentNames[3] = {
-        "body_force_x",
-        "body_force_y",
-        "body_force_z"
-    };
+    const char* componentNames[3] = {"body_force_x", "body_force_y", "body_force_z"};
 
     const PylithReal bodyForceScale = pylith::scales::ElasticityScales::getBodyForceScale(*_scales);
 
@@ -81,11 +78,9 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addGravityField(spatialdata::
     PYLITH_DEBUG(pylith::journal::application_flow, "addGravityField(void)");
 
     const char* subfieldName = "gravitational_acceleration";
-    const char* componentNames[3] = {
-        "gravitational_acceleration_x",
-        "gravitational_acceleration_y",
-        "gravitational_acceleration_z"
-    };
+    const char* componentNames[3] = {"gravitational_acceleration_x",
+                                     "gravitational_acceleration_y",
+                                     "gravitational_acceleration_z"};
     const PylithReal accelerationScale = pylith::scales::ElasticityScales::getAccelerationScale(*_scales);
 
     pylith::topology::Field::Description description;

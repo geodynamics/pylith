@@ -1,26 +1,27 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/initializers/MeshDistributor.hh" // implementation of class methods
 
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
+#include "pylith/problems/Problem.hh" // USES Problem
 #include "pylith/topology/Distributor.hh" // HOLDSA Distributor
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/problems/Problem.hh" // USES Problem
-#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor
-pylith::initializers::MeshDistributor::MeshDistributor(void) : _distributor(nullptr) {}
+pylith::initializers::MeshDistributor::MeshDistributor(void) : _distributor(nullptr) {
+}
 
 
 // ------------------------------------------------------------------------------------------------

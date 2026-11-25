@@ -1,22 +1,22 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 
 // ----------------------------------------------------------------------
 // Default constructor.
-inline
-pylith::topology::Stratum::Stratum(const PetscDM dmMesh,
-                                   const StratumEnum stype,
-                                   const int level) {
+inline pylith::topology::Stratum::Stratum(const PetscDM dmMesh,
+                                          const StratumEnum stype,
+                                          const int level) {
     assert(dmMesh);
     switch (stype) {
     case HEIGHT:
@@ -35,8 +35,7 @@ pylith::topology::Stratum::Stratum(const PetscDM dmMesh,
 
 // ----------------------------------------------------------------------
 // Default destructor
-inline
-pylith::topology::Stratum::~Stratum(void) {
+inline pylith::topology::Stratum::~Stratum(void) {
     _begin = 0;
     _end = 0;
 } // destructor
@@ -44,8 +43,7 @@ pylith::topology::Stratum::~Stratum(void) {
 
 // ----------------------------------------------------------------------
 // Get starting point.
-inline
-PetscInt
+inline PetscInt
 pylith::topology::Stratum::begin(void) const {
     return _begin;
 } // begin
@@ -53,8 +51,7 @@ pylith::topology::Stratum::begin(void) const {
 
 // ----------------------------------------------------------------------
 // Get ending point.
-inline
-PetscInt
+inline PetscInt
 pylith::topology::Stratum::end(void) const { // end
     return _end;
 } // end
@@ -62,20 +59,18 @@ pylith::topology::Stratum::end(void) const { // end
 
 // ----------------------------------------------------------------------
 // Get number of points in stratum.
-inline
-PetscInt
+inline PetscInt
 pylith::topology::Stratum::size(void) const { // size
-    return _end-_begin;
+    return _end - _begin;
 } // size
 
 
 // ----------------------------------------------------------------------
 // Default constructor.
-inline
-pylith::topology::StratumIS::StratumIS(const PetscDM dmMesh,
-                                       const char* label,
-                                       const int id,
-                                       const bool includeOnlyCells) :
+inline pylith::topology::StratumIS::StratumIS(const PetscDM dmMesh,
+                                              const char* label,
+                                              const int id,
+                                              const bool includeOnlyCells) :
     _indexSet(0),
     _size(0),
     _points(0) { // constructor
@@ -88,55 +83,61 @@ pylith::topology::StratumIS::StratumIS(const PetscDM dmMesh,
         const PetscInt* points = NULL;
         PylithCallPetsc(DMGetStratumIS(dmMesh, label, id, &pointsIS));
         if (pointsIS) {
-            PylithCallPetsc(ISGetSize(pointsIS, &numPoints));assert(numPoints >= 0);
-            PylithCallPetsc(ISGetIndices(pointsIS, &points));assert(!numPoints || points);
+            PylithCallPetsc(ISGetSize(pointsIS, &numPoints));
+            assert(numPoints >= 0);
+            PylithCallPetsc(ISGetIndices(pointsIS, &points));
+            assert(!numPoints || points);
             PetscInt cStart, cEnd;
             PylithCallPetsc(DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd));
             PetscInt* cells = (numPoints > 0) ? new PetscInt[numPoints] : 0;
             PetscInt count = 0;
             for (PetscInt i = 0; i < numPoints; ++i) {
-                if ((points[i] >= cStart) && (points[i] < cEnd) ) {
+                if ((points[i] >= cStart) && (points[i] < cEnd)) {
                     cells[count++] = points[i];
                 } // if
             } // for
             PylithCallPetsc(ISCreateGeneral(PETSC_COMM_SELF, count, cells, PETSC_COPY_VALUES, &_indexSet));
-            delete[] cells;cells = 0;
-            PylithCallPetsc(ISRestoreIndices(pointsIS, &points));_points = NULL;
-            PylithCallPetsc(ISDestroy(&pointsIS));assert(!pointsIS);
+            delete[] cells;
+            cells = 0;
+            PylithCallPetsc(ISRestoreIndices(pointsIS, &points));
+            _points = NULL;
+            PylithCallPetsc(ISDestroy(&pointsIS));
+            assert(!pointsIS);
         } // if
     } // if/else
 
     if (_indexSet) {
-        PylithCallPetsc(ISGetSize(_indexSet, &_size));assert(_size >= 0);
-        PylithCallPetsc(ISGetIndices(_indexSet, &_points));assert(!_size || _points);
+        PylithCallPetsc(ISGetSize(_indexSet, &_size));
+        assert(_size >= 0);
+        PylithCallPetsc(ISGetIndices(_indexSet, &_points));
+        assert(!_size || _points);
     } // if
 } // constructor
 
 
 // ----------------------------------------------------------------------
 // Default destructor.
-inline
-pylith::topology::StratumIS::~StratumIS(void) { // destructor
+inline pylith::topology::StratumIS::~StratumIS(void) { // destructor
     deallocate();
 } // destructor
 
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc data structures.
-inline
-void
+inline void
 pylith::topology::StratumIS::deallocate(void) { // deallocate
     if (_indexSet) {
-        PylithCallPetsc(ISRestoreIndices(_indexSet, &_points));_points = NULL;
-        PylithCallPetsc(ISDestroy(&_indexSet));assert(!_indexSet);
+        PylithCallPetsc(ISRestoreIndices(_indexSet, &_points));
+        _points = NULL;
+        PylithCallPetsc(ISDestroy(&_indexSet));
+        assert(!_indexSet);
     } // if
 } // deallocate
 
 
 // ----------------------------------------------------------------------
 // Get array of points.
-inline
-const PetscInt*
+inline const PetscInt*
 pylith::topology::StratumIS::points(void) const { // points
     return _points;
 } // points
@@ -144,8 +145,7 @@ pylith::topology::StratumIS::points(void) const { // points
 
 // ----------------------------------------------------------------------
 // Get number of points in index set.
-inline
-PetscInt
+inline PetscInt
 pylith::topology::StratumIS::size(void) const { // size
     return _size;
 } // size

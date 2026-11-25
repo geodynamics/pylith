@@ -1,12 +1,13 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # @file pylith/materials/AuxSubfieldsAbsorbingDampers.py
 #
 # @brief Python container for absorbing dampers subfields.
@@ -18,6 +19,7 @@ class AuxSubfieldsAbsorbingDampers(Component):
     """
     Auxiliary subfields for the absorbing dampers boundary condition.
     """
+
     DOC_CONFIG = {
         "cfg": """
             [absorbing_dampers_auxiliary_subfields]
@@ -32,19 +34,18 @@ class AuxSubfieldsAbsorbingDampers(Component):
     from pylith.topology.Subfield import Subfield
 
     density = pythia.pyre.inventory.facility("density", family="auxiliary_subfield", factory=Subfield)
-    density.meta['tip'] = "Mass density subfield."
+    density.meta["tip"] = "Mass density subfield."
 
     vs = pythia.pyre.inventory.facility("vs", family="auxiliary_subfield", factory=Subfield)
-    vs.meta['tip'] = "Shear (S) wave speed subfield."
+    vs.meta["tip"] = "Shear (S) wave speed subfield."
 
     vp = pythia.pyre.inventory.facility("vp", family="auxiliary_subfield", factory=Subfield)
-    vp.meta['tip'] = "Dilatational (P) wave speed subfield."
+    vp.meta["tip"] = "Dilatational (P) wave speed subfield."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="auxsubfieldsabsorbingdampers"):
-        """Constructor.
-        """
+        """Constructor."""
         Component.__init__(self, name, facility="auxiliary_subfields")
         return
 
@@ -57,9 +58,9 @@ class AuxSubfieldsAbsorbingDampers(Component):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
+
 def auxiliary_subfields():
-    """Factory associated with AuxSubfieldsAbsorbingDampers.
-    """
+    """Factory associated with AuxSubfieldsAbsorbingDampers."""
     return AuxSubfieldsAbsorbingDampers()
 
 

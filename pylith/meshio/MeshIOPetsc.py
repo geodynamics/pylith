@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 import pathlib
 
@@ -25,33 +25,34 @@ class MeshIOPetsc(MeshIOObj, ModuleMeshIOPetsc):
 
     Implements `MeshIOObj`.
     """
-    DOC_CONFIG = {
-        "cfg": """
+
+    DOC_CONFIG = {"cfg": """
             [pylithapp.problem.mesh_initializer.phases.read_mesh.reader]
             filename = mesh_quad.msh
             gmsh_mark_vertices = False
             coordsys.space_dim = 2
-        """
-    }
+        """}
 
     import pythia.pyre.inventory
 
     filename = pythia.pyre.inventory.str("filename", default="")
-    filename.meta['tip'] = "Name of mesh file for reading with PETSc."
+    filename.meta["tip"] = "Name of mesh file for reading with PETSc."
 
     gmshMarkRecursive = pythia.pyre.inventory.bool("gmsh_mark_recursive", default=False)
-    gmshMarkRecursive.meta['tip'] = "Gmsh file marks faces, edges, and vertices rather than just faces (3D) or edges (2D)."
+    gmshMarkRecursive.meta["tip"] = (
+        "Gmsh file marks faces, edges, and vertices rather than just faces (3D) or edges (2D)."
+    )
 
     prefix = pythia.pyre.inventory.str("options_prefix", default="")
-    prefix.meta['tip'] = "Name of PETSc options prefix for this mesh."
+    prefix.meta["tip"] = "Name of PETSc options prefix for this mesh."
 
     from spatialdata.geocoords.CSCart import CSCart
+
     coordsys = pythia.pyre.inventory.facility("coordsys", family="coordsys", factory=CSCart)
-    coordsys.meta['tip'] = "Coordinate system associated with mesh."
+    coordsys.meta["tip"] = "Coordinate system associated with mesh."
 
     def __init__(self, mode=MeshIOObj.READ, name="meshiopetsc"):
-        """Constructor.
-        """
+        """Constructor."""
         MeshIOObj.__init__(self, mode, name)
 
     def preinitialize(self):
@@ -63,30 +64,28 @@ class MeshIOPetsc(MeshIOObj, ModuleMeshIOPetsc):
         ModuleMeshIOPetsc.setCoordSys(self, self.coordsys)
 
     def _configure(self):
-        """Set members using inventory.
-        """
+        """Set members using inventory."""
         MeshIOObj._configure(self)
 
     def _createModuleObj(self):
-        """Create C++ MeshIOPetsc object.
-        """
+        """Create C++ MeshIOPetsc object."""
         ModuleMeshIOPetsc.__init__(self)
 
     def _validate(self, context):
         if 0 == len(self.filename) and self.mode == self.READ and not pathlib.Path(self.filename).is_file():
             context.error(IOError(f"Input mesh '{self.filename}' not found."))
 
+
 # FACTORIES ////////////////////////////////////////////////////////////
 
+
 def mesh_input():
-    """Factory associated with MeshIOPetsc.
-    """
+    """Factory associated with MeshIOPetsc."""
     return MeshIOPetsc(mode=MeshIOPetsc.READ)
 
 
 def mesh_output():
-    """Factory associated with MeshIOPetsc.
-    """
+    """Factory associated with MeshIOPetsc."""
     return MeshIOPetsc(mode=MeshIOPetsc.WRITE)
 
 

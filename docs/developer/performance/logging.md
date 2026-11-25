@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Logging
 
 PyLith includes `pylith::petsc::EventLogger` as a high-level interface for event logging with PETSc.
@@ -8,3 +17,5 @@ Refer to the `_Problem::Events` class near the top of `libsrc/pylith/problems/Pr
 
 We name events in PyLith C++ code following the template `PL:CLASS:METHOD` (C++ namespace style but reducing `::` to `:` to reduce the length of the string) in which we are logging method `METHOD` in C++ class `CLASS`.
 In the PyLith Python code, we follow the template `PL.CLASS.METHOD`.
+
+% End of file

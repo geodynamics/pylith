@@ -1,23 +1,18 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
-/** @file modulesrc/faults/FaultCohesive.i
- *
- * @brief Python interface to C++ FaultCohesive object.
- */
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 namespace pylith {
     namespace faults {
-        class FaultCohesive: public pylith::problems::Physics {
+        class FaultCohesive : public pylith::problems::Physics {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             /// Default constructor.
             FaultCohesive(void);
 
@@ -25,8 +20,7 @@ public:
             virtual ~FaultCohesive(void);
 
             /// Deallocate PETSc and local data structures.
-            virtual
-            void deallocate(void);
+            virtual void deallocate(void);
 
             /** Set name of label identifying cohesive cells.
              *
@@ -124,16 +118,16 @@ public:
              * @param[in] materials Materials in problem.
              * @returns Integrator if applicable, otherwise NULL.
              */
-            virtual
-            pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution,
-                                                             const std::vector < pylith::materials::Material* > &materials) = 0;
+            virtual pylith::feassemble::Integrator*
+            createIntegrator(const pylith::topology::Field& solution,
+                             const std::vector<pylith::materials::Material*>& materials) = 0;
 
             /** Create constraint and set kernels.
              *
              * @param[in] solution Solution field.
              * @returns Constraint if applicable, otherwise NULL.
              */
-            std::vector < pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
+            std::vector<pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
 
             /** Create derived field.
              *
@@ -156,8 +150,7 @@ public:
                                                            const pylith::topology::Mesh& physicsMesh);
 
             // PROTECTED METHODS //////////////////////////////////////////////////////////////////
-protected:
-
+          protected:
             /** Get auxiliary factory associated with physics.
              *
              * @return Auxiliary factory for physics object.
@@ -176,10 +169,9 @@ protected:
              * @param[in] solution Solution field.
              * @param[in] materials Materials in problem.
              */
-            virtual
-            void _setKernelsResidual(pylith::feassemble::IntegratorInterface* integrator,
-                                     const pylith::topology::Field& solution,
-                                     const std::vector < pylith::materials::Material* > &materials) const = 0;
+            virtual void _setKernelsResidual(pylith::feassemble::IntegratorInterface* integrator,
+                                             const pylith::topology::Field& solution,
+                                             const std::vector<pylith::materials::Material*>& materials) const = 0;
 
             /** Set kernels for Jacobian.
              *
@@ -187,28 +179,26 @@ protected:
              * @param[in] solution Solution field.
              * @param[in] materials Materials in problem.
              */
-            virtual
-            void _setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
-                                     const pylith::topology::Field& solution,
-                                     const std::vector < pylith::materials::Material* > &materials) const = 0;
+            virtual void _setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
+                                             const pylith::topology::Field& solution,
+                                             const std::vector<pylith::materials::Material*>& materials) const = 0;
 
             /** Set kernels for computing derived field.
              *
              * @param[out] integrator Integrator for material.
              * @param[in] solution Solution field.
              */
-            virtual
-            void _setKernelsDerivedField(pylith::feassemble::IntegratorInterface* integrator,
-                                         const pylith::topology::Field& solution) const;
+            virtual void _setKernelsDerivedField(pylith::feassemble::IntegratorInterface* integrator,
+                                                 const pylith::topology::Field& solution) const;
 
             // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+          private:
             pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution); // Empty method
 
         }; // class FaultCohesive
 
-    } // faults
-} // pylith
+    } // namespace faults
+} // namespace pylith
+
 
 // End of file

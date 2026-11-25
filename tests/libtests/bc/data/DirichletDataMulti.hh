@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/utils/types.hh" // HASA PylithScalar
@@ -14,13 +15,12 @@
 namespace pylith {
     namespace bc {
         class DirichletDataMulti;
-    } // pylith
-} // bc
+    } // namespace bc
+} // namespace pylith
 
 class pylith::bc::DirichletDataMulti {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     DirichletDataMulti(void);
 
@@ -28,8 +28,7 @@ public:
     ~DirichletDataMulti(void);
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     int numDOF; ///< Number of degrees of freedom at each point.
 
     //@{ Boundary condition A
@@ -83,5 +82,6 @@ public:
     PylithScalar densityScale; ///< Density scale.
     //@}
 };
+
 
 // End of file

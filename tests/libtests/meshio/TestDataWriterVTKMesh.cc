@@ -1,31 +1,30 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "TestDataWriterVTKMesh.hh" // Implementation of class methods
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/Field.hh" // USES Field
-#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/meshio/DataWriterVTK.hh" // USES DataWriterVTK
-#include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
+#include "pylith/meshio/DataWriterVTK.hh" // USES DataWriterVTK
+#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
 
 // ------------------------------------------------------------------------------------------------
 // Setup testing data.
-pylith::meshio::TestDataWriterVTKMesh::TestDataWriterVTKMesh(TestDataWriterVTKMesh_Data* data) :
-    _data(data) {
+pylith::meshio::TestDataWriterVTKMesh::TestDataWriterVTKMesh(TestDataWriterVTKMesh_Data* data) : _data(data) {
     TestDataWriterMesh::_initialize();
 }
 
@@ -35,7 +34,8 @@ pylith::meshio::TestDataWriterVTKMesh::TestDataWriterVTKMesh(TestDataWriterVTKMe
 pylith::meshio::TestDataWriterVTKMesh::~TestDataWriterVTKMesh(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _data;_data = nullptr;
+    delete _data;
+    _data = nullptr;
 
     PYLITH_METHOD_END;
 } // tearDown
@@ -169,7 +169,8 @@ pylith::meshio::TestDataWriterVTKMesh::testWriteVertexField(void) {
         writer.writeVertexField(t, *subfield);
         REQUIRE(writer._wroteVertexHeader);
         CHECK(false == writer._wroteCellHeader);
-        delete subfield;subfield = nullptr;
+        delete subfield;
+        subfield = nullptr;
     } // for
     writer.closeTimeStep();
     writer.close();
@@ -212,7 +213,8 @@ pylith::meshio::TestDataWriterVTKMesh::testWriteCellField(void) {
         writer.writeCellField(t, *subfield);
         CHECK(false == writer._wroteVertexHeader);
         REQUIRE(writer._wroteCellHeader);
-        delete subfield;subfield = nullptr;
+        delete subfield;
+        subfield = nullptr;
     } // for
     writer.closeTimeStep();
     writer.close();

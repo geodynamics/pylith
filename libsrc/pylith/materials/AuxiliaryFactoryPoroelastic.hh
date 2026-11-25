@@ -1,23 +1,23 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
-#include "pylith/materials/materialsfwd.hh" // forward declarations
 #include "pylith/materials/AuxiliaryFactoryPoroelasticity.hh" // ISA AuxiliaryFactoryPoroelasticity
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 
 class pylith::materials::AuxiliaryFactoryPoroelastic : public pylith::materials::AuxiliaryFactoryPoroelasticity {
     friend class TestAuxiliaryFactoryPoroelastic; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     AuxiliaryFactoryPoroelastic(void);
 
@@ -49,11 +49,11 @@ public:
     void addShearModulus(void);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
-    AuxiliaryFactoryPoroelastic(const AuxiliaryFactoryPoroelastic &); ///< Not implemented.
+  private:
+    AuxiliaryFactoryPoroelastic(const AuxiliaryFactoryPoroelastic&); ///< Not implemented.
     const AuxiliaryFactoryPoroelastic& operator=(const AuxiliaryFactoryPoroelastic&); ///< Not implemented
 
 }; // class AuxiliaryFactoryPoroelastic
+
 
 // End of file

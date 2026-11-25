@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -14,8 +14,8 @@
 
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
-#include "pylith/utils/journals.hh" // USES PYLITH_DEBUG
 #include "pylith/utils/constants.hh" // USES pylith::g_acc
+#include "pylith/utils/journals.hh" // USES PYLITH_DEBUG
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
@@ -26,96 +26,112 @@ namespace pylith {
     class _GravityRefState2D;
 }
 class pylith::_GravityRefState2D {
-private:
-
+  private:
     static const double Y_MAX;
 
     // Density
-    static double density(const double x,
-                          const double y) {
+    static double
+    density(const double x,
+            const double y) {
         return 2500.0;
     } // density
 
-    static const char* density_units(void) {
+    static const char*
+    density_units(void) {
         return "kg/m**3";
     } // density_units
 
     // Vs
-    static double vs(const double x,
-                     const double y) {
+    static double
+    vs(const double x,
+       const double y) {
         return 3000.0;
     } // vs
 
-    static const char* vs_units(void) {
+    static const char*
+    vs_units(void) {
         return "m/s";
     } // vs_units
 
     // Vp
-    static double vp(const double x,
-                     const double y) {
-        return sqrt(3.0)*vs(x,y);
+    static double
+    vp(const double x,
+       const double y) {
+        return sqrt(3.0) * vs(x, y);
     } // vp
 
-    static const char* vp_units(void) {
+    static const char*
+    vp_units(void) {
         return "m/s";
     } // vp_units
 
-    static double referenceMeanStress(const double x,
-                                      const double y) {
-        return density(x,y) * pylith::g_acc * (y-Y_MAX);
+    static double
+    referenceMeanStress(const double x,
+                        const double y) {
+        return density(x, y) * pylith::g_acc * (y - Y_MAX);
     } // referenceMeanStress
 
-    static double referenceShearStress(const double x,
-                                       const double y) {
+    static double
+    referenceShearStress(const double x,
+                         const double y) {
         return 0.0;
     } // referenceShearStress
 
-    static const char* stress_units(void) {
+    static const char*
+    stress_units(void) {
         return "Pa";
     } // stress_units
 
-    static double referenceStrain(const double x,
-                                  const double y) {
+    static double
+    referenceStrain(const double x,
+                    const double y) {
         return 0.0;
     } // referencStrain
 
-    static const char* strain_units(void) {
+    static const char*
+    strain_units(void) {
         return "none";
     } // strain_units
 
-    static double setGravityAcc_x(const double x,
-                                  const double y) {
+    static double
+    setGravityAcc_x(const double x,
+                    const double y) {
         return 0.0;
     } // setGravityAcc_x
 
-    static double setGravityAcc_y(const double x,
-                                  const double y) {
+    static double
+    setGravityAcc_y(const double x,
+                    const double y) {
         return -pylith::g_acc;
     } // setGravityAcc_y
 
-    static const char* acc_units(void) {
+    static const char*
+    acc_units(void) {
         return "m/s**2";
     } // acc_units
 
     // Solution subfields (nondimensional).
 
     // Displacement
-    static double disp_x(const double x,
-                         const double y) {
+    static double
+    disp_x(const double x,
+           const double y) {
         return 0.0;
     } // disp_x
 
-    static double disp_y(const double x,
-                         const double y) {
+    static double
+    disp_y(const double x,
+           const double y) {
         return 0.0;
     } // disp_y
 
-    static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
-                                          PetscReal t,
-                                          const PetscReal x[],
-                                          PetscInt numComponents,
-                                          PetscScalar* s,
-                                          void* context) {
+    static PetscErrorCode
+    solnkernel_disp(PetscInt spaceDim,
+                    PetscReal t,
+                    const PetscReal x[],
+                    PetscInt numComponents,
+                    PetscScalar* s,
+                    void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(2 == numComponents);
         REQUIRE(s);
@@ -127,11 +143,11 @@ private:
         return PETSC_SUCCESS;
     } // solnkernel_disp
 
-public:
-
-    static
-    TestLinearElasticity_Data* createData(void) {
-        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();REQUIRE(data);
+  public:
+    static TestLinearElasticity_Data*
+    createData(void) {
+        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();
+        REQUIRE(data);
 
         data->journalName = "GravityRefState2D";
         data->isJacobianLinear = true;
@@ -139,7 +155,8 @@ public:
         data->meshFilename = ":UNKNOWN:"; // Set in child class.
         data->boundaryLabel = "boundary";
 
-        delete data->gravityField;data->gravityField = new spatialdata::spatialdb::GravityField();
+        delete data->gravityField;
+        data->gravityField = new spatialdata::spatialdb::GravityField();
         data->gravityField->setGravityDir(0.0, -1.0, 0.0);
         data->gravityField->setGravityAcc(pylith::g_acc);
 
@@ -147,7 +164,8 @@ public:
 
         // Material information
         data->numAuxSubfields = 6;
-        static const char* _auxSubfields[6] = { // order must match order of subfields in auxiliary field
+        static const char* _auxSubfields[6] = {
+            // order must match order of subfields in auxiliary field
             "density",
             "gravitational_acceleration",
             "reference_stress",
@@ -190,7 +208,8 @@ public:
         static const PylithInt constrainedDOF[2] = {0, 1};
         static const PylithInt numConstrained = 2;
         data->bcs.resize(1);
-        pylith::bc::DirichletUserFn*bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
+        pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
+        REQUIRE(bc);
         bc->setSubfieldName("displacement");
         bc->setLabelName("boundary");
         bc->setLabelValue(1);
@@ -213,7 +232,8 @@ const double pylith::_GravityRefState2D::Y_MAX = +4.0e+3;
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::GravityRefState2D::TriP1(void) {
-    TestLinearElasticity_Data* data = pylith::_GravityRefState2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_GravityRefState2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -240,7 +260,8 @@ pylith::GravityRefState2D::TriP1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::GravityRefState2D::TriP2(void) {
-    TestLinearElasticity_Data* data = pylith::_GravityRefState2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_GravityRefState2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -267,7 +288,8 @@ pylith::GravityRefState2D::TriP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::GravityRefState2D::TriP3(void) {
-    TestLinearElasticity_Data* data = pylith::_GravityRefState2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_GravityRefState2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -294,7 +316,8 @@ pylith::GravityRefState2D::TriP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::GravityRefState2D::QuadQ1(void) {
-    TestLinearElasticity_Data* data = pylith::_GravityRefState2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_GravityRefState2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -321,7 +344,8 @@ pylith::GravityRefState2D::QuadQ1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::GravityRefState2D::QuadQ2(void) {
-    TestLinearElasticity_Data* data = pylith::_GravityRefState2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_GravityRefState2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -348,7 +372,8 @@ pylith::GravityRefState2D::QuadQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::GravityRefState2D::QuadQ3(void) {
-    TestLinearElasticity_Data* data = pylith::_GravityRefState2D::createData();REQUIRE(data);
+    TestLinearElasticity_Data* data = pylith::_GravityRefState2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 

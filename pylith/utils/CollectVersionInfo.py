@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from pythia.pyre.components.Component import Component
 
@@ -23,21 +23,21 @@ class CollectVersionInfo(Component):
     """
 
     def __init__(self):
-        """Constructor.
-        """
+        """Constructor."""
         Component.__init__(self, name="collectversioninfo", facility="collectversioninfo")
 
     @classmethod
     def asString(cls):
         info = cls._collect()
-        s = "Platform:\n" \
-            "    Hostname: %(hostname)s\n" \
-            "    Operating system: %(os)s\n" \
-            "    Kernel: %(kernel)s\n" \
-            "    Version: %(version)s\n" \
-            "    Machine: %(machine)s\n" \
-            "    Processor: %(processor)s\n" \
-            % info["platform"]
+        s = (
+            "Platform:\n"
+            "    Hostname: %(hostname)s\n"
+            "    Operating system: %(os)s\n"
+            "    Kernel: %(kernel)s\n"
+            "    Version: %(version)s\n"
+            "    Machine: %(machine)s\n"
+            "    Processor: %(processor)s\n" % info["platform"]
+        )
 
         version = info["version"]
 
@@ -46,21 +46,30 @@ class CollectVersionInfo(Component):
         if version["pylith"]["isRelease"]:
             s += "    Release v%(version)s\n" % version["pylith"]
         else:
-            s += "    Configured on %(gitDate)s, GIT branch: %(gitBranch)s, revision: %(gitRevision)s, hash: %(gitHash)s\n" % version["pylith"]
+            s += (
+                "    Configured on %(gitDate)s, GIT branch: %(gitBranch)s, revision: %(gitRevision)s, hash: %(gitHash)s\n"
+                % version["pylith"]
+            )
 
         # PETSc
         s += "\nPETSc\n"
         if version["petsc"]["isRelease"]:
             s += "    Release v%(version)s\n" % version["petsc"]
         else:
-            s += "    Configured on %(gitDate)s, GIT branch: %(gitBranch)s, revision: %(gitRevision)s\n" % version["petsc"]
+            s += (
+                "    Configured on %(gitDate)s, GIT branch: %(gitBranch)s, revision: %(gitRevision)s\n"
+                % version["petsc"]
+            )
 
         # Spatialdata
         s += "\nSpatialdata\n"
         if version["spatialdata"]["isRelease"]:
             s += "    Release v%(version)s\n" % version["spatialdata"]
         else:
-            s += "    Configured on %(gitDate)s, GIT branch: %(gitBranch)s, revision: %(gitRevision)s, hash: %(gitHash)s\n" % version["spatialdata"]
+            s += (
+                "    Configured on %(gitDate)s, GIT branch: %(gitBranch)s, revision: %(gitRevision)s, hash: %(gitHash)s\n"
+                % version["spatialdata"]
+            )
 
         # MPI
         s += "\nMPI standard: %(standard)s, implementation: %(implementation)s, version: %(version)s\n" % version["mpi"]
@@ -75,9 +84,8 @@ class CollectVersionInfo(Component):
         s += "Proj version: %(version)s\n" % version["proj"]
 
         # Python
-        s += "\nPython\n" \
-            "    v%(version)s of %(implementation)s compiled with %(compiler)s\n" % version["python"]
-        for (pname, pver) in version["python"]["modules"].items():
+        s += "\nPython\n" "    v%(version)s of %(implementation)s compiled with %(compiler)s\n" % version["python"]
+        for pname, pver in version["python"]["modules"].items():
             s += "    %s: v%s from %s\n" % (pname, pver["version"], pver["location"])
         return s
 
@@ -90,8 +98,7 @@ class CollectVersionInfo(Component):
 
     @classmethod
     def _collect(cls):
-        """Collect version information.
-        """
+        """Collect version information."""
         info = {
             "platform": cls._collectPlatform(),
             "version": cls._collectVersion(),
@@ -100,7 +107,7 @@ class CollectVersionInfo(Component):
 
     @classmethod
     def _collectPlatform(cls):
-        (os, hostname, kernel, version, machine, processor) = platform.uname()
+        os, hostname, kernel, version, machine, processor = platform.uname()
         info = {
             "hostname": hostname,
             "os": os,
@@ -129,10 +136,7 @@ class CollectVersionInfo(Component):
     def _collectVersionPyLith():
         v = utils.PylithVersion()
         if v.isRelease():
-            info = {
-                "isRelease": True,
-                "version": v.version()
-            }
+            info = {"isRelease": True, "version": v.version()}
         else:
             info = {
                 "isRelease": False,
@@ -146,12 +150,10 @@ class CollectVersionInfo(Component):
     @staticmethod
     def _collectVersionSpatialdata():
         import spatialdata.utils.utils as utils
+
         v = utils.SpatialdataVersion()
         if v.isRelease():
-            info = {
-                "isRelease": True,
-                "version": v.version()
-            }
+            info = {"isRelease": True, "version": v.version()}
         else:
             info = {
                 "isRelease": False,
@@ -166,10 +168,7 @@ class CollectVersionInfo(Component):
     def _collectVersionPetsc():
         v = petsc.PetscVersion()
         if v.isRelease():
-            info = {
-                "isRelease": True,
-                "version": v.version()
-            }
+            info = {"isRelease": True, "version": v.version()}
         else:
             info = {
                 "isRelease": False,
@@ -227,6 +226,7 @@ class CollectVersionInfo(Component):
     @staticmethod
     def _collectVersionProj():
         import spatialdata.utils.utils as utils
+
         v = utils.SpatialdataVersion()
         info = {
             "version": v.projVersion(),
@@ -236,6 +236,7 @@ class CollectVersionInfo(Component):
     @staticmethod
     def _getPackageVersion(name):
         import os
+
         m = None
         location = None
         version = None

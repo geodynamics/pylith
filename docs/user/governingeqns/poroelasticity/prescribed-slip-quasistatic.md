@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Quasistatic
 
 The strong form of the quasistatic boundary value problem may be expressed as
@@ -157,3 +166,5 @@ J_F^{\lambda u} &= \frac{\partial F^\lambda}{\partial u} + s_\mathit{tshift} \fr
 % Jf_ll
   J_F^{ll} &= \frac{\partial F^l}{\partial \lambda} + s_{tshift} \frac{\partial F^l}{\partial \dot{\lambda}} = 0, \\
 \end{align}
+
+% End of file

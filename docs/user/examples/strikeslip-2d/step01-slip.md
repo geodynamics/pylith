@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 1: Static Coseismic Slip
 
 % Metadata extracted from parameter files.
@@ -413,3 +422,5 @@ Consequently, in the subsequent steps we adopt the uniform refinement parameters
 3. Using higher order discretizations of the solution subfields requires adjusting more parameters that uniform refinement. We adjust the default quadrature order, basis order of the solution fields, and basis order of relevant output fields.
 4. Because uniform mesh refinement requires only a couple of additional parameters, we recommend first using uniform refinement to assess the sensitivity of the results to the discretization size before increasing the basis order of the solution subfields. However, if you know your results are sensitive to the stress field, then we recommend first increasing the basis order.
 5. In some cases, you may find that uniform refinement and higher order discretizations indicate that some portions of the mesh need higher resolution that others, and you might need to adjust the spatial variation of the discretization size in the initial coarse mesh.
+
+% End of file

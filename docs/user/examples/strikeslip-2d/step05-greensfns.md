@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 5: Green's Functions
 
 % Metadata extracted from parameter files.
@@ -140,3 +149,5 @@ Solution for Step 4.
 The colors of the shaded surface indicate the y displacement, and the deformation is exaggerated by a factor of 1000.
 The time value corresponds to the zero-based index of the slip impulses.
 :::
+
+% End of file

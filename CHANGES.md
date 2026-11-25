@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 See <https://github.com/geodynamics/pylith/commits/main> for the complete log of changes made to PyLith.
 
 :::{note}
@@ -1354,3 +1363,5 @@ There are two new features in PyLith version 1.1 that require users to adjust in
   * Traction boundary conditions
 
   * Generalized Maxwell and Power-law Maxwell viscoelastic models
+
+% End of file

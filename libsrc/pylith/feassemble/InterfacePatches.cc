@@ -1,34 +1,33 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/feassemble/InterfacePatches.hh" // implementation of object methods
 
-#include "pylith/faults/TopologyOps.hh" // USES TopologyOps
 #include "pylith/faults/FaultCohesive.hh" // USES FaultCohesive
+#include "pylith/faults/TopologyOps.hh" // USES TopologyOps
 #include "pylith/feassemble/FEKernelKey.hh" // USES FEKernelKey
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
-#include <utility> // USES std::pair
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
+#include <utility> // USES std::pair
 
 namespace pylith {
     namespace feassemble {
         namespace _InterfacePatches {
-            inline
-            PetscWeakForm
+            inline PetscWeakForm
             getCellWeakForm(PetscDM dm,
                             const PetscInt cell) {
                 PetscDS ds = NULL;
@@ -39,19 +38,20 @@ namespace pylith {
             } // getCellWeakForm
 
 
-        } // _InterfacePatches
-    } // feassemble
-} // pylith
+        } // namespace _InterfacePatches
+    } // namespace feassemble
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::feassemble::InterfacePatches::InterfacePatches(void) :
-    _labelName(pylith::topology::Mesh::cells_label_name) {}
+pylith::feassemble::InterfacePatches::InterfacePatches(void) : _labelName(pylith::topology::Mesh::cells_label_name) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::feassemble::InterfacePatches::~InterfacePatches(void) {}
+pylith::feassemble::InterfacePatches::~InterfacePatches(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -80,17 +80,18 @@ pylith::feassemble::InterfacePatches::createMaterialPairs(const pylith::faults::
     assert(fault);
     const char* const cellsLabelName = pylith::topology::Mesh::cells_label_name;
     const std::string& patchLabelName = fault->getSurfaceLabelName() + std::string("-integration-patches");
-    InterfacePatches* patches = new InterfacePatches();assert(patches);
+    InterfacePatches* patches = new InterfacePatches();
+    assert(patches);
     patches->_labelName = patchLabelName;
 
     PylithCallPetsc(DMCreateLabel(dmSoln, patchLabelName.c_str()));
 
-    std::map<std::pair<int,int>, int> integrationPatches;
+    std::map<std::pair<int, int>, int> integrationPatches;
     PylithInt patchLabelValue = 0;
 
     PetscSF sf = NULL;
     PylithCallPetsc(DMGetPointSF(dmSoln, &sf));
-    const PetscInt *leaves = NULL;
+    const PetscInt* leaves = NULL;
     PetscInt numLeaves = 0, loc = -1;
     PylithCallPetsc(PetscSFGetGraph(sf, NULL, &numLeaves, &leaves, NULL));
 
@@ -98,9 +99,13 @@ pylith::feassemble::InterfacePatches::createMaterialPairs(const pylith::faults::
     PylithInt numCohesiveCells = 0;
     const PylithInt* cohesiveCells = NULL;
     PylithCallPetsc(DMGetStratumIS(dmSoln, cellsLabelName, fault->getCohesiveLabelValue(), &cohesiveCellsIS));
-    if (!cohesiveCellsIS) {PYLITH_METHOD_RETURN(patches);}
-    PylithCallPetsc(ISGetSize(cohesiveCellsIS, &numCohesiveCells));assert(numCohesiveCells > 0);
-    PylithCallPetsc(ISGetIndices(cohesiveCellsIS, &cohesiveCells));assert(cohesiveCells);
+    if (!cohesiveCellsIS) {
+        PYLITH_METHOD_RETURN(patches);
+    }
+    PylithCallPetsc(ISGetSize(cohesiveCellsIS, &numCohesiveCells));
+    assert(numCohesiveCells > 0);
+    PylithCallPetsc(ISGetIndices(cohesiveCellsIS, &cohesiveCells));
+    assert(cohesiveCells);
 
     for (PylithInt iCohesive = 0; iCohesive < numCohesiveCells; ++iCohesive) {
         const PetscInt cohesiveCell = cohesiveCells[iCohesive];
@@ -115,7 +120,10 @@ pylith::feassemble::InterfacePatches::createMaterialPairs(const pylith::faults::
 
         PetscInt adjacentCellNegative = -1;
         PetscInt adjacentCellPositive = -1;
-        pylith::faults::TopologyOps::getAdjacentCells(&adjacentCellNegative, &adjacentCellPositive, dmSoln, cohesiveCell);
+        pylith::faults::TopologyOps::getAdjacentCells(&adjacentCellNegative,
+                                                      &adjacentCellPositive,
+                                                      dmSoln,
+                                                      cohesiveCell);
         assert(adjacentCellNegative >= 0);
         assert(adjacentCellPositive >= 0);
 
@@ -125,9 +133,10 @@ pylith::feassemble::InterfacePatches::createMaterialPairs(const pylith::faults::
         if (0 == integrationPatches.count(matPair)) {
             integrationPatches[matPair] = ++patchLabelValue;
             PYLITH_DEBUG(pylith::journal::integration_kernels,
-                         "Creating integration patch on fault '" << fault->getSurfaceLabelName()
-                                                                 << "' for material pair ("<< matPair.first << "," << matPair.second<< ") "
-                                                                 << "using label '" << patchLabelName << "' with value " << patchLabelValue << ".");
+                         "Creating integration patch on fault '"
+                             << fault->getSurfaceLabelName() << "' for material pair (" << matPair.first << ","
+                             << matPair.second << ") "
+                             << "using label '" << patchLabelName << "' with value " << patchLabelValue << ".");
 
             // Get weak forms.
             PetscWeakForm weakFormCohesive = _InterfacePatches::getCellWeakForm(dmSoln, cohesiveCell);
@@ -138,11 +147,17 @@ pylith::feassemble::InterfacePatches::createMaterialPairs(const pylith::faults::
             WeakFormKeys weakFormKeys;
             pylith::feassemble::FEKernelKey* key = NULL;
             key = pylith::feassemble::FEKernelKey::create(weakFormCohesive, patchLabelName.c_str(), patchLabelValue);
-            weakFormKeys.cohesive = *key;delete key;key = NULL;
+            weakFormKeys.cohesive = *key;
+            delete key;
+            key = NULL;
             key = pylith::feassemble::FEKernelKey::create(weakFormNegative, cellsLabelName, matPair.first);
-            weakFormKeys.negative = *key;delete key;key = NULL;
+            weakFormKeys.negative = *key;
+            delete key;
+            key = NULL;
             key = pylith::feassemble::FEKernelKey::create(weakFormPositive, cellsLabelName, matPair.second);
-            weakFormKeys.positive = *key;delete key;key = NULL;
+            weakFormKeys.positive = *key;
+            delete key;
+            key = NULL;
             patches->_keys[patchLabelValue] = weakFormKeys;
         } // if
         PylithCallPetsc(DMSetLabelValue(dmSoln, patchLabelName.c_str(), cohesiveCell, integrationPatches[matPair]));

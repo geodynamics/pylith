@@ -1,24 +1,24 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/problems/ProgressMonitor.hh" // implementation of class methods
 
-#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <mpi.h> // USES MPI_Comm_rank, MPI_COMM_WORLD
 
-#include <fstream> // HASA std::ofstream
 #include <cassert> // USES assert()
+#include <fstream> // HASA std::ofstream
 #include <sstream> // USES std::ostringstream
 
 // ------------------------------------------------------------------------------------------------
@@ -27,7 +27,8 @@ pylith::problems::ProgressMonitor::ProgressMonitor(void) :
     _updatePercent(5.0),
     _filename("progress.txt"),
     _iUpdate(-1),
-    _isMaster(true) {}
+    _isMaster(true) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -127,7 +128,7 @@ pylith::problems::ProgressMonitor::_calcFinishTime(const double percentComplete,
         finished_tm.tm_sec += durationSec;
         mktime(&finished_tm);
         finished = asctime(&finished_tm);
-        finished = finished.erase(finished.find_last_not_of('\n')+1);
+        finished = finished.erase(finished.find_last_not_of('\n') + 1);
     } else {
         finished = "TBD";
     } // if/else

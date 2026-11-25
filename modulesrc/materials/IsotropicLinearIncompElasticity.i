@@ -1,24 +1,18 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
 
-/** @file modulesrc/materials/IsotropicLinearIncompElasticity.i
- *
- * Python interface to C++ IsotropicLinearIncompElasticity.
- */
 
 namespace pylith {
     namespace materials {
-        class IsotropicLinearIncompElasticity: public pylith::materials::RheologyIncompressibleElasticity {
+        class IsotropicLinearIncompElasticity : public pylith::materials::RheologyIncompressibleElasticity {
             // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+          public:
             /// Default constructor.
             IsotropicLinearIncompElasticity(void);
 
@@ -92,12 +86,12 @@ public:
              * @return Project kernel for computing stress subfield in derived field.
              */
             PetscPointFnWrapper getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const;
-
         };
 
         // class IsotropicLinearIncompElasticity
 
-    } // materials
-} // pylith
+    } // namespace materials
+} // namespace pylith
+
 
 // End of file

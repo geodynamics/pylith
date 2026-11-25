@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Axial and Shear Deformation in a 3D Box
 
 This suite of examples demonstrates some basic concepts of using PyLith to solve the static and quasistatic boundary elasticity equation in a 3D box with uniform material properties.
@@ -65,3 +74,5 @@ To run the example:
 ```bash
 pylith step05_sheardisptractrate.cfg
 ```
+
+% End of file

@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -20,78 +20,90 @@
 
 namespace pylith {
     class _UniformShear2D;
-} // pylith
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::_UniformShear2D {
-private:
-
+  private:
     // Density
-    static double density(const double x,
-                          const double y) {
+    static double
+    density(const double x,
+            const double y) {
         return 2500.0;
     } // density
 
-    static const char* density_units(void) {
+    static const char*
+    density_units(void) {
         return "kg/m**3";
     } // density_units
 
     // Vs
-    static double vs(const double x,
-                     const double y) {
+    static double
+    vs(const double x,
+       const double y) {
         return 3000.0;
     } // vs
 
-    static const char* vs_units(void) {
+    static const char*
+    vs_units(void) {
         return "m/s";
     } // vs_units
 
     // Vp
-    static double vp(const double x,
-                     const double y) {
+    static double
+    vp(const double x,
+       const double y) {
         return 1.0e+15;
     } // vp
 
-    static const char* vp_units(void) {
+    static const char*
+    vp_units(void) {
         return "m/s";
     } // vp_units
 
     // Solution subfields.
 
-    static double strain_xx(void) {
+    static double
+    strain_xx(void) {
         return 0.0;
     } // strain_xx
 
-    static double strain_yy(void) {
+    static double
+    strain_yy(void) {
         return 0.0;
     } // strain_yy
 
-    static double strain_xy(void) {
+    static double
+    strain_xy(void) {
         return 0.3;
     } // strain_xy
 
     // Displacement
-    static double disp_x(const double x,
-                         const double y) {
-        return strain_xx()*x + strain_xy()*y;
+    static double
+    disp_x(const double x,
+           const double y) {
+        return strain_xx() * x + strain_xy() * y;
     } // disp_x
 
-    static double disp_y(const double x,
-                         const double y) {
-        return strain_xy()*x + strain_yy()*y;
+    static double
+    disp_y(const double x,
+           const double y) {
+        return strain_xy() * x + strain_yy() * y;
     } // disp_y
 
-    static double pressure(const double x,
-                           const double y) {
+    static double
+    pressure(const double x,
+             const double y) {
         return 0.0;
     } // pressure
 
-    static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
-                                          PetscReal t,
-                                          const PetscReal x[],
-                                          PetscInt numComponents,
-                                          PetscScalar* s,
-                                          void* context) {
+    static PetscErrorCode
+    solnkernel_disp(PetscInt spaceDim,
+                    PetscReal t,
+                    const PetscReal x[],
+                    PetscInt numComponents,
+                    PetscScalar* s,
+                    void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(x);
         REQUIRE(2 == numComponents);
@@ -103,12 +115,13 @@ private:
         return PETSC_SUCCESS;
     } // solnkernel_disp
 
-    static PetscErrorCode solnkernel_pressure(PetscInt spaceDim,
-                                              PetscReal t,
-                                              const PetscReal x[],
-                                              PetscInt numComponents,
-                                              PetscScalar* s,
-                                              void* context) {
+    static PetscErrorCode
+    solnkernel_pressure(PetscInt spaceDim,
+                        PetscReal t,
+                        const PetscReal x[],
+                        PetscInt numComponents,
+                        PetscScalar* s,
+                        void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(x);
         REQUIRE(1 == numComponents);
@@ -119,11 +132,11 @@ private:
         return PETSC_SUCCESS;
     } // solnkernel_pressure
 
-public:
-
-    static
-    TestIncompressibleElasticity_Data* createData(void) {
-        TestIncompressibleElasticity_Data* data = new TestIncompressibleElasticity_Data();REQUIRE(data);
+  public:
+    static TestIncompressibleElasticity_Data*
+    createData(void) {
+        TestIncompressibleElasticity_Data* data = new TestIncompressibleElasticity_Data();
+        REQUIRE(data);
 
         data->journalName = "UniformShear2D";
 
@@ -159,7 +172,8 @@ public:
         { // disp
             static const PylithInt constrainedDOF[2] = {0, 1};
             static const PylithInt numConstrainedDOF = 2;
-            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
+            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
+            REQUIRE(bc);
             bc->setSubfieldName("displacement");
             bc->setLabelName("boundary");
             bc->setLabelValue(1);
@@ -171,7 +185,8 @@ public:
         { // pressure
             static const PylithInt constrainedDOF[1] = {0};
             static const PylithInt numConstrainedDOF = 1;
-            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
+            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
+            REQUIRE(bc);
             bc->setSubfieldName("pressure");
             bc->setLabelName("boundary");
             bc->setLabelValue(1);
@@ -195,7 +210,8 @@ public:
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformShear2D::TriP1(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -213,7 +229,8 @@ pylith::UniformShear2D::TriP1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformShear2D::TriP2(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -238,7 +255,8 @@ pylith::UniformShear2D::TriP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformShear2D::TriP3(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -263,7 +281,8 @@ pylith::UniformShear2D::TriP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformShear2D::TriP4(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -288,7 +307,8 @@ pylith::UniformShear2D::TriP4(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformShear2D::QuadQ1(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -306,7 +326,8 @@ pylith::UniformShear2D::QuadQ1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformShear2D::QuadQ2(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -331,7 +352,8 @@ pylith::UniformShear2D::QuadQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformShear2D::QuadQ3(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -356,7 +378,8 @@ pylith::UniformShear2D::QuadQ3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformShear2D::QuadQ4(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();REQUIRE(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 

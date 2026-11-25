@@ -1,19 +1,19 @@
-// =================================================================================================
-// This code is part of SpatialData, developed through the Computational Infrastructure
-// for Geodynamics (https://github.com/geodynamics/spatialdata).
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
 //
-// Copyright (c) 2010-2026, University of California, Davis and the SpatialData Development Team.
-// All rights reserved.
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "Scales.hh" // implementation of class methods
 
-#include "pylith/utils/journals.hh" // USES journal macros
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/utils/journals.hh" // USES journal macros
 
 #include <cassert> // USES assert()
 
@@ -24,12 +24,14 @@ pylith::scales::Scales::Scales(void) :
     _displacement(1.0),
     _rigidity(1.0),
     _time(1.0),
-    _temperature(1.0) {}
+    _temperature(1.0) {
+}
 
 
 // ----------------------------------------------------------------------
 // Default destructor
-pylith::scales::Scales::~Scales(void) {}
+pylith::scales::Scales::~Scales(void) {
+}
 
 
 // ----------------------------------------------------------------------
@@ -39,7 +41,8 @@ pylith::scales::Scales::Scales(const Scales& dim) :
     _displacement(dim._displacement),
     _rigidity(dim._rigidity),
     _time(dim._time),
-    _temperature(dim._temperature) {}
+    _temperature(dim._temperature) {
+}
 
 
 // ----------------------------------------------------------------------
@@ -63,8 +66,7 @@ pylith::scales::Scales::operator=(const Scales& dim) {
 void
 pylith::scales::Scales::setLengthScale(const double value) {
     if (value <= 0.0) {
-        PYLITH_ERROR(pylith::exceptions::OutOfRangeError,
-                     "Length scale (" << value << ") must be positive.");
+        PYLITH_ERROR(pylith::exceptions::OutOfRangeError, "Length scale (" << value << ") must be positive.");
     } // if
     _length = value;
 } // setLengthScale
@@ -75,8 +77,7 @@ pylith::scales::Scales::setLengthScale(const double value) {
 void
 pylith::scales::Scales::setDisplacementScale(const double value) {
     if (value <= 0.0) {
-        PYLITH_ERROR(pylith::exceptions::OutOfRangeError,
-                     "Displacement scale (" << value << ") must be positive.");
+        PYLITH_ERROR(pylith::exceptions::OutOfRangeError, "Displacement scale (" << value << ") must be positive.");
     } // if
     _displacement = value;
 } // setDisplacementScale
@@ -87,8 +88,7 @@ pylith::scales::Scales::setDisplacementScale(const double value) {
 void
 pylith::scales::Scales::setRigidityScale(const double value) {
     if (value <= 0.0) {
-        PYLITH_ERROR(pylith::exceptions::OutOfRangeError,
-                     "Rigidity scale (" << value << ") must be positive.");
+        PYLITH_ERROR(pylith::exceptions::OutOfRangeError, "Rigidity scale (" << value << ") must be positive.");
     } // if
     _rigidity = value;
 } // setRigidityScale
@@ -99,8 +99,7 @@ pylith::scales::Scales::setRigidityScale(const double value) {
 void
 pylith::scales::Scales::setTimeScale(const double value) {
     if (value <= 0.0) {
-        PYLITH_ERROR(pylith::exceptions::OutOfRangeError,
-                     "Time scale (" << value << ") must be positive.");
+        PYLITH_ERROR(pylith::exceptions::OutOfRangeError, "Time scale (" << value << ") must be positive.");
     } // if
     _time = value;
 } // setTimeScale
@@ -111,8 +110,7 @@ pylith::scales::Scales::setTimeScale(const double value) {
 void
 pylith::scales::Scales::setTemperatureScale(const double value) {
     if (value <= 0.0) {
-        PYLITH_ERROR(pylith::exceptions::OutOfRangeError,
-                     "Temperature scale (" << value << ") must be positive.");
+        PYLITH_ERROR(pylith::exceptions::OutOfRangeError, "Temperature scale (" << value << ") must be positive.");
     } // if
     _temperature = value;
 } // setTemperatureScale

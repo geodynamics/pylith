@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "TestDataWriterHDF5.hh" // ISA TestDataWriterHDF5
@@ -19,14 +20,13 @@ namespace pylith {
     namespace meshio {
         class TestDataWriterHDF5Mesh;
         class TestDataWriterHDF5Mesh_Data;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterHDF5Mesh : public TestDataWriterHDF5, public TestDataWriterMesh {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestDataWriterHDF5Mesh(TestDataWriterHDF5Mesh_Data* data);
 
@@ -34,12 +34,10 @@ public:
     ~TestDataWriterHDF5Mesh(void);
 
     /// Test filename()
-    static
-    void testAccessors(void);
+    static void testAccessors(void);
 
     /// Test hdf5Filename.
-    static
-    void testHdf5Filename(void);
+    static void testHdf5Filename(void);
 
     /// Test open() and close()
     void testOpenClose(void);
@@ -51,8 +49,7 @@ public:
     void testWriteCellField(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get test data.
      *
      * @returns Test data.
@@ -60,13 +57,13 @@ protected:
     TestDataWriter_Data* _getData(void);
 
     // PROTECTED MEMBDERS /////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     TestDataWriterHDF5Mesh_Data* _data; ///< Data for testing.
 
 }; // class TestDataWriterHDF5Mesh
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterHDF5Mesh_Data : public TestDataWriterHDF5_Data, public TestDataWriter_Data {};
+
 
 // End of file

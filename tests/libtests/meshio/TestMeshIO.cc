@@ -1,28 +1,28 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "TestMeshIO.hh" // Implementation of class methods
 
+#include "pylith/meshio/MeshIO.hh" // USES MeshIO
+#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Stratum.hh" // USES Stratum
-#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
-#include "pylith/meshio/MeshIO.hh" // USES MeshIO
 
 #include "pylith/utils/array.hh" // USES int_array
 #include "pylith/utils/journals.hh" // USES PYLITH_DEBUG
 
-#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
@@ -33,21 +33,30 @@ static PetscErrorCode
 DMPlexInvertCell_Private(PetscInt dim,
                          PetscInt numCorners,
                          PetscInt cone[]) {
-#define SWAPCONE(cone,i,j)  \
-    do {                      \
-        int _cone_tmp;          \
-        _cone_tmp = (cone)[i];  \
-        (cone)[i] = (cone)[j];  \
-        (cone)[j] = _cone_tmp;  \
+#define SWAPCONE(cone, i, j)                                                                                           \
+    do {                                                                                                               \
+        int _cone_tmp;                                                                                                 \
+        _cone_tmp = (cone)[i];                                                                                         \
+        (cone)[i] = (cone)[j];                                                                                         \
+        (cone)[j] = _cone_tmp;                                                                                         \
     } while (0)
 
     PetscFunctionBegin;
-    if (dim != 3) { PetscFunctionReturn(0);}
+    if (dim != 3) {
+        PetscFunctionReturn(0);
+    }
     switch (numCorners) {
-    case 4: SWAPCONE(cone,0,1);break;
-    case 6: SWAPCONE(cone,0,1);break;
-    case 8: SWAPCONE(cone,1,3);break;
-    default: break;
+    case 4:
+        SWAPCONE(cone, 0, 1);
+        break;
+    case 6:
+        SWAPCONE(cone, 0, 1);
+        break;
+    case 8:
+        SWAPCONE(cone, 1, 3);
+        break;
+    default:
+        break;
     }
     PetscFunctionReturn(0);
 #undef SWAPCONE
@@ -56,8 +65,7 @@ DMPlexInvertCell_Private(PetscInt dim,
 
 // ----------------------------------------------------------------------
 // Constructor.
-pylith::meshio::TestMeshIO::TestMeshIO(TestMeshIO_Data* data) :
-    _data(data) {
+pylith::meshio::TestMeshIO::TestMeshIO(TestMeshIO_Data* data) : _data(data) {
     REQUIRE(_data);
     _mesh = NULL;
 } // constructor
@@ -68,7 +76,8 @@ pylith::meshio::TestMeshIO::TestMeshIO(TestMeshIO_Data* data) :
 pylith::meshio::TestMeshIO::~TestMeshIO(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _mesh;_mesh = NULL;
+    delete _mesh;
+    _mesh = NULL;
 
     PYLITH_METHOD_END;
 } // destructor
@@ -98,7 +107,9 @@ pylith::meshio::TestMeshIO::_createMesh(void) {
         REQUIRE(_data->faceGroupNames);
     } // if
 
-    delete _mesh;_mesh = new pylith::topology::Mesh();REQUIRE(_mesh);
+    delete _mesh;
+    _mesh = new pylith::topology::Mesh();
+    REQUIRE(_mesh);
 
     int_array cellsCopy(_data->topology->cells); // Create copy because building mesh may change cells (invert)
     pylith::meshio::MeshBuilder::buildMesh(_mesh, *_data->topology, *_data->geometry);
@@ -115,7 +126,8 @@ pylith::meshio::TestMeshIO::_createMesh(void) {
 
     // Vertex groups
     for (size_t iGroup = 0, index = 0; iGroup < _data->numVertexGroups; ++iGroup) {
-        const size_t groupSize = _data->vertexGroupSizes[iGroup];REQUIRE(groupSize > 0);
+        const size_t groupSize = _data->vertexGroupSizes[iGroup];
+        REQUIRE(groupSize > 0);
         int_array points(groupSize);
         for (size_t i = 0; i < groupSize; ++i, ++index) {
             points[i] = _data->vertexGroups[index];
@@ -124,16 +136,21 @@ pylith::meshio::TestMeshIO::_createMesh(void) {
     } // for
 
     // Face groups
-    const pylith::meshio::MeshBuilder::shape_t faceShape = pylith::meshio::MeshBuilder::faceShapeFromCellShape(_data->topology->cellShape);
+    const pylith::meshio::MeshBuilder::shape_t faceShape =
+        pylith::meshio::MeshBuilder::faceShapeFromCellShape(_data->topology->cellShape);
     const size_t numFaceVertices = pylith::meshio::MeshBuilder::getNumVerticesFace(faceShape);
     for (size_t iGroup = 0, index = 0; iGroup < _data->numFaceGroups; ++iGroup) {
-        const size_t numFaces = _data->faceGroupSizes[iGroup];REQUIRE(numFaces > 0);
+        const size_t numFaces = _data->faceGroupSizes[iGroup];
+        REQUIRE(numFaces > 0);
         const size_t totalSize = numFaces * (1 + numFaceVertices); // cell + vertices
         int_array faceValues(totalSize);
         for (size_t i = 0; i < totalSize; ++i, ++index) {
             faceValues[i] = _data->faceGroups[index];
         } // for
-        pylith::meshio::MeshBuilder::setFaceGroupFromCellVertices(_mesh, _data->faceGroupNames[iGroup], faceValues, faceShape);
+        pylith::meshio::MeshBuilder::setFaceGroupFromCellVertices(_mesh,
+                                                                  _data->faceGroupNames[iGroup],
+                                                                  faceValues,
+                                                                  faceShape);
     } // for
 
     // Set coordinate system
@@ -167,7 +184,8 @@ pylith::meshio::TestMeshIO::_checkVals(void) {
     CHECK(_data->topology->dimension == size_t(_mesh->getDimension()));
     const int spaceDim = _data->geometry->spaceDim;
 
-    PetscDM dmMesh = _mesh->getDM();REQUIRE(dmMesh);
+    PetscDM dmMesh = _mesh->getDM();
+    REQUIRE(dmMesh);
 
     // Check vertices
     pylith::topology::Stratum verticesStratum(dmMesh, pylith::topology::Stratum::DEPTH, 0);
@@ -184,8 +202,9 @@ pylith::meshio::TestMeshIO::_checkVals(void) {
         REQUIRE(spaceDim == coordsVisitor.sectionDof(v));
 
         for (int iDim = 0; iDim < spaceDim; ++iDim, ++index) {
-            const double vtolerance = std::max(tolerance, fabs(_data->geometry->vertices[index])*tolerance);
-            CHECK_THAT(coordsArray[off+iDim], Catch::Matchers::WithinAbs(_data->geometry->vertices[index], vtolerance));
+            const double vtolerance = std::max(tolerance, fabs(_data->geometry->vertices[index]) * tolerance);
+            CHECK_THAT(coordsArray[off + iDim],
+                       Catch::Matchers::WithinAbs(_data->geometry->vertices[index], vtolerance));
         } // for
     } // for
 
@@ -198,12 +217,12 @@ pylith::meshio::TestMeshIO::_checkVals(void) {
     REQUIRE(_data->topology->numCells == numCells);
     const int offset = numCells;
     for (PylithInt c = cStart, index = 0; c < cEnd; ++c) {
-        PylithInt *closure = NULL;
+        PylithInt* closure = NULL;
         PylithInt closureSize;
         size_t numCorners = 0;
 
         PylithCallPetscRequire(DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure));
-        for (PylithInt p = 0; p < closureSize*2; p += 2) {
+        for (PylithInt p = 0; p < closureSize * 2; p += 2) {
             const PylithInt point = closure[p];
             if ((point >= vStart) && (point < vEnd)) {
                 closure[numCorners++] = point;
@@ -212,7 +231,7 @@ pylith::meshio::TestMeshIO::_checkVals(void) {
         PylithCallPetscRequire(DMPlexInvertCell_Private(_data->topology->dimension, numCorners, closure));
         REQUIRE(_data->topology->numCorners == numCorners);
         for (size_t p = 0; p < numCorners; ++p) {
-            CHECK(_data->topology->cells[index++] == closure[p]-offset);
+            CHECK(_data->topology->cells[index++] == closure[p] - offset);
         } // for
         PylithCallPetscRequire(DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure));
     } // for
@@ -221,7 +240,7 @@ pylith::meshio::TestMeshIO::_checkVals(void) {
     PylithInt matId = 0;
     for (PylithInt c = cStart; c < cEnd; ++c) {
         PylithCallPetscRequire(DMGetLabelValue(dmMesh, pylith::topology::Mesh::cells_label_name, c, &matId));
-        CHECK(_data->materialIds[c-cStart] == matId);
+        CHECK(_data->materialIds[c - cStart] == matId);
     } // for
 
     // Check vertex groups
@@ -271,8 +290,8 @@ pylith::meshio::TestMeshIO::_checkVals(void) {
         int_array faceValues;
         pylith::meshio::MeshBuilder::getFaceGroup(&faceValues, *_mesh, groupName, labelValue);
         const size_t numFaces = _data->faceGroupSizes[iGroup];
-        const size_t totalSize = numFaces*(1+_data->numFaceVertices);
-        REQUIRE(totalSize == faceValues.size() );
+        const size_t totalSize = numFaces * (1 + _data->numFaceVertices);
+        REQUIRE(totalSize == faceValues.size());
         for (size_t i = 0; i < totalSize; ++i) {
             CHECK(_data->faceGroups[index++] == faceValues[i]);
         } // for
@@ -302,14 +321,17 @@ pylith::meshio::TestMeshIO_Data::TestMeshIO_Data(void) :
     numFaceGroups(0),
 
     useIndexZero(true),
-    filename("") {}
+    filename("") {
+}
 
 
 // ----------------------------------------------------------------------
 // Destructor
 pylith::meshio::TestMeshIO_Data::~TestMeshIO_Data(void) {
-    delete topology;topology = NULL;
-    delete geometry;geometry = NULL;
+    delete topology;
+    topology = NULL;
+    delete geometry;
+    geometry = NULL;
 }
 
 

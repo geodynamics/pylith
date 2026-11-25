@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 import unittest
 
@@ -15,8 +15,7 @@ from pylith.topology.Mesh import Mesh
 
 
 class TestMesh(unittest.TestCase):
-    """Unit testing of Mesh object.
-    """
+    """Unit testing of Mesh object."""
 
     def test_constructor(self):
         mesh = Mesh()
@@ -30,6 +29,7 @@ def load_tests(loader, tests, pattern):
 
 if __name__ == "__main__":
     from pylith.petsc.Manager import Manager
+
     petsc = Manager()
     petsc.initialize()
 

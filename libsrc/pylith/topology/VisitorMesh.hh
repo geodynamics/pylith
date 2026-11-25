@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
@@ -22,16 +23,14 @@ class pylith::topology::VecVisitorMesh { // VecVisitorMesh
     friend class TestVecVisitorMesh; // unit testing
 
     // PUBLIC ENUMS ///////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     enum SectionEnum {
-        LOCAL_SECTION=0,
-        GLOBAL_SECTION=1,
+        LOCAL_SECTION = 0,
+        GLOBAL_SECTION = 1,
     };
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /** Constructor with field over a mesh.
      *
      * The optional subfield argument is designed to improve performance
@@ -42,7 +41,7 @@ public:
      * @param subfield Name of subfield section to use instead of field section.
      */
     VecVisitorMesh(const Field& field,
-                   const char* subfield=0);
+                   const char* subfield = 0);
 
     /// Default destructor
     ~VecVisitorMesh(void);
@@ -57,7 +56,7 @@ public:
      * @param subfield Name of subfield section to use instead of field section.
      */
     void initialize(const Field& field,
-                    const char *subfield=0);
+                    const char* subfield = 0);
 
     /// Clear cached data.
     void clear(void);
@@ -166,12 +165,10 @@ public:
      *
      * @param field Field to optimize closure for.
      */
-    static
-    void optimizeClosure(const Field& field);
+    static void optimizeClosure(const Field& field);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     PetscDM _dm; ///< Cached PETSc dm for mesh.
     PetscVec _localVec; ///< Cached local PETSc Vec.
     PetscSection _localSection; ///< Cached PETSc local section.
@@ -180,11 +177,9 @@ private:
     SectionEnum _selectedSection; ///< Current selected section.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
-private:
-
+  private:
     VecVisitorMesh(const VecVisitorMesh&); ///< Not implemented
     const VecVisitorMesh& operator=(const VecVisitorMesh&); ///< Not implemented
-
 };
 
 // VecVisitorMesh
@@ -197,8 +192,7 @@ class pylith::topology::MatVisitorMesh { // MatVisitorMesh
     friend class TestMatVisitorMesh; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /** Default constructor.
      *
      * @param mat PETSc matrix.
@@ -229,23 +223,21 @@ public:
                     const InsertMode mode) const;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     const PetscMat _mat; ///< Cached PETSc matrix.
     PetscDM _dm; ///< Cached PETSc dm for mesh.
     PetscSection _localSection; ///< Cached PETSc local section.
     PetscSection _globalSection; ///< Cached PETSc global section.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
-private:
-
+  private:
     MatVisitorMesh(const MatVisitorMesh&); ///< Not implemented
     const MatVisitorMesh& operator=(const MatVisitorMesh&); ///< Not implemented
-
 };
 
 // MatVisitorMesh
 
 #include "VisitorMesh.icc"
+
 
 // End of file

@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 /* @brief C++ PlaneStrainState object that stores stress and strain as
  * state variables.
@@ -35,8 +35,8 @@
 namespace contrib {
     namespace materials {
         class PlaneStrainState;
-    } // materials
-} // contrib
+    } // namespace materials
+} // namespace contrib
 
 // PlaneStrainState -----------------------------------------------------
 class contrib::materials::PlaneStrainState : public pylith::materials::ElasticMaterial { // class PlaneStrainState
@@ -48,8 +48,7 @@ class contrib::materials::PlaneStrainState : public pylith::materials::ElasticMa
     // --------------------------------------------------------------------
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor
     PlaneStrainState(void);
 
@@ -70,8 +69,7 @@ public:
     PylithScalar stableTimeStepImplicit(const pylith::topology::Mesh& mesh);
 
     // PROTECTED METHODS //////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Compute properties from values in spatial database.
      *
      * Order of values in arrays matches order used in dbValues() and
@@ -211,8 +209,7 @@ protected:
     // --------------------------------------------------------------------
 
     // PROTECTED METHODS //////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Update state variables (for next time step).
      *
      * @param stateVars State variables at location.
@@ -238,8 +235,7 @@ protected:
                           const int initialStrainSize);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
-private:
-
+  private:
     // --------------------------------------------------------------------
     // We use these constants for consistent access into the arrays of
     // physical properties and state variables.
@@ -256,8 +252,7 @@ private:
     static const int s_stress;
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
-private:
-
+  private:
     /// Not implemented
     PlaneStrainState(const PlaneStrainState& m);
 
@@ -265,5 +260,6 @@ private:
     const PlaneStrainState& operator=(const PlaneStrainState& m);
 
 }; // class PlaneStrainState
+
 
 // End of file

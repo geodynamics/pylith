@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-meshing-cubit)=
 # Cubit
 
@@ -41,7 +50,7 @@ s
 : Get id of last entity create of type `entity_type`.
 
 `cubit.get_id_from_name(name: str)`
-: Get id of enty with name `name`.
+: Get id of entity with name `name`.
 
 `cubit.get_id_string(entity_ids: list)`
 : Get string with list of ids for list of entity ids `entity_ids`.
@@ -63,3 +72,5 @@ s
 
 `cubit.body(id: int)`
 : Get body given entity id `id`.
+
+% End of file

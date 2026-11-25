@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -22,28 +22,27 @@
 namespace pylith {
     namespace topology {
         class TestFieldBase;
-    } // topology
-} // pylith
+    } // namespace topology
+} // namespace pylith
 
 class pylith::topology::TestFieldBase : public pylith::utils::GenericComponent {
     // PUBLIC METHODS ///////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test vectorFieldString().
-    static
-    void testVectorFieldString(void);
+    static void testVectorFieldString(void);
 
     /// Test parseVectorFieldString().
-    static
-    void testParseVectorFieldString(void);
+    static void testParseVectorFieldString(void);
 
 }; // class TestFieldBase
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestFieldBase::testVectorFieldString", "[TestFieldBase]") {
+TEST_CASE("TestFieldBase::testVectorFieldString",
+          "[TestFieldBase]") {
     pylith::topology::TestFieldBase::testVectorFieldString();
 }
-TEST_CASE("TestFieldBase::testParVectorFieldString", "[TestFieldBase]") {
+TEST_CASE("TestFieldBase::testParVectorFieldString",
+          "[TestFieldBase]") {
     pylith::topology::TestFieldBase::testParseVectorFieldString();
 }
 

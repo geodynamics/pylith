@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "TestDataWriterHDF5.hh" // ISA TestDataWriterHDF5
@@ -19,14 +20,13 @@ namespace pylith {
     namespace meshio {
         class TestDataWriterHDF5Material;
         class TestDataWriterHDF5Material_Data;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterHDF5Material : public TestDataWriterHDF5, public TestDataWriterMaterial {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestDataWriterHDF5Material(TestDataWriterHDF5Material_Data* data);
 
@@ -43,8 +43,7 @@ public:
     void testWriteCellField(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get test data.
      *
      * @returns Test data.
@@ -52,13 +51,14 @@ protected:
     TestDataWriterMaterial_Data* _getData(void);
 
     // PROTECTED MEMBDERS /////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     TestDataWriterHDF5Material_Data* _data; ///< Data for testing.
 
 }; // class TestDataWriterHDF5Material
 
 // ------------------------------------------------------------------------------------------------
-class pylith::meshio::TestDataWriterHDF5Material_Data : public TestDataWriterHDF5_Data, public TestDataWriterMaterial_Data {};
+class pylith::meshio::TestDataWriterHDF5Material_Data : public TestDataWriterHDF5_Data,
+                                                        public TestDataWriterMaterial_Data {};
+
 
 // End of file

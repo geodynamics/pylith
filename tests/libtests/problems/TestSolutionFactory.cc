@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -15,22 +15,21 @@
 #include "pylith/problems/SolutionFactory.hh" // Test subject
 #include "tests/src/FieldTester.hh" // USES FieldTester
 
+#include "pylith/exceptions/error.hh" // USES PyLITH_METHOD*
+#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
-#include "pylith/topology/Field.hh" // USES Field
-#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/exceptions/error.hh" // USES PyLITH_METHOD*
 
-#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 
 #include "catch2/catch_test_macros.hpp"
 
 // ------------------------------------------------------------------------------------------------
 // Setup testing data.
-pylith::problems::TestSolutionFactory::TestSolutionFactory(TestSolutionFactory_Data* data) :
-    _data(data) {
+pylith::problems::TestSolutionFactory::TestSolutionFactory(TestSolutionFactory_Data* data) : _data(data) {
     PYLITH_METHOD_BEGIN;
     REQUIRE(_data);
 
@@ -47,17 +46,20 @@ pylith::problems::TestSolutionFactory::TestSolutionFactory(TestSolutionFactory_D
     componentNames[0] = "displacement_x";
     componentNames[1] = "displacement_y";
     componentNames[2] = "displacement_z";
-    info.description = pylith::topology::Field::Description(
-        "displacement",
-        "displacement",
-        componentNames,
-        componentNames.size(),
-        pylith::topology::Field::VECTOR,
-        _data->scales->getLengthScale()
-        );
-    info.fe = pylith::topology::Field::Discretization(
-        1, 2, -1, -1, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, true
-        );
+    info.description = pylith::topology::Field::Description("displacement",
+                                                            "displacement",
+                                                            componentNames,
+                                                            componentNames.size(),
+                                                            pylith::topology::Field::VECTOR,
+                                                            _data->scales->getLengthScale());
+    info.fe = pylith::topology::Field::Discretization(1,
+                                                      2,
+                                                      -1,
+                                                      -1,
+                                                      false,
+                                                      pylith::topology::Field::DEFAULT_BASIS,
+                                                      pylith::topology::Field::POLYNOMIAL_SPACE,
+                                                      true);
     info.index = 0;
     _data->subfields["displacement"] = info;
     _data->subfields["displacement"].description.numComponents = _data->dimension;
@@ -67,17 +69,21 @@ pylith::problems::TestSolutionFactory::TestSolutionFactory(TestSolutionFactory_D
     componentNames[0] = "velocity_x";
     componentNames[1] = "velocity_y";
     componentNames[2] = "velocity_z";
-    info.description = pylith::topology::Field::Description(
-        "velocity",
-        "velocity",
-        componentNames,
-        componentNames.size(),
-        pylith::topology::Field::VECTOR,
-        _data->scales->getLengthScale() / _data->scales->getTimeScale()
-        );
-    info.fe = pylith::topology::Field::Discretization(
-        2, 3, -1, -1, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, false
-        );
+    info.description =
+        pylith::topology::Field::Description("velocity",
+                                             "velocity",
+                                             componentNames,
+                                             componentNames.size(),
+                                             pylith::topology::Field::VECTOR,
+                                             _data->scales->getLengthScale() / _data->scales->getTimeScale());
+    info.fe = pylith::topology::Field::Discretization(2,
+                                                      3,
+                                                      -1,
+                                                      -1,
+                                                      false,
+                                                      pylith::topology::Field::DEFAULT_BASIS,
+                                                      pylith::topology::Field::POLYNOMIAL_SPACE,
+                                                      false);
     info.index = 1;
     _data->subfields["velocity"] = info;
     _data->subfields["velocity"].description.numComponents = _data->dimension;
@@ -85,34 +91,41 @@ pylith::problems::TestSolutionFactory::TestSolutionFactory(TestSolutionFactory_D
     // pressure
     componentNames.resize(1);
     componentNames[0] = "pressure";
-    info.description = pylith::topology::Field::Description(
-        "pressure",
-        "pressure",
-        componentNames,
-        componentNames.size(),
-        pylith::topology::Field::SCALAR,
-        _data->scales->getRigidityScale()
-        );
-    info.fe = pylith::topology::Field::Discretization(
-        2, 2, -1, -1, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, true
-        );
+    info.description = pylith::topology::Field::Description("pressure",
+                                                            "pressure",
+                                                            componentNames,
+                                                            componentNames.size(),
+                                                            pylith::topology::Field::SCALAR,
+                                                            _data->scales->getRigidityScale());
+    info.fe = pylith::topology::Field::Discretization(2,
+                                                      2,
+                                                      -1,
+                                                      -1,
+                                                      false,
+                                                      pylith::topology::Field::DEFAULT_BASIS,
+                                                      pylith::topology::Field::POLYNOMIAL_SPACE,
+                                                      true);
     info.index = 0;
     _data->subfields["pressure"] = info;
 
     // trace_strain
     componentNames.resize(1);
     componentNames[0] = "trace_strain";
-    info.description = pylith::topology::Field::Description(
-        "trace_strain",
-        "trace_strain",
-        componentNames,
-        componentNames.size(),
-        pylith::topology::Field::SCALAR,
-        _data->scales->getLengthScale() / _data->scales->getLengthScale()
-        );
-    info.fe = pylith::topology::Field::Discretization(
-        2, 2, -1, -1, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, true
-        );
+    info.description =
+        pylith::topology::Field::Description("trace_strain",
+                                             "trace_strain",
+                                             componentNames,
+                                             componentNames.size(),
+                                             pylith::topology::Field::SCALAR,
+                                             _data->scales->getLengthScale() / _data->scales->getLengthScale());
+    info.fe = pylith::topology::Field::Discretization(2,
+                                                      2,
+                                                      -1,
+                                                      -1,
+                                                      false,
+                                                      pylith::topology::Field::DEFAULT_BASIS,
+                                                      pylith::topology::Field::POLYNOMIAL_SPACE,
+                                                      true);
     info.index = 1;
     _data->subfields["trace_strain"] = info;
 
@@ -121,17 +134,20 @@ pylith::problems::TestSolutionFactory::TestSolutionFactory(TestSolutionFactory_D
     componentNames[0] = "lagrange_multiplier_fault_x";
     componentNames[1] = "lagrange_multiplier_fault_y";
     componentNames[2] = "lagrange_multiplier_fault_z";
-    info.description = pylith::topology::Field::Description(
-        "lagrange_multiplier_fault",
-        "lagrange_multiplier_fault",
-        componentNames,
-        componentNames.size(),
-        pylith::topology::Field::VECTOR,
-        _data->scales->getRigidityScale()
-        );
-    info.fe = pylith::topology::Field::Discretization(
-        2, 2, -1, -1, true, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, true
-        );
+    info.description = pylith::topology::Field::Description("lagrange_multiplier_fault",
+                                                            "lagrange_multiplier_fault",
+                                                            componentNames,
+                                                            componentNames.size(),
+                                                            pylith::topology::Field::VECTOR,
+                                                            _data->scales->getRigidityScale());
+    info.fe = pylith::topology::Field::Discretization(2,
+                                                      2,
+                                                      -1,
+                                                      -1,
+                                                      true,
+                                                      pylith::topology::Field::DEFAULT_BASIS,
+                                                      pylith::topology::Field::POLYNOMIAL_SPACE,
+                                                      true);
     info.index = 1;
     _data->subfields["lagrange_multiplier_fault"] = info;
     _data->subfields["lagrange_multiplier_fault"].description.numComponents = _data->dimension;
@@ -139,17 +155,20 @@ pylith::problems::TestSolutionFactory::TestSolutionFactory(TestSolutionFactory_D
     // temperature
     componentNames.resize(1);
     componentNames[0] = "temperature";
-    info.description = pylith::topology::Field::Description(
-        "temperature",
-        "temperature",
-        componentNames,
-        componentNames.size(),
-        pylith::topology::Field::SCALAR,
-        _data->scales->getTemperatureScale()
-        );
-    info.fe = pylith::topology::Field::Discretization(
-        2, 3, -1, -1, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POINT_SPACE, true
-        );
+    info.description = pylith::topology::Field::Description("temperature",
+                                                            "temperature",
+                                                            componentNames,
+                                                            componentNames.size(),
+                                                            pylith::topology::Field::SCALAR,
+                                                            _data->scales->getTemperatureScale());
+    info.fe = pylith::topology::Field::Discretization(2,
+                                                      3,
+                                                      -1,
+                                                      -1,
+                                                      false,
+                                                      pylith::topology::Field::DEFAULT_BASIS,
+                                                      pylith::topology::Field::POINT_SPACE,
+                                                      true);
     info.index = 1;
     _data->subfields["temperature"] = info;
 
@@ -164,10 +183,14 @@ pylith::problems::TestSolutionFactory::TestSolutionFactory(TestSolutionFactory_D
 pylith::problems::TestSolutionFactory::~TestSolutionFactory(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _factory;_factory = NULL;
-    delete _data;_data = NULL;
-    delete _mesh;_mesh = NULL;
-    delete _solution;_solution = NULL;
+    delete _factory;
+    _factory = NULL;
+    delete _data;
+    _data = NULL;
+    delete _mesh;
+    _mesh = NULL;
+    delete _solution;
+    _solution = NULL;
 
     PYLITH_METHOD_END;
 } // destructor
@@ -290,7 +313,8 @@ pylith::problems::TestSolutionFactory::_initialize(void) {
     pylith::meshio::MeshIOAscii iohandler;
     REQUIRE(_data->meshFilename);
     iohandler.setFilename(_data->meshFilename);
-    _mesh = new pylith::topology::Mesh();REQUIRE(_mesh);
+    _mesh = new pylith::topology::Mesh();
+    REQUIRE(_mesh);
     iohandler.read(_mesh);
 
     REQUIRE(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
@@ -301,7 +325,8 @@ pylith::problems::TestSolutionFactory::_initialize(void) {
     REQUIRE(_data->scales);
     pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->scales);
 
-    _solution = new pylith::topology::Field(*_mesh);REQUIRE(_solution);
+    _solution = new pylith::topology::Field(*_mesh);
+    REQUIRE(_solution);
     _solution->setLabel("solution");
     _factory = new SolutionFactory(*_solution, *_data->scales);
 
@@ -314,14 +339,18 @@ pylith::problems::TestSolutionFactory_Data::TestSolutionFactory_Data(void) :
     meshFilename(NULL),
     cs(NULL),
     scales(new pylith::scales::Scales),
-    solutionDB(new spatialdata::spatialdb::UserFunctionDB) {}
+    solutionDB(new spatialdata::spatialdb::UserFunctionDB) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
 pylith::problems::TestSolutionFactory_Data::~TestSolutionFactory_Data(void) {
-    delete cs;cs = NULL;
-    delete scales;scales = NULL;
-    delete solutionDB;solutionDB = NULL;
+    delete cs;
+    cs = NULL;
+    delete scales;
+    scales = NULL;
+    delete solutionDB;
+    solutionDB = NULL;
 }
 
 

@@ -1,4 +1,14 @@
 #!python
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # WARNING: This is not a standalone Python script. It must be run from within Cubit.
 #
 # Generate simple Exodus files for testing ExodusII and MeshIOCubit.
@@ -19,9 +29,10 @@ import cubit
 cubit.reset()
 
 km = 1000.0
-dx = 10*km
+dx = 10 * km
 
-cubit.brick(40*km, 80*km, 40*km); v1 = cubit.get_last_id("volume")
+cubit.brick(40 * km, 80 * km, 40 * km)
+v1 = cubit.get_last_id("volume")
 
 # Translate block so the top is at z=0
 cubit.cmd(f"volume {v1} move x 0 y 0 z -20*km")
@@ -29,22 +40,27 @@ cubit.cmd(f"volume {v1} move x 0 y 0 z -20*km")
 # ----------------------------------------------------------------------
 # Create interface surfaces
 # ----------------------------------------------------------------------
-cubit.cmd("create planar surface with plane xplane offset 0"); fault_surf = cubit.get_last_id("surface")
+cubit.cmd("create planar surface with plane xplane offset 0")
+fault_surf = cubit.get_last_id("surface")
 v_fault = cubit.get_last_id("volume")
 cubit.cmd(f"surface {fault_surf} name 'fault_surface'")
 
 # ----------------------------------------------------------------------
 # Divide volumes using interface surfaces
 # ----------------------------------------------------------------------
-cubit.cmd(f"webcut volume {v1} with plane surface {fault_surf}"); v2 = cubit.get_last_id("volume")
-cubit.cmd(f"volume {v1} name 'v_xpos'"); v_xpos = v1
-cubit.cmd(f"volume {v2} name 'v_xneg'"); v_xneg = v2
+cubit.cmd(f"webcut volume {v1} with plane surface {fault_surf}")
+v2 = cubit.get_last_id("volume")
+cubit.cmd(f"volume {v1} name 'v_xpos'")
+v_xpos = v1
+cubit.cmd(f"volume {v2} name 'v_xneg'")
+v_xneg = v2
 
 # ----------------------------------------------------------------------
 # Chop x and y faults into pieces
 # ----------------------------------------------------------------------
 # fault_surface_x
-cubit.brick(2*km, 50*km, 40*km); fault_chopper = cubit.get_last_id("volume")
+cubit.brick(2 * km, 50 * km, 40 * km)
+fault_chopper = cubit.get_last_id("volume")
 cubit.cmd(f"chop volume {v_fault} with volume {fault_chopper}")
 
 # ----------------------------------------------------------------------
@@ -82,7 +98,7 @@ cubit.cmd("nodeset 10 group fault_vertices")
 cubit.cmd("nodeset 10 name 'fault_vertices'")
 
 cubit.cmd("group 'fault_edge_vertices' add node in curve 45")
-#cubit.cmd("group 'fault_edge_vertices' add node in curve 46")
+# cubit.cmd("group 'fault_edge_vertices' add node in curve 46")
 cubit.cmd("group 'fault_edge_vertices' add node in curve 47")
 cubit.cmd("nodeset 11 group fault_edge_vertices")
 cubit.cmd("nodeset 11 name 'fault_edge_vertices'")
@@ -114,3 +130,6 @@ cubit.cmd("sideset 120 name 'boundary_zpos'")
 # Export exodus file
 # ----------------------------------------------------------------------
 cubit.cmd("export mesh 'tet_k.exo' dimension 3 overwrite")
+
+
+# End of file

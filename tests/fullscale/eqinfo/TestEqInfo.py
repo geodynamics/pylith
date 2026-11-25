@@ -1,12 +1,13 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # @file tests/fullscale/eqinfo/TestEqInfo.py
 #
 # @brief Generic tests for pylith_eqinfo.
@@ -19,43 +20,37 @@ from pylith.apps.EqInfoApp import EqInfoApp
 
 
 class TestEqInfo(unittest.TestCase):
-    """Generic tests for pylith_eqinfo.
-    """
+    """Generic tests for pylith_eqinfo."""
 
     def _check(self, statsE, stats):
-        """Check earthquake stats.
-        """
-        attrs = ["timestamp",
-                 "ruparea",
-                 "potency",
-                 "moment",
-                 "avgslip",
-                 "mommag",
-                 ]
+        """Check earthquake stats."""
+        attrs = [
+            "timestamp",
+            "ruparea",
+            "potency",
+            "moment",
+            "avgslip",
+            "mommag",
+        ]
 
         statsE.avgslip = statsE.potency / (statsE.ruparea + 1.0e-30)
         mask = statsE.moment > 0.0
-        statsE.mommag = -1.0e+30 * numpy.ones(statsE.moment.shape)
-        statsE.mommag[mask] = 2.0 / 3.0 * \
-            (numpy.log10(statsE.moment[mask]) - 9.05)
+        statsE.mommag = -1.0e30 * numpy.ones(statsE.moment.shape)
+        statsE.mommag[mask] = 2.0 / 3.0 * (numpy.log10(statsE.moment[mask]) - 9.05)
 
         for attr in attrs:
             valuesE = statsE.__getattribute__(attr)
             values = stats.__getattribute__(attr)
-            msg = "Mismatch in number of snapshots for attribute '%s', %d != %d." % (
-                attr, len(valuesE), len(values))
+            msg = "Mismatch in number of snapshots for attribute '%s', %d != %d." % (attr, len(valuesE), len(values))
             self.assertEqual(len(valuesE), len(values), msg=msg)
 
-            for (valueE, value) in zip(valuesE, values):
-                msg = "Mismatch in value for attribute '%s', %g != %g." % (
-                    attr, valueE, value)
+            for valueE, value in zip(valuesE, values):
+                msg = "Mismatch in value for attribute '%s', %g != %g." % (attr, valueE, value)
                 if valueE != 0.0:
                     if math.isinf(math.fabs(valueE)):
-                        self.assertAlmostEqual(1.0, math.fabs(
-                            value) / 1.0e+30, places=6, msg=msg)
+                        self.assertAlmostEqual(1.0, math.fabs(value) / 1.0e30, places=6, msg=msg)
                     else:
-                        self.assertAlmostEqual(
-                            1.0, value / valueE, places=6, msg=msg)
+                        self.assertAlmostEqual(1.0, value / valueE, places=6, msg=msg)
                 else:
                     self.assertAlmostEqual(valueE, value, places=6, msg=msg)
 
@@ -64,8 +59,7 @@ class TestEqInfo(unittest.TestCase):
 
 # ----------------------------------------------------------------------
 def run_eqinfo(appName, cfgfiles):
-    """Helper function to run pylith_eqinfo.
-    """
+    """Helper function to run pylith_eqinfo."""
     if str(appName) in dir(run_eqinfo):
         return
 

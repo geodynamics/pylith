@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -14,16 +14,16 @@
 
 #include "tests/src/FaultCohesiveStub.hh" // USES FaultsCohesiveStub
 
+#include "pylith/faults/TopologyOps.hh" // USES TopologyOps
+#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Stratum.hh" // USES Stratum
-#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
-#include "pylith/faults/TopologyOps.hh" // USES TopologyOps
 
-#include "pylith/utils/array.hh" // USES int_array, scalar_array
-#include "pylith/utils/journals.hh" // USES journals
 #include "pylith/exceptions/Exceptions.hh" // USES Exceptions
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/utils/array.hh" // USES int_array, scalar_array
+#include "pylith/utils/journals.hh" // USES journals
 
 #include "pylith/scales/Scales.hh" // USES Scales
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
@@ -47,8 +47,10 @@ pylith::faults::TestTransformTopology::TestTransformTopology(TestTransformTopolo
 // ------------------------------------------------------------------------------------------------
 // Destructor
 pylith::faults::TestTransformTopology::~TestTransformTopology(void) {
-    delete _data;_data = nullptr;
-    delete _mesh;_mesh = nullptr;
+    delete _data;
+    _data = nullptr;
+    delete _mesh;
+    _mesh = nullptr;
 } // tearDown
 
 
@@ -77,7 +79,8 @@ pylith::faults::TestTransformTopology::run(void) {
         } // if
         if (!_data->failureExpected) {
             pylith::topology::Mesh* meshNew = fault.transformTopology(_mesh);
-            delete _mesh;_mesh = meshNew;
+            delete _mesh;
+            _mesh = meshNew;
         } else {
             REQUIRE_THROWS_AS(fault.transformTopology(_mesh), std::runtime_error);
             return;
@@ -91,7 +94,8 @@ pylith::faults::TestTransformTopology::run(void) {
     } // if
 
     REQUIRE(_data->cellDim == size_t(_mesh->getDimension()));
-    PetscDM dmMesh = _mesh->getDM();assert(dmMesh);
+    PetscDM dmMesh = _mesh->getDM();
+    assert(dmMesh);
 
     // Check vertices
     topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
@@ -115,7 +119,7 @@ pylith::faults::TestTransformTopology::run(void) {
     for (PetscInt c = cStart, cell = 0; c < cEnd; ++c, ++cell) {
         PetscInt coneSize = 0;
         PylithCallPetscRequire(DMPlexGetConeSize(dmMesh, c, &coneSize));
-        INFO("cell="<<cell);
+        INFO("cell=" << cell);
         CHECK(_data->numCorners[cell] == coneSize);
     } // for
 
@@ -136,7 +140,7 @@ pylith::faults::TestTransformTopology::run(void) {
         double centroid[3];
         PylithCallPetscRequire(DMPlexComputeCellGeometryFVM(dmMesh, c, NULL, centroid, NULL));
         const PetscInt labelValueE = _data->getMatId(c, _data->numNoncohesiveCells, centroid);
-        INFO("cell="<<c<<" with centroid ("<<centroid[0]<<","<<centroid[1]<<","<<centroid[2]<<")");
+        INFO("cell=" << c << " with centroid (" << centroid[0] << "," << centroid[1] << "," << centroid[2] << ")");
         CHECK(labelValueE == labelValue);
     } // for
 
@@ -149,9 +153,9 @@ pylith::faults::TestTransformTopology::run(void) {
     for (PetscInt iLabel = 0; iLabel < numLabels; ++iLabel) {
         PetscDMLabel label = NULL;
         PetscIS pointIS = NULL;
-        const PetscInt *points = NULL;
+        const PetscInt* points = NULL;
         PetscInt numPoints = 0, depth = 0;
-        const char *labelName = NULL;
+        const char* labelName = NULL;
         std::set<std::string> ignoreLabels;
         ignoreLabels.insert("depth");
         ignoreLabels.insert(pylith::topology::Mesh::cells_label_name);
@@ -161,8 +165,10 @@ pylith::faults::TestTransformTopology::run(void) {
         ignoreLabels.insert("celltype");
 
         PylithCallPetscRequire(DMGetLabelName(dmMesh, iLabel, &labelName));
-        if (ignoreLabels.count(labelName) > 0) { continue; }
-        INFO("Checking label '" <<labelName << "'");
+        if (ignoreLabels.count(labelName) > 0) {
+            continue;
+        }
+        INFO("Checking label '" << labelName << "'");
         PylithCallPetscRequire(DMGetLabel(dmMesh, labelName, &label));
         PylithCallPetscRequire(DMLabelGetStratumIS(label, 1, &pointIS));
         REQUIRE(pointIS);
@@ -195,7 +201,9 @@ pylith::faults::TestTransformTopology::_initialize(void) {
     PYLITH_METHOD_BEGIN;
     REQUIRE(_data);
 
-    delete _mesh;_mesh = new pylith::topology::Mesh;REQUIRE(_mesh);
+    delete _mesh;
+    _mesh = new pylith::topology::Mesh;
+    REQUIRE(_mesh);
 
     pylith::meshio::MeshIOAscii iohandler;
     iohandler.setFilename(_data->filename);
@@ -229,12 +237,14 @@ pylith::faults::TestTransformTopology_Data::TestTransformTopology_Data(void) :
     groupSizes(NULL),
     groupNames(NULL),
     groupTypes(NULL),
-    failureExpected(false) {}
+    failureExpected(false) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
 // Destructor
-pylith::faults::TestTransformTopology_Data::~TestTransformTopology_Data(void) {}
+pylith::faults::TestTransformTopology_Data::~TestTransformTopology_Data(void) {
+}
 
 
 // End of file

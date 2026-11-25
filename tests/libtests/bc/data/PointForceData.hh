@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/utils/types.hh" // HASA PylithScalar
@@ -14,13 +15,12 @@
 namespace pylith {
     namespace bc {
         class PointForceData;
-    } // pylith
-} // bc
+    } // namespace bc
+} // namespace pylith
 
 class pylith::bc::PointForceData {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     PointForceData(void);
 
@@ -28,8 +28,7 @@ public:
     ~PointForceData(void);
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     PylithScalar tRef; ///< Reference time for rate of change of forces.
     PylithScalar forceRate; ///< Rate of change of force.
     PylithScalar tResidual; ///< Time for computing residual.
@@ -56,7 +55,7 @@ public:
     PylithScalar timeScale; ///< Time scale.
     PylithScalar densityScale; ///< Density scale.
     //@}
-
 };
+
 
 // End of file

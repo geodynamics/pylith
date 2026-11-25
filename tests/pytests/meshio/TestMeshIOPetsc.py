@@ -1,29 +1,29 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 import unittest
 
 from pylith.testing.TestCases import TestComponent, make_suite
-from pylith.meshio.MeshIOPetsc import (MeshIOPetsc, mesh_input, mesh_output)
+from pylith.meshio.MeshIOPetsc import MeshIOPetsc, mesh_input, mesh_output
 
 
 class TestMeshIOPetscInputRead(TestComponent):
-    """Unit testing of MeshIOPetsc object.
-    """
+    """Unit testing of MeshIOPetsc object."""
+
     _class = MeshIOPetsc
     _factory = mesh_input
 
 
 class TestMeshIOPetscInputWrite(TestComponent):
-    """Unit testing of MeshIOPetsc object.
-    """
+    """Unit testing of MeshIOPetsc object."""
+
     _class = MeshIOPetsc
     _factory = mesh_output
 
@@ -32,7 +32,7 @@ def load_tests(loader, tests, pattern):
     TEST_CLASSES = [
         TestMeshIOPetscInputRead,
         TestMeshIOPetscInputWrite,
-        ]
+    ]
     return make_suite(TEST_CLASSES, loader)
 
 

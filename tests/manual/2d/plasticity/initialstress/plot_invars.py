@@ -1,4 +1,13 @@
 #!/usr/bin/env nemesis
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 import numpy
 import h5py
@@ -13,13 +22,13 @@ stepSizes = ["dt01", "dt02", "dt05", "dt10"]
 
 # Time and stress/strain normalization information.
 uparser = parser()
-timeUnits = uparser.parse('1.0*year').value
+timeUnits = uparser.parse("1.0*year").value
 strainUnits = 1.0e-6
 stressUnits = uparser.parse("1.0*MPa").value
 
 # Line styles.
-stylePlastic = ['k-', 'ro', 'bs', 'gD']
-styleElastic = ['k--', 'r--', 'b--', 'g--']
+stylePlastic = ["k-", "ro", "bs", "gD"]
+styleElastic = ["k--", "r--", "b--", "g--"]
 
 # -----------------------------------------------------------------------------
 
@@ -30,17 +39,17 @@ def computeStressInvar(fileName):
     """
 
     h5 = h5py.File(fileName, "r", driver="sec2")
-    time = h5['time'][:]
-    stress = h5['cell_fields/stress'][:] / stressUnits
+    time = h5["time"][:]
+    stress = h5["cell_fields/stress"][:] / stressUnits
     h5.close()
 
     timeYears = time / timeUnits
     numSteps = time.shape[0]
     stressInvarMean = numpy.zeros(numSteps, dtype=numpy.float64)
 
-    pres = (stress[:, :, 0] + stress[:, :, 1] + stress[:, :, 2]) / 3.0
-    s11 = stress[:, :, 0] - pres
-    s22 = stress[:, :, 1] - pres
+    pressure = (stress[:, :, 0] + stress[:, :, 1] + stress[:, :, 2]) / 3.0
+    s11 = stress[:, :, 0] - pressure
+    s22 = stress[:, :, 1] - pressure
     s12 = stress[:, :, 2]
 
     stressInvar = numpy.sqrt(0.5 * (s11 * s11 + s22 * s22 + 2.0 * (s12 * s12)))
@@ -63,24 +72,22 @@ def computeStressInvar(fileName):
 
 
 def computeStrainInvar(fileName):
-    """Function to compute second plastic strain invariant.
-    """
+    """Function to compute second plastic strain invariant."""
 
     h5 = h5py.File(fileName, "r", driver="sec2")
-    times = h5['time'][:, 0, 0]
+    times = h5["time"][:, 0, 0]
     timeYears = times / timeUnits
     numSteps = times.shape[0]
     strainInvarMean = numpy.zeros(numSteps, dtype=numpy.float64)
 
-    plasStrain = h5['cell_fields/plastic_strain'][:, :, :] / strainUnits
+    plasStrain = h5["cell_fields/plastic_strain"][:, :, :] / strainUnits
     h5.close()
     e11 = plasStrain[:, :, 0]
     e22 = plasStrain[:, :, 1]
     e33 = plasStrain[:, :, 2]
     e12 = plasStrain[:, :, 3]
 
-    strainInvar = numpy.sqrt(0.5 * (e11 * e11 + e22 * e22 + e33 * e33 +
-                                    2.0 * (e12 * e12)))
+    strainInvar = numpy.sqrt(0.5 * (e11 * e11 + e22 * e22 + e33 * e33 + 2.0 * (e12 * e12)))
 
     print("File %s:" % fileName)
     for stepNum in range(numSteps):
@@ -109,10 +116,13 @@ ax = pyplot.subplot(111)
 
 for istep, stepSize in enumerate(stepSizes):
     filename = "output/plastic_%s-statevars.h5" % stepSize
-    (strainInvarMean, time) = computeStrainInvar(filename)
+    strainInvarMean, time = computeStrainInvar(filename)
     ax.plot(time, strainInvarMean, stylePlastic[istep])
 
-ax.set_xlabel('Time (years)')
-ax.set_ylabel('Plastic strain invariant (microStrain)')
+ax.set_xlabel("Time (years)")
+ax.set_ylabel("Plastic strain invariant (microStrain)")
 
 pyplot.show()
+
+
+# End of file

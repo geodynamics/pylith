@@ -1,24 +1,24 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/feassemble/PhysicsImplementation.hh" // implementation of object methods
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
 #include "pylith/problems/Physics.hh" // USES Physics
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
-#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 #include <cassert> // USES assert()
@@ -31,7 +31,8 @@ pylith::feassemble::PhysicsImplementation::PhysicsImplementation(pylith::problem
     _diagnosticField(NULL),
     _derivedField(NULL),
     _observers(NULL),
-    _logger(NULL) {}
+    _logger(NULL) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -47,11 +48,15 @@ void
 pylith::feassemble::PhysicsImplementation::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _auxiliaryField;_auxiliaryField = NULL;
-    delete _diagnosticField;_diagnosticField = NULL;
-    delete _derivedField;_derivedField = NULL;
+    delete _auxiliaryField;
+    _auxiliaryField = NULL;
+    delete _diagnosticField;
+    _diagnosticField = NULL;
+    delete _derivedField;
+    _derivedField = NULL;
     _observers = NULL; // :KLUDGE: Use shared pointer. _observers held by physics.
-    delete _logger;_logger = NULL;
+    delete _logger;
+    _logger = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -102,10 +107,11 @@ pylith::feassemble::PhysicsImplementation::getDerivedField(void) const {
 // ------------------------------------------------------------------------------------------------
 // Notify observers of current solution.
 void
-pylith::feassemble::PhysicsImplementation::notifyObservers(const PylithReal t,
-                                                           const PylithInt tindex,
-                                                           const pylith::topology::Field& solution,
-                                                           const pylith::problems::Observer::NotificationType notification) {
+pylith::feassemble::PhysicsImplementation::notifyObservers(
+    const PylithReal t,
+    const PylithInt tindex,
+    const pylith::topology::Field& solution,
+    const pylith::problems::Observer::NotificationType notification) {
     if (!_observers) {
         return;
     } // if

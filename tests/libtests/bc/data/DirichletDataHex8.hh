@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "DirichletData.hh"
@@ -14,13 +15,12 @@
 namespace pylith {
     namespace bc {
         class DirichletDataHex8;
-    } // pylith
-} // bc
+    } // namespace bc
+} // namespace pylith
 
 class pylith::bc::DirichletDataHex8 : public DirichletData {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     DirichletDataHex8(void);
 
@@ -28,8 +28,7 @@ public:
     ~DirichletDataHex8(void);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     static const int _numDOF; ///< Number of degrees of freedom at each point.
 
     static const int _numFixedDOF; ///< Number of fixedDOF at constrained points.
@@ -48,5 +47,6 @@ private:
     static const char* _meshFilename; ///< Filename of input mesh.
     static const char* _dbFilename; ///< Filename of simple spatial database.
 };
+
 
 // End of file

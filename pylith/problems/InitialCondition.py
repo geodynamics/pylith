@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from pylith.petsc.Component import Component
 from .problems import InitialCondition as ModuleInitialCondition
@@ -16,26 +16,24 @@ class InitialCondition(Component, ModuleInitialCondition):
     """
     Abstract base class for specifying initial conditions for the solution.
     """
+
     import pythia.pyre.inventory
 
     subfields = pythia.pyre.inventory.list("subfields", default=["displacement"])
     subfields.meta["tip"] = "Names of solution subfields for initial condition."
 
     def __init__(self, name="initialconditions"):
-        """Constructor.
-        """
+        """Constructor."""
         Component.__init__(self, name, facility="initial_conditions")
 
     def preinitialize(self, problem):
-        """Setup initial conditions.
-        """
+        """Setup initial conditions."""
         self._createModuleObj()
         ModuleInitialCondition.setIdentifier(self, self.aliases[-1])
         ModuleInitialCondition.setSubfields(self, self.subfields)
 
     def _createModuleObj(self):
-        """Call constructor for module object for access to C++ object.
-        """
+        """Call constructor for module object for access to C++ object."""
         raise NotImplementedError("Please implement _createModuleObj() in derived class.")
 
 

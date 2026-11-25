@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # MMS Test Redesign: Approach C — Detailed Design Specification
 
 ## 1. Overview
@@ -2149,3 +2158,5 @@ This design achieves:
 - **Clear ownership model** with no double-free or use-after-free risks.
 - **Extensible to multiple kinematic sources** without interface changes.
 - **Works for 2D and 3D** without special handling.
+
+% End of file

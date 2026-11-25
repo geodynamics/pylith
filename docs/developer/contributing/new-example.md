@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Creating a new example
 
 The workflow for creating a new example is similar to the workflow for creating a new feature.
@@ -16,3 +25,5 @@ A new example is added using a feature branch with additions to the `examples` d
     4. Add example to table and toc in `examples/index.md`.
     5. Add files to `docs/Makefile.am`
     6. Check that all Markdown files have each sentence on its own single line.
+
+% End of file

@@ -1,4 +1,14 @@
 #!/usr/bin/env nemesis
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 """Plot solver performance for 3D elasticity with faults benchmark."""
 
 from matplotlib import pyplot
@@ -46,9 +56,7 @@ LABELS = (
 )
 
 pyplot.style.use("matplotlib_extras.color-lightbg")
-figure, axes = pyplot.subplots(
-    ncols=2, nrows=1, figsize=(8.5, 4.0), layout="constrained"
-)
+figure, axes = pyplot.subplots(ncols=2, nrows=1, figsize=(8.5, 4.0), layout="constrained")
 
 ax_iters = axes[0]
 ax_iters.spines[["top", "right"]].set_visible(False)
@@ -107,3 +115,6 @@ for i_solver, sim_values in enumerate(STATS.values()):
 
     ax_time.legend(loc="upper left", fontsize="small")
     figure.savefig(f"solver-performance-{i_solver}.pdf")
+
+
+# End of file

@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Visual Studio Code
 
 Visual Studio Code (VS Code) provides a extensive integrated development environment for writing code, source control, building, and running tests.
@@ -8,7 +17,7 @@ The PyLith repository is setup to include local settings for VS Code for buildin
 The PyLith settings for VS Code make use of the following environment variables, which are automatically set in the PyLith development Docker container.
 If you are working in VS Code with local source code, then we recommend setting these environment variables as part of activating the PyLith virtual environment.
 
-| Environment variable | Decription                                              |
+| Environment variable | Description                                              |
 | :------------------- | :------------------------------------------------------ |
 | `PETSC_DIR`          | Directory for PETSc                                     |
 | `PETSC_ARCH`         | Build label for PETSc debugging configuration           |
@@ -62,3 +71,5 @@ Other extensions that you may find useful include:
 - Remote-SSH
 - Git Graph
 - Git Lens
+
+% End of file

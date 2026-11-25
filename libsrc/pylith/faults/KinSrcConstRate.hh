@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/faults/KinSrc.hh"
@@ -27,8 +28,7 @@ class pylith::faults::KinSrcConstRate : public KinSrc {
     friend class TestKinSrcConstRate; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     KinSrcConstRate(void);
 
@@ -58,25 +58,24 @@ public:
      * @param[in] constants Array of registered constants.
      * @param[out] slip [dim].
      */
-    static
-    void slipFn(const PylithInt dim,
-                const PylithInt numS,
-                const PylithInt numA,
-                const PylithInt sOff[],
-                const PylithInt sOff_x[],
-                const PylithScalar s[],
-                const PylithScalar s_t[],
-                const PylithScalar s_x[],
-                const PylithInt aOff[],
-                const PylithInt aOff_x[],
-                const PylithScalar a[],
-                const PylithScalar a_t[],
-                const PylithScalar a_x[],
-                const PylithReal t,
-                const PylithScalar x[],
-                const PylithInt numConstants,
-                const PylithScalar constants[],
-                PylithScalar slip[]);
+    static void slipFn(const PylithInt dim,
+                       const PylithInt numS,
+                       const PylithInt numA,
+                       const PylithInt sOff[],
+                       const PylithInt sOff_x[],
+                       const PylithScalar s[],
+                       const PylithScalar s_t[],
+                       const PylithScalar s_x[],
+                       const PylithInt aOff[],
+                       const PylithInt aOff_x[],
+                       const PylithScalar a[],
+                       const PylithScalar a_t[],
+                       const PylithScalar a_x[],
+                       const PylithReal t,
+                       const PylithScalar x[],
+                       const PylithInt numConstants,
+                       const PylithScalar constants[],
+                       PylithScalar slip[]);
 
     /** Slip rate time function kernel.
      *
@@ -101,25 +100,24 @@ public:
      * @param[in] constants Array of registered constants.
      * @param[out] slipRate [dim].
      */
-    static
-    void slipRateFn(const PylithInt dim,
-                    const PylithInt numS,
-                    const PylithInt numA,
-                    const PylithInt sOff[],
-                    const PylithInt sOff_x[],
-                    const PylithScalar s[],
-                    const PylithScalar s_t[],
-                    const PylithScalar s_x[],
-                    const PylithInt aOff[],
-                    const PylithInt aOff_x[],
-                    const PylithScalar a[],
-                    const PylithScalar a_t[],
-                    const PylithScalar a_x[],
-                    const PylithReal t,
-                    const PylithScalar x[],
-                    const PylithInt numConstants,
-                    const PylithScalar constants[],
-                    PylithScalar slipRate[]);
+    static void slipRateFn(const PylithInt dim,
+                           const PylithInt numS,
+                           const PylithInt numA,
+                           const PylithInt sOff[],
+                           const PylithInt sOff_x[],
+                           const PylithScalar s[],
+                           const PylithScalar s_t[],
+                           const PylithScalar s_x[],
+                           const PylithInt aOff[],
+                           const PylithInt aOff_x[],
+                           const PylithScalar a[],
+                           const PylithScalar a_t[],
+                           const PylithScalar a_x[],
+                           const PylithReal t,
+                           const PylithScalar x[],
+                           const PylithInt numConstants,
+                           const PylithScalar constants[],
+                           PylithScalar slipRate[]);
 
     /** Slip acceleration time function kernel.
      *
@@ -144,29 +142,27 @@ public:
      * @param[in] constants Array of registered constants.
      * @param[out] slipAcc [dim].
      */
-    static
-    void slipAccFn(const PylithInt dim,
-                   const PylithInt numS,
-                   const PylithInt numA,
-                   const PylithInt sOff[],
-                   const PylithInt sOff_x[],
-                   const PylithScalar s[],
-                   const PylithScalar s_t[],
-                   const PylithScalar s_x[],
-                   const PylithInt aOff[],
-                   const PylithInt aOff_x[],
-                   const PylithScalar a[],
-                   const PylithScalar a_t[],
-                   const PylithScalar a_x[],
-                   const PylithReal t,
-                   const PylithScalar x[],
-                   const PylithInt numConstants,
-                   const PylithScalar constants[],
-                   PylithScalar slipAcc[]);
+    static void slipAccFn(const PylithInt dim,
+                          const PylithInt numS,
+                          const PylithInt numA,
+                          const PylithInt sOff[],
+                          const PylithInt sOff_x[],
+                          const PylithScalar s[],
+                          const PylithScalar s_t[],
+                          const PylithScalar s_x[],
+                          const PylithInt aOff[],
+                          const PylithInt aOff_x[],
+                          const PylithScalar a[],
+                          const PylithScalar a_t[],
+                          const PylithScalar a_x[],
+                          const PylithReal t,
+                          const PylithScalar x[],
+                          const PylithInt numConstants,
+                          const PylithScalar constants[],
+                          PylithScalar slipAcc[]);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Setup auxiliary subfields (discretization and query fns).
      *
      * @param[in] scales Scales for nondimensionalizing values.
@@ -176,11 +172,11 @@ protected:
                               const spatialdata::geocoords::CoordSys* cs);
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     KinSrcConstRate(const KinSrcConstRate&); ///< Not implemented
     const KinSrcConstRate& operator=(const KinSrcConstRate&); ///< Not implemented
 
 }; // class KinSrcConstRate
+
 
 // End of file

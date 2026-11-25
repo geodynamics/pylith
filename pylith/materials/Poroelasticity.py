@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from .Material import Material
 from .materials import Poroelasticity as ModulePoroelasticity
@@ -20,8 +20,8 @@ class Poroelasticity(Material, ModulePoroelasticity):
 
     Implements `Material`.
     """
-    DOC_CONFIG = {
-        "cfg": """
+
+    DOC_CONFIG = {"cfg": """
             [pylithapp.problem.materials.mat_poroelastic]
             label_value = 3
             use_body_force = True
@@ -31,38 +31,39 @@ class Poroelasticity(Material, ModulePoroelasticity):
 
             auxiliary_subfields.density.basis_order = 0
             auxiliary_subfields.body_force.basis_order = 0
-        """
-    }
+        """}
 
     import pythia.pyre.inventory
 
     useBodyForce = pythia.pyre.inventory.bool("use_body_force", default=False)
-    useBodyForce.meta['tip'] = "Include body force term in Poroelasticity equation."
+    useBodyForce.meta["tip"] = "Include body force term in Poroelasticity equation."
 
     useSourceDensity = pythia.pyre.inventory.bool("use_source_density", default=False)
-    useSourceDensity.meta['tip'] = "Include source_density term in Poroelasticity equation."
+    useSourceDensity.meta["tip"] = "Include source_density term in Poroelasticity equation."
 
     useStateVars = pythia.pyre.inventory.bool("use_state_variables", default=False)
-    useStateVars.meta['tip'] = "Update porosity state variable using compaction formulation."
+    useStateVars.meta["tip"] = "Update porosity state variable using compaction formulation."
 
-    rheology = pythia.pyre.inventory.facility("bulk_rheology", family="poroelasticity_rheology", factory=IsotropicLinearPoroelasticity)
-    rheology.meta['tip'] = "Bulk rheology for poroelastic material."
+    rheology = pythia.pyre.inventory.facility(
+        "bulk_rheology", family="poroelasticity_rheology", factory=IsotropicLinearPoroelasticity
+    )
+    rheology.meta["tip"] = "Bulk rheology for poroelastic material."
 
     def __init__(self, name="poroelasticity"):
-        """Constructor.
-        """
+        """Constructor."""
         Material.__init__(self, name)
 
     def _defaults(self):
         from .AuxSubfieldsPoroelasticity import AuxSubfieldsPoroelasticity
+
         self.auxiliarySubfields = AuxSubfieldsPoroelasticity("auxiliary_subfields")
 
         from .DerivedSubfieldsPoroelasticity import DerivedSubfieldsPoroelasticity
+
         self.derivedSubfields = DerivedSubfieldsPoroelasticity("derived_subfields")
 
     def preinitialize(self, problem):
-        """Setup material.
-        """
+        """Setup material."""
         self.rheology.preinitialize(problem)
         Material.preinitialize(self, problem)
 
@@ -70,20 +71,19 @@ class Poroelasticity(Material, ModulePoroelasticity):
 
         ModulePoroelasticity.useBodyForce(self, self.useBodyForce)
         ModulePoroelasticity.useSourceDensity(self, self.useSourceDensity)
-        ModulePoroelasticity.useStateVars(self, self.useStateVars)        
+        ModulePoroelasticity.useStateVars(self, self.useStateVars)
 
     def _createModuleObj(self):
-        """Create handle to C++ Poroelasticity.
-        """
+        """Create handle to C++ Poroelasticity."""
         ModulePoroelasticity.__init__(self)
         ModulePoroelasticity.setBulkRheology(self, self.rheology)  # Material sets auxiliary db in rheology.
 
 
 # Factories
 
+
 def material():
-    """Factory associated with Poroelasticity.
-    """
+    """Factory associated with Poroelasticity."""
     return Poroelasticity()
 
 

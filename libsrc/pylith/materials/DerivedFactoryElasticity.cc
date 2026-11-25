@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -30,7 +30,8 @@ pylith::materials::DerivedFactoryElasticity::DerivedFactoryElasticity(void) {
 
 // ------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::materials::DerivedFactoryElasticity::~DerivedFactoryElasticity(void) {}
+pylith::materials::DerivedFactoryElasticity::~DerivedFactoryElasticity(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -41,7 +42,7 @@ pylith::materials::DerivedFactoryElasticity::addCauchyStress(void) {
     PYLITH_DEBUG(pylith::journal::application_flow, "addCauchyStress(void)");
 
     const char* fieldName = "cauchy_stress";
-    const char* componentNames[6] = { "stress_xx", "stress_yy", "stress_zz", "stress_xy", "stress_yz", "stress_xz" };
+    const char* componentNames[6] = {"stress_xx", "stress_yy", "stress_zz", "stress_xy", "stress_yz", "stress_xz"};
     const int stressSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
 
     pylith::topology::Field::Description description;
@@ -70,7 +71,7 @@ pylith::materials::DerivedFactoryElasticity::addCauchyStrain(void) {
     PYLITH_DEBUG(pylith::journal::application_flow, "addCauchyStrain(void)");
 
     const char* fieldName = "cauchy_strain";
-    const char* componentNames[6] = { "strain_xx", "strain_yy", "strain_zz", "strain_xy", "strain_yz", "strain_xz" };
+    const char* componentNames[6] = {"strain_xx", "strain_yy", "strain_zz", "strain_xy", "strain_yz", "strain_xz"};
     const int strainSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
 
     pylith::topology::Field::Description description;
@@ -106,7 +107,6 @@ pylith::materials::DerivedFactoryElasticity::addSubfields(void) {
     } // if
 
     PYLITH_METHOD_END;
-
 }
 
 

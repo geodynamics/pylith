@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/testing/testingfwd.hh" // forward declarations
@@ -17,8 +18,7 @@ class pylith::problems::ObserverSolnStub : public pylith::problems::ObserverSoln
     friend class TestObserverSolnStub; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     ObserverSolnStub(void);
 
@@ -56,16 +56,15 @@ public:
                 const NotificationType notification);
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     PylithReal _timeScale; ///< Time scale.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     ObserverSolnStub(const ObserverSolnStub&); ///< Not implemented.
     const ObserverSolnStub& operator=(const ObserverSolnStub&); ///< Not implemented
 
 }; // ObserverSolnStub
+
 
 // End of file

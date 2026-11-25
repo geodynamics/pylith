@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 /* Original mesh
  *
@@ -27,8 +27,7 @@
 
 #include "CohesiveImpulsesDataTet4.hh"
 
-const char* pylith::faults::CohesiveImpulsesDataTet4::_meshFilename =
-    "data/tet4.mesh";
+const char* pylith::faults::CohesiveImpulsesDataTet4::_meshFilename = "data/tet4.mesh";
 
 const int pylith::faults::CohesiveImpulsesDataTet4::_spaceDim = 3;
 
@@ -39,58 +38,79 @@ const int pylith::faults::CohesiveImpulsesDataTet4::_numBasis = 3;
 const int pylith::faults::CohesiveImpulsesDataTet4::_numQuadPts = 3;
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataTet4::_quadPts[] = {
-    -1.00000000e+00, -1.00000000e+00,
-    1.00000000e+00, -1.00000000e+00,
-    -1.00000000e+00,  1.00000000e+00,
+    -1.00000000e+00,
+    -1.00000000e+00,
+    1.00000000e+00,
+    -1.00000000e+00,
+    -1.00000000e+00,
+    1.00000000e+00,
 };
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataTet4::_quadWts[] = {
-    2.0/3.0, 2.0/3.0, 2.0/3.0,
+    2.0 / 3.0,
+    2.0 / 3.0,
+    2.0 / 3.0,
 };
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataTet4::_basis[] = {
-    1.0, 0.0, 0.0,
-    0.0, 1.0, 0.0,
-    0.0, 0.0, 1.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
 };
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataTet4::_basisDeriv[] = {
-    -0.50000000e+00, -0.50000000e+00,
-    0.50000000e+00,  0.00000000e+00,
-    0.00000000e+00,  0.50000000e+00,
-    -0.50000000e+00, -0.50000000e+00,
-    0.50000000e+00,  0.00000000e+00,
-    0.00000000e+00,  0.50000000e+00,
-    -0.50000000e+00, -0.50000000e+00,
-    0.50000000e+00,  0.00000000e+00,
-    0.00000000e+00,  0.50000000e+00,
+    -0.50000000e+00,
+    -0.50000000e+00,
+    0.50000000e+00,
+    0.00000000e+00,
+    0.00000000e+00,
+    0.50000000e+00,
+    -0.50000000e+00,
+    -0.50000000e+00,
+    0.50000000e+00,
+    0.00000000e+00,
+    0.00000000e+00,
+    0.50000000e+00,
+    -0.50000000e+00,
+    -0.50000000e+00,
+    0.50000000e+00,
+    0.00000000e+00,
+    0.00000000e+00,
+    0.50000000e+00,
 };
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataTet4::_verticesRef[] = {
-    -1.00000000e+00, -1.00000000e+00,
-    1.00000000e+00, -1.00000000e+00,
-    -1.00000000e+00,  1.00000000e+00,
+    -1.00000000e+00,
+    -1.00000000e+00,
+    1.00000000e+00,
+    -1.00000000e+00,
+    -1.00000000e+00,
+    1.00000000e+00,
 };
 
 const int pylith::faults::CohesiveImpulsesDataTet4::_id = 10;
 
 const char* pylith::faults::CohesiveImpulsesDataTet4::_label = "fault";
 
-const char* pylith::faults::CohesiveImpulsesDataTet4::_impulseAmpFilename =
-    "data/tet4_impulses.spatialdb";
+const char* pylith::faults::CohesiveImpulsesDataTet4::_impulseAmpFilename = "data/tet4_impulses.spatialdb";
 
 const int pylith::faults::CohesiveImpulsesDataTet4::_impulseDOF[2] = {
-    0, 2,
+    0,
+    2,
 };
 const int pylith::faults::CohesiveImpulsesDataTet4::_numComponents = 2;
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataTet4::_fieldT[] = {
-    7.1, 8.1, 9.1,
-    7.2, 8.2, 9.2, // 4
+    7.1, 8.1, 9.1, 7.2, 8.2, 9.2, // 4
     7.3, 8.3, 9.3, // 5
     7.4, 8.4, 9.4, // 6
-    7.5, 8.5, 9.5,
-    7.6, 8.6, 9.6, // 8
+    7.5, 8.5, 9.5, 7.6, 8.6, 9.6, // 8
     7.8, 8.8, 9.8, // 9
     7.0, 8.0, 9.0, // 10
     7.7, 8.7, 9.7, // 11
@@ -99,12 +119,10 @@ const PylithScalar pylith::faults::CohesiveImpulsesDataTet4::_fieldT[] = {
 };
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataTet4::_fieldIncr[] = {
-    3.1, 4.1, 5.1,
-    3.2, 4.2, 5.2, // 4
+    3.1, 4.1, 5.1, 3.2, 4.2, 5.2, // 4
     3.3, 4.3, 5.3, // 5
     3.4, 4.4, 5.4, // 6
-    3.5, 4.5, 5.5,
-    3.6, 4.6, 5.6, // 8
+    3.5, 4.5, 5.5, 3.6, 4.6, 5.6, // 8
     3.8, 4.8, 5.8, // 9
     3.0, 4.0, 5.0, // 10
     3.7, 4.7, 5.7, // 11
@@ -117,15 +135,14 @@ const PylithScalar pylith::faults::CohesiveImpulsesDataTet4::_fieldIncr[] = {
 // ----------------------------------------------------------------------
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataTet4::_orientation[] = {
-    0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
-    0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
-    0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
+    0.0,  +1.0, 0.0, 0.0, 0.0, +1.0, +1.0, 0.0, 0.0, 0.0,  +1.0, 0.0, 0.0, 0.0,
+    +1.0, +1.0, 0.0, 0.0, 0.0, +1.0, 0.0,  0.0, 0.0, +1.0, +1.0, 0.0, 0.0,
 };
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataTet4::_area[] = {
-    1.0/3.0,
-    1.0/3.0,
-    1.0/3.0,
+    1.0 / 3.0,
+    1.0 / 3.0,
+    1.0 / 3.0,
 };
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataTet4::_amplitude[3] = {
@@ -138,30 +155,46 @@ const int pylith::faults::CohesiveImpulsesDataTet4::_numImpulses = 4;
 
 const int pylith::faults::CohesiveImpulsesDataTet4::_numConstraintEdges = 3;
 const int pylith::faults::CohesiveImpulsesDataTet4::_constraintEdges[] = {
-    11, 12, 13,
+    11,
+    12,
+    13,
 };
-const int pylith::faults::CohesiveImpulsesDataTet4::_negativeVertices[] = {
-    4,  5,  6
-};
+const int pylith::faults::CohesiveImpulsesDataTet4::_negativeVertices[] = {4, 5, 6};
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataTet4::_residual[] = {
-    0.0,  0.0,  0.0,
-    +7.7/3.0,  +8.7/3.0,  +9.7/3.0, // 4
-    +7.9/3.0,  +8.9/3.0,  +9.9/3.0, // 5
-    +7.1/3.0,  +8.1/3.0,  +9.1/3.0, // 6
-    0.0,  0.0,  0.0,
-    -7.7/3.0,  -8.7/3.0,  -9.7/3.0, // 8
-    -7.9/3.0,  -8.9/3.0,  -9.9/3.0, // 9
-    -7.1/3.0,  -8.1/3.0,  -9.1/3.0, // 10
-    -1.0/3.0*(7.6-7.2 - 1.2), // 11
-    -1.0/3.0*(8.6-8.2 + 0.0),
-    -1.0/3.0*(9.6-9.2 + 0.0),
-    -1.0/3.0*(7.8-7.3 + 0.0), // 12
-    -1.0/3.0*(8.8-8.3 + 0.0),
-    -1.0/3.0*(9.8-9.3 + 0.0),
-    -1.0/3.0*(7.0-7.4 + 0.0), // 13
-    -1.0/3.0*(8.0-8.4 + 0.0),
-    -1.0/3.0*(9.0-9.4 + 0.0),
+    0.0,
+    0.0,
+    0.0,
+    +7.7 / 3.0,
+    +8.7 / 3.0,
+    +9.7 / 3.0, // 4
+    +7.9 / 3.0,
+    +8.9 / 3.0,
+    +9.9 / 3.0, // 5
+    +7.1 / 3.0,
+    +8.1 / 3.0,
+    +9.1 / 3.0, // 6
+    0.0,
+    0.0,
+    0.0,
+    -7.7 / 3.0,
+    -8.7 / 3.0,
+    -9.7 / 3.0, // 8
+    -7.9 / 3.0,
+    -8.9 / 3.0,
+    -9.9 / 3.0, // 9
+    -7.1 / 3.0,
+    -8.1 / 3.0,
+    -9.1 / 3.0, // 10
+    -1.0 / 3.0 * (7.6 - 7.2 - 1.2), // 11
+    -1.0 / 3.0 * (8.6 - 8.2 + 0.0),
+    -1.0 / 3.0 * (9.6 - 9.2 + 0.0),
+    -1.0 / 3.0 * (7.8 - 7.3 + 0.0), // 12
+    -1.0 / 3.0 * (8.8 - 8.3 + 0.0),
+    -1.0 / 3.0 * (9.8 - 9.3 + 0.0),
+    -1.0 / 3.0 * (7.0 - 7.4 + 0.0), // 13
+    -1.0 / 3.0 * (8.0 - 8.4 + 0.0),
+    -1.0 / 3.0 * (9.0 - 9.4 + 0.0),
 };
 
 pylith::faults::CohesiveImpulsesDataTet4::CohesiveImpulsesDataTet4(void) { // constructor
@@ -193,7 +226,8 @@ pylith::faults::CohesiveImpulsesDataTet4::CohesiveImpulsesDataTet4(void) { // co
 } // constructor
 
 
-pylith::faults::CohesiveImpulsesDataTet4::~CohesiveImpulsesDataTet4(void) {}
+pylith::faults::CohesiveImpulsesDataTet4::~CohesiveImpulsesDataTet4(void) {
+}
 
 
 // End of file

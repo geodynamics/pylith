@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "TestDataWriter.hh" // USES TestDataWriter_Data
@@ -17,14 +18,13 @@ namespace pylith {
     namespace meshio {
         class TestDataWriterMaterial;
         class TestDataWriterMaterial_Data;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterMaterial {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestDataWriterMaterial(void);
 
@@ -32,24 +32,19 @@ public:
     ~TestDataWriterMaterial(void);
 
     /// Set data for tri test case.
-    static
-    void setDataTri(TestDataWriterMaterial_Data* data);
+    static void setDataTri(TestDataWriterMaterial_Data* data);
 
     /// Set data for quad test case.
-    static
-    void setDataQuad(TestDataWriterMaterial_Data* data);
+    static void setDataQuad(TestDataWriterMaterial_Data* data);
 
     /// Set data for tet test case.
-    static
-    void setDataTet(TestDataWriterMaterial_Data* data);
+    static void setDataTet(TestDataWriterMaterial_Data* data);
 
     /// Set data for hex test case.
-    static
-    void setDataHex(TestDataWriterMaterial_Data* data);
+    static void setDataHex(TestDataWriterMaterial_Data* data);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Initialize mesh.
     void _initialize(void);
 
@@ -69,12 +64,10 @@ protected:
      *
      * @returns Test data.
      */
-    virtual
-    TestDataWriterMaterial_Data* _getData(void) = 0;
+    virtual TestDataWriterMaterial_Data* _getData(void) = 0;
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     pylith::topology::Mesh* _domainMesh; ///< Finite-element mesh.
     pylith::topology::Mesh* _materialMesh; ///< Subdomain mesh over material.
 
@@ -83,8 +76,7 @@ protected:
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterMaterial_Data : public TestDataWriter_Data {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestDataWriterMaterial_Data(void);
 
@@ -92,10 +84,10 @@ public:
     ~TestDataWriterMaterial_Data(void);
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     int materialId; ///< Id of material.
 
 }; // class TestDataWriterMaterial_Data
+
 
 // End of file

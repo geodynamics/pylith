@@ -1,23 +1,23 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "TestDataWriterVTKPoints.hh" // Implementation of class methods
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/Field.hh" // USES Field
-#include "pylith/meshio/OutputSolnPoints.hh" // USES OutputSolnPoints
-#include "pylith/meshio/DataWriterVTK.hh" // USES DataWriterVTK
-#include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/meshio/DataWriterVTK.hh" // USES DataWriterVTK
+#include "pylith/meshio/OutputSolnPoints.hh" // USES OutputSolnPoints
+#include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include "pylith/scales/Scales.hh" // USES Scales
 
@@ -26,8 +26,7 @@
 
 // ------------------------------------------------------------------------------------------------
 // Constructor.
-pylith::meshio::TestDataWriterVTKPoints::TestDataWriterVTKPoints(TestDataWriterVTKPoints_Data* data) :
-    _data(data) {
+pylith::meshio::TestDataWriterVTKPoints::TestDataWriterVTKPoints(TestDataWriterVTKPoints_Data* data) : _data(data) {
     TestDataWriterPoints::_initialize();
 } // constructor
 
@@ -37,7 +36,8 @@ pylith::meshio::TestDataWriterVTKPoints::TestDataWriterVTKPoints(TestDataWriterV
 pylith::meshio::TestDataWriterVTKPoints::~TestDataWriterVTKPoints(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _data;_data = nullptr;
+    delete _data;
+    _data = nullptr;
 
     PYLITH_METHOD_END;
 } // destructor.
@@ -110,7 +110,8 @@ pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void) {
         writer.writeVertexField(t, *subfield);
         REQUIRE(writer._wroteVertexHeader);
         CHECK(false == writer._wroteCellHeader);
-        delete subfield;subfield = NULL;
+        delete subfield;
+        subfield = NULL;
     } // for
     writer.closeTimeStep();
     writer.close();

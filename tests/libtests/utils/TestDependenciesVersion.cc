@@ -1,13 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
-//
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -22,48 +21,47 @@ namespace pylith {
     namespace utils {
         class TestDependenciesVersion;
     }
-}
+} // namespace pylith
 
 class pylith::utils::TestDependenciesVersion {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test mpiVersion()
-    static
-    void testMPIVersion(void);
+    static void testMPIVersion(void);
 
     /// Test mpiImplementation()
-    static
-    void testMPIImplementation(void);
+    static void testMPIImplementation(void);
 
     /// Test mpiStandard()
-    static
-    void testMPIStandard(void);
+    static void testMPIStandard(void);
 
     /// Test netcdfVersion()
-    static
-    void testNetCDFVersion(void);
+    static void testNetCDFVersion(void);
 
     /// Test hdf5Version()
-    static
-    void testHDF5Version(void);
+    static void testHDF5Version(void);
 
 }; // class TestDependenciesVersion
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestDependenciesVersion::testMPIVersion", "[TestDependenciesVersion]") {
+TEST_CASE("TestDependenciesVersion::testMPIVersion",
+          "[TestDependenciesVersion]") {
     pylith::utils::TestDependenciesVersion::testMPIVersion();
 }
-TEST_CASE("TestDependenciesVersion::testMPIImplementation", "[TestDependenciesVersion]") {
+TEST_CASE("TestDependenciesVersion::testMPIImplementation",
+          "[TestDependenciesVersion]") {
     pylith::utils::TestDependenciesVersion::testMPIImplementation();
 }
-TEST_CASE("TestDependenciesVersion::testMPIStandard", "[TestDependenciesVersion]") {
+TEST_CASE("TestDependenciesVersion::testMPIStandard",
+          "[TestDependenciesVersion]") {
     pylith::utils::TestDependenciesVersion::testMPIStandard();
 }
-TEST_CASE("TestDependenciesVersion::testNetCDFVersion", "[TestDependenciesVersion]") {
+TEST_CASE("TestDependenciesVersion::testNetCDFVersion",
+          "[TestDependenciesVersion]") {
     pylith::utils::TestDependenciesVersion::testNetCDFVersion();
 }
-TEST_CASE("TestDependenciesVersion::testHDF5Version", "[TestDependenciesVersion]") {
+TEST_CASE("TestDependenciesVersion::testHDF5Version",
+          "[TestDependenciesVersion]") {
     pylith::utils::TestDependenciesVersion::testHDF5Version();
 }
 

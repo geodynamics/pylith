@@ -65,7 +65,7 @@ RELEASE NOTES - PyLith v2.0.1
 * Bug fixes
 
   - Improved example journal files for Cubit/Trelis to improve
-    compability. All journal files should work with Cubit 14.1 and
+    compatibility. All journal files should work with Cubit 14.1 and
     Trelis 15.0.
 
   - Created examples of IDless journal files in examples/2d/greensfns.

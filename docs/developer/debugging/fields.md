@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Viewing fields
 
 In addition to using the debugger to inspect code and variables, it is often helpful to print fields to stdout or inspect where a computed field does not match the expected field.
@@ -208,3 +217,5 @@ Cell 1 Element Solution for Field 2
   elem 1 diff 1.51946e-31
 ... # Output continues for values in other cells
 ```
+
+% End of file

@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from .InitializePhase import InitializePhase
 from .initializers import MeshReordering as ModuleMeshReordering
@@ -19,12 +19,10 @@ class MeshReordering(InitializePhase):
     Implements `InitializePhase`.
     """
 
-    DOC_CONFIG = {
-        "cfg": """
+    DOC_CONFIG = {"cfg": """
             [pylithapp.problem.mesh_initializer.phases.reorder_mesh]
             # No parameters
-        """
-    }
+        """}
 
     def __init__(self, name="reorder_mesh"):
         """Constructor."""

@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -14,23 +14,23 @@
 
 #include "pylith/bc/DirichletTimeDependent.hh" // USES DirichletTimeDependent
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
-#include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
-#include "pylith/topology/VisitorMesh.hh" // USES VisitorMesh
-#include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorMesh.hh" // USES VisitorMesh
 #include "pylith/utils/constants.hh" // USES PYLITH_MAXFLOAT
 
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
-#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+#include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 
 const double pylith::bc::TestDirichletTimeDependent::FILL_VALUE = -999.0;
 
@@ -40,7 +40,8 @@ void
 pylith::bc::TestDirichletTimeDependent::setUp(void) {
     PYLITH_METHOD_BEGIN;
 
-    _bc = new pylith::bc::DirichletTimeDependent();CPPUNIT_ASSERT(_bc);
+    _bc = new pylith::bc::DirichletTimeDependent();
+    CPPUNIT_ASSERT(_bc);
 
     _data = NULL;
     _mesh = NULL;
@@ -56,11 +57,15 @@ void
 pylith::bc::TestDirichletTimeDependent::tearDown(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _bc;_bc = NULL;
+    delete _bc;
+    _bc = NULL;
 
-    delete _data;_data = NULL;
-    delete _mesh;_mesh = NULL;
-    delete _solution;_solution = NULL;
+    delete _data;
+    _data = NULL;
+    delete _mesh;
+    _mesh = NULL;
+    delete _solution;
+    _solution = NULL;
 
     PYLITH_METHOD_END;
 } // tearDown
@@ -72,8 +77,10 @@ void
 pylith::bc::TestDirichletTimeDependent::testConstructor(void) {
     PYLITH_METHOD_BEGIN;
 
-    DirichletTimeDependent* bc = new DirichletTimeDependent();CPPUNIT_ASSERT(bc);
-    delete bc;bc = NULL;
+    DirichletTimeDependent* bc = new DirichletTimeDependent();
+    CPPUNIT_ASSERT(bc);
+    delete bc;
+    bc = NULL;
 
     PYLITH_METHOD_END;
 } // testConstructor
@@ -96,7 +103,7 @@ pylith::bc::TestDirichletTimeDependent::testAccessors(void) {
 
     // constrainedDOF().
     const size_t numConstrained = 4;
-    const int constrainedDOF[4] = { 0, 2, 3, 6 };
+    const int constrainedDOF[4] = {0, 2, 3, 6};
     _bc->constrainedDOF(constrainedDOF, numConstrained);
     const pylith::int_array& dof = _bc->constrainedDOF();
     CPPUNIT_ASSERT_EQUAL(numConstrained, dof.size());
@@ -146,9 +153,12 @@ void
 pylith::bc::TestDirichletTimeDependent::testAuxFieldDiscretization(void) {
     PYLITH_METHOD_BEGIN;
 
-    const topology::FieldBase::Discretization infoDefault = pylith::topology::Field::Discretization(1, 1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE);
-    const topology::FieldBase::Discretization infoA = pylith::topology::Field::Discretization(1, 2, false, pylith::topology::FieldBase::POLYNOMIAL_SPACE);
-    const topology::FieldBase::Discretization infoB = pylith::topology::Field::Discretization(2, 2, true, pylith::topology::FieldBase::POINT_SPACE);
+    const topology::FieldBase::Discretization infoDefault =
+        pylith::topology::Field::Discretization(1, 1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE);
+    const topology::FieldBase::Discretization infoA =
+        pylith::topology::Field::Discretization(1, 2, false, pylith::topology::FieldBase::POLYNOMIAL_SPACE);
+    const topology::FieldBase::Discretization infoB =
+        pylith::topology::Field::Discretization(2, 2, true, pylith::topology::FieldBase::POINT_SPACE);
 
     CPPUNIT_ASSERT(_bc);
     _bc->auxSubfieldDiscretization("A", infoA.basisOrder, infoA.quadOrder, infoA.isBasisContinuous, infoA.feSpace);
@@ -180,7 +190,8 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldDiscretization(void) {
     } // C (default)
 
     { // default
-        const topology::FieldBase::Discretization& test = _bc->_auxiliaryFactory()->getSubfieldDiscretization("default");
+        const topology::FieldBase::Discretization& test =
+            _bc->_auxiliaryFactory()->getSubfieldDiscretization("default");
         CPPUNIT_ASSERT_EQUAL(infoDefault.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.isBasisContinuous, test.isBasisContinuous);
@@ -252,7 +263,7 @@ pylith::bc::TestDirichletTimeDependent::testVerifyConfiguration(void) {
 
     // Check for failure with constrained DOF not in solution.
     const size_t numConstrainedDOF = 1;
-    const int constrainedDOF[1] = { 9999 };
+    const int constrainedDOF[1] = {9999};
     _bc->constrainedDOF(constrainedDOF, numConstrainedDOF);
     CPPUNIT_ASSERT_THROW(_bc->verifyConfiguration(*_solution), pylith::exceptions::ValueError);
 
@@ -274,9 +285,11 @@ pylith::bc::TestDirichletTimeDependent::testInitialize(void) {
     CPPUNIT_ASSERT(_solution);
 
     PetscDS prob = NULL;
-    err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);
+    err = DMGetDS(_solution->dmMesh(), &prob);
+    CPPUNIT_ASSERT(!err);
     int numBCBefore = 0;
-    err = PetscDSGetNumBoundary(prob, &numBCBefore);CPPUNIT_ASSERT(!err);
+    err = PetscDSGetNumBoundary(prob, &numBCBefore);
+    CPPUNIT_ASSERT(!err);
 
     _bc->initialize(*_solution);
 
@@ -291,26 +304,31 @@ pylith::bc::TestDirichletTimeDependent::testInitialize(void) {
     // Verify auxiliary field.
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_mesh);
-    const pylith::topology::Field* auxField = _bc->auxField();CPPUNIT_ASSERT(auxField);
+    const pylith::topology::Field* auxField = _bc->auxField();
+    CPPUNIT_ASSERT(auxField);
     CPPUNIT_ASSERT_EQUAL(std::string("Dirichlet auxiliary"), std::string(auxField->getLabel()));
     CPPUNIT_ASSERT_EQUAL(_mesh->dimension(), auxField->getSpaceDim());
 
     PylithReal norm = 0.0;
     PylithReal t = _data->t;
-    const PetscDM dm = auxField->dmMesh();CPPUNIT_ASSERT(dm);
+    const PetscDM dm = auxField->dmMesh();
+    CPPUNIT_ASSERT(dm);
     pylith::topology::FieldQuery query(*auxField);
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(_data->scales);
     query.openDB(_data->auxDB, _data->scales->getLengthScale());
-    err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm);CPPUNIT_ASSERT(!err);
+    err =
+        DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm);
+    CPPUNIT_ASSERT(!err);
     query.closeDB(_data->auxDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
 
     // Verify boundary condition was added to DS.
     int numBCAfter = 0;
-    err = PetscDSGetNumBoundary(prob, &numBCAfter);CPPUNIT_ASSERT(!err);
-    CPPUNIT_ASSERT_EQUAL(numBCAfter, 1+numBCBefore);
+    err = PetscDSGetNumBoundary(prob, &numBCAfter);
+    CPPUNIT_ASSERT(!err);
+    CPPUNIT_ASSERT_EQUAL(numBCAfter, 1 + numBCBefore);
 
     PYLITH_METHOD_END;
 } // testInitialize
@@ -322,7 +340,9 @@ void
 pylith::bc::TestDirichletTimeDependent::testPrestep(void) {
     PYLITH_METHOD_BEGIN;
 
-    if (!_data->useTimeHistory) {PYLITH_METHOD_END;}
+    if (!_data->useTimeHistory) {
+        PYLITH_METHOD_END;
+    }
 
     _initialize();
     _setupSolutionField();
@@ -331,7 +351,8 @@ pylith::bc::TestDirichletTimeDependent::testPrestep(void) {
     CPPUNIT_ASSERT(_solution);
     _bc->initialize(*_solution);
 
-    const pylith::topology::Field* auxField = _bc->auxField();CPPUNIT_ASSERT(auxField);
+    const pylith::topology::Field* auxField = _bc->auxField();
+    CPPUNIT_ASSERT(auxField);
     CPPUNIT_ASSERT(auxField->hasSubfield("time_history_value"));
 
     pylith::topology::Field valueField(*_mesh);
@@ -341,12 +362,19 @@ pylith::bc::TestDirichletTimeDependent::testPrestep(void) {
 
     PylithReal norm = 0.0;
     PylithReal t = _data->t;
-    const PetscDM dm = auxField->dmMesh();CPPUNIT_ASSERT(dm);
+    const PetscDM dm = auxField->dmMesh();
+    CPPUNIT_ASSERT(dm);
     pylith::topology::FieldQuery query(valueField);
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(_data->scales);
     query.openDB(_data->auxDB, _data->scales->getLengthScale());
-    err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), valueField.localVector(), &norm);CPPUNIT_ASSERT(!err);
+    err = DMPlexComputeL2DiffLocal(dm,
+                                   t,
+                                   query.functions(),
+                                   (void**)query.contextPtrs(),
+                                   valueField.localVector(),
+                                   &norm);
+    CPPUNIT_ASSERT(!err);
     query.closeDB(_data->auxDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
@@ -371,7 +399,8 @@ pylith::bc::TestDirichletTimeDependent::testSetSolution(void) {
 
     // Initialize solution field.
     _solution->allocate();
-    err = VecSet(_solution->localVector(), FILL_VALUE);CPPUNIT_ASSERT(!err);
+    err = VecSet(_solution->localVector(), FILL_VALUE);
+    CPPUNIT_ASSERT(!err);
 
     // Set solution field.
     CPPUNIT_ASSERT(_data);
@@ -386,20 +415,29 @@ pylith::bc::TestDirichletTimeDependent::testSetSolution(void) {
     _solution->createScatter(_solution->mesh(), "global");
     _solution->scatterLocalToContext("global", ADD_VALUES);
     PylithScalar value = 0.0;
-    err = VecMax(_solution->scatterVector("global"), NULL, &value);CPPUNIT_ASSERT(!err);
+    err = VecMax(_solution->scatterVector("global"), NULL, &value);
+    CPPUNIT_ASSERT(!err);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(FILL_VALUE, value, tolerance);
-    err = VecMin(_solution->scatterVector("global"), NULL, &value);CPPUNIT_ASSERT(!err);
+    err = VecMin(_solution->scatterVector("global"), NULL, &value);
+    CPPUNIT_ASSERT(!err);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(FILL_VALUE, value, tolerance);
 
     // Verify solution values match expected values.
     // Fill unconstrained values in global vector and then scatter to local vector.
     const PylithReal t = _data->t;
-    const PetscDM dmSoln = _solution->dmMesh();CPPUNIT_ASSERT(dmSoln);
+    const PetscDM dmSoln = _solution->dmMesh();
+    CPPUNIT_ASSERT(dmSoln);
     pylith::topology::FieldQuery query(*_solution);
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(_data->scales);
     query.openDB(_data->solnDB, _data->scales->getLengthScale());
-    err = DMProjectFunction(dmSoln, t, query.functions(), (void**)query.contextPtrs(), INSERT_VALUES, _solution->scatterVector("global"));CPPUNIT_ASSERT(!err);
+    err = DMProjectFunction(dmSoln,
+                            t,
+                            query.functions(),
+                            (void**)query.contextPtrs(),
+                            INSERT_VALUES,
+                            _solution->scatterVector("global"));
+    CPPUNIT_ASSERT(!err);
     query.closeDB(_data->solnDB);
     _solution->scatterContextToLocal("global", INSERT_VALUES);
 
@@ -413,7 +451,13 @@ pylith::bc::TestDirichletTimeDependent::testSetSolution(void) {
 
     PylithReal norm = 0.0;
     query.openDB(_data->solnDB, _data->scales->getLengthScale());
-    err = DMPlexComputeL2DiffLocal(dmSoln, t, query.functions(), (void**)query.contextPtrs(), _solution->localVector(), &norm);CPPUNIT_ASSERT(!err);
+    err = DMPlexComputeL2DiffLocal(dmSoln,
+                                   t,
+                                   query.functions(),
+                                   (void**)query.contextPtrs(),
+                                   _solution->localVector(),
+                                   &norm);
+    CPPUNIT_ASSERT(!err);
     query.closeDB(_data->solnDB);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
 
@@ -437,10 +481,13 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldSetup(void) {
     CPPUNIT_ASSERT(_data->scales);
     const PylithReal timeScale = _data->scales->getTimeScale();
 
-    delete _bc->_boundaryMesh;_bc->_boundaryMesh = new pylith::topology::Mesh(_solution->mesh(), _data->bcLabel);
+    delete _bc->_boundaryMesh;
+    _bc->_boundaryMesh = new pylith::topology::Mesh(_solution->mesh(), _data->bcLabel);
     CPPUNIT_ASSERT(_bc->_boundaryMesh);
 
-    delete _bc->_auxiliaryField;_bc->_auxiliaryField = new pylith::topology::Field(*_bc->_boundaryMesh);CPPUNIT_ASSERT(_bc->_auxiliaryField);
+    delete _bc->_auxiliaryField;
+    _bc->_auxiliaryField = new pylith::topology::Field(*_bc->_boundaryMesh);
+    CPPUNIT_ASSERT(_bc->_auxiliaryField);
     _bc->_auxiliaryFieldSetup(*_solution);
 
     CPPUNIT_ASSERT(_mesh->getCoordSys());
@@ -568,7 +615,9 @@ pylith::bc::TestDirichletTimeDependent::_initialize(void) {
 
     CPPUNIT_ASSERT(_data);
 
-    delete _mesh;_mesh = new pylith::topology::Mesh();CPPUNIT_ASSERT(_mesh);
+    delete _mesh;
+    _mesh = new pylith::topology::Mesh();
+    CPPUNIT_ASSERT(_mesh);
     pylith::meshio::MeshIOAscii iohandler;
     CPPUNIT_ASSERT(_data->meshFilename);
     iohandler.filename(_data->meshFilename);
@@ -585,7 +634,11 @@ pylith::bc::TestDirichletTimeDependent::_initialize(void) {
     for (int ifield = 0; ifield < _data->numAuxSubfields; ++ifield) {
         const pylith::topology::Field::Discretization& discretization = _data->auxDiscretizations[ifield];
         const char* name = _data->auxSubfields[ifield];
-        _bc->auxSubfieldDiscretization(name, discretization.basisOrder, discretization.quadOrder, discretization.isBasisContinuous, discretization.feSpace);
+        _bc->auxSubfieldDiscretization(name,
+                                       discretization.basisOrder,
+                                       discretization.quadOrder,
+                                       discretization.isBasisContinuous,
+                                       discretization.feSpace);
     } // for
 
     _bc->useInitial(_data->useInitial);
@@ -611,7 +664,8 @@ pylith::bc::TestDirichletTimeDependent::_setupSolutionField(void) {
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_data->scales);
 
-    delete _solution;_solution = new pylith::topology::Field(*_mesh);
+    delete _solution;
+    _solution = new pylith::topology::Field(*_mesh);
     pylith::problems::SolutionFactory factory(*_solution, *_data->scales);
     factory.displacement(_data->solnDiscretizations[0]);
     factory.velocity(_data->solnDiscretizations[1]);
@@ -645,16 +699,21 @@ pylith::bc::TestDirichletTimeDependent_Data::TestDirichletTimeDependent_Data(voi
     dt(0.0),
     solnNumSubfields(0),
     solnDiscretizations(NULL),
-    solnDB(new spatialdata::spatialdb::UserFunctionDB) {}
+    solnDB(new spatialdata::spatialdb::UserFunctionDB) {
+}
 
 
 // ----------------------------------------------------------------------
 // Destructor
 pylith::bc::TestDirichletTimeDependent_Data::~TestDirichletTimeDependent_Data(void) {
-    delete cs;cs = NULL;
-    delete scales;scales = NULL;
-    delete auxDB;auxDB = NULL;
-    delete solnDB;solnDB = NULL;
+    delete cs;
+    cs = NULL;
+    delete scales;
+    scales = NULL;
+    delete auxDB;
+    auxDB = NULL;
+    delete solnDB;
+    solnDB = NULL;
 } // destructor
 
 

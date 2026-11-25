@@ -1,13 +1,15 @@
-dnl ================================================================================================
+dnl -*- autoconf -*-
+dnl -*- coding: utf-8 -*-
+dnl
 dnl This code is part of PyLith, developed through the Computational Infrastructure
 dnl for Geodynamics (https://github.com/geodynamics/pylith).
 dnl
-dnl Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-dnl All rights reserved.
-dnl
-dnl See https://mit-license.org/ and LICENSE.md and for license information.
-dnl ================================================================================================
+dnl Copyright (c) 2010-2026 The PyLith authors and contributors
+dnl SPDX-License-Identifier: MIT
+
+
 dnl Process this file with autoconf to produce a configure script.
+
 
 AC_PREREQ(2.59)
 AC_INIT([PyLith], [5.0.2], [https://geodynamics.org/resources/pylith])
@@ -352,3 +354,6 @@ AC_CONFIG_FILES([Makefile
 AC_OUTPUT
 
 dnl end of configure.ac
+
+
+dnl End of file

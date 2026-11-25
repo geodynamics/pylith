@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 /*
@@ -29,8 +30,8 @@
 
 #include "pylith/meshio/DataWriter.hh" // ISA DataWriter
 
-#include <string> // USES std::string
 #include <map> // HASA std::map
+#include <string> // USES std::string
 
 // DataWriterHDF5Ext ----------------------------------------------------
 /// Object for writing finite-element data to HDF5 file.
@@ -42,8 +43,7 @@ class pylith::meshio::DataWriterHDF5Ext : public DataWriter { // DataWriterHDF5E
     friend class TestDataWriterHDF5ExtFaultMesh; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     DataWriterHDF5Ext(void);
 
@@ -113,8 +113,7 @@ public:
                          const topology::Mesh& mesh);
 
     // PRIVATE METHODS //////////////////////////////////////////////////////
-private:
-
+  private:
     /** Copy constructor.
      *
      * @param[in] w Object to copy.
@@ -131,13 +130,11 @@ private:
     void _writeTimeStamp(const PylithScalar t);
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
-private:
-
+  private:
     const DataWriterHDF5Ext& operator=(const DataWriterHDF5Ext&); ///< Not implemented
 
     // PRIVATE STRUCTS //////////////////////////////////////////////////////
-private:
-
+  private:
     struct ExternalDataset {
         PetscViewer viewer;
         PetscInt numTimeSteps;
@@ -147,8 +144,7 @@ private:
     typedef std::map<std::string, ExternalDataset> dataset_type;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     std::string _filename; ///< Name of HDF5 file.
     HDF5* _h5; ///< HDF5 file
     dataset_type _datasets; ///< Datasets
@@ -157,5 +153,6 @@ private:
 }; // DataWriterHDF5Ext
 
 #include "DataWriterHDF5Ext.icc" // inline methods
+
 
 // End of file

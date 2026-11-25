@@ -1,27 +1,27 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/feassemble/feassemblefwd.hh" // forward declarations
 
-#include "pylith/topology/topologyfwd.hh" // USES Field
 #include "pylith/feassemble/Integrator.hh" // USES EquationPart, eqnPart
 #include "pylith/petsc/petsc_types.h" // HASA PetscDM
+#include "pylith/topology/topologyfwd.hh" // USES Field
 
 class pylith::feassemble::FEKernelKey {
     friend class TestFEKernelKey; // unit testing
     friend class TestInterfacePatches; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     FEKernelKey(void);
 
@@ -36,10 +36,9 @@ public:
      *
      * @return Key for finite-element integration.
      */
-    static
-    FEKernelKey* create(PetscWeakForm weakForm,
-                        const char* name,
-                        const int value);
+    static FEKernelKey* create(PetscWeakForm weakForm,
+                               const char* name,
+                               const int value);
 
     /** Get name of label.
      *
@@ -70,12 +69,11 @@ public:
      */
     PetscFormKey getPetscKey(const pylith::topology::Field& solution,
                              const PetscInt equationPart,
-                             const char* fieldTrial=NULL,
-                             const char* fieldBasis=NULL) const;
+                             const char* fieldTrial = NULL,
+                             const char* fieldBasis = NULL) const;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     PetscWeakForm _weakForm; ///< PETSc weak form object associated with integration key.
     std::string _name; ///< Name of label designating integration domain.
     int _value; ///< Value of label designating integration domain.
@@ -83,5 +81,6 @@ private:
 }; // FEKernelKey
 
 #include "FEKernelKey.icc"
+
 
 // End of file

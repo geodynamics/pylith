@@ -1,4 +1,14 @@
 #!/usr/bin/env python3
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 """Run commands listed in a (YAML) file.
 
 This script is primarily used to run an example suite or a benchmark, including pre- and post-processing scripts.
@@ -71,3 +81,6 @@ def cli() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(cli())
+
+
+# End of file

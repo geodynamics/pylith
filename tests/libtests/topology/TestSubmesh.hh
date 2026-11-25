@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
@@ -20,14 +21,13 @@ namespace pylith {
     namespace topology {
         class TestSubmesh;
         class TestSubmesh_Data;
-    } // topology
-} // pylith
+    } // namespace topology
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::topology::TestSubmesh : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestSubmesh(TestSubmesh_Data* data);
 
@@ -47,14 +47,12 @@ public:
     void testSizes(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     // Build lower dimension mesh.
     void _buildMesh(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     TestSubmesh_Data* _data; ///< Data for testing.
     Mesh* _domainMesh; ///< Mesh holding domain mesh.
     Mesh* _testMesh; ///< Test subject.
@@ -64,8 +62,7 @@ protected:
 // ------------------------------------------------------------------------------------------------
 class pylith::topology::TestSubmesh_Data {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestSubmesh_Data(void);
 
@@ -73,8 +70,7 @@ public:
     ~TestSubmesh_Data(void);
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     // GENERAL, VALUES DEPEND ON TEST CASE
 
     pylith::meshio::MeshBuilder::Topology* topology; ///< Topology for domain mesh
@@ -105,5 +101,6 @@ public:
     /// @}
 
 }; // TestSubmesh_Data
+
 
 // End of file

@@ -1,25 +1,27 @@
 #!/usr/bin/env nemesis
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # Code to compute solution and state variables for Maxwell test.
 # ----------------------------------------------------------------------
 #
 import math
 import numpy
+
 # ----------------------------------------------------------------------
-inFile = 'tri_small.vtk'
-outFile = 'tri_small_vars.vtk'
+inFile = "tri_small.vtk"
+outFile = "tri_small_vars.vtk"
 
 # Read and write original file.
-i = open(inFile, 'r')
-o = open(outFile, 'w')
+i = open(inFile, "r")
+o = open(outFile, "w")
 lines = i.readlines()
 numLines = len(lines)
 for lineNum in range(numLines):
@@ -44,7 +46,7 @@ for lineNum in range(5, numPoints + 5):
 density = 4000.0
 vs = 5600.0
 vp = math.sqrt(3.0) * vs
-viscosity = 7.91700159488e+19
+viscosity = 7.91700159488e19
 shearModulus = density * vs * vs
 maxwellTime = viscosity / shearModulus
 
@@ -61,32 +63,46 @@ dispY = (a * y * y + 2.0 * b * x * y + c * x * x) * math.exp(-t / maxwellTime)
 dispOut = numpy.column_stack((dispX, dispY, numpy.zeros_like(dispX)))
 dispPertX = dispX + d * x
 dispPertY = dispY + d * x
-dispPertOut = numpy.column_stack(
-    (dispPertX, dispPertY, numpy.zeros_like(dispPertX)))
+dispPertOut = numpy.column_stack((dispPertX, dispPertY, numpy.zeros_like(dispPertX)))
 
 # Total strain and total perturbed strain.
 totalStrainXX = (2.0 * a * x + 2.0 * b * y) * math.exp(-t / maxwellTime)
 totalStrainYY = (2.0 * b * x + 2.0 * a * y) * math.exp(-t / maxwellTime)
 totalStrainXY = (b * (x + y) + c * (x + y)) * math.exp(-t / maxwellTime)
 totalStrainZZ = numpy.zeros(numPoints, dtype=numpy.float64)
-totalStrainPertXX = (2.0 * a * x + 2.0 * b * y) * \
-    math.exp(-t / maxwellTime) + d
+totalStrainPertXX = (2.0 * a * x + 2.0 * b * y) * math.exp(-t / maxwellTime) + d
 totalStrainPertYY = (2.0 * b * x + 2.0 * a * y) * math.exp(-t / maxwellTime)
-totalStrainPertXY = (b * (x + y) + c * (x + y)) * \
-    math.exp(-t / maxwellTime) + d / 2.0
+totalStrainPertXY = (b * (x + y) + c * (x + y)) * math.exp(-t / maxwellTime) + d / 2.0
 totalStrainPertZZ = numpy.zeros(numPoints, dtype=numpy.float64)
 
 # Viscous strain.
-viscousStrainTXX = 2.0 * maxwellTime * (math.exp(t / maxwellTime) - 1.0) * \
-    (a * (2.0 * x - y) - b * (x - 2.0 * y)) * \
-    math.exp(-2.0 * t / maxwellTime) / (3.0 * t)
-viscousStrainTYY = -2.0 * maxwellTime * (math.exp(t / maxwellTime) - 1.0) * \
-    (a * (x - 2.0 * y) - b * (2.0 * x - y)) * \
-    math.exp(-2.0 * t / maxwellTime) / (3.0 * t)
-viscousStrainTZZ = -2.0 * maxwellTime * (math.exp(t / maxwellTime) - 1.0) * \
-    (a * (x + y) + b * (x + y)) * math.exp(-2.0 * t / maxwellTime) / (3.0 * t)
-viscousStrainTXY = maxwellTime * (math.exp(t / maxwellTime) - 1.0) * \
-    (b * (x + y) + c * (x + y)) * math.exp(-2.0 * t / maxwellTime) / t
+viscousStrainTXX = (
+    2.0
+    * maxwellTime
+    * (math.exp(t / maxwellTime) - 1.0)
+    * (a * (2.0 * x - y) - b * (x - 2.0 * y))
+    * math.exp(-2.0 * t / maxwellTime)
+    / (3.0 * t)
+)
+viscousStrainTYY = (
+    -2.0
+    * maxwellTime
+    * (math.exp(t / maxwellTime) - 1.0)
+    * (a * (x - 2.0 * y) - b * (2.0 * x - y))
+    * math.exp(-2.0 * t / maxwellTime)
+    / (3.0 * t)
+)
+viscousStrainTZZ = (
+    -2.0
+    * maxwellTime
+    * (math.exp(t / maxwellTime) - 1.0)
+    * (a * (x + y) + b * (x + y))
+    * math.exp(-2.0 * t / maxwellTime)
+    / (3.0 * t)
+)
+viscousStrainTXY = (
+    maxwellTime * (math.exp(t / maxwellTime) - 1.0) * (b * (x + y) + c * (x + y)) * math.exp(-2.0 * t / maxwellTime) / t
+)
 
 # Deviatoric strains.
 meanStrainT = (totalStrainXX + totalStrainYY) / 3.0
@@ -107,111 +123,110 @@ print("expFac = %f" % expFac)
 print("dq = %f" % dq)
 
 # Perturbed viscous strains.
-viscousStrainTplusDtXX = expFac * viscousStrainTXX + \
-    dq * (devStrainTplusDtXX - devStrainTXX)
-viscousStrainTplusDtYY = expFac * viscousStrainTYY + \
-    dq * (devStrainTplusDtYY - devStrainTYY)
-viscousStrainTplusDtZZ = expFac * viscousStrainTZZ + \
-    dq * (devStrainTplusDtZZ - devStrainTZZ)
-viscousStrainTplusDtXY = expFac * viscousStrainTXY + \
-    dq * (totalStrainPertXY - totalStrainXY)
+viscousStrainTplusDtXX = expFac * viscousStrainTXX + dq * (devStrainTplusDtXX - devStrainTXX)
+viscousStrainTplusDtYY = expFac * viscousStrainTYY + dq * (devStrainTplusDtYY - devStrainTYY)
+viscousStrainTplusDtZZ = expFac * viscousStrainTZZ + dq * (devStrainTplusDtZZ - devStrainTZZ)
+viscousStrainTplusDtXY = expFac * viscousStrainTXY + dq * (totalStrainPertXY - totalStrainXY)
 
 # Write results to output file.
-head = 'POINT_DATA 12\n'
-headscalar = 'LOOKUP_TABLE default\n'
-head1 = 'VECTORS displacement double\n'
+head = "POINT_DATA 12\n"
+headscalar = "LOOKUP_TABLE default\n"
+head1 = "VECTORS displacement double\n"
 o.write(head)
 o.write(head1)
 numpy.savetxt(o, dispOut)
-head2 = 'VECTORS displacement_pert double\n'
+head2 = "VECTORS displacement_pert double\n"
 o.write(head2)
 numpy.savetxt(o, dispPertOut)
-head3 = 'SCALARS total_strain_xx double 1\n'
+head3 = "SCALARS total_strain_xx double 1\n"
 o.write(head3)
 o.write(headscalar)
 numpy.savetxt(o, totalStrainXX)
-head4 = 'SCALARS total_strain_yy double 1\n'
+head4 = "SCALARS total_strain_yy double 1\n"
 o.write(head4)
 o.write(headscalar)
 numpy.savetxt(o, totalStrainYY)
-head5 = 'SCALARS total_strain_xy double 1\n'
+head5 = "SCALARS total_strain_xy double 1\n"
 o.write(head5)
 o.write(headscalar)
 numpy.savetxt(o, totalStrainXY)
-head6 = 'SCALARS total_strain_pert_xx double 1\n'
+head6 = "SCALARS total_strain_pert_xx double 1\n"
 o.write(head6)
 o.write(headscalar)
 numpy.savetxt(o, totalStrainPertXX)
-head7 = 'SCALARS total_strain_pert_yy double 1\n'
+head7 = "SCALARS total_strain_pert_yy double 1\n"
 o.write(head7)
 o.write(headscalar)
 numpy.savetxt(o, totalStrainPertYY)
-head8 = 'SCALARS total_strain_pert_xy double 1\n'
+head8 = "SCALARS total_strain_pert_xy double 1\n"
 o.write(head8)
 o.write(headscalar)
 numpy.savetxt(o, totalStrainPertXY)
-head9 = 'SCALARS dev_strain_t_xx double 1\n'
+head9 = "SCALARS dev_strain_t_xx double 1\n"
 o.write(head9)
 o.write(headscalar)
 numpy.savetxt(o, devStrainTXX)
-head10 = 'SCALARS dev_strain_t_yy double 1\n'
+head10 = "SCALARS dev_strain_t_yy double 1\n"
 o.write(head10)
 o.write(headscalar)
 numpy.savetxt(o, devStrainTYY)
-head10 = 'SCALARS dev_strain_t_zz double 1\n'
+head10 = "SCALARS dev_strain_t_zz double 1\n"
 o.write(head10)
 o.write(headscalar)
 numpy.savetxt(o, devStrainTZZ)
-head11 = 'SCALARS dev_strain_t_xy double 1\n'
+head11 = "SCALARS dev_strain_t_xy double 1\n"
 o.write(head11)
 o.write(headscalar)
 numpy.savetxt(o, devStrainTXY)
-head12 = 'SCALARS dev_strain_t_plus_dt_xx double 1\n'
+head12 = "SCALARS dev_strain_t_plus_dt_xx double 1\n"
 o.write(head12)
 o.write(headscalar)
 numpy.savetxt(o, devStrainTplusDtXX)
-head13 = 'SCALARS dev_strain_t_plus_dt_yy double 1\n'
+head13 = "SCALARS dev_strain_t_plus_dt_yy double 1\n"
 o.write(head13)
 o.write(headscalar)
 numpy.savetxt(o, devStrainTplusDtYY)
-head14 = 'SCALARS dev_strain_t_plus_dt_zz double 1\n'
+head14 = "SCALARS dev_strain_t_plus_dt_zz double 1\n"
 o.write(head14)
 o.write(headscalar)
 numpy.savetxt(o, devStrainTplusDtZZ)
-head15 = 'SCALARS dev_strain_t_plus_dt_xy double 1\n'
+head15 = "SCALARS dev_strain_t_plus_dt_xy double 1\n"
 o.write(head15)
 o.write(headscalar)
 numpy.savetxt(o, devStrainTplusDtXY)
-head16 = 'SCALARS viscous_strain_t_xx double 1\n'
+head16 = "SCALARS viscous_strain_t_xx double 1\n"
 o.write(head16)
 o.write(headscalar)
 numpy.savetxt(o, viscousStrainTXX)
-head17 = 'SCALARS viscous_strain_t_yy double 1\n'
+head17 = "SCALARS viscous_strain_t_yy double 1\n"
 o.write(head17)
 o.write(headscalar)
 numpy.savetxt(o, viscousStrainTYY)
-head17 = 'SCALARS viscous_strain_t_zz double 1\n'
+head17 = "SCALARS viscous_strain_t_zz double 1\n"
 o.write(head17)
 o.write(headscalar)
 numpy.savetxt(o, viscousStrainTZZ)
-head18 = 'SCALARS viscous_strain_t_xy double 1\n'
+head18 = "SCALARS viscous_strain_t_xy double 1\n"
 o.write(head18)
 o.write(headscalar)
 numpy.savetxt(o, viscousStrainTXY)
-head19 = 'SCALARS viscous_strain_t_plus_dt_xx double 1\n'
+head19 = "SCALARS viscous_strain_t_plus_dt_xx double 1\n"
 o.write(head19)
 o.write(headscalar)
 numpy.savetxt(o, viscousStrainTplusDtXX)
-head20 = 'SCALARS viscous_strain_t_plus_dt_yy double 1\n'
+head20 = "SCALARS viscous_strain_t_plus_dt_yy double 1\n"
 o.write(head20)
 o.write(headscalar)
 numpy.savetxt(o, viscousStrainTplusDtYY)
-head21 = 'SCALARS viscous_strain_t_plus_dt_zz double 1\n'
+head21 = "SCALARS viscous_strain_t_plus_dt_zz double 1\n"
 o.write(head21)
 o.write(headscalar)
 numpy.savetxt(o, viscousStrainTplusDtZZ)
-head22 = 'SCALARS viscous_strain_t_plus_dt_xy double 1\n'
+head22 = "SCALARS viscous_strain_t_plus_dt_xy double 1\n"
 o.write(head22)
 o.write(headscalar)
 numpy.savetxt(o, viscousStrainTplusDtXY)
 o.close()
+
+
+# End of file

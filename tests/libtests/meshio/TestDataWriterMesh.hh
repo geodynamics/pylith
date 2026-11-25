@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "TestDataWriter.hh" // USES TestDataWriter_Data
@@ -17,14 +18,13 @@
 namespace pylith {
     namespace meshio {
         class TestDataWriterMesh;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterMesh {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestDataWriterMesh(void);
 
@@ -32,24 +32,19 @@ public:
     ~TestDataWriterMesh(void);
 
     /// Set data for tri test case.
-    static
-    void setDataTri(TestDataWriter_Data* data);
+    static void setDataTri(TestDataWriter_Data* data);
 
     /// Set data for quad test case.
-    static
-    void setDataQuad(TestDataWriter_Data* data);
+    static void setDataQuad(TestDataWriter_Data* data);
 
     /// Set data for tet test case.
-    static
-    void setDataTet(TestDataWriter_Data* data);
+    static void setDataTet(TestDataWriter_Data* data);
 
     /// Set data for hex test case.
-    static
-    void setDataHex(TestDataWriter_Data* data);
+    static void setDataHex(TestDataWriter_Data* data);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Initialize mesh.
     void _initialize(void);
 
@@ -69,14 +64,13 @@ protected:
      *
      * @returns Test data.
      */
-    virtual
-    TestDataWriter_Data* _getData(void) = 0;
+    virtual TestDataWriter_Data* _getData(void) = 0;
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected:
-
+  protected:
     pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
 
 }; // class TestDataWriterMesh
+
 
 // End of file

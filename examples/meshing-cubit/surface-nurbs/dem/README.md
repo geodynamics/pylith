@@ -1,0 +1,57 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
+This is a simple example showing how to create a NURBS surface using
+Cubit, given a set of regularly-spaced data, such as might be obtained
+from a DEM. We create the surface as a net surface (see Cubit
+documentation); this requires either a mapped mesh or a set of
+intersecting lines (u-lines and v-lines). In either case, the
+intersecting lines must form a logically structured quadrilateral
+mesh. The Python script, dem2lines.py, creates the lines and resamples
+the original data outside a specified region for which full resolution
+is desired. This is useful because using a full-resolution surface for
+the entire region can be quite memory intensive.
+
+The steps for creating the NURBS surface are as follows:
+
+1.  We start with a very coarse DEM of Mt. Ruapehu volcano in New
+Zealand (NZMG coordinates) in ASCII format. Note that the DEM must be in
+ASCII format and it must be ordered in either rows or columns. The DEM used
+in this example was produced using the GMT grd2xyz utility.
+
+2.  The parameters for the Python script are contained in the file
+dem2lines.cfg. In this file we specify the name of the input
+file, the name of an output VTK file (for viewing the resampled DEM
+using a package such as ParaView), and prefixes and filenames for the output
+journal files. The x_min, x_max, etc. values indicate the region over
+which full resolution is desired. Outside this region, resampling
+occurs at skip_interval, 2*skip_interval, etc. until the edge of the
+DEM is reached.
+
+3.  Once the parameters have been set, run the script:
+
+./dem2lines.py
+
+This will produce the file ruapehu-nzmg-1km-resampled.vtk, and will
+also populate the ulines and vlines directories with journal files defining
+each u-line and v-line, as well as creating journal files to playback these
+file, and a master journal file to control everything. You can visualize the
+VTK file to make sure it looks OK.
+
+4.  Once you have created the necessary journal files, you can create the
+surface yourself by running Cubit and playing back the 'ruapehu_topo.jou'
+file. This will create the NURBS surface (ruapehu_topo.sat).
+
+5.  Once the surface has been created, you can import it in future
+Cubit sessions and use it just as you would any surface created within
+Cubit.  For example, to use this surface within Cubit, you would type:
+
+import acis 'ruapehu_topo.sat'
+
+% End of file

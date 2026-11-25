@@ -1,26 +1,18 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
 
-/**
- * @file modulesrc/meshio/MeshIOAscii.i
- *
- * @brief Python interface to C++ MeshIOAscii object.
- */
 
 namespace pylith {
     namespace meshio {
-        class MeshIOAscii: public MeshIO
-        { // MeshIOAscii
-          // PUBLIC METHODS /////////////////////////////////////////////////
-public:
-
+        class MeshIOAscii : public MeshIO { // MeshIOAscii
+                                            // PUBLIC METHODS /////////////////////////////////////////////////
+          public:
             /// Constructor
             MeshIOAscii(void);
 
@@ -43,8 +35,7 @@ public:
             const char* getFilename(void) const;
 
             // PROTECTED METHODS //////////////////////////////////////////////
-protected:
-
+          protected:
             /// Write mesh
             void _write(void) const;
 
@@ -53,7 +44,8 @@ protected:
 
         }; // MeshIOAscii
 
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
+
 
 // End of file

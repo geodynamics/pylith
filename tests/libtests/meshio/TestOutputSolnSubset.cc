@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -14,10 +14,10 @@
 
 #include "pylith/meshio/OutputSolnSubset.hh"
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Stratum.hh" // USES Stratum
 
 #include <string.h> // USES strcmp()
 
@@ -61,12 +61,14 @@ pylith::meshio::TestOutputSolnSubset::testSubdomainMesh(void) { // testSubdomain
 
     const char* label = "bc3";
     const int nvertices = 3;
-    const int verticesE[nvertices] = { 2, 3, 4 };
+    const int verticesE[nvertices] = {2, 3, 4};
     const int ncells = 2;
     const int ncorners = 2;
-    const int cellsE[ncells*ncorners] = {
-        2, 3,
-        3, 4,
+    const int cellsE[ncells * ncorners] = {
+        2,
+        3,
+        3,
+        4,
     };
 
     topology::Mesh mesh;
@@ -77,7 +79,8 @@ pylith::meshio::TestOutputSolnSubset::testSubdomainMesh(void) { // testSubdomain
     OutputSolnSubset output;
     output.setLabel(label);
 
-    PetscDM dmMesh = output.subdomainMesh(mesh).getDM();CPPUNIT_ASSERT(dmMesh);
+    PetscDM dmMesh = output.subdomainMesh(mesh).getDM();
+    CPPUNIT_ASSERT(dmMesh);
 
     // Check vertices
     topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
@@ -94,13 +97,13 @@ pylith::meshio::TestOutputSolnSubset::testSubdomainMesh(void) { // testSubdomain
     const PetscInt cEnd = cellsStratum.end();
     CPPUNIT_ASSERT_EQUAL(ncells, cellsStratum.size());
     for (PetscInt c = cStart, index = 0; c < cEnd; ++c) {
-        PetscInt *closure = NULL;
+        PetscInt* closure = NULL;
         PetscInt closureSize = 0;
         PylithCallPetsc(DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure));
         int count = 0;
         for (int i = 0; i < closureSize; ++i) {
-            const PetscInt p = closure[2*i];
-            if (( p >= vStart) && ( p < vEnd) ) {
+            const PetscInt p = closure[2 * i];
+            if ((p >= vStart) && (p < vEnd)) {
                 CPPUNIT_ASSERT_EQUAL(cellsE[index], p);
                 ++count;
                 ++index;

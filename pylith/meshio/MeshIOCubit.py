@@ -1,12 +1,13 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # @file pythia.pyre/meshio/MeshIOCubit.py
 #
 # @brief Python object for reading/writing finite-element mesh from
@@ -30,26 +31,25 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
 
     Implements `MeshIOObj`.
     """
-    DOC_CONFIG = {
-        "cfg": """
+
+    DOC_CONFIG = {"cfg": """
             [pylithapp.problem.mesh_initializer.phases.read_mesh.reader]
             filename = mesh_quad.exo
             coordsys.space_dim = 2
-        """
-    }
+        """}
 
     import pythia.pyre.inventory
 
     filename = pythia.pyre.inventory.str("filename", default="mesh.exo")
-    filename.meta['tip'] = "Name of Cubit Exodus file."
+    filename.meta["tip"] = "Name of Cubit Exodus file."
 
     from spatialdata.geocoords.CSCart import CSCart
+
     coordsys = pythia.pyre.inventory.facility("coordsys", family="coordsys", factory=CSCart)
-    coordsys.meta['tip'] = "Coordinate system associated with mesh."
+    coordsys.meta["tip"] = "Coordinate system associated with mesh."
 
     def __init__(self, name="meshiocubit"):
-        """Constructor.
-        """
+        """Constructor."""
         mode = MeshIOObj.READ
         MeshIOObj.__init__(self, mode, name)
 
@@ -60,13 +60,11 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
         ModuleMeshIOCubit.setCoordSys(self, self.coordsys)
 
     def _configure(self):
-        """Set members using inventory.
-        """
+        """Set members using inventory."""
         MeshIOObj._configure(self)
 
     def _createModuleObj(self):
-        """Create C++ MeshIOCubit object.
-        """
+        """Create C++ MeshIOCubit object."""
         ModuleMeshIOCubit.__init__(self)
 
     def _validate(self, context):
@@ -78,9 +76,9 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
+
 def mesh_input():
-    """Factory associated with MeshIOCubit.
-    """
+    """Factory associated with MeshIOCubit."""
     return MeshIOCubit()
 
 

@@ -1,18 +1,19 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/feassemble/feassemblefwd.hh" // forward declarations
 
-#include "pylith/utils/types.hh" // USES PetscInt
 #include "pylith/petsc/petsc_types.h" // HASA PetscDM, PetscDS, PetscWeakForm
+#include "pylith/utils/types.hh" // USES PetscInt
 
 #include <string> // HASA std::string
 
@@ -20,8 +21,7 @@ class pylith::feassemble::DSLabelAccess {
     friend class TestDSLabelAccess; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /** Constructor with PetscDM, label name, and label value.
      *
      * @param[in] dm PETSc DM holding label.
@@ -83,8 +83,7 @@ public:
     void removeOverlap(void);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     PetscDM _dm; ///< Cached PETSc dm for mesh.
     PetscDMLabel _label; ///< Cached PETSc DMLabel.
     PetscDS _ds; ///< Cached PetscDS for label and value.
@@ -96,14 +95,13 @@ private:
     std::string _name; ///< Name of label;
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     DSLabelAccess(void); ///< Not implemented.
     DSLabelAccess(const DSLabelAccess&); ///< Not implemented.
     const DSLabelAccess& operator=(const DSLabelAccess&); ///< Not implemented
-
 };
 
 #include "DSLabelAccess.icc"
+
 
 // End of file

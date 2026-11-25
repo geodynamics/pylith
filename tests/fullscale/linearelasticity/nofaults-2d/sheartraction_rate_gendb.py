@@ -1,13 +1,14 @@
 #!/usr/bin/env nemesis
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # @file tests/fullscale/linearelasticity/nofaults-2d/sheartraction_rate_gendb.py
 #
 # @brief Python script to generate spatial database with Dirichlet
@@ -25,13 +26,11 @@ class GenerateDB(object):
     """
 
     def __init__(self):
-        """Constructor.
-        """
+        """Constructor."""
         return
 
     def run(self):
-        """Generate the database.
-        """
+        """Generate the database."""
         # Domain
         x = numpy.arange(-4000.0, 4000.1, 1000.0)
         y = numpy.arange(-4000.0, 4000.1, 1000.0)
@@ -44,37 +43,32 @@ class GenerateDB(object):
         xy[:, 1] = numpy.ravel(numpy.transpose(yy))
 
         from sheartraction_rate_soln import AnalyticalSoln
+
         soln = AnalyticalSoln()
         disp = soln.bc_initial_displacement(xy)
         velocity_time = soln.bc_rate_time(xy) / year.value
         velocity = soln.bc_velocity(xy) * year.value
 
         from spatialdata.geocoords.CSCart import CSCart
+
         cs = CSCart()
         cs.inventory.spaceDim = 2
         cs._configure()
-        data = {'points': xy,
-                'coordsys': cs,
-                'data_dim': 2,
-                'values': [
-                    {'name': "initial_amplitude_x",
-                     'units': "m",
-                     'data': disp[0, :, 0].ravel()},
-                    {'name': "initial_amplitude_y",
-                     'units': "m",
-                     'data': disp[0, :, 1].ravel()},
-                    {'name': "rate_amplitude_x",
-                     'units': "m/year",
-                     'data': velocity[0, :, 0].ravel()},
-                    {'name': "rate_amplitude_y",
-                     'units': "m/year",
-                     'data': velocity[0, :, 1].ravel()},
-                    {'name': "rate_start_time",
-                     'units': "year",
-                     'data': velocity_time[0, :, 0].ravel()},
-                ]}
+        data = {
+            "points": xy,
+            "coordsys": cs,
+            "data_dim": 2,
+            "values": [
+                {"name": "initial_amplitude_x", "units": "m", "data": disp[0, :, 0].ravel()},
+                {"name": "initial_amplitude_y", "units": "m", "data": disp[0, :, 1].ravel()},
+                {"name": "rate_amplitude_x", "units": "m/year", "data": velocity[0, :, 0].ravel()},
+                {"name": "rate_amplitude_y", "units": "m/year", "data": velocity[0, :, 1].ravel()},
+                {"name": "rate_start_time", "units": "year", "data": velocity_time[0, :, 0].ravel()},
+            ],
+        }
 
         from spatialdata.spatialdb.SimpleIOAscii import createWriter
+
         io = createWriter("sheartraction_rate_disp.spatialdb")
         io.write(data)
         return

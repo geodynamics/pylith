@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/problems/ProgressMonitor.hh" // ISA ProgressMonitor
@@ -17,8 +18,7 @@ class pylith::problems::ProgressMonitorStep : public pylith::problems::ProgressM
     friend class TestProgressMonitorStep; // unit testing
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     ProgressMonitorStep(void);
 
@@ -39,8 +39,7 @@ public:
                 const size_t stop);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Open progress monitor.
     void _open(void);
 
@@ -60,16 +59,15 @@ protected:
                  const char* finished);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     std::ofstream _sout; ///< Output stream.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     ProgressMonitorStep(const ProgressMonitorStep&); ///< Not implemented.
     const ProgressMonitorStep& operator=(const ProgressMonitorStep&); ///< Not implemented.
 
 }; // ProgressMonitorStep
+
 
 // End of file

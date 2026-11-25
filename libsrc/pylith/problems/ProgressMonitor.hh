@@ -1,27 +1,27 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/problems/problemsfwd.hh" // forward declarations
 
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
-#include <string> // HASA std::string
 #include <ctime> // HASA time_t
+#include <string> // HASA std::string
 
 class pylith::problems::ProgressMonitor : public pylith::utils::PyreComponent {
     friend class TestProgressMonitor; // unit testing
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     ProgressMonitor(void);
 
@@ -29,8 +29,7 @@ public:
     virtual ~ProgressMonitor(void);
 
     /// Deallocate PETSc and local data structures.
-    virtual
-    void deallocate(void);
+    virtual void deallocate(void);
 
     /** Set how often to report status.
      *
@@ -63,15 +62,12 @@ public:
     void close(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Open progress monitor.
-    virtual
-    void _open(void) = 0;
+    virtual void _open(void) = 0;
 
     /// Close progress monitor.
-    virtual
-    void _close(void) = 0;
+    virtual void _close(void) = 0;
 
     /** Compute finish time.
      * @param[in] percentComplete Percent of simulation complete.
@@ -84,8 +80,7 @@ protected:
                                 const time_t& startTime);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     double _updatePercent; ///< Percentage of completion between status reports.
     std::string _filename; ///< Name of output file.
     time_t _startTime;
@@ -93,11 +88,11 @@ protected:
     bool _isMaster; ///< Is master process.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     ProgressMonitor(const ProgressMonitor&); ///< Not implemented.
     const ProgressMonitor& operator=(const ProgressMonitor&); ///< Not implemented.
 
 }; // ProgressMonitor
+
 
 // End of file

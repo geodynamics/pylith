@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Dynamic
 
 For compatibility with PETSc TS algorithms, we want to turn the second order equation {math:numref}`eqn:elasticity:strong:form` into two first order
@@ -157,3 +166,5 @@ where $c_i$ equals $v_p$ for the normal traction and $v_s$ for the shear tractio
 \begin{equation}
 G^v(t,s) =  \int_{\Gamma_\tau} {\vec{\psi}_\mathit{trial}^{v}} \cdot{\color{blue}\underbrace{\color{black} \left( -\rho c_i v_i(t) \right) }_{\color{blue}{\vec{g}^v_0}}} \, d\Gamma,
 \end{equation}
+
+% End of file

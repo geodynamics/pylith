@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 /* Mesh: meshHex8.txt
  *
@@ -32,24 +32,26 @@ const char* pylith::bc::DirichletDataHex8::_label = "bc";
 
 const int pylith::bc::DirichletDataHex8::_numDOF = 3;
 const int pylith::bc::DirichletDataHex8::_numFixedDOF = 2;
-const int pylith::bc::DirichletDataHex8::_fixedDOF[] = { 0, 2 };
+const int pylith::bc::DirichletDataHex8::_fixedDOF[] = {0, 2};
 
 const int pylith::bc::DirichletDataHex8::_numConstrainedPts = 4;
-const int pylith::bc::DirichletDataHex8::_constrainedPoints[] = { 0, 1, 6, 7 };
+const int pylith::bc::DirichletDataHex8::_constrainedPoints[] = {0, 1, 6, 7};
 
 const PylithScalar pylith::bc::DirichletDataHex8::_tRef = 0.2;
 const PylithScalar pylith::bc::DirichletDataHex8::_valueRate = 0.4;
 const PylithScalar pylith::bc::DirichletDataHex8::_valuesInitial[] = {
-    -0.2, 0.3,
-    0.1, 0.7,
-    0.5, 0.4,
-    3.2, 6.1,
+    -0.2,
+    0.3,
+    0.1,
+    0.7,
+    0.5,
+    0.4,
+    3.2,
+    6.1,
 };
 
-const char* pylith::bc::DirichletDataHex8::_meshFilename =
-    "data/hex8.mesh";
-const char* pylith::bc::DirichletDataHex8::_dbFilename =
-    "data/hex8_disp.spatialdb";
+const char* pylith::bc::DirichletDataHex8::_meshFilename = "data/hex8.mesh";
+const char* pylith::bc::DirichletDataHex8::_dbFilename = "data/hex8_disp.spatialdb";
 
 pylith::bc::DirichletDataHex8::DirichletDataHex8(void) { // constructor
     id = _id;
@@ -71,7 +73,8 @@ pylith::bc::DirichletDataHex8::DirichletDataHex8(void) { // constructor
 } // constructor
 
 
-pylith::bc::DirichletDataHex8::~DirichletDataHex8(void) {}
+pylith::bc::DirichletDataHex8::~DirichletDataHex8(void) {
+}
 
 
 // End of file

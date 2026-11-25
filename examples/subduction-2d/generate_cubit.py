@@ -1,4 +1,14 @@
 #!python3
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 """WARNING: This script only works with Python supplied with Cubit.
 
 To run this script outside the Cubit GUI, you will need to run it like:
@@ -7,6 +17,8 @@ PATH_TO_CUBIT/Cubit.app/Contents/Frameworks/Python.framework/Versions/Current/bi
 
 where you replace 'PATH_TO_CUBIT' with the absolute path.
 """
+
+
 # -------------------------------------------------------------------------------------------------
 # Utility functions. No edits should be needed.
 # -------------------------------------------------------------------------------------------------
@@ -14,19 +26,27 @@ def setup_cubit():
     """Detect if we are running outside Cubit. If so, then we parse command line arguments and setup
     Cubit."""
     import sys
+
     if not "cubit" in sys.modules:
         import argparse
         import pathlib
 
         parser = argparse.ArgumentParser()
-        parser.add_argument("--cubit-directory", action="store", dest="cubit_dir", required=True, help="Directory containing cubit executable.")
+        parser.add_argument(
+            "--cubit-directory",
+            action="store",
+            dest="cubit_dir",
+            required=True,
+            help="Directory containing cubit executable.",
+        )
         args = parser.parse_args()
 
         # Initialize cubit
         cubit_absdir = pathlib.Path(args.cubit_dir).expanduser().resolve()
         sys.path.append(str(cubit_absdir))
         import cubit
-        cubit.init(['cubit','-nojournal'])
+
+        cubit.init(["cubit", "-nojournal"])
 
 
 # -------------------------------------------------------------------------------------------------
@@ -34,8 +54,8 @@ def setup_cubit():
 # -------------------------------------------------------------------------------------------------
 # 2D subduction zone example based on the 2011 M9.0 Tohoku earthquake.
 km = 1000.0
-DX_FAULT = 5.0*km # Discretization size on fault
-DX_BIAS = 1.07 # rate of geometric increase in cell size with distance from the fault
+DX_FAULT = 5.0 * km  # Discretization size on fault
+DX_BIAS = 1.07  # rate of geometric increase in cell size with distance from the fault
 CELL = "tri"
 
 
@@ -46,7 +66,6 @@ setup_cubit()
 cubit.reset()
 
 import math
-
 
 # -------------------------------------------------------------------------------------------------
 # Geometry
@@ -77,19 +96,19 @@ import math
 # than name the vertex because this allows us to still use "idA to idB"
 # to select multiple vertices.
 #
-p_topo_west = cubit.create_vertex(-600.0*km, -2.0*km, 0.0)
-cubit.create_vertex(-439.1*km, -0.3*km, 0.0)
-cubit.create_vertex(-351.2*km, -0.8*km, 0.0)
-cubit.create_vertex(-263.4*km,  0.0*km, 0.0)
-cubit.create_vertex(-175.6*km,  0.4*km, 0.0)
-cubit.create_vertex( -87.7*km,  0.0*km, 0.0)
-cubit.create_vertex(   0.0*km, -0.4*km, 0.0)
-cubit.create_vertex(  87.7*km, -3.0*km, 0.0)
-p_topo_trench = cubit.create_vertex(165.6*km, -6.0*km, 0.0)
-cubit.create_vertex( 263.4*km, -5.40*km, 0.0)
-cubit.create_vertex( 351.2*km, -5.40*km, 0.0)
-cubit.create_vertex( 439.1*km, -5.40*km, 0.0)
-p_topo_east = cubit.create_vertex( 600.0*km, -5.70*km, 0.0)
+p_topo_west = cubit.create_vertex(-600.0 * km, -2.0 * km, 0.0)
+cubit.create_vertex(-439.1 * km, -0.3 * km, 0.0)
+cubit.create_vertex(-351.2 * km, -0.8 * km, 0.0)
+cubit.create_vertex(-263.4 * km, 0.0 * km, 0.0)
+cubit.create_vertex(-175.6 * km, 0.4 * km, 0.0)
+cubit.create_vertex(-87.7 * km, 0.0 * km, 0.0)
+cubit.create_vertex(0.0 * km, -0.4 * km, 0.0)
+cubit.create_vertex(87.7 * km, -3.0 * km, 0.0)
+p_topo_trench = cubit.create_vertex(165.6 * km, -6.0 * km, 0.0)
+cubit.create_vertex(263.4 * km, -5.40 * km, 0.0)
+cubit.create_vertex(351.2 * km, -5.40 * km, 0.0)
+cubit.create_vertex(439.1 * km, -5.40 * km, 0.0)
+p_topo_east = cubit.create_vertex(600.0 * km, -5.70 * km, 0.0)
 
 cubit.cmd(f"create curve spline vertex {p_topo_west.id()} to {p_topo_east.id()}")
 cubit.cmd(f"curve {cubit.get_last_id('curve')} name 'c_topo'")
@@ -97,16 +116,16 @@ cubit.cmd(f"curve {cubit.get_last_id('curve')} name 'c_topo'")
 # Top of slab
 # Hayes and Wald, 2009
 # http://earthquake.usgs.gov/research/data/slab
-p_slabtop_west = cubit.create_vertex(-422.4*km, -240.00*km, 0.0)
-cubit.create_vertex(-331.0*km, -180.00*km, 0.0)
-cubit.create_vertex(-261.6*km, -140.00*km, 0.0)
-cubit.create_vertex(-223.9*km, -120.00*km, 0.0)
-cubit.create_vertex(-182.6*km, -100.00*km, 0.0)
-cubit.create_vertex(-134.3*km, -80.00*km, 0.0)
-p_slabtop_coseismic = cubit.create_vertex( -74.6*km, -60.00*km, 0.0)
-p_slabtop_moho = cubit.create_vertex(  -7.9*km, -40.00*km, 0.0)
-cubit.create_vertex(71.1*km, -20.00*km, 0.0)
-p_slabtop_u = cubit.create_vertex(160.5*km, -7.50*km, 0.0)
+p_slabtop_west = cubit.create_vertex(-422.4 * km, -240.00 * km, 0.0)
+cubit.create_vertex(-331.0 * km, -180.00 * km, 0.0)
+cubit.create_vertex(-261.6 * km, -140.00 * km, 0.0)
+cubit.create_vertex(-223.9 * km, -120.00 * km, 0.0)
+cubit.create_vertex(-182.6 * km, -100.00 * km, 0.0)
+cubit.create_vertex(-134.3 * km, -80.00 * km, 0.0)
+p_slabtop_coseismic = cubit.create_vertex(-74.6 * km, -60.00 * km, 0.0)
+p_slabtop_moho = cubit.create_vertex(-7.9 * km, -40.00 * km, 0.0)
+cubit.create_vertex(71.1 * km, -20.00 * km, 0.0)
+p_slabtop_u = cubit.create_vertex(160.5 * km, -7.50 * km, 0.0)
 
 cubit.cmd(f"create curve spline vertex {p_slabtop_west.id()} to {p_slabtop_u.id()} {p_topo_trench.id()}")
 cubit.cmd(f"curve {cubit.get_last_id('curve')} name 'c_slabtop'")
@@ -118,8 +137,8 @@ cubit.cmd(f"curve {cubit.get_last_id('curve')} name 'c_slabtop'")
 cubit.cmd(f"vertex {p_slabtop_west.id()} to {p_slabtop_coseismic.id()} copy move X {120.0*km}")
 p_slabbot_west_id = p_slabtop_u.id() + 1
 
-cubit.create_vertex(175.6*km, -40.0*km, 0.0)
-p_slabbot_east = cubit.create_vertex(600.0*km, -40.0*km, 0.0)
+cubit.create_vertex(175.6 * km, -40.0 * km, 0.0)
+p_slabbot_east = cubit.create_vertex(600.0 * km, -40.0 * km, 0.0)
 
 cubit.cmd(f"create curve spline vertex {p_slabbot_west_id} to {p_slabbot_east.id()}")
 cubit.cmd(f"curve {cubit.get_last_id('curve')} name 'c_slabbot'")
@@ -129,14 +148,14 @@ cubit.cmd(f"create curve spline vertex {p_slabtop_west.id()} {p_slabbot_west_id}
 cubit.cmd(f"curve {cubit.get_last_id('curve')} name 'c_slab_end'")
 
 # Top of mantle (uniform depth of 40 km)
-p_moho_west = cubit.create_vertex(-600.0*km, -40.00*km, 0.0)
+p_moho_west = cubit.create_vertex(-600.0 * km, -40.00 * km, 0.0)
 
 cubit.cmd(f"create curve spline vertex {p_moho_west.id()} {p_slabtop_moho.id()}")
 cubit.cmd(f"curve {cubit.get_last_id('curve')} name 'c_conmoho'")
 
 # Lateral edges and bottom boundary
-p_bot_west = cubit.create_vertex(-600.0*km, -600.00*km, 0.0)
-p_bot_east = cubit.create_vertex(+600.0*km, -600.00*km, 0.0)
+p_bot_west = cubit.create_vertex(-600.0 * km, -600.00 * km, 0.0)
+p_bot_east = cubit.create_vertex(+600.0 * km, -600.00 * km, 0.0)
 
 cubit.cmd(f"create curve spline vertex {p_topo_west.id()} {p_moho_west.id()} {p_bot_west.id()}")
 cubit.cmd(f"curve {cubit.get_last_id('curve')} name 'c_west'")
@@ -275,7 +294,6 @@ if False:
     cubit.cmd("nodeset 32 group fault_slabbot_edge")
     cubit.cmd("nodeset 32 name 'fault_slabbot_edge'")
 
-
     # Create nodeset for topography/bathymetry
     cubit.cmd("group 'groundsurf' add node in curve c_topo")
     cubit.cmd("group 'groundsurf' add node in curve c_topo@A")
@@ -329,7 +347,6 @@ if True:
     cubit.cmd("sideset 22 group fault_slabbot")
     cubit.cmd("sideset 22 name 'fault_slabbot'")
 
-
     ## Create sideset for topography/bathymetry
     cubit.cmd("group 'groundsurf' add curve c_topo")
     cubit.cmd("group 'groundsurf' add curve c_topo@A")
@@ -360,7 +377,6 @@ if True:
     cubit.cmd("sideset 14 group boundary_bot")
     cubit.cmd("sideset 14 name 'boundary_bot'")
 
-
     # Buried edges :TODO: Remove after using transform to create fault
     # Fault edge (coseismic region only)
     cubit.cmd("group 'fault_coseismic_edge' add node in vertex 65")
@@ -380,3 +396,6 @@ if True:
 
 # Write mesh as ExodusII file
 cubit.cmd(f"export mesh 'mesh_{CELL}.exo' dimension 2 overwrite")
+
+
+# End of file

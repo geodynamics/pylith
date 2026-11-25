@@ -1,27 +1,38 @@
 #!/usr/bin/env nemesis
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 import gmsh
-from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup, GenerateMesh)
+from pylith.meshio.gmsh_utils import BoundaryGroup, MaterialGroup, GenerateMesh
+
 
 class App(GenerateMesh):
     """
     Block is DOMAIN_X by DOMAIN_Y by DOMAIN_Z with discretization size DX.
     """
-    DOMAIN_X = DOMAIN_Y = DOMAIN_Z = 8.0e+3
-    DX = 2.0e+3
+
+    DOMAIN_X = DOMAIN_Y = DOMAIN_Z = 8.0e3
+    DX = 2.0e3
 
     def __init__(self):
         self.cell_choices = {
             "required": True,
             "choices": ["tet", "hex"],
-            }
+        }
         self.filename = "tet.msh"
 
     def create_geometry(self):
-        """Create geometry.
-        """
-        self.v_domain = gmsh.model.occ.add_box(-0.5*self.DOMAIN_X, -0.5*self.DOMAIN_Y, -self.DOMAIN_Z,
-                                               self.DOMAIN_X, self.DOMAIN_Y, self.DOMAIN_Z)
+        """Create geometry."""
+        self.v_domain = gmsh.model.occ.add_box(
+            -0.5 * self.DOMAIN_X, -0.5 * self.DOMAIN_Y, -self.DOMAIN_Z, self.DOMAIN_X, self.DOMAIN_Y, self.DOMAIN_Z
+        )
 
         gmsh.model.occ.synchronize()
 
@@ -29,23 +40,17 @@ class App(GenerateMesh):
         self.boundaries = [tag for dim, tag in dim_tags]
 
     def mark(self):
-        """Mark geometry for materials, boundary conditions, faults, etc.
-        """
-        materials = (
-            MaterialGroup(tag=24, entities=[self.v_domain]),
-        )
+        """Mark geometry for materials, boundary conditions, faults, etc."""
+        materials = (MaterialGroup(tag=24, entities=[self.v_domain]),)
         for material in materials:
             material.create_physical_group()
 
-        boundary_groups = (
-            BoundaryGroup(name="boundary", tag=1, dim=2, entities=self.boundaries),
-        )
+        boundary_groups = (BoundaryGroup(name="boundary", tag=1, dim=2, entities=self.boundaries),)
         for group in boundary_groups:
             group.create_physical_group()
 
     def generate_mesh(self, cell):
-        """Generate the mesh. Should also include optimizing the mesh quality.
-        """
+        """Generate the mesh. Should also include optimizing the mesh quality."""
         gmsh.option.setNumber("Mesh.MeshSizeMin", self.DX)
         gmsh.option.setNumber("Mesh.MeshSizeMax", self.DX)
         if cell == "hex":

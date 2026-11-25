@@ -1,14 +1,16 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
-2.7,  3.4,
-};
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
+2.7, 3.4,
+}
+;
 
 const int pylith::bc::AbsorbingDampersDataQuad4::_spaceDim = 2;
 const int pylith::bc::AbsorbingDampersDataQuad4::_cellDim = 1;
@@ -17,95 +19,46 @@ const int pylith::bc::AbsorbingDampersDataQuad4::_numCells = 2;
 const int pylith::bc::AbsorbingDampersDataQuad4::_numCorners = 2;
 /* Now vertices are renumbered in the submesh */
 const int pylith::bc::AbsorbingDampersDataQuad4::_cells[] = {
-    3 /*3*/, 2 /*2*/,
-    4 /*6*/, 5 /*7*/,
+    3 /*3*/,
+    2 /*2*/,
+    4 /*6*/,
+    5 /*7*/,
 };
 
 const PylithScalar pylith::bc::AbsorbingDampersDataQuad4::_dampingConsts[] = {
-    1.25e+07, 7.5e+06,
-    1.25e+07, 7.5e+06,
+    1.25e+07,
+    7.5e+06,
+    1.25e+07,
+    7.5e+06,
 };
 const PylithScalar pylith::bc::AbsorbingDampersDataQuad4::_valsResidual[] = {
-    -3.75000000e+07,   -2.92500000e+07,
-    -3.75000000e+07,   -2.92500000e+07,
-    0.0, 0.0,
-    0.0, 0.0,
-    -7.75000000e+07,   -5.02500000e+07,
-    -7.75000000e+07,   -5.02500000e+07,
+    -3.75000000e+07,
+    -2.92500000e+07,
+    -3.75000000e+07,
+    -2.92500000e+07,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    -7.75000000e+07,
+    -5.02500000e+07,
+    -7.75000000e+07,
+    -5.02500000e+07,
 };
 const PylithScalar pylith::bc::AbsorbingDampersDataQuad4::_valsJacobian[] = {
     1.25e+07, 0.0, // 0x
-    1.25e+07, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 7.5e+06, // 0y
-    0.0, 7.5e+06,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    1.25e+07, 0.0, // 1x
-    1.25e+07, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 7.5e+06, // 1y
-    0.0, 7.5e+06,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0, // 2x
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0, // 2y
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0, // 3x
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0, // 3y
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0, // 4x
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    1.25e+07, 0.0,
-    1.25e+07, 0.0,
-    0.0, 0.0, // 4y
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 7.5e+06,
-    0.0, 7.5e+06,
-    0.0, 0.0, // 5x
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    1.25e+07, 0.0,
-    1.25e+07, 0.0,
-    0.0, 0.0, // 5y
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 0.0,
-    0.0, 7.5e+06,
-    0.0, 7.5e+06,
+    1.25e+07, 0.0,     0.0, 0.0, 0.0, 0.0, 0.0,      0.0,     0.0,      0.0,     0.0,      7.5e+06, // 0y
+    0.0,      7.5e+06, 0.0, 0.0, 0.0, 0.0, 0.0,      0.0,     0.0,      0.0,     1.25e+07, 0.0, // 1x
+    1.25e+07, 0.0,     0.0, 0.0, 0.0, 0.0, 0.0,      0.0,     0.0,      0.0,     0.0,      7.5e+06, // 1y
+    0.0,      7.5e+06, 0.0, 0.0, 0.0, 0.0, 0.0,      0.0,     0.0,      0.0,     0.0,      0.0, // 2x
+    0.0,      0.0,     0.0, 0.0, 0.0, 0.0, 0.0,      0.0,     0.0,      0.0,     0.0,      0.0, // 2y
+    0.0,      0.0,     0.0, 0.0, 0.0, 0.0, 0.0,      0.0,     0.0,      0.0,     0.0,      0.0, // 3x
+    0.0,      0.0,     0.0, 0.0, 0.0, 0.0, 0.0,      0.0,     0.0,      0.0,     0.0,      0.0, // 3y
+    0.0,      0.0,     0.0, 0.0, 0.0, 0.0, 0.0,      0.0,     0.0,      0.0,     0.0,      0.0, // 4x
+    0.0,      0.0,     0.0, 0.0, 0.0, 0.0, 1.25e+07, 0.0,     1.25e+07, 0.0,     0.0,      0.0, // 4y
+    0.0,      0.0,     0.0, 0.0, 0.0, 0.0, 0.0,      7.5e+06, 0.0,      7.5e+06, 0.0,      0.0, // 5x
+    0.0,      0.0,     0.0, 0.0, 0.0, 0.0, 1.25e+07, 0.0,     1.25e+07, 0.0,     0.0,      0.0, // 5y
+    0.0,      0.0,     0.0, 0.0, 0.0, 0.0, 0.0,      7.5e+06, 0.0,      7.5e+06,
 };
 
 pylith::bc::AbsorbingDampersDataQuad4::AbsorbingDampersDataQuad4(void) { // constructor
@@ -140,7 +93,8 @@ pylith::bc::AbsorbingDampersDataQuad4::AbsorbingDampersDataQuad4(void) { // cons
 } // constructor
 
 
-pylith::bc::AbsorbingDampersDataQuad4::~AbsorbingDampersDataQuad4(void) {}
+pylith::bc::AbsorbingDampersDataQuad4::~AbsorbingDampersDataQuad4(void) {
+}
 
 
 // End of file

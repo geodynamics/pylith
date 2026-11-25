@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 3: Interseismic Deformation
 
 This example involves a quasi-static simulation for interseismic deformation.
@@ -122,3 +131,5 @@ pylith_viz --filename=output/step03_interseismic-domain.h5 warp_grid --component
 Solution for Step 3 at t=140 yr.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 5000.
 :::
+
+% End of file

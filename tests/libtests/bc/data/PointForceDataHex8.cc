@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 /* Mesh: meshHex8.txt
  *
@@ -32,40 +32,32 @@ const char* pylith::bc::PointForceDataHex8::_label = "bc";
 
 const int pylith::bc::PointForceDataHex8::_numDOF = 3;
 const int pylith::bc::PointForceDataHex8::_numForceDOF = 2;
-const int pylith::bc::PointForceDataHex8::_forceDOF[] = { 0, 2 };
+const int pylith::bc::PointForceDataHex8::_forceDOF[] = {0, 2};
 
 const int pylith::bc::PointForceDataHex8::_numForcePts = 4;
-const int pylith::bc::PointForceDataHex8::_forcePoints[] = { 0, 1, 6, 7 };
+const int pylith::bc::PointForceDataHex8::_forcePoints[] = {0, 1, 6, 7};
 
 const PylithScalar pylith::bc::PointForceDataHex8::_tRef = 0.2;
 const PylithScalar pylith::bc::PointForceDataHex8::_forceRate = 0.4;
 const PylithScalar pylith::bc::PointForceDataHex8::_forceInitial[] = {
-    -0.2, 0.3,
-    0.1, 0.7,
-    0.5, 0.4,
-    3.2, 6.1,
+    -0.2,
+    0.3,
+    0.1,
+    0.7,
+    0.5,
+    0.4,
+    3.2,
+    6.1,
 };
 
 const PylithScalar pylith::bc::PointForceDataHex8::_tResidual = 0.45;
 const PylithScalar pylith::bc::PointForceDataHex8::_residual[] = {
-    -0.1, 0.0, 0.4,
-    0.2, 0.0, 0.8,
-    0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0,
-    0.6, 0.0, 0.5,
-    3.3, 0.0, 6.2,
-    0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0,
+    -0.1, 0.0, 0.4, 0.2, 0.0, 0.8, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.6,  0.0, 0.5, 3.3, 0.0, 6.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 };
 
-const char* pylith::bc::PointForceDataHex8::_meshFilename =
-    "data/hex8.mesh";
-const char* pylith::bc::PointForceDataHex8::_dbFilename =
-    "data/hex8_force.spatialdb";
+const char* pylith::bc::PointForceDataHex8::_meshFilename = "data/hex8.mesh";
+const char* pylith::bc::PointForceDataHex8::_dbFilename = "data/hex8_force.spatialdb";
 
 pylith::bc::PointForceDataHex8::PointForceDataHex8(void) { // constructor
     id = _id;
@@ -90,7 +82,8 @@ pylith::bc::PointForceDataHex8::PointForceDataHex8(void) { // constructor
 } // constructor
 
 
-pylith::bc::PointForceDataHex8::~PointForceDataHex8(void) {}
+pylith::bc::PointForceDataHex8::~PointForceDataHex8(void) {
+}
 
 
 // End of file

@@ -1,3 +1,13 @@
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 from . import (
     TestMeshIOAscii,
     TestMeshIOPetsc,
@@ -53,6 +63,7 @@ def test_modules():
     ]
     if has_netcdf():
         from . import TestMeshIOCubit
+
         modules += [
             TestMeshIOCubit,
         ]
@@ -62,6 +73,7 @@ def test_modules():
             TestDataWriterHDF5Ext,
             TestXdmf,
         )
+
         modules += [
             TestDataWriterHDF5,
             TestDataWriterHDF5Ext,

@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 /** @file tests/mmstests/faults/TestFaultKin2D_OneFaultShearNoSlip.cc
  *
@@ -18,168 +18,188 @@
 
 #include "OneFaultShearNoSlip.hh" // Implementation of cases
 
-#include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
-#include "pylith/faults/KinSrcStep.hh" // USES KinSrcStep
-#include "pylith/problems/TimeDependent.hh" // USES TimeDependent
-#include "pylith/materials/Elasticity.hh" // USES Elasticity
-#include "pylith/materials/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity
 #include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
 #include "pylith/bc/NeumannUserFn.hh" // USES NeumannUserFn
+#include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
+#include "pylith/faults/KinSrcStep.hh" // USES KinSrcStep
+#include "pylith/materials/Elasticity.hh" // USES Elasticity
+#include "pylith/materials/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity
+#include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 
-#include "pylith/topology/Mesh.hh" // USES pylith::topology::Mesh::cells_label_name
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
+#include "pylith/topology/Mesh.hh" // USES pylith::topology::Mesh::cells_label_name
 #include "pylith/utils/journals.hh" // USES PYLITH_DEBUG
 
-#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "pylith/scales/Scales.hh" // USES Scales
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 
 #include "catch2/catch_test_macros.hpp"
 
 namespace pylith {
     class _OneFaultShearNoSlip;
-} // pylith
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::_OneFaultShearNoSlip {
     static pylith::scales::Scales scales;
 
     // Density
-    static double density(const double x,
-                          const double y) {
+    static double
+    density(const double x,
+            const double y) {
         return 2500.0;
     } // density
 
-    static const char* density_units(void) {
+    static const char*
+    density_units(void) {
         return "kg/m**3";
     } // density_units
 
     // Vs
-    static double vs(const double x,
-                     const double y) {
+    static double
+    vs(const double x,
+       const double y) {
         return 3000.0;
     } // vs
 
-    static const char* vs_units(void) {
+    static const char*
+    vs_units(void) {
         return "m/s";
     } // vs_units
 
     // Vp
-    static double vp(const double x,
-                     const double y) {
-        return sqrt(3.0)*vs(x,y);
+    static double
+    vp(const double x,
+       const double y) {
+        return sqrt(3.0) * vs(x, y);
     } // vp
 
-    static const char* vp_units(void) {
+    static const char*
+    vp_units(void) {
         return "m/s";
     } // vp_units
 
     // Kinematic rupture auxiliary components.
 
     // Initiation time
-    static double initiation_time(const double x,
-                                  const double y) {
+    static double
+    initiation_time(const double x,
+                    const double y) {
         return 0.0;
     } // initiation_time
 
-    static const char* time_units(void) {
+    static const char*
+    time_units(void) {
         return "s";
     } // time_units
 
     // Slip
-    static double finalslip_opening(const double x,
-                                    const double y) {
+    static double
+    finalslip_opening(const double x,
+                      const double y) {
         return 0.0;
     } // slip_opening
 
-    static double finalslip_leftlateral(const double x,
-                                        const double y) {
+    static double
+    finalslip_leftlateral(const double x,
+                          const double y) {
         return 0.0;
     } // slip_leftlateral
 
-    static const char* slip_units(void) {
+    static const char*
+    slip_units(void) {
         return "m";
     } // slip_units
 
     // Solution subfields.
-    static double strain_xx(void) {
+    static double
+    strain_xx(void) {
         return 0.0;
     } // strain_xx
 
-    static double strain_yy(void) {
+    static double
+    strain_yy(void) {
         return 0.0;
     } // strain_yy
 
-    static double strain_xy(void) {
+    static double
+    strain_xy(void) {
         return 0.3;
     } // strain_xy
 
     // Displacement
-    static double disp_x(const double x,
-                         const double y) {
-        return strain_xx()*x + strain_xy()*y;
+    static double
+    disp_x(const double x,
+           const double y) {
+        return strain_xx() * x + strain_xy() * y;
     } // disp_x
 
-    static double disp_y(const double x,
-                         const double y) {
-        return strain_xy()*x + strain_yy()*y;
+    static double
+    disp_y(const double x,
+           const double y) {
+        return strain_xy() * x + strain_yy() * y;
     } // disp_y
 
-    static const char* disp_units(void) {
+    static const char*
+    disp_units(void) {
         return "m";
     } // disp_units
 
-    static double faulttraction_x(const double x,
-                                  const double y) {
+    static double
+    faulttraction_x(const double x,
+                    const double y) {
         return 0.0;
     } // faulttraction_x
 
-    static double faulttraction_y(const double x,
-                                  const double y) {
+    static double
+    faulttraction_y(const double x,
+                    const double y) {
         const double rigidityScale = scales.getRigidityScale();
         const double mu = density(x, y) * vs(x, y) * vs(x, y);
 
         return strain_xy() * 2.0 * mu / rigidityScale;
     } // faulttraction_y
 
-    static
-    void boundary_tractions(const PylithInt dim,
-                            const PylithInt numS,
-                            const PylithInt numA,
-                            const PylithInt sOff[],
-                            const PylithInt sOff_x[],
-                            const PylithScalar s[],
-                            const PylithScalar s_t[],
-                            const PylithScalar s_x[],
-                            const PylithInt aOff[],
-                            const PylithInt aOff_x[],
-                            const PylithScalar a[],
-                            const PylithScalar a_t[],
-                            const PylithScalar a_x[],
-                            const PylithReal t,
-                            const PylithReal x[],
-                            const PylithReal n[],
-                            const PylithInt numConstants,
-                            const PylithScalar constants[],
-                            PylithScalar r0[]) {
+    static void
+    boundary_tractions(const PylithInt dim,
+                       const PylithInt numS,
+                       const PylithInt numA,
+                       const PylithInt sOff[],
+                       const PylithInt sOff_x[],
+                       const PylithScalar s[],
+                       const PylithScalar s_t[],
+                       const PylithScalar s_x[],
+                       const PylithInt aOff[],
+                       const PylithInt aOff_x[],
+                       const PylithScalar a[],
+                       const PylithScalar a_t[],
+                       const PylithScalar a_x[],
+                       const PylithReal t,
+                       const PylithReal x[],
+                       const PylithReal n[],
+                       const PylithInt numConstants,
+                       const PylithScalar constants[],
+                       PylithScalar r0[]) {
         REQUIRE(r0);
         const double rigidityScale = scales.getRigidityScale();
         const double mu = density(x[0], x[1]) * vs(x[0], x[1]) * vs(x[0], x[1]);
 
-        const PylithScalar tanDir[2] = {-n[1], n[0] };
+        const PylithScalar tanDir[2] = {-n[1], n[0]};
         const PylithScalar tractionShear = -strain_xy() * 2.0 * mu / rigidityScale;
         const PylithScalar tractionNormal = 0.0;
-        r0[0] += tractionShear*tanDir[0] + tractionNormal*n[0];
-        r0[1] += tractionShear*tanDir[1] + tractionNormal*n[1];
+        r0[0] += tractionShear * tanDir[0] + tractionNormal * n[0];
+        r0[1] += tractionShear * tanDir[1] + tractionNormal * n[1];
     } // boundary_tractions
 
-    static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
-                                          PetscReal t,
-                                          const PetscReal x[],
-                                          PetscInt numComponents,
-                                          PetscScalar* s,
-                                          void* context) {
+    static PetscErrorCode
+    solnkernel_disp(PetscInt spaceDim,
+                    PetscReal t,
+                    const PetscReal x[],
+                    PetscInt numComponents,
+                    PetscScalar* s,
+                    void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(x);
         REQUIRE(2 == numComponents);
@@ -191,12 +211,13 @@ class pylith::_OneFaultShearNoSlip {
         return PETSC_SUCCESS;
     } // solnkernel_disp
 
-    static PetscErrorCode solnkernel_lagrangemultiplier(PetscInt spaceDim,
-                                                        PetscReal t,
-                                                        const PetscReal x[],
-                                                        PetscInt numComponents,
-                                                        PetscScalar* s,
-                                                        void* context) {
+    static PetscErrorCode
+    solnkernel_lagrangemultiplier(PetscInt spaceDim,
+                                  PetscReal t,
+                                  const PetscReal x[],
+                                  PetscInt numComponents,
+                                  PetscScalar* s,
+                                  void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(x);
         REQUIRE(2 == numComponents);
@@ -208,11 +229,11 @@ class pylith::_OneFaultShearNoSlip {
         return PETSC_SUCCESS;
     } // solnkernel_lagrangemultiplier
 
-public:
-
-    static
-    TestFaultKin_Data* createData(void) {
-        TestFaultKin_Data* data = new TestFaultKin_Data();REQUIRE(data);
+  public:
+    static TestFaultKin_Data*
+    createData(void) {
+        TestFaultKin_Data* data = new TestFaultKin_Data();
+        REQUIRE(data);
 
         data->journalName = "OneFaultShearNoSlip";
 
@@ -240,7 +261,8 @@ public:
         data->matAuxDB.setCoordSys(data->cs);
 
         REQUIRE(!data->kinSrc);
-        data->kinSrc = new pylith::faults::KinSrcStep();REQUIRE(data->kinSrc);
+        data->kinSrc = new pylith::faults::KinSrcStep();
+        REQUIRE(data->kinSrc);
         data->kinSrc->setOriginTime(0.0);
         data->faultAuxDB.addValue("initiation_time", initiation_time, time_units());
         data->faultAuxDB.addValue("final_slip_opening", finalslip_opening, slip_units());
@@ -248,7 +270,7 @@ public:
         data->faultAuxDB.setCoordSys(data->cs);
 
         data->faultNumAuxSubfields = 1;
-        static const char* _faultAuxSubfields[1] = { "slip" };
+        static const char* _faultAuxSubfields[1] = {"slip"};
         data->faultAuxSubfields = _faultAuxSubfields;
         static const pylith::topology::Field::Discretization _faultAuxDiscretizations[1] = {
             pylith::topology::Field::Discretization(0, 1), // slip
@@ -258,7 +280,8 @@ public:
         // Materials
         data->materials.resize(3);
         { // xneg
-            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();REQUIRE(material);
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();
+            REQUIRE(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
             material->setIdentifier("elasticity");
@@ -268,7 +291,8 @@ public:
             data->materials[0] = material;
         } // xneg
         { // mid
-            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();REQUIRE(material);
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();
+            REQUIRE(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
             material->setIdentifier("elasticity");
@@ -278,7 +302,8 @@ public:
             data->materials[1] = material;
         } // mid
         { // xpos
-            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();REQUIRE(material);
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();
+            REQUIRE(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
             material->setIdentifier("elasticity");
@@ -335,8 +360,8 @@ public:
             fault->setSurfaceLabelName("fault_xpos_faces");
 
             const int numRuptures = 1;
-            const char* ruptureNames[1] = { "rupture" };
-            pylith::faults::KinSrc* ruptures[1] = { data->kinSrc };
+            const char* ruptureNames[1] = {"rupture"};
+            pylith::faults::KinSrc* ruptures[1] = {data->kinSrc};
             fault->setEqRuptures(ruptureNames, numRuptures, ruptures, numRuptures);
             data->faults[0] = fault;
         } // xpos
@@ -359,7 +384,8 @@ pylith::scales::Scales pylith::_OneFaultShearNoSlip::scales;
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::OneFaultShearNoSlip::TriP1(void) {
-    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();REQUIRE(data);
+    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -378,7 +404,8 @@ pylith::OneFaultShearNoSlip::TriP1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::OneFaultShearNoSlip::TriP2(void) {
-    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();REQUIRE(data);
+    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -409,7 +436,8 @@ pylith::OneFaultShearNoSlip::TriP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::OneFaultShearNoSlip::TriP3(void) {
-    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();REQUIRE(data);
+    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -440,7 +468,8 @@ pylith::OneFaultShearNoSlip::TriP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::OneFaultShearNoSlip::TriP4(void) {
-    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();REQUIRE(data);
+    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -471,7 +500,8 @@ pylith::OneFaultShearNoSlip::TriP4(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::OneFaultShearNoSlip::QuadQ1(void) {
-    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();REQUIRE(data);
+    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -490,7 +520,8 @@ pylith::OneFaultShearNoSlip::QuadQ1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::OneFaultShearNoSlip::QuadQ2(void) {
-    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();REQUIRE(data);
+    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -521,7 +552,8 @@ pylith::OneFaultShearNoSlip::QuadQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::OneFaultShearNoSlip::QuadQ3(void) {
-    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();REQUIRE(data);
+    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -552,7 +584,8 @@ pylith::OneFaultShearNoSlip::QuadQ3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::OneFaultShearNoSlip::QuadQ4(void) {
-    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();REQUIRE(data);
+    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 

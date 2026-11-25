@@ -1,49 +1,46 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
- Values
- *   1: 0.3
- *   3: 0.7
- * tRef = 0.7
- * Rate of change = -0.2
- */
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
+Values* 1 : 0.3 * 3 : 0.7 * tRef = 0.7 * Rate of change = -0.2 * /
 
 #include "PointForceDataTri3.hh"
 
-const int pylith::bc::PointForceDataTri3::_id = 0;
+                                                          const int pylith::bc::PointForceDataTri3::_id = 0;
 
 const char* pylith::bc::PointForceDataTri3::_label = "bc";
 
 const int pylith::bc::PointForceDataTri3::_numDOF = 2;
 const int pylith::bc::PointForceDataTri3::_numForceDOF = 1;
-const int pylith::bc::PointForceDataTri3::_forceDOF[] = { 1 };
+const int pylith::bc::PointForceDataTri3::_forceDOF[] = {1};
 
 const int pylith::bc::PointForceDataTri3::_numForcePts = 2;
-const int pylith::bc::PointForceDataTri3::_forcePoints[] = { 1, 3 };
+const int pylith::bc::PointForceDataTri3::_forcePoints[] = {1, 3};
 
 const PylithScalar pylith::bc::PointForceDataTri3::_tRef = 0.7;
 const PylithScalar pylith::bc::PointForceDataTri3::_forceRate = -0.2;
-const PylithScalar pylith::bc::PointForceDataTri3::_forceInitial[] =
-{ 0.3, 0.7 };
+const PylithScalar pylith::bc::PointForceDataTri3::_forceInitial[] = {0.3, 0.7};
 
 const PylithScalar pylith::bc::PointForceDataTri3::_tResidual = 1.5;
-const PylithScalar pylith::bc::PointForceDataTri3::_residual[] =
-{ 0.0, 0.0,
-  0.0, 0.14,
-  0.0, 0.0,
-  0.0, 0.54,
+const PylithScalar pylith::bc::PointForceDataTri3::_residual[] = {
+    0.0,
+    0.0,
+    0.0,
+    0.14,
+    0.0,
+    0.0,
+    0.0,
+    0.54,
 };
 
-const char* pylith::bc::PointForceDataTri3::_meshFilename =
-    "data/tri3.mesh";
-const char* pylith::bc::PointForceDataTri3::_dbFilename =
-    "data/tri3_force.spatialdb";
+const char* pylith::bc::PointForceDataTri3::_meshFilename = "data/tri3.mesh";
+const char* pylith::bc::PointForceDataTri3::_dbFilename = "data/tri3_force.spatialdb";
 
 pylith::bc::PointForceDataTri3::PointForceDataTri3(void) { // constructor
     id = _id;
@@ -68,7 +65,8 @@ pylith::bc::PointForceDataTri3::PointForceDataTri3(void) { // constructor
 } // constructor
 
 
-pylith::bc::PointForceDataTri3::~PointForceDataTri3(void) {}
+pylith::bc::PointForceDataTri3::~PointForceDataTri3(void) {
+}
 
 
 // End of file

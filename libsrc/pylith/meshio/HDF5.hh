@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/meshio/meshiofwd.hh"
@@ -21,14 +22,12 @@ class pylith::meshio::HDF5 {
     friend class TestHDF5; // Unit testing
 
     // PUBLIC STRUCTS ---------------------------------------------------------------------
-public:
-
+  public:
     // Structs for packaging method arguments and return values.
 
     /// Dataset.
-    template <typename T>
-    struct Dataset {
-        std::vector<T>      data;
+    template <typename T> struct Dataset {
+        std::vector<T> data;
         std::vector<hsize_t> dims;
     };
 
@@ -52,8 +51,7 @@ public:
 
 
     // PUBLIC METHODS ---------------------------------------------------------------------
-public:
-
+  public:
     /// Default constructor.
     HDF5(void);
 
@@ -322,18 +320,17 @@ public:
                                       const char* name);
 
     // PRIVATE METHODS --------------------------------------------------------------------
-private:
-
+  private:
     // Map a C++ scalar type to the corresponding native HDF5 type.
     template <typename T> static hid_t _h5NativeType();
 
     // PRIVATE MEMBERS --------------------------------------------------------------------
-private:
-
+  private:
     hid_t _file;
 }; // HDF5
 
 
 #include "HDF5.icc"
+
 
 // End of file

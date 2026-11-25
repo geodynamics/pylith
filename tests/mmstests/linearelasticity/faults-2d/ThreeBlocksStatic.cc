@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 /** @file tests/mmstests/linearelasticity/faults-2d/ThreeBlocksStatic.cc
  *
@@ -19,27 +19,27 @@
 
 #include "ThreeBlocksStatic.hh" // Implementation of cases
 
+#include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 #include "pylith/faults/KinSrcStep.hh" // USES KinSrcStep
-#include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/materials/Elasticity.hh" // USES Elasticity
 #include "pylith/materials/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity
-#include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
+#include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 
-#include "pylith/topology/Mesh.hh" // USES pylith::topology::Mesh::cells_label_name
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
+#include "pylith/topology/Mesh.hh" // USES pylith::topology::Mesh::cells_label_name
 #include "pylith/utils/journals.hh" // USES PYLITH_DEBUG
 
-#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "pylith/scales/Scales.hh" // USES Scales
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 
 #include "catch2/catch_test_macros.hpp"
 
 namespace pylith {
     class _ThreeBlocksStatic;
-} // pylith
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::_ThreeBlocksStatic {
@@ -51,73 +51,86 @@ class pylith::_ThreeBlocksStatic {
     static const double Y_DISP_RIGHT; // nondimensional
 
     // Density
-    static double density(const double x,
-                          const double y) {
+    static double
+    density(const double x,
+            const double y) {
         return 2500.0;
     } // density
 
-    static const char* density_units(void) {
+    static const char*
+    density_units(void) {
         return "kg/m**3";
     } // density_units
 
     // Vs
-    static double vs(const double x,
-                     const double y) {
+    static double
+    vs(const double x,
+       const double y) {
         return 3000.0;
     } // vs
 
-    static const char* vs_units(void) {
+    static const char*
+    vs_units(void) {
         return "m/s";
     } // vs_units
 
     // Vp
-    static double vp(const double x,
-                     const double y) {
-        return sqrt(3.0)*vs(x,y);
+    static double
+    vp(const double x,
+       const double y) {
+        return sqrt(3.0) * vs(x, y);
     } // vp
 
-    static const char* vp_units(void) {
+    static const char*
+    vp_units(void) {
         return "m/s";
     } // vp_units
 
     // Kinematic rupture auxiliary components.
 
     // Initiation time
-    static double initiation_time(const double x,
-                                  const double y) {
+    static double
+    initiation_time(const double x,
+                    const double y) {
         return 0.0;
     } // initiation_time
 
-    static const char* time_units(void) {
+    static const char*
+    time_units(void) {
         return "s";
     } // time_units
 
     // Slip
-    static double finalslip_opening(const double x,
-                                    const double y) {
+    static double
+    finalslip_opening(const double x,
+                      const double y) {
         return 0.0;
     } // slip_opening
 
-    static double finalslip_leftlateral(const double x,
-                                        const double y) {
+    static double
+    finalslip_leftlateral(const double x,
+                          const double y) {
         return +1.0 * scales.getDisplacementScale();
     } // slip_leftlateral
 
-    static const char* slip_units(void) {
+    static const char*
+    slip_units(void) {
         return "m";
     } // slip_units
 
     // Solution subfields.
 
     // Displacement
-    static double disp_x(const double x,
-                         const double y) {
+    static double
+    disp_x(const double x,
+           const double y) {
         return 0.0;
     } // disp_x
 
-    static double disp_y(const double x,
-                         const double y,
-                         PetscInt flag) {
+    static double
+    disp_y(const double x,
+           const double y,
+           PetscInt flag) {
         double disp = 0.0;
         if (!flag) {
             if (x < X_FAULT_LEFT) {
@@ -139,22 +152,25 @@ class pylith::_ThreeBlocksStatic {
         return disp;
     } // disp_y
 
-    static double faulttraction_x(const double x,
-                                  const double y) {
+    static double
+    faulttraction_x(const double x,
+                    const double y) {
         return 0.0;
     } // faulttraction_x
 
-    static double faulttraction_y(const double x,
-                                  const double y) {
+    static double
+    faulttraction_y(const double x,
+                    const double y) {
         return 0.0;
     } // faulttraction_y
 
-    static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
-                                          PetscReal t,
-                                          const PetscReal x[],
-                                          PetscInt numComponents,
-                                          PetscScalar* s,
-                                          void* context) {
+    static PetscErrorCode
+    solnkernel_disp(PetscInt spaceDim,
+                    PetscReal t,
+                    const PetscReal x[],
+                    PetscInt numComponents,
+                    PetscScalar* s,
+                    void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(x);
         REQUIRE(2 == numComponents);
@@ -168,11 +184,15 @@ class pylith::_ThreeBlocksStatic {
             PetscDM dmMesh = PetscDM(context);
             PetscInt cell = 0;
             err = DMPlexGetActivePoint(dmMesh, &cell);
-            if (err) { return err; }
+            if (err) {
+                return err;
+            }
 
             double centroid[3] = {0.0, 0.0, 0.0};
             err = DMPlexComputeCellGeometryFVM(dmMesh, cell, NULL, centroid, NULL);
-            if (err) { return err; }
+            if (err) {
+                return err;
+            }
             flag = 0;
             if (centroid[0] < X_FAULT_LEFT) {
                 flag = 10;
@@ -187,12 +207,13 @@ class pylith::_ThreeBlocksStatic {
         return err;
     } // solnkernel_disp
 
-    static PetscErrorCode solnkernel_lagrangemultiplier(PetscInt spaceDim,
-                                                        PetscReal t,
-                                                        const PetscReal x[],
-                                                        PetscInt numComponents,
-                                                        PetscScalar* s,
-                                                        void* context) {
+    static PetscErrorCode
+    solnkernel_lagrangemultiplier(PetscInt spaceDim,
+                                  PetscReal t,
+                                  const PetscReal x[],
+                                  PetscInt numComponents,
+                                  PetscScalar* s,
+                                  void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(x);
         REQUIRE(2 == numComponents);
@@ -204,11 +225,11 @@ class pylith::_ThreeBlocksStatic {
         return PETSC_SUCCESS;
     } // solnkernel_lagrangemultiplier
 
-public:
-
-    static
-    TestFaultKin_Data* createData(void) {
-        TestFaultKin_Data* data = new TestFaultKin_Data();REQUIRE(data);
+  public:
+    static TestFaultKin_Data*
+    createData(void) {
+        TestFaultKin_Data* data = new TestFaultKin_Data();
+        REQUIRE(data);
 
         data->journalName = "ThreeBlocksStatic";
 
@@ -237,7 +258,8 @@ public:
         data->matAuxDB.setCoordSys(data->cs);
 
         REQUIRE(!data->kinSrc);
-        data->kinSrc = new pylith::faults::KinSrcStep();REQUIRE(data->kinSrc);
+        data->kinSrc = new pylith::faults::KinSrcStep();
+        REQUIRE(data->kinSrc);
         data->kinSrc->setOriginTime(0.0);
         data->faultAuxDB.addValue("initiation_time", initiation_time, time_units());
         data->faultAuxDB.addValue("final_slip_opening", finalslip_opening, slip_units());
@@ -245,7 +267,7 @@ public:
         data->faultAuxDB.setCoordSys(data->cs);
 
         data->faultNumAuxSubfields = 1;
-        static const char* _faultAuxSubfields[1] = { "slip" };
+        static const char* _faultAuxSubfields[1] = {"slip"};
         data->faultAuxSubfields = _faultAuxSubfields;
         static const pylith::topology::Field::Discretization _faultAuxDiscretizations[1] = {
             pylith::topology::Field::Discretization(0, 1), // slip
@@ -255,7 +277,8 @@ public:
         // Materials
         data->materials.resize(3);
         { // xneg
-            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();REQUIRE(material);
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();
+            REQUIRE(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
             material->setIdentifier("elasticity");
@@ -265,7 +288,8 @@ public:
             data->materials[0] = material;
         } // xneg
         { // mid
-            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();REQUIRE(material);
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();
+            REQUIRE(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
             material->setIdentifier("elasticity");
@@ -275,7 +299,8 @@ public:
             data->materials[1] = material;
         } // mid
         { // xpos
-            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();REQUIRE(material);
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();
+            REQUIRE(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
             material->setIdentifier("elasticity");
@@ -314,8 +339,8 @@ public:
             fault->setSurfaceLabelName("fault_xneg_faces");
 
             const int numRuptures = 1;
-            const char* ruptureNames[1] = { "rupture" };
-            pylith::faults::KinSrc* ruptures[1] = { data->kinSrc };
+            const char* ruptureNames[1] = {"rupture"};
+            pylith::faults::KinSrc* ruptures[1] = {data->kinSrc};
             fault->setEqRuptures(ruptureNames, numRuptures, ruptures, numRuptures);
             data->faults[0] = fault;
         } // xneg
@@ -325,8 +350,8 @@ public:
             fault->setSurfaceLabelName("fault_xpos_faces");
 
             const int numRuptures = 1;
-            const char* ruptureNames[1] = { "rupture" };
-            pylith::faults::KinSrc* ruptures[1] = { data->kinSrc };
+            const char* ruptureNames[1] = {"rupture"};
+            pylith::faults::KinSrc* ruptures[1] = {data->kinSrc};
             fault->setEqRuptures(ruptureNames, numRuptures, ruptures, numRuptures);
             data->faults[1] = fault;
         } // xpos
@@ -346,8 +371,8 @@ public:
 }; // TestFaultKin2D_ThreeBlocksStatic
 pylith::scales::Scales pylith::_ThreeBlocksStatic::scales;
 
-const double pylith::_ThreeBlocksStatic::X_FAULT_LEFT = -2.0/12.0;
-const double pylith::_ThreeBlocksStatic::X_FAULT_RIGHT = +2.0/12.0;
+const double pylith::_ThreeBlocksStatic::X_FAULT_LEFT = -2.0 / 12.0;
+const double pylith::_ThreeBlocksStatic::X_FAULT_RIGHT = +2.0 / 12.0;
 const double pylith::_ThreeBlocksStatic::Y_DISP_LEFT = -1.5;
 const double pylith::_ThreeBlocksStatic::Y_DISP_CENTER = -0.5;
 const double pylith::_ThreeBlocksStatic::Y_DISP_RIGHT = +0.5;
@@ -355,7 +380,8 @@ const double pylith::_ThreeBlocksStatic::Y_DISP_RIGHT = +0.5;
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::ThreeBlocksStatic::TriP1(void) {
-    TestFaultKin_Data* data = pylith::_ThreeBlocksStatic::createData();REQUIRE(data);
+    TestFaultKin_Data* data = pylith::_ThreeBlocksStatic::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -374,7 +400,8 @@ pylith::ThreeBlocksStatic::TriP1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::ThreeBlocksStatic::TriP2(void) {
-    TestFaultKin_Data* data = pylith::_ThreeBlocksStatic::createData();REQUIRE(data);
+    TestFaultKin_Data* data = pylith::_ThreeBlocksStatic::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -405,7 +432,8 @@ pylith::ThreeBlocksStatic::TriP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::ThreeBlocksStatic::TriP3(void) {
-    TestFaultKin_Data* data = pylith::_ThreeBlocksStatic::createData();REQUIRE(data);
+    TestFaultKin_Data* data = pylith::_ThreeBlocksStatic::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -436,7 +464,8 @@ pylith::ThreeBlocksStatic::TriP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::ThreeBlocksStatic::TriP4(void) {
-    TestFaultKin_Data* data = pylith::_ThreeBlocksStatic::createData();REQUIRE(data);
+    TestFaultKin_Data* data = pylith::_ThreeBlocksStatic::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -467,7 +496,8 @@ pylith::ThreeBlocksStatic::TriP4(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::ThreeBlocksStatic::QuadQ1(void) {
-    TestFaultKin_Data* data = pylith::_ThreeBlocksStatic::createData();REQUIRE(data);
+    TestFaultKin_Data* data = pylith::_ThreeBlocksStatic::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -486,7 +516,8 @@ pylith::ThreeBlocksStatic::QuadQ1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::ThreeBlocksStatic::QuadQ2(void) {
-    TestFaultKin_Data* data = pylith::_ThreeBlocksStatic::createData();REQUIRE(data);
+    TestFaultKin_Data* data = pylith::_ThreeBlocksStatic::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -517,7 +548,8 @@ pylith::ThreeBlocksStatic::QuadQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::ThreeBlocksStatic::QuadQ3(void) {
-    TestFaultKin_Data* data = pylith::_ThreeBlocksStatic::createData();REQUIRE(data);
+    TestFaultKin_Data* data = pylith::_ThreeBlocksStatic::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -548,7 +580,8 @@ pylith::ThreeBlocksStatic::QuadQ3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::ThreeBlocksStatic::QuadQ4(void) {
-    TestFaultKin_Data* data = pylith::_ThreeBlocksStatic::createData();REQUIRE(data);
+    TestFaultKin_Data* data = pylith::_ThreeBlocksStatic::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 

@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/materials/materialsfwd.hh" // forward declarations
@@ -16,8 +17,7 @@ class pylith::materials::DerivedFactoryElasticity : public pylith::topology::Fie
     friend class TestDerivedFactoryElasticity; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     DerivedFactoryElasticity(void);
 
@@ -34,11 +34,11 @@ public:
     virtual void addSubfields(void);
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
-    DerivedFactoryElasticity(const DerivedFactoryElasticity &); ///< Not implemented.
+  private:
+    DerivedFactoryElasticity(const DerivedFactoryElasticity&); ///< Not implemented.
     const DerivedFactoryElasticity& operator=(const DerivedFactoryElasticity&); ///< Not implemented
 
 }; // class DerivedFactoryElasticity
+
 
 // End of file

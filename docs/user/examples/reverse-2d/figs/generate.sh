@@ -1,3 +1,13 @@
+# -*- sh -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 pdflatex diagrams.tex
 pdfextract 1 1 diagrams.pdf geometry.pdf
 pdfextract 2 2 diagrams.pdf geometry-gmsh.pdf
@@ -13,3 +23,6 @@ for fin in *.pdf; do
   mutool convert -F svg -o $fout $fin && mv -f $fout1 $fout
   rm -f diagrams?.svg
 done 
+
+
+# End of file

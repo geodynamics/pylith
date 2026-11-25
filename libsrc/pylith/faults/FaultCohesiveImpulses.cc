@@ -1,40 +1,40 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/faults/FaultCohesiveImpulses.hh" // implementation of object methods
 
 #include "pylith/faults/AuxiliaryFieldFactory.hh" // USES AuxiliaryFieldFactory
+#include "pylith/feassemble/ConstraintSimple.hh" // USES ConstraintSimple
 #include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface
 #include "pylith/feassemble/InterfacePatches.hh" // USES InterfacePatches
-#include "pylith/feassemble/ConstraintSimple.hh" // USES ConstraintSimple
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps::checkDiscretization()
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
 #include "pylith/fekernels/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 
+#include "pylith/exceptions/Exceptions.hh" // Exception
 #include "pylith/petsc/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/exceptions/Exceptions.hh" // Exception
 
-#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "pylith/scales/Scales.hh" // USES Nondimensionalizer
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
+#include <cassert> // USES assert()
 #include <cmath> // USES pow(), sqrt()
 #include <cstdlib> // USES atoi()
-#include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
 
 // ------------------------------------------------------------------------------------------------
@@ -46,8 +46,7 @@ namespace pylith {
     namespace faults {
         class _FaultCohesiveImpulses {
             // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             static const char* pyreComponent;
 
             /** Find points with impulse amplitude greater than threshold.
@@ -56,23 +55,20 @@ public:
              * @param[in] auxiliaryField Auxiliary field with impulse amplitude.
              * @param[in] threshold Threshold for impulses.
              */
-            static
-            void findImpulsePoints(int_array* impulsePoints,
-                                   const pylith::topology::Field& auxiliaryField,
-                                   const double threshold);
-
+            static void findImpulsePoints(int_array* impulsePoints,
+                                          const pylith::topology::Field& auxiliaryField,
+                                          const double threshold);
         };
         const char* _FaultCohesiveImpulses::pyreComponent = "faultcohesiveimpulses";
 
         // _FaultCohesiveKin
 
-    } // faults
-} // pylith
+    } // namespace faults
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::faults::FaultCohesiveImpulses::FaultCohesiveImpulses(void) :
-    _threshold(1.0e-6) {
+pylith::faults::FaultCohesiveImpulses::FaultCohesiveImpulses(void) : _threshold(1.0e-6) {
     pylith::utils::PyreComponent::setName(_FaultCohesiveImpulses::pyreComponent);
 } // constructor
 
@@ -98,11 +94,12 @@ pylith::faults::FaultCohesiveImpulses::deallocate(void) {
 void
 pylith::faults::FaultCohesiveImpulses::setImpulseDOF(const int* flags,
                                                      const size_t size) {
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setImpulseDOF(flags="<<flags<<", size="<<size<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "setImpulseDOF(flags=" << flags << ", size=" << size << ")");
 
     if (((size == 0) && flags) || ((size > 0) && !flags)) {
         PYLITH_COMPONENT_ERROR(pylith::exceptions::InternalLogicError,
-                               "Inconsistent array size ("<<size<<") and values ("<<flags<<").");
+                               "Inconsistent array size (" << size << ") and values (" << flags << ").");
     } // if
 
     _impulseDOF.resize(size);
@@ -116,11 +113,11 @@ pylith::faults::FaultCohesiveImpulses::setImpulseDOF(const int* flags,
 // Set threshold for nonzero impulse amplitude.
 void
 pylith::faults::FaultCohesiveImpulses::setThreshold(const double value) {
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setThreshold(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setThreshold(value=" << value << ")");
 
     if (value < 0) {
         PYLITH_COMPONENT_ERROR(pylith::exceptions::OutOfRangeError,
-                               "Threshold ("<< value << ") for impulse amplitude must be nonnegative.");
+                               "Threshold (" << value << ") for impulse amplitude must be nonnegative.");
     } // if
     assert(_scales);
     _threshold = value / _scales->getDisplacementScale();
@@ -131,7 +128,7 @@ pylith::faults::FaultCohesiveImpulses::setThreshold(const double value) {
 // Return the number of impulses on this process.
 size_t
 pylith::faults::FaultCohesiveImpulses::getNumImpulsesLocal(void) {
-    return _impulsePoints.size()*_impulseDOF.size();
+    return _impulsePoints.size() * _impulseDOF.size();
 } // getNumImpulses
 
 
@@ -140,7 +137,8 @@ pylith::faults::FaultCohesiveImpulses::getNumImpulsesLocal(void) {
 void
 pylith::faults::FaultCohesiveImpulses::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "verifyConfiguration(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "verifyConfiguration(solution=" << solution.getLabel() << ")");
 
     // Verify solution contains required fields.
     std::string reason = "interface 'FaultCohesiveImpulses'.";
@@ -163,20 +161,29 @@ pylith::topology::Field*
 pylith::faults::FaultCohesiveImpulses::createAuxiliaryField(const pylith::topology::Field& solution,
                                                             const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "createAuxiliaryField(solution=" << solution.getLabel() << ", domainMesh=)"
+                                                            << typeid(domainMesh).name() << ")");
 
     assert(_scales);
 
-    pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
+    pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);
+    assert(auxiliaryField);
     auxiliaryField->setLabel("auxiliary field");
 
     // Set default discretization of auxiliary subfields to match lagrange_multiplier_fault subfield in solution.
-    const pylith::topology::FieldBase::Discretization& discretization = solution.getSubfieldInfo("lagrange_multiplier_fault").fe;
+    const pylith::topology::FieldBase::Discretization& discretization =
+        solution.getSubfieldInfo("lagrange_multiplier_fault").fe;
     const PylithInt dimension = -1;
     const bool isFaultOnly = false;
     assert(_auxiliaryFactory);
-    _auxiliaryFactory->setSubfieldDiscretization("default", discretization.basisOrder, discretization.quadOrder, dimension,
-                                                 isFaultOnly, discretization.cellBasis, discretization.feSpace,
+    _auxiliaryFactory->setSubfieldDiscretization("default",
+                                                 discretization.basisOrder,
+                                                 discretization.quadOrder,
+                                                 dimension,
+                                                 isFaultOnly,
+                                                 discretization.cellBasis,
+                                                 discretization.feSpace,
                                                  discretization.isBasisContinuous);
 
     assert(_scales);
@@ -226,7 +233,9 @@ void
 pylith::faults::FaultCohesiveImpulses::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
                                                             const double impulseReal) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", impulseReal="<<impulseReal<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "updateAuxiliaryField(auxiliaryField=" << auxiliaryField << ", impulseReal=" << impulseReal
+                                                                  << ")");
 
     assert(auxiliaryField);
     assert(_scales);
@@ -263,7 +272,8 @@ void
 pylith::faults::FaultCohesiveImpulses::_updateSlip(pylith::topology::Field* auxiliaryField,
                                                    const long impulseStep) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_updateSlip(auxiliaryField="<<auxiliaryField<<", impulseStep="<<impulseStep<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "_updateSlip(auxiliaryField=" << auxiliaryField << ", impulseStep=" << impulseStep << ")");
 
     assert(auxiliaryField);
     assert(_scales);
@@ -279,9 +289,10 @@ pylith::faults::FaultCohesiveImpulses::_updateSlip(pylith::topology::Field* auxi
         PylithScalar* auxiliaryArray = auxiliaryVisitor.localArray();
         const PetscInt pImpulse = _impulsePoints[iImpulse];
         const PetscInt dof = _impulseDOF[iComponent];
-        const PetscInt slipDof = auxiliaryVisitor.sectionDof(pImpulse);assert(iComponent < size_t(slipDof));
+        const PetscInt slipDof = auxiliaryVisitor.sectionDof(pImpulse);
+        assert(iComponent < size_t(slipDof));
         const PetscInt slipOff = auxiliaryVisitor.sectionOffset(pImpulse);
-        auxiliaryArray[slipOff+dof] = 1.0 / _scales->getDisplacementScale();
+        auxiliaryArray[slipOff + dof] = 1.0 / _scales->getDisplacementScale();
     } // if
 
     pythia::journal::debug_t debug(pylith::journal::auxiliary_fields);
@@ -301,11 +312,14 @@ pylith::faults::FaultCohesiveImpulses::_updateSlip(pylith::topology::Field* auxi
 // ------------------------------------------------------------------------------------------------
 // Set kernels for residual.
 void
-pylith::faults::FaultCohesiveImpulses::_setKernelsResidual(pylith::feassemble::IntegratorInterface* integrator,
-                                                           const pylith::topology::Field& solution,
-                                                           const std::vector<pylith::materials::Material*>& materials) const {
+pylith::faults::FaultCohesiveImpulses::_setKernelsResidual(
+    pylith::feassemble::IntegratorInterface* integrator,
+    const pylith::topology::Field& solution,
+    const std::vector<pylith::materials::Material*>& materials) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_setKernelsResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "_setKernelsResidual(integrator=" << integrator << ", solution=" << solution.getLabel()
+                                                             << ")");
     typedef pylith::feassemble::IntegratorInterface integrator_t;
 
     std::vector<ResidualKernels> kernels;
@@ -324,12 +338,10 @@ pylith::faults::FaultCohesiveImpulses::_setKernelsResidual(pylith::feassemble::I
         PetscBdPointFn* f1l = NULL;
 
         kernels.resize(3);
-        kernels[0] = ResidualKernels("displacement", integrator_t::LHS, integrator_t::NEGATIVE_FACE,
-                                     f0u_neg, f1u_neg);
-        kernels[1] = ResidualKernels("displacement", integrator_t::LHS, integrator_t::POSITIVE_FACE,
-                                     f0u_pos, f1u_pos);
-        kernels[2] = ResidualKernels("lagrange_multiplier_fault", integrator_t::LHS, integrator_t::FAULT_FACE,
-                                     f0l, f1l);
+        kernels[0] = ResidualKernels("displacement", integrator_t::LHS, integrator_t::NEGATIVE_FACE, f0u_neg, f1u_neg);
+        kernels[1] = ResidualKernels("displacement", integrator_t::LHS, integrator_t::POSITIVE_FACE, f0u_pos, f1u_pos);
+        kernels[2] =
+            ResidualKernels("lagrange_multiplier_fault", integrator_t::LHS, integrator_t::FAULT_FACE, f0l, f1l);
 
         break;
     } // QUASISTATIC
@@ -338,8 +350,7 @@ pylith::faults::FaultCohesiveImpulses::_setKernelsResidual(pylith::feassemble::I
         PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError,
                                "Green's functions for dynamic simulations is not yet supported.");
     default:
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError,
-                               "Unknown formulation '"<<_formulation<<"'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation '" << _formulation << "'.");
     } // switch
 
     assert(integrator);
@@ -352,11 +363,14 @@ pylith::faults::FaultCohesiveImpulses::_setKernelsResidual(pylith::feassemble::I
 // ------------------------------------------------------------------------------------------------
 // Set kernels for Jacobian.
 void
-pylith::faults::FaultCohesiveImpulses::_setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
-                                                           const pylith::topology::Field& solution,
-                                                           const std::vector<pylith::materials::Material*>& materials) const {
+pylith::faults::FaultCohesiveImpulses::_setKernelsJacobian(
+    pylith::feassemble::IntegratorInterface* integrator,
+    const pylith::topology::Field& solution,
+    const std::vector<pylith::materials::Material*>& materials) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_setKernelsJacobian(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "_setKernelsJacobian(integrator=" << integrator << ", solution=" << solution.getLabel()
+                                                             << ")");
     typedef pylith::feassemble::IntegratorInterface integrator_t;
 
     std::vector<JacobianKernels> kernels;
@@ -380,12 +394,30 @@ pylith::faults::FaultCohesiveImpulses::_setKernelsJacobian(pylith::feassemble::I
         kernels.resize(3);
         const char* nameDisplacement = "displacement";
         const char* nameLagrangeMultiplier = "lagrange_multiplier_fault";
-        kernels[0] = JacobianKernels(nameDisplacement, nameLagrangeMultiplier, integrator_t::LHS,
-                                     integrator_t::NEGATIVE_FACE, Jf0ul_neg, Jf1ul_neg, Jf2ul_neg, Jf3ul_neg);
-        kernels[1] = JacobianKernels(nameDisplacement, nameLagrangeMultiplier, integrator_t::LHS,
-                                     integrator_t::POSITIVE_FACE, Jf0ul_pos, Jf1ul_pos, Jf2ul_pos, Jf3ul_pos);
-        kernels[2] = JacobianKernels(nameLagrangeMultiplier, nameDisplacement, integrator_t::LHS,
-                                     integrator_t::FAULT_FACE, Jf0lu, Jf1lu, Jf2lu, Jf3lu);
+        kernels[0] = JacobianKernels(nameDisplacement,
+                                     nameLagrangeMultiplier,
+                                     integrator_t::LHS,
+                                     integrator_t::NEGATIVE_FACE,
+                                     Jf0ul_neg,
+                                     Jf1ul_neg,
+                                     Jf2ul_neg,
+                                     Jf3ul_neg);
+        kernels[1] = JacobianKernels(nameDisplacement,
+                                     nameLagrangeMultiplier,
+                                     integrator_t::LHS,
+                                     integrator_t::POSITIVE_FACE,
+                                     Jf0ul_pos,
+                                     Jf1ul_pos,
+                                     Jf2ul_pos,
+                                     Jf3ul_pos);
+        kernels[2] = JacobianKernels(nameLagrangeMultiplier,
+                                     nameDisplacement,
+                                     integrator_t::LHS,
+                                     integrator_t::FAULT_FACE,
+                                     Jf0lu,
+                                     Jf1lu,
+                                     Jf2lu,
+                                     Jf3lu);
         break;
     } // QUASISTATIC
     case pylith::problems::Physics::DYNAMIC_IMEX:
@@ -393,8 +425,7 @@ pylith::faults::FaultCohesiveImpulses::_setKernelsJacobian(pylith::feassemble::I
         PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError,
                                "Green's functions for dynamic simulations is not yet supported.");
     default:
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError,
-                               "Unknown formulation '"<<_formulation<<"'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation '" << _formulation << "'.");
     } // switch
 
     assert(integrator);
@@ -414,7 +445,8 @@ pylith::faults::_FaultCohesiveImpulses::findImpulsePoints(int_array* impulsePoin
     // PYLITH_DEBUG(pylith::journal::application_flow, "_updateSlip(auxiliaryField="<<auxiliaryField<<",
     // impulseStep="<<impulseStep<<")");
 
-    PetscSection auxiliaryFieldSection = auxiliaryField.getGlobalSection();assert(auxiliaryFieldSection);
+    PetscSection auxiliaryFieldSection = auxiliaryField.getGlobalSection();
+    assert(auxiliaryFieldSection);
     PetscInt pStart = 0, pEnd = 0;
     PylithCallPetsc(PetscSectionGetChart(auxiliaryFieldSection, &pStart, &pEnd));
     pylith::topology::VecVisitorMesh auxiliaryVisitor(auxiliaryField, "slip");
@@ -422,7 +454,8 @@ pylith::faults::_FaultCohesiveImpulses::findImpulsePoints(int_array* impulsePoin
         PYLITH_METHOD_END;
     } // if
 
-    PylithScalar* auxiliaryArray = auxiliaryVisitor.localArray();assert(auxiliaryArray);
+    PylithScalar* auxiliaryArray = auxiliaryVisitor.localArray();
+    assert(auxiliaryArray);
 
     // Use global section to get number of degrees of freedom so that we don't double count.
     PetscSection slipSectionGlobal = NULL;
@@ -437,7 +470,7 @@ pylith::faults::_FaultCohesiveImpulses::findImpulsePoints(int_array* impulsePoin
         const PetscInt slipOff = auxiliaryVisitor.sectionOffset(point);
         assert(auxiliaryVisitor.sectionDof(point) >= slipDof);
         for (PetscInt iDOF = 0; iDOF < slipDof; ++iDOF) {
-            if (auxiliaryArray[slipOff+iDOF] >= threshold) {
+            if (auxiliaryArray[slipOff + iDOF] >= threshold) {
                 ++count;
                 break;
             } // if
@@ -452,7 +485,7 @@ pylith::faults::_FaultCohesiveImpulses::findImpulsePoints(int_array* impulsePoin
 
         const PetscInt slipOff = auxiliaryVisitor.sectionOffset(point);
         for (PetscInt iDOF = 0; iDOF < slipDof; ++iDOF) {
-            if (auxiliaryArray[slipOff+iDOF] >= threshold) {
+            if (auxiliaryArray[slipOff + iDOF] >= threshold) {
                 (*impulsePoints)[index++] = point;
                 break;
             } // if

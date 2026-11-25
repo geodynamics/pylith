@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 import pathlib
 import re
@@ -13,9 +22,12 @@ def replacement(match):
 
 files = pathlib.Path(".").rglob("*.py")
 for filename in files:
-    with open(filename, 'r') as fin:
+    with open(filename, "r") as fin:
         lines = fin.read()
         newlines = re.sub(PATTERN_DEF, replacement, lines)
         newlines = re.sub(PATTERN_CLASS, replacement, newlines)
-    with open(filename, 'w') as fout:
+    with open(filename, "w") as fout:
         fout.write(newlines)
+
+
+# End of file

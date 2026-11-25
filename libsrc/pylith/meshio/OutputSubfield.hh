@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/meshio/meshiofwd.hh" // forward declarations
@@ -15,15 +16,14 @@
 
 #include "pylith/topology/FieldBase.hh" // HASA Description, Discretization
 
-#include "pylith/topology/topologyfwd.hh" // USES Field, RefineOutputInterpolator
 #include "pylith/petsc/petsc_types.h" // HASA PetscVec
+#include "pylith/topology/topologyfwd.hh" // USES Field, RefineOutputInterpolator
 
 class pylith::meshio::OutputSubfield : public pylith::utils::GenericComponent {
     friend class TestOutputSubfield; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /** Create OutputSubfield from Field.
      *
      * @param[in] field Field with subfields.
@@ -32,12 +32,11 @@ public:
      * @param[in] basisOrder Basis order for subfield.
      * @param[in] refineLevels Number of levels of mesh refinement.
      */
-    static
-    OutputSubfield* create(const pylith::topology::Field& field,
-                           const pylith::topology::Mesh& mesh,
-                           const char* name,
-                           const int basisOrder,
-                           const int refineLevels);
+    static OutputSubfield* create(const pylith::topology::Field& field,
+                                  const pylith::topology::Mesh& mesh,
+                                  const char* name,
+                                  const int basisOrder,
+                                  const int refineLevels);
 
     /** Create OutputSubfield from Field.
      *
@@ -47,10 +46,9 @@ public:
      * @param[in] mesh Mesh for subfield.
      * @param[in] name Name of subfield that will be extracted.
      */
-    static
-    OutputSubfield* create(const pylith::topology::Field& field,
-                           const pylith::topology::Mesh& mesh,
-                           const char* name);
+    static OutputSubfield* create(const pylith::topology::Field& field,
+                                  const pylith::topology::Mesh& mesh,
+                                  const char* name);
 
     /// Destructor
     ~OutputSubfield(void);
@@ -113,14 +111,12 @@ public:
                          const PetscInt subfieldIndex);
 
     // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     // Constructor.
     OutputSubfield(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     pylith::topology::FieldBase::Description _description; ///< Description of subfield.
     pylith::topology::FieldBase::Discretization _discretization; ///< Discretization of subfield.
     PetscInt _subfieldIndex; ///< Index of subfield in fields.
@@ -136,11 +132,11 @@ protected:
     PetscInt _labelValue; ///< Value of PETSc label associated with subfield.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     OutputSubfield(const OutputSubfield&); ///< Not implemented.
     const OutputSubfield& operator=(const OutputSubfield&); ///< Not implemented
 
 }; // OutputSubfield
+
 
 // End of file

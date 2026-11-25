@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -17,10 +17,10 @@
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
 
-#include <string.h> // USES strcmp()
+#include <fstream> // USES std::ifstream
 #include <iostream> // USES std::cerr
 #include <sstream> // USES std::ostringstream
-#include <fstream> // USES std::ifstream
+#include <string.h> // USES strcmp()
 
 // ------------------------------------------------------------------------------------------------
 // Check VTK file against archived file.
@@ -93,12 +93,14 @@ pylith::meshio::TestDataWriterVTK::checkFile(const char* filenameRoot,
 pylith::meshio::TestDataWriterVTK_Data::TestDataWriterVTK_Data(void) :
     timestepFilename(NULL),
     vertexFilename(NULL),
-    cellFilename(NULL) {}
+    cellFilename(NULL) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
 // Destructor
-pylith::meshio::TestDataWriterVTK_Data::~TestDataWriterVTK_Data(void) {}
+pylith::meshio::TestDataWriterVTK_Data::~TestDataWriterVTK_Data(void) {
+}
 
 
 // End of file

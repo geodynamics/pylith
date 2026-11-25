@@ -1,20 +1,19 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from pylith.problems.Physics import Physics
 from .bc import BoundaryCondition as ModuleBoundaryCondition
 
 
 def validateLabel(value):
-    """Validate label for group/nodeset/pset.
-    """
+    """Validate label for group/nodeset/pset."""
     if 0 == len(value):
         raise ValueError("Label for boundary condition group/nodeset/pset in mesh not specified.")
     return value
@@ -28,23 +27,21 @@ class BoundaryCondition(Physics, ModuleBoundaryCondition):
     import pythia.pyre.inventory
 
     field = pythia.pyre.inventory.str("field", default="displacement")
-    field.meta['tip'] = "Solution subfield associated with boundary condition."
+    field.meta["tip"] = "Solution subfield associated with boundary condition."
 
     labelName = pythia.pyre.inventory.str("label", default="", validator=validateLabel)
-    labelName.meta['tip'] = "Name of label identifying boundary."
+    labelName.meta["tip"] = "Name of label identifying boundary."
 
     labelValue = pythia.pyre.inventory.int("label_value", default=1)
-    labelValue.meta['tip'] = "Value of label identifying boundary (tag of physical group in Gmsh files)."
+    labelValue.meta["tip"] = "Value of label identifying boundary (tag of physical group in Gmsh files)."
 
     def __init__(self, name="boundarycondition"):
-        """Constructor.
-        """
+        """Constructor."""
         Physics.__init__(self, name, facility="boundary_condition")
         return
 
     def preinitialize(self, problem):
-        """Setup boundary condition.
-        """
+        """Setup boundary condition."""
         Physics.preinitialize(self, problem)
 
         ModuleBoundaryCondition.setSubfieldName(self, self.field)
@@ -53,9 +50,9 @@ class BoundaryCondition(Physics, ModuleBoundaryCondition):
         return
 
     def _configure(self):
-        """Setup members using inventory.
-        """
+        """Setup members using inventory."""
         Physics._configure(self)
         return
+
 
 # End of file

@@ -1,21 +1,21 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
-  namespace faults {
-        class CohesiveKinDataTri3;
-    } // pylith
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
+namespace faults {
+    class CohesiveKinDataTri3;
+} // pylith
 } // faults
 
 class pylith::faults::CohesiveKinDataTri3 : public CohesiveKinData {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     CohesiveKinDataTri3(void);
 
@@ -23,8 +23,7 @@ public:
     ~CohesiveKinDataTri3(void);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     static const char* _meshFilename; ///< Filename of input mesh
 
     static const int _spaceDim; ///< Number of dimensions in vertex coordinates
@@ -65,9 +64,9 @@ private:
     static const int _numCohesiveCells; ///< Number of cohesive cells
     static const int _cellMappingFault[]; ///< Fault cell
     static const int _cellMappingCohesive[]; ///< Cohesive cell
-
 };
 
 #endif // pylith_faults_cohesivekindatatri3_hh
+
 
 // End of file

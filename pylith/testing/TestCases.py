@@ -1,12 +1,11 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
 
 
 import unittest
@@ -21,8 +20,8 @@ def configureComponent(component):
 
 
 class TestAbstractComponent(unittest.TestCase):
-    """Unit testing of abstract Pyre component.
-    """
+    """Unit testing of abstract Pyre component."""
+
     _class = None
 
     def test_constructor(self):
@@ -36,8 +35,7 @@ class TestAbstractComponent(unittest.TestCase):
 
     @staticmethod
     def customizeInventory(obj):
-        """Customize inventory before running configure.
-        """
+        """Customize inventory before running configure."""
         return
 
 

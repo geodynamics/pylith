@@ -1,21 +1,22 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/problems/problemsfwd.hh" // HOLDSA SolutionFactory
-#include "pylith/topology/Field.hh" // HOLDSA Field::SubfieldInfo
-#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
-#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA Coordsys
 #include "pylith/scales/scalesfwd.hh" // HOLDSA Scales
+#include "pylith/topology/Field.hh" // HOLDSA Field::SubfieldInfo
+#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA Coordsys
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
 
 #include <map> // USES std::map
 
@@ -24,14 +25,13 @@ namespace pylith {
     namespace problems {
         class TestSolutionFactory;
         class TestSolutionFactory_Data;
-    } // problems
-} // pylith
+    } // namespace problems
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::problems::TestSolutionFactory : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestSolutionFactory(TestSolutionFactory_Data* data);
 
@@ -54,14 +54,12 @@ public:
     void testSetValues(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
-    /// Initialze mesh, coordinate system, solution, and factory.
+  protected:
+    /// Initialize mesh, coordinate system, solution, and factory.
     void _initialize(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     SolutionFactory* _factory; ///< Test subject.
     TestSolutionFactory_Data* _data; ///< Test data.
 
@@ -73,8 +71,7 @@ protected:
 // ------------------------------------------------------------------------------------------------
 class pylith::problems::TestSolutionFactory_Data {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestSolutionFactory_Data(void);
 
@@ -82,8 +79,7 @@ public:
     ~TestSolutionFactory_Data(void);
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     size_t dimension; ///< Spatial dimension.
     const char* meshFilename; ///< Name of file with ASCII mesh.
     spatialdata::geocoords::CoordSys* cs; ///< Coordinate system.
@@ -93,5 +89,6 @@ public:
     spatialdata::spatialdb::UserFunctionDB* solutionDB; ///< Spatial database with values for solution.
 
 }; // class TestSolutionFactory_Data
+
 
 // End of file

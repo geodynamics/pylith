@@ -1,12 +1,13 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # @brief Python object implementing 1-D isotropic linear elastic
 # material for plane strain.
 #
@@ -49,13 +50,10 @@ class PlaneStrainState(ElasticMaterial, ModulePlaneStrainState):
         #
         # Do not change the name of this variable. The output manager will
         # request this variable by name.
-        self.availableFields = \
-            {'vertex':
-             {'info': [],
-              'data': []},
-             'cell':
-             {'info': ["mu", "lambda", "density"],
-              'data': ["total_strain", "stress"]}}
+        self.availableFields = {
+            "vertex": {"info": [], "data": []},
+            "cell": {"info": ["mu", "lambda", "density"], "data": ["total_strain", "stress"]},
+        }
         self._loggingPrefix = "MaPlSn "  # Prefix that appears in PETSc logging
         return
 
@@ -72,6 +70,7 @@ class PlaneStrainState(ElasticMaterial, ModulePlaneStrainState):
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
+
 
 # This is the function that is called when you invoke
 # material_one = pylith.materials.contrib.PlaneStrainState

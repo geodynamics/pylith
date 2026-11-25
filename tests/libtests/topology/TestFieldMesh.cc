@@ -1,23 +1,23 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "TestFieldMesh.hh" // Implementation of class methods
 
+#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor::optimizeClosure()
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::createDMMesh()
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
-#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor::optimizeClosure()
 
 #include "pylith/meshio/MeshBuilder.hh" // Uses MeshBuilder
 #include "pylith/utils/array.hh" // USES scalar_array
@@ -25,13 +25,12 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
 #include "catch2/catch_test_macros.hpp"
-#include "catch2/matchers/catch_matchers_floating_point.hpp"
 #include "catch2/matchers/catch_matchers_exception.hpp"
+#include "catch2/matchers/catch_matchers_floating_point.hpp"
 
 // ------------------------------------------------------------------------------------------------
 // Constructor.
-pylith::topology::TestFieldMesh::TestFieldMesh(TestFieldMesh_Data* data) :
-    _data(data) {
+pylith::topology::TestFieldMesh::TestFieldMesh(TestFieldMesh_Data* data) : _data(data) {
     PYLITH_METHOD_BEGIN;
     REQUIRE(_data);
 
@@ -48,9 +47,12 @@ pylith::topology::TestFieldMesh::TestFieldMesh(TestFieldMesh_Data* data) :
 pylith::topology::TestFieldMesh::~TestFieldMesh(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _data;_data = NULL;
-    delete _mesh;_mesh = NULL;
-    delete _field;_field = NULL;
+    delete _data;
+    _data = NULL;
+    delete _mesh;
+    _mesh = NULL;
+    delete _field;
+    _field = NULL;
 
     PYLITH_METHOD_END;
 } // destructor
@@ -80,7 +82,8 @@ pylith::topology::TestFieldMesh::testCopyConstructor(void) {
     REQUIRE(_mesh);
     REQUIRE(_field);
 
-    PetscDM dmMesh = _mesh->getDM();REQUIRE(dmMesh);
+    PetscDM dmMesh = _mesh->getDM();
+    REQUIRE(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
     const PylithInt vStart = depthStratum.begin();
     const PylithInt vEnd = depthStratum.end();
@@ -90,14 +93,16 @@ pylith::topology::TestFieldMesh::testCopyConstructor(void) {
     Field field(*_field);
     field.setLabel(label.c_str());
 
-    const char *name = NULL;
+    const char* name = NULL;
     PylithCallPetscRequire(PetscObjectGetName((PetscObject)field.getDM(), &name));
     CHECK(fullLabel == std::string(name));
 
-    PetscSection section = field.getLocalSection();REQUIRE(section);
-    PetscVec vec = field.getLocalVector();REQUIRE(vec);
+    PetscSection section = field.getLocalSection();
+    REQUIRE(section);
+    PetscVec vec = field.getLocalVector();
+    REQUIRE(vec);
 
-    PylithCallPetscRequire(PetscObjectGetName((PetscObject) vec, &name));
+    PylithCallPetscRequire(PetscObjectGetName((PetscObject)vec, &name));
     CHECK(fullLabel == std::string(name));
 
     const PylithInt ndof = _data->descriptionA.numComponents + _data->descriptionB.numComponents;
@@ -185,7 +190,7 @@ pylith::topology::TestFieldMesh::testSectionAccessors(void) {
 
     REQUIRE(_field->getChartSize() > 0); // vertices + edges + faces + cells
     const PylithInt ndof = _data->descriptionA.numComponents + _data->descriptionB.numComponents;
-    CHECK(_data->geometry->numVertices*ndof == size_t(_field->getStorageSize()));
+    CHECK(_data->geometry->numVertices * ndof == size_t(_field->getStorageSize()));
 
     PYLITH_METHOD_END;
 } // testSectionAccessors
@@ -206,16 +211,18 @@ pylith::topology::TestFieldMesh::testVectorAccessors(void) {
     const PylithInt ndof =
         _data->geometry->numVertices * (_data->descriptionA.numComponents + _data->descriptionB.numComponents);
     const PylithInt ndofConstrained =
-        _data->bcANumConstrainedDOF*_data->bcANumVertices + _data->bcBNumConstrainedDOF*_data->bcBNumVertices;
+        _data->bcANumConstrainedDOF * _data->bcANumVertices + _data->bcBNumConstrainedDOF * _data->bcBNumVertices;
 
-    const PetscVec& localVec = _field->getLocalVector();REQUIRE(localVec);
+    const PetscVec& localVec = _field->getLocalVector();
+    REQUIRE(localVec);
     PylithCallPetscRequire(PetscObjectGetName((PetscObject)localVec, &name));
     CHECK(std::string(_field->getLabel()) == std::string(name));
     PylithCallPetscRequire(VecGetSize(localVec, &size));
     CHECK(ndof == size);
 
     _field->createGlobalVector();
-    const PetscVec& globalVec = _field->getGlobalVector();REQUIRE(globalVec);
+    const PetscVec& globalVec = _field->getGlobalVector();
+    REQUIRE(globalVec);
     _field->scatterLocalToVector(globalVec);
     PylithCallPetscRequire(PetscObjectGetName((PetscObject)globalVec, &name));
     CHECK(std::string(_field->getLabel()) == std::string(name));
@@ -224,7 +231,8 @@ pylith::topology::TestFieldMesh::testVectorAccessors(void) {
 
     _field->createOutputVector();
     _field->scatterLocalToOutput();
-    const PetscVec& outputVec = _field->getOutputVector();REQUIRE(outputVec);
+    const PetscVec& outputVec = _field->getOutputVector();
+    REQUIRE(outputVec);
     PylithCallPetscRequire(PetscObjectGetName((PetscObject)outputVec, &name));
     CHECK(std::string(_field->getLabel()) == std::string(name));
     PylithCallPetscRequire(VecGetSize(outputVec, &size));
@@ -343,7 +351,9 @@ pylith::topology::TestFieldMesh::_initialize(void) {
     REQUIRE(_data->geometry);
     REQUIRE(_data->topology);
 
-    delete _mesh;_mesh = new Mesh;REQUIRE(_mesh);
+    delete _mesh;
+    _mesh = new Mesh;
+    REQUIRE(_mesh);
     pylith::meshio::MeshBuilder::buildMesh(_mesh, *_data->topology, *_data->geometry);
 
     spatialdata::geocoords::CSCart cs;
@@ -351,7 +361,8 @@ pylith::topology::TestFieldMesh::_initialize(void) {
     _mesh->setCoordSys(&cs);
 
     // Setup labels
-    pylith::meshio::MeshBuilder::shape_t faceShape = pylith::meshio::MeshBuilder::faceShapeFromCellShape(_data->topology->cellShape);
+    pylith::meshio::MeshBuilder::shape_t faceShape =
+        pylith::meshio::MeshBuilder::faceShapeFromCellShape(_data->topology->cellShape);
     pylith::int_array faceValuesA(_data->bcAFaceValues, _data->bcAFaceValuesSize);
     pylith::meshio::MeshBuilder::setFaceGroupFromCellVertices(_mesh, _data->bcALabel, faceValuesA, faceShape);
 
@@ -359,7 +370,8 @@ pylith::topology::TestFieldMesh::_initialize(void) {
     pylith::meshio::MeshBuilder::setFaceGroupFromCellVertices(_mesh, _data->bcBLabel, faceValuesB, faceShape);
 
     // Setup field
-    delete _field;_field = new Field(*_mesh);
+    delete _field;
+    _field = new Field(*_mesh);
     _field->setLabel("solution");
     _field->subfieldAdd(_data->descriptionA, _data->discretizationA);
     _field->subfieldAdd(_data->descriptionB, _data->discretizationB);
@@ -372,16 +384,39 @@ pylith::topology::TestFieldMesh::_initialize(void) {
     PylithCallPetscRequire(DMGetLabel(_field->getDM(), _data->bcBLabel, &labelB));
     const PetscInt numLabelValues = 1;
     PetscInt i_field = 0;
-    PylithCallPetscRequire(DMAddBoundary(_field->getDM(), DM_BC_ESSENTIAL, "bcA", labelA, numLabelValues, &_data->bcALabelId, i_field,
-                                         _data->bcANumConstrainedDOF, _data->bcAConstrainedDOF, NULL, NULL, NULL, NULL));
+    PylithCallPetscRequire(DMAddBoundary(_field->getDM(),
+                                         DM_BC_ESSENTIAL,
+                                         "bcA",
+                                         labelA,
+                                         numLabelValues,
+                                         &_data->bcALabelId,
+                                         i_field,
+                                         _data->bcANumConstrainedDOF,
+                                         _data->bcAConstrainedDOF,
+                                         NULL,
+                                         NULL,
+                                         NULL,
+                                         NULL));
     i_field = 1;
-    PylithCallPetscRequire(DMAddBoundary(_field->getDM(), DM_BC_ESSENTIAL, "bcB", labelB, numLabelValues, &_data->bcBLabelId, i_field,
-                                         _data->bcBNumConstrainedDOF, _data->bcBConstrainedDOF, NULL, NULL, NULL, NULL));
+    PylithCallPetscRequire(DMAddBoundary(_field->getDM(),
+                                         DM_BC_ESSENTIAL,
+                                         "bcB",
+                                         labelB,
+                                         numLabelValues,
+                                         &_data->bcBLabelId,
+                                         i_field,
+                                         _data->bcBNumConstrainedDOF,
+                                         _data->bcBConstrainedDOF,
+                                         NULL,
+                                         NULL,
+                                         NULL,
+                                         NULL));
     // Allocate field.
     _field->allocate();
 
     // Populate with values.
-    PetscDM dmMesh = _mesh->getDM();REQUIRE(dmMesh);
+    PetscDM dmMesh = _mesh->getDM();
+    REQUIRE(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
     const PylithInt vStart = depthStratum.begin();
     const PylithInt vEnd = depthStratum.end();
@@ -394,12 +429,12 @@ pylith::topology::TestFieldMesh::_initialize(void) {
         const PylithInt offA = fieldVisitor.sectionOffset(v);
         CHECK(numComponents == fieldVisitor.sectionDof(v));
         for (size_t d = 0; d < _data->descriptionA.numComponents; ++d) {
-            fieldArray[offA+d] = _data->subfieldAValues[indexA++];
+            fieldArray[offA + d] = _data->subfieldAValues[indexA++];
         } // for
           // Set values for field B
         const PylithInt offB = offA + _data->descriptionA.numComponents;
         for (size_t d = 0; d < _data->descriptionB.numComponents; ++d) {
-            fieldArray[offB+d] = _data->subfieldBValues[indexB++];
+            fieldArray[offB + d] = _data->subfieldBValues[indexB++];
         } // for
     } // for
 
@@ -428,7 +463,8 @@ pylith::topology::TestFieldMesh::_checkValues(const Field& field,
         } // for
     } // for
 
-    PetscDM dmMesh = _mesh->getDM();REQUIRE(dmMesh);
+    PetscDM dmMesh = _mesh->getDM();
+    REQUIRE(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
     const PylithInt vStart = depthStratum.begin();
     const PylithInt vEnd = depthStratum.end();
@@ -442,7 +478,7 @@ pylith::topology::TestFieldMesh::_checkValues(const Field& field,
         const PylithInt off = fieldVisitor.sectionOffset(v);
 
         for (PylithInt d = 0; d < numComponents; ++d) {
-            CHECK_THAT(fieldArray[off+d], Catch::Matchers::WithinAbs(valuesE[index++]*scale, tolerance));
+            CHECK_THAT(fieldArray[off + d], Catch::Matchers::WithinAbs(valuesE[index++] * scale, tolerance));
         } // for
     } // for
 
@@ -480,7 +516,7 @@ pylith::topology::TestFieldMesh::_checkValues(const PetscVec& vec,
     const PylithReal tolerance = 1.0e-6;
     REQUIRE(sizeE == size);
     for (PylithInt i = 0; i < sizeE; ++i) {
-        CHECK_THAT(vecArray[i], Catch::Matchers::WithinAbs(valuesE[i]*scale, tolerance));
+        CHECK_THAT(vecArray[i], Catch::Matchers::WithinAbs(valuesE[i] * scale, tolerance));
     } // for
     PylithCallPetscRequire(VecRestoreArray(vec, &vecArray));
 
@@ -512,14 +548,17 @@ pylith::topology::TestFieldMesh_Data::TestFieldMesh_Data(void) :
     bcBFaceValuesSize(0),
     bcBFaceValues(NULL),
     bcBNumVertices(0),
-    bcBVertices(NULL) {}
+    bcBVertices(NULL) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
 // Destructor
 pylith::topology::TestFieldMesh_Data::~TestFieldMesh_Data(void) {
-    delete topology;topology = NULL;
-    delete geometry;geometry = NULL;
+    delete topology;
+    topology = NULL;
+    delete geometry;
+    geometry = NULL;
 }
 
 

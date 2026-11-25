@@ -1,3 +1,13 @@
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 """
 Utilities for generating PyLith compatible meshes using Gmsh.
 """
@@ -59,9 +69,7 @@ def group_exclude(group_name, exclude_name, new_name, new_tag):
     for dim, tag in groups.items():
         entities = set(gmsh.model.get_entities_for_physical_group(dim, tag))
         if dim in groups_exclude:
-            entities_exclude = gmsh.model.get_entities_for_physical_group(
-                dim, groups_exclude[dim]
-            )
+            entities_exclude = gmsh.model.get_entities_for_physical_group(dim, groups_exclude[dim])
             entities = entities.difference(set(entities_exclude))
         tags = [tag for tag in entities]
         gmsh.model.add_physical_group(dim, tags, new_tag)
@@ -76,9 +84,7 @@ def create_material(tag, entities):
     dim = gmsh.model.get_dimension()
     name = gmsh.model.get_physical_name(dim, tag)
     if name:
-        raise ValueError(
-            f"ERROR: Attempting to use material tag '{tag}' that is already in use for material '{name}'."
-        )
+        raise ValueError(f"ERROR: Attempting to use material tag '{tag}' that is already in use for material '{name}'.")
     gmsh.model.addPhysicalGroup(dim, entities, tag)
     gmsh.model.setPhysicalName(dim, tag, f"material-id:{tag}")
 
@@ -176,21 +182,15 @@ class GenerateMesh(ABC):
         import argparse
 
         parser = argparse.ArgumentParser()
-        parser.add_argument(
-            "--geometry", action="store_true", dest="geometry", help="Create geometry."
-        )
+        parser.add_argument("--geometry", action="store_true", dest="geometry", help="Create geometry.")
         parser.add_argument(
             "--mark",
             action="store_true",
             dest="mark",
             help="Mark entities (materials, boundary conditions).",
         )
-        parser.add_argument(
-            "--generate", action="store_true", dest="generate", help="Generate mesh."
-        )
-        parser.add_argument(
-            "--write", action="store_true", dest="write", help="Write mesh to file."
-        )
+        parser.add_argument("--generate", action="store_true", dest="generate", help="Generate mesh.")
+        parser.add_argument("--write", action="store_true", dest="write", help="Write mesh to file.")
 
         parser.add_argument(
             "--name",
@@ -210,7 +210,7 @@ class GenerateMesh(ABC):
             "--ascii",
             action="store_false",
             dest="binary",
-            help="Write mesh to ASCII file (detault is binary).",
+            help="Write mesh to ASCII file (default is binary).",
             default=True,
         )
 

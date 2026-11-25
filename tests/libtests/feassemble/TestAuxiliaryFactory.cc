@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -14,35 +14,34 @@
 
 #include "pylith/feassemble/AuxiliaryFactory.hh" // Test subject
 
+#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
-#include "pylith/topology/Field.hh" // USES Field
-#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/scales/Scales.hh" // USES Scales
-#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
-#include "pylith/utils/journals.hh"
-#include "pylith/exceptions/error.hh"
 #include "pylith/exceptions/Exceptions.hh"
+#include "pylith/exceptions/error.hh"
+#include "pylith/utils/journals.hh"
 
-#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 
 #include "catch2/catch_test_macros.hpp"
-#include "catch2/matchers/catch_matchers_floating_point.hpp"
 #include "catch2/matchers/catch_matchers_exception.hpp"
+#include "catch2/matchers/catch_matchers_floating_point.hpp"
 
 
 namespace pylith {
     namespace feassemble {
         class TestAuxiliaryFactory;
     }
-}
+} // namespace pylith
 
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::feassemble::TestAuxiliaryFactory : public pylith::utils::GenericComponent {
-public:
-
+  public:
     /// Setup testing data.
     TestAuxiliaryFactory(void);
 
@@ -61,32 +60,35 @@ public:
     /// Test setValuesFromDB().
     void testSetValuesFromDB(void);
 
-private:
-
+  private:
     pylith::feassemble::AuxiliaryFactory* _factory; ///< Test subject.
 
-public:
-
-    static double density(const double x,
-                          const double y) {
-        return x+y;
+  public:
+    static double
+    density(const double x,
+            const double y) {
+        return x + y;
     } // density
 
-    static const char* density_units(void) {
+    static const char*
+    density_units(void) {
         return "kg/m**3";
     } // density_units
 
-    static double velocity_x(const double x,
-                             const double y) {
-        return 2.0*x - 0.5*y;
+    static double
+    velocity_x(const double x,
+               const double y) {
+        return 2.0 * x - 0.5 * y;
     } // velocity_x
 
-    static double velocity_y(const double x,
-                             const double y) {
-        return 0.4*x + 0.1*y;
+    static double
+    velocity_y(const double x,
+               const double y) {
+        return 0.4 * x + 0.1 * y;
     } // velocity_x
 
-    static const char* velocity_units(void) {
+    static const char*
+    velocity_units(void) {
         return "m/s";
     } // velocity_units
 
@@ -102,7 +104,8 @@ pylith::feassemble::TestAuxiliaryFactory::TestAuxiliaryFactory(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Tear down testing data.
 pylith::feassemble::TestAuxiliaryFactory::~TestAuxiliaryFactory(void) {
-    delete _factory;_factory = NULL;
+    delete _factory;
+    _factory = NULL;
 } // destructor
 
 
@@ -128,16 +131,40 @@ pylith::feassemble::TestAuxiliaryFactory::testQueryDB(void) {
 // Test setSubfieldDiscretization() and getSubfieldDiscretization().
 void
 pylith::feassemble::TestAuxiliaryFactory::testSubfieldDiscretization(void) {
-    pylith::topology::FieldBase::Discretization feDisp(2, 2, -1, 2, false, pylith::topology::FieldBase::SIMPLEX_BASIS,
-                                                       pylith::topology::FieldBase::POLYNOMIAL_SPACE, true);
-    pylith::topology::FieldBase::Discretization feVel(3, 2, 1, 2, true, pylith::topology::FieldBase::SIMPLEX_BASIS,
-                                                      pylith::topology::FieldBase::POINT_SPACE, false);
+    pylith::topology::FieldBase::Discretization feDisp(2,
+                                                       2,
+                                                       -1,
+                                                       2,
+                                                       false,
+                                                       pylith::topology::FieldBase::SIMPLEX_BASIS,
+                                                       pylith::topology::FieldBase::POLYNOMIAL_SPACE,
+                                                       true);
+    pylith::topology::FieldBase::Discretization feVel(3,
+                                                      2,
+                                                      1,
+                                                      2,
+                                                      true,
+                                                      pylith::topology::FieldBase::SIMPLEX_BASIS,
+                                                      pylith::topology::FieldBase::POINT_SPACE,
+                                                      false);
 
     REQUIRE(_factory);
-    _factory->setSubfieldDiscretization("displacement", feDisp.basisOrder, feDisp.quadOrder, feDisp.dimension,
-                                        feDisp.isFaultOnly, feDisp.cellBasis, feDisp.feSpace, feDisp.isBasisContinuous);
-    _factory->setSubfieldDiscretization("velocity", feVel.basisOrder, feVel.quadOrder, feVel.dimension,
-                                        feVel.isFaultOnly, feVel.cellBasis, feVel.feSpace, feVel.isBasisContinuous);
+    _factory->setSubfieldDiscretization("displacement",
+                                        feDisp.basisOrder,
+                                        feDisp.quadOrder,
+                                        feDisp.dimension,
+                                        feDisp.isFaultOnly,
+                                        feDisp.cellBasis,
+                                        feDisp.feSpace,
+                                        feDisp.isBasisContinuous);
+    _factory->setSubfieldDiscretization("velocity",
+                                        feVel.basisOrder,
+                                        feVel.quadOrder,
+                                        feVel.dimension,
+                                        feVel.isFaultOnly,
+                                        feVel.cellBasis,
+                                        feVel.feSpace,
+                                        feVel.isBasisContinuous);
 
     { // Check displacement discretization
         const pylith::topology::FieldBase::Discretization& feTest = _factory->getSubfieldDiscretization("displacement");
@@ -227,7 +254,7 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     cs.setSpaceDim(spaceDim);
 
     const int numSubfields = 2;
-    static const char* subfields[2] = { "density", "velocity" };
+    static const char* subfields[2] = {"density", "velocity"};
     static const pylith::topology::Field::Discretization subfieldDiscretizations[2] = {
         pylith::topology::Field::Discretization(1, 2), // density
         pylith::topology::Field::Discretization(2, 2), // velocity
@@ -290,12 +317,17 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     // Verify auxiliary field
     PylithReal norm = 0.0;
     PylithReal t = 0.0;
-    const PetscDM dmField = auxiliaryField.getDM();REQUIRE(dmField);
+    const PetscDM dmField = auxiliaryField.getDM();
+    REQUIRE(dmField);
     pylith::topology::FieldQuery query(auxiliaryField);
     query.initializeWithDefaultQueries();
     query.openDB(&auxiliaryDB, scales.getLengthScale());
-    PylithCallPetscRequire(DMPlexComputeL2DiffLocal(dmField, t, query._functions, (void**)query._contextPtrs,
-                                                    auxiliaryField.getLocalVector(), &norm));
+    PylithCallPetscRequire(DMPlexComputeL2DiffLocal(dmField,
+                                                    t,
+                                                    query._functions,
+                                                    (void**)query._contextPtrs,
+                                                    auxiliaryField.getLocalVector(),
+                                                    &norm));
     query.closeDB(&auxiliaryDB);
     const PylithReal tolerance = 1.0e-6;
     CHECK_THAT(norm, Catch::Matchers::WithinAbs(0.0, tolerance));
@@ -308,17 +340,22 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
 
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestAuxiliaryFactory::testQueryDB", "[TestAuxiliaryFactory]") {
+TEST_CASE("TestAuxiliaryFactory::testQueryDB",
+          "[TestAuxiliaryFactory]") {
     pylith::feassemble::TestAuxiliaryFactory().testQueryDB();
 }
-TEST_CASE("TestAuxiliaryFactory::testSubfieldDiscretization", "[TestAuxiliaryFactory]") {
+TEST_CASE("TestAuxiliaryFactory::testSubfieldDiscretization",
+          "[TestAuxiliaryFactory]") {
     pylith::feassemble::TestAuxiliaryFactory().testSubfieldDiscretization();
 }
-TEST_CASE("TestAuxiliaryFactory::testInitialize", "[TestAuxiliaryFactory]") {
+TEST_CASE("TestAuxiliaryFactory::testInitialize",
+          "[TestAuxiliaryFactory]") {
     pylith::feassemble::TestAuxiliaryFactory().testInitialize();
 }
-TEST_CASE("TestAuxiliaryFactory::testSetValuesFromDB", "[TestAuxiliaryFactory]") {
+TEST_CASE("TestAuxiliaryFactory::testSetValuesFromDB",
+          "[TestAuxiliaryFactory]") {
     pylith::feassemble::TestAuxiliaryFactory().testSetValuesFromDB();
 }
+
 
 // End of file

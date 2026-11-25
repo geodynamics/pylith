@@ -1,16 +1,17 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2024, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
-#include "pylith/topology/topologyfwd.hh" // forward declarations
 #include "pylith/petsc/petsc_types.h" // USES PetscDM
+#include "pylith/topology/topologyfwd.hh" // forward declarations
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase
 
@@ -21,8 +22,7 @@ class pylith::topology::RefineOutputInterpolator {
     friend class TestRefineUniform; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     RefineOutputInterpolator(void);
 
@@ -63,8 +63,7 @@ public:
                      const PetscVec& vectorIn);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     struct Level {
         PetscDM dm;
         PetscMat interpolateMatrix;
@@ -74,11 +73,11 @@ private:
     std::vector<Level> _levels; ///< Information at each refinement level.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     RefineOutputInterpolator(const RefineOutputInterpolator&); ///< Not implemented
     const RefineOutputInterpolator& operator=(const RefineOutputInterpolator&); ///< Not implemented
 
 }; // RefineOutputInterpolator
+
 
 // End of file

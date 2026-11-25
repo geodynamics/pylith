@@ -1,12 +1,12 @@
-// =================================================================================================
-// This code is part of SpatialData, developed through the Computational Infrastructure
-// for Geodynamics (https://github.com/geodynamics/spatialdata).
+// -*- swig -*-
+// -*- coding: utf-8 -*-
 //
-// Copyright (c) 2010-2026, University of California, Davis and the SpatialData Development Team.
-// All rights reserved.
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 /** @file modulesrc/units/Scales.i
  *
@@ -15,10 +15,8 @@
 
 namespace pylith {
     namespace scales {
-        class Scales
-        { // class Scales
-public:
-
+        class Scales { // class Scales
+          public:
             // PUBLIC METHODS /////////////////////////////////////////////////
 
             /// Default constructor
@@ -127,7 +125,8 @@ public:
 
         }; // class Scales
 
-    } // units
-} // spatialdata
+    } // namespace scales
+} // namespace pylith
+
 
 // End of file

@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 /** C++ unit testing for ProgressMonitor.
  */
 
@@ -25,13 +26,12 @@
 namespace pylith {
     namespace problems {
         class TestProgressMonitorTime;
-    } // problems
-} // pylith
+    } // namespace problems
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::problems::TestProgressMonitorTime : public pylith::utils::GenericComponent {
-public:
-
+  public:
     /// Constructor
     TestProgressMonitorTime(void);
 
@@ -47,34 +47,38 @@ public:
     /// Test update().
     void testUpdate(void);
 
-private:
-
+  private:
     pylith::problems::ProgressMonitorTime* _monitor; ///< Test subject.
 
 }; // class TestProgressMonitorTime
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestProgressMonitorTime::testAccessors", "[TestProgressMonitorTime]") {
+TEST_CASE("TestProgressMonitorTime::testAccessors",
+          "[TestProgressMonitorTime]") {
     pylith::problems::TestProgressMonitorTime().testAccessors();
 }
-TEST_CASE("TestProgressMonitorTime::testOpenClose", "[TestProgressMonitorTime]") {
+TEST_CASE("TestProgressMonitorTime::testOpenClose",
+          "[TestProgressMonitorTime]") {
     pylith::problems::TestProgressMonitorTime().testOpenClose();
 }
-TEST_CASE("TestProgressMonitorTime::testUpdate", "[TestProgressMonitorTime]") {
+TEST_CASE("TestProgressMonitorTime::testUpdate",
+          "[TestProgressMonitorTime]") {
     pylith::problems::TestProgressMonitorTime().testUpdate();
 }
 
 // ------------------------------------------------------------------------------------------------
 // Setup testing data.
 pylith::problems::TestProgressMonitorTime::TestProgressMonitorTime(void) {
-    _monitor = new ProgressMonitorTime();REQUIRE(_monitor);
+    _monitor = new ProgressMonitorTime();
+    REQUIRE(_monitor);
 } // setUp
 
 
 // ------------------------------------------------------------------------------------------------
 // Tear down testing data.
 pylith::problems::TestProgressMonitorTime::~TestProgressMonitorTime(void) {
-    delete _monitor;_monitor = NULL;
+    delete _monitor;
+    _monitor = NULL;
 } // tearDown
 
 
@@ -121,9 +125,9 @@ pylith::problems::TestProgressMonitorTime::testUpdate(void) {
     const double start = 1.0;
     const double stop = 11.0;
     const int numUpdateCalls = 7;
-    const double current[numUpdateCalls] = { 1.0, 2.0, 2.1, 4.0, 6.1, 6.2, 10.0 };
+    const double current[numUpdateCalls] = {1.0, 2.0, 2.1, 4.0, 6.1, 6.2, 10.0};
     const int numUpdates = 5;
-    const double percentComplete[numUpdates] = { 0.0, 10.0, 30.0, 51.0, 90.0 };
+    const double percentComplete[numUpdates] = {0.0, 10.0, 30.0, 51.0, 90.0};
     const double tolerance = 1.0e-6;
     const char* filename = "progress_time.txt";
 

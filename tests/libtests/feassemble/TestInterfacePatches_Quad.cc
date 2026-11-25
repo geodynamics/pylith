@@ -1,13 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
-//
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -17,11 +16,10 @@ namespace pylith {
     namespace feassemble {
         class TestInterfacePatches_Quad;
     }
-}
+} // namespace pylith
 
 class pylith::feassemble::TestInterfacePatches_Quad {
-public:
-
+  public:
     // Data factory methods
     static TestInterfacePatches_Data* caseA(void);
 
@@ -49,16 +47,21 @@ pylith::feassemble::TestInterfacePatches_Quad::caseA(void) {
     data->patchKeys = const_cast<TestInterfacePatches_Data::KeyValues*>(patchKeys);
 
     static const PylithInt patchNumCells[numPatches] = {
-        2, 1, 1, 1, 1, 1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
     };
     data->patchNumCells = const_cast<PylithInt*>(patchNumCells);
 
-    static const PylithInt patchCells11[2] = { 14, 15 };
-    static const PylithInt patchCells12[1] = { 16 };
-    static const PylithInt patchCells32[1] = { 17 };
-    static const PylithInt patchCells34[1] = { 18 };
-    static const PylithInt patchCells44[1] = { 19 };
-    static const PylithInt patchCells43[1] = { 20 };
+    static const PylithInt patchCells11[2] = {14, 15};
+    static const PylithInt patchCells12[1] = {16};
+    static const PylithInt patchCells32[1] = {17};
+    static const PylithInt patchCells34[1] = {18};
+    static const PylithInt patchCells44[1] = {19};
+    static const PylithInt patchCells43[1] = {20};
     static const PylithInt* patchCells[numPatches] = {
         patchCells11,
         patchCells12,
@@ -76,11 +79,15 @@ pylith::feassemble::TestInterfacePatches_Quad::caseA(void) {
 // ------------------------------------------------------------------------------------------------
 #include "catch2/catch_test_macros.hpp"
 
-TEST_CASE("TestInterfacePatches::testAccessors", "[TestInterfacePatches]") {
+TEST_CASE("TestInterfacePatches::testAccessors",
+          "[TestInterfacePatches]") {
     pylith::feassemble::TestInterfacePatches::testAccessors();
 }
-TEST_CASE("TestInterfacePatches_QuadA", "[TestInterfacePatches][Quad]") {
-    pylith::feassemble::TestInterfacePatches(pylith::feassemble::TestInterfacePatches_Quad::caseA()).testCreateMaterialPairs();
+TEST_CASE("TestInterfacePatches_QuadA",
+          "[TestInterfacePatches][Quad]") {
+    pylith::feassemble::TestInterfacePatches(pylith::feassemble::TestInterfacePatches_Quad::caseA())
+        .testCreateMaterialPairs();
 }
+
 
 // End of file

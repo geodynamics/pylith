@@ -1,59 +1,54 @@
-// =================================================================================================
-// This code is part of SpatialData, developed through the Computational Infrastructure
-// for Geodynamics (https://github.com/geodynamics/spatialdata).
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
 //
-// Copyright (c) 2010-2026, University of California, Davis and the SpatialData Development Team.
-// All rights reserved.
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include <assert.h> // USES assert()
 
 // Get value to nondimensionalize position in meters (SI units).
-inline
-double
+inline double
 pylith::scales::Scales::getLengthScale(void) const {
     return _length;
 }
 
 
 // Get value to nondimensionalize displacement in meters (SI units).
-inline
-double
+inline double
 pylith::scales::Scales::getDisplacementScale(void) const {
     return _displacement;
 }
 
 
 // Get value to nondimensionalize rigidity (elastic moduli).
-inline
-double
+inline double
 pylith::scales::Scales::getRigidityScale(void) const {
     return _rigidity;
 }
 
 
 // Get value to nondimensionalize time scale in seconds (SI units).
-inline
-double
+inline double
 pylith::scales::Scales::getTimeScale(void) const {
     return _time;
 }
 
 
 // Get value to nondimensionalize temperature scale in Kelvin (SI units).
-inline
-double
+inline double
 pylith::scales::Scales::getTemperatureScale(void) const {
     return _temperature;
 }
 
 
 // Make value dimensionless.
-inline
-double
+inline double
 pylith::scales::Scales::nondimensionalize(const double value,
                                           const double scale) const {
     return value / scale;
@@ -61,13 +56,11 @@ pylith::scales::Scales::nondimensionalize(const double value,
 
 
 // Make values dimensionless.
-inline
-void
+inline void
 pylith::scales::Scales::nondimensionalize(double* const values,
                                           const size_t nvalues,
                                           const double scale) const {
-    assert( (0 < nvalues && values) ||
-            (0 == nvalues && !values) );
+    assert((0 < nvalues && values) || (0 == nvalues && !values));
 
     for (size_t i = 0; i < nvalues; ++i) {
         values[i] /= scale;
@@ -76,13 +69,11 @@ pylith::scales::Scales::nondimensionalize(double* const values,
 
 
 // Make values dimensionless.
-inline
-void
+inline void
 pylith::scales::Scales::nondimensionalize(float* const values,
                                           const size_t nvalues,
                                           const double scale) const {
-    assert( (0 < nvalues && values) ||
-            (0 == nvalues && !values) );
+    assert((0 < nvalues && values) || (0 == nvalues && !values));
 
     for (size_t i = 0; i < nvalues; ++i) {
         values[i] /= scale;
@@ -91,8 +82,7 @@ pylith::scales::Scales::nondimensionalize(float* const values,
 
 
 // Make value dimensionless.
-inline
-double
+inline double
 pylith::scales::Scales::dimensionalize(const double value,
                                        const double scale) const {
     return value * scale;
@@ -100,13 +90,11 @@ pylith::scales::Scales::dimensionalize(const double value,
 
 
 // Make value dimensionless.
-inline
-void
+inline void
 pylith::scales::Scales::dimensionalize(double* const values,
                                        const size_t nvalues,
                                        const double scale) const {
-    assert( (0 < nvalues && values) ||
-            (0 == nvalues && !values) );
+    assert((0 < nvalues && values) || (0 == nvalues && !values));
 
     for (size_t i = 0; i < nvalues; ++i) {
         values[i] *= scale;
@@ -115,13 +103,11 @@ pylith::scales::Scales::dimensionalize(double* const values,
 
 
 // Make value dimensionless.
-inline
-void
+inline void
 pylith::scales::Scales::dimensionalize(float* const values,
                                        const size_t nvalues,
                                        const double scale) const {
-    assert( (0 < nvalues && values) ||
-            (0 == nvalues && !values) );
+    assert((0 < nvalues && values) || (0 == nvalues && !values));
 
     for (size_t i = 0; i < nvalues; ++i) {
         values[i] *= scale;

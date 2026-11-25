@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/problems/problemsfwd.hh" // forward declarations
@@ -23,8 +24,7 @@ class pylith::problems::SolutionFactory : public pylith::utils::GenericComponent
     friend class TestSolutionFactory; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /** Default constructor.
      *
      * @param[inout] solution Solution field.
@@ -92,18 +92,17 @@ public:
     void setValues(spatialdata::spatialdb::SpatialDB* db);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::topology::Field& _solution; ///< Solution field.
     const pylith::scales::Scales& _scales; ///< Nondimensionalizer.
     const int _spaceDim; ///< Spatal dimension of problem.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
-private:
-
-    SolutionFactory(const SolutionFactory &); ///< Not implemented.
+  private:
+    SolutionFactory(const SolutionFactory&); ///< Not implemented.
     const SolutionFactory& operator=(const SolutionFactory&); ///< Not implemented
 
 }; // class SolutionFactory
+
 
 // End of file

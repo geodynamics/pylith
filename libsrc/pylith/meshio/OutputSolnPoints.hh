@@ -1,19 +1,20 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/meshio/OutputSoln.hh" // ISA OutputSoln
 
 #include "pylith/meshio/meshiofwd.hh"
-#include "pylith/topology/topologyfwd.hh"
 #include "pylith/petsc/petsc_types.h"
+#include "pylith/topology/topologyfwd.hh"
 
 #include "spatialdata/geocoords/geocoordsfwd.hh" // USES CoordSys
 
@@ -21,8 +22,7 @@ class pylith::meshio::OutputSolnPoints : public pylith::meshio::OutputSoln {
     friend class TestOutputSolnPoints; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     OutputSolnPoints(void);
 
@@ -47,8 +47,7 @@ public:
                    const int numPointNames);
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Write solution at time step.
      *
      * @param[in] t Current time.
@@ -70,8 +69,7 @@ protected:
                                  const char* name);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     /** Setup interpolatior.
      *
      * @param[in] solution Solution field.
@@ -88,8 +86,7 @@ private:
     void _writePointNames(void);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::scalar_array _pointCoords; ///< Array of point coordinates.
     pylith::string_vector _pointNames; ///< Array of point names.
     pylith::topology::Mesh* _pointMesh; ///< Mesh for points (no cells).
@@ -97,11 +94,11 @@ private:
     DMInterpolationInfo _interpolator; ///< Field interpolator.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     OutputSolnPoints(const OutputSolnPoints&); ///< Not implemented.
     const OutputSolnPoints& operator=(const OutputSolnPoints&); ///< Not implemented
 
 }; // OutputSolnPoints
+
 
 // End of file

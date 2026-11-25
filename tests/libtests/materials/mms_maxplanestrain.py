@@ -1,13 +1,14 @@
 #!/usr/bin/env nemesis
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # Initial attempt to compute governing equations for Maxwell plane strain
 # material and then run assumed solution through these equations.
 # PREREQUISITES:  sympy
@@ -17,19 +18,20 @@ from sympy.abc import x, y, z, t
 import sympy
 import sympy.tensor
 import sympy.tensor.array
+
 # ----------------------------------------------------------------------
 ndim = 3
 numComps = 2
 ndimRange = range(ndim)
 numCompsRange = range(numComps)
-outFile = 'mms_maxplanestrain.txt'
+outFile = "mms_maxplanestrain.txt"
 
 zero = sympy.sympify(0)
 one = sympy.sympify(1)
 two = sympy.sympify(2)
 three = sympy.sympify(3)
 
-out = open(outFile, 'w')
+out = open(outFile, "w")
 
 # ----------------------------------------------------------------------
 
@@ -45,33 +47,33 @@ def printTensor(tensor, tensorName):
     simpTensor = sympy.simplify(tensor)
 
     for i in range(ndim):
-        if (rank == 2):
+        if rank == 2:
             for j in range(ndim):
-                line = tensorName + \
-                    '_%d%d = %s\n' % (i + 1, j + 1, simpTensor[i, j])
+                line = tensorName + "_%d%d = %s\n" % (i + 1, j + 1, simpTensor[i, j])
                 out.write(line)
         else:
-            line = tensorName + '_%d = %s\n' % (i + 1, simpTensor[i])
+            line = tensorName + "_%d = %s\n" % (i + 1, simpTensor[i])
             out.write(line)
 
-    out.write('\n')
+    out.write("\n")
 
     return
+
+
 # ----------------------------------------------------------------------
 
 
 print("Defining basis, solution, and constants:")
 # Define basis and displacement vector.
-u1, u2, u3 = sympy.symbols('u1 u2 u3', type="Function")
+u1, u2, u3 = sympy.symbols("u1 u2 u3", type="Function")
 X = sympy.tensor.array.Array([x, y, z])
-dt = sympy.symbols('dt')
+dt = sympy.symbols("dt")
 
 # Material constants.
-(bulkModulus, shearModulus,
- maxwellTime) = sympy.symbols('bulkModulus shearModulus maxwellTime')
+bulkModulus, shearModulus, maxwellTime = sympy.symbols("bulkModulus shearModulus maxwellTime")
 
 # Assumed displacements:  second-order spatial variation for now.
-a, b, c, d, e = sympy.symbols('a b c d e')
+a, b, c, d, e = sympy.symbols("a b c d e")
 u1 = (x * x * a + two * x * y * b + y * y * c) * sympy.exp(-t / maxwellTime)
 u2 = (x * x * c + two * y * x * b + y * y * a) * sympy.exp(-t / maxwellTime)
 u3 = zero
@@ -94,8 +96,7 @@ strainRate = strain.diff(t)
 # Deformation gradient, etc., for perturbed solution.
 print("Computing strain tensor for perturbed solution:")
 defGradPert = sympy.tensor.array.derive_by_array(UPert, X)
-defGradTransposePert = sympy.tensor.array.Array(
-    defGradPert.tomatrix().transpose())
+defGradTransposePert = sympy.tensor.array.Array(defGradPert.tomatrix().transpose())
 strainPert = (defGradPert + defGradTransposePert) / two
 strainRatePert = strainPert.diff(t)
 
@@ -109,8 +110,7 @@ devStrainRate = devStrain.diff(t)
 # Define volumetric strain and deviatoric strain for perturbed solution.
 print("Computing deviatoric strain tensor for perturbed solution:")
 volStrainPert = sympy.tensor.array.tensorcontraction(strainPert, (0, 1))
-volStrainArrPert = sympy.tensor.array.tensorproduct(
-    volStrainPert, sympy.eye(ndim))
+volStrainArrPert = sympy.tensor.array.tensorproduct(volStrainPert, sympy.eye(ndim))
 devStrainPert = strainPert - volStrainArrPert / three
 devStrainRatePert = devStrainPert.diff(t)
 
@@ -147,51 +147,54 @@ stressPert = meanStressArrPert + devStressPert
 
 # Equilibrium equation.
 print("Computing equilibrium:")
-equilDeriv = sympy.tensor.array.derive_by_array(stress, X)
-equil = sympy.tensor.array.tensorcontraction(equilDeriv, (1, 2))
+equilibriumDeriv = sympy.tensor.array.derive_by_array(stress, X)
+equilibrium = sympy.tensor.array.tensorcontraction(equilibriumDeriv, (1, 2))
 
 # Write results to file.
 print("Writing solution variables:")
-out.write('Solution variables:\n')
-printTensor(U, 's')
-printTensor(Udot, 's_t')
-printTensor(defGrad, 's_x')
+out.write("Solution variables:\n")
+printTensor(U, "s")
+printTensor(Udot, "s_t")
+printTensor(defGrad, "s_x")
 
-out.write('Solution variables (perturbed solution):\n')
-printTensor(UPert, 'sPert')
-printTensor(UdotPert, 'sPert_t')
-printTensor(defGradPert, 'sPert_x')
+out.write("Solution variables (perturbed solution):\n")
+printTensor(UPert, "sPert")
+printTensor(UdotPert, "sPert_t")
+printTensor(defGradPert, "sPert_x")
 
 print("Writing auxiliary variables:")
-out.write('\nAuxiliary variables:\n')
-printTensor(strain, 'totalStrain')
-printTensor(strainRate, 'totalStrain_t')
-printTensor(visStrain, 'visStrain')
-printTensor(visStrainRate, 'visStrain_t')
+out.write("\nAuxiliary variables:\n")
+printTensor(strain, "totalStrain")
+printTensor(strainRate, "totalStrain_t")
+printTensor(visStrain, "visStrain")
+printTensor(visStrainRate, "visStrain_t")
 
-out.write('\nAuxiliary variables (perturbed solution):\n')
-printTensor(strainPert, 'totalStrainPert')
-printTensor(strainRatePert, 'totalStrainPert_t')
-printTensor(visStrainPert, 'visStrainPert')
-printTensor(visStrainRatePert, 'visStrainPert_t')
+out.write("\nAuxiliary variables (perturbed solution):\n")
+printTensor(strainPert, "totalStrainPert")
+printTensor(strainRatePert, "totalStrainPert_t")
+printTensor(visStrainPert, "visStrainPert")
+printTensor(visStrainRatePert, "visStrainPert_t")
 
 print("Writing equilibrium equations:")
-out.write('\nEquilibrium:\n')
-printTensor(equil, 'equil')
+out.write("\nEquilibrium:\n")
+printTensor(equilibrium, "equilibrium")
 
 print("Writing additional variables:")
-out.write('\nAdditional:\n')
-printTensor(devStrain, 'devStrain')
-printTensor(devStrainRate, 'devStrain_t')
-printTensor(stress, 'stress')
-printTensor(devStress, 'devStress')
-printTensor(visStrainFunc, 'visStrainFunc')
+out.write("\nAdditional:\n")
+printTensor(devStrain, "devStrain")
+printTensor(devStrainRate, "devStrain_t")
+printTensor(stress, "stress")
+printTensor(devStress, "devStress")
+printTensor(visStrainFunc, "visStrainFunc")
 
-out.write('\nAdditional (perturbed solution):\n')
-printTensor(devStrainPert, 'devStrainPert')
-printTensor(devStrainRatePert, 'devStrainPert_t')
-printTensor(stressPert, 'stressPert')
-printTensor(devStressPert, 'devStressPert')
-printTensor(visStrainFuncPert, 'visStrainFuncPert')
+out.write("\nAdditional (perturbed solution):\n")
+printTensor(devStrainPert, "devStrainPert")
+printTensor(devStrainRatePert, "devStrainPert_t")
+printTensor(stressPert, "stressPert")
+printTensor(devStressPert, "devStressPert")
+printTensor(visStrainFuncPert, "visStrainFuncPert")
 
 out.close()
+
+
+# End of file

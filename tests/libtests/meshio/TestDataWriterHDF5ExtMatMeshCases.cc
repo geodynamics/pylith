@@ -1,21 +1,21 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "TestDataWriterHDF5ExtMatMeshCases.hh" // Implementation of class methods
 
-#include "data/DataWriterHDF5DataMatMeshTri3.hh"
+#include "data/DataWriterHDF5DataMatMeshHex8.hh"
 #include "data/DataWriterHDF5DataMatMeshQuad4.hh"
 #include "data/DataWriterHDF5DataMatMeshTet4.hh"
-#include "data/DataWriterHDF5DataMatMeshHex8.hh"
+#include "data/DataWriterHDF5DataMatMeshTri3.hh"
 
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 

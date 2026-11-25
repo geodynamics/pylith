@@ -1,23 +1,18 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
-/** @file modulesrc/faults/KinSrcConstRate.i
- *
- * @brief Python interface to C++ KinSrcConstRate object.
- */
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 namespace pylith {
     namespace faults {
-        class KinSrcConstRate: public pylith::faults::KinSrc {
+        class KinSrcConstRate : public pylith::faults::KinSrc {
             // PUBLIC METHODS /////////////////////////////////////////////////
-public:
-
+          public:
             /// Default constructor.
             KinSrcConstRate(void);
 
@@ -25,8 +20,7 @@ public:
             ~KinSrcConstRate(void);
 
             // PROTECTED METHODS //////////////////////////////////////////////////
-protected:
-
+          protected:
             /** Setup auxiliary subfields (discretization and query fns).
              *
              * @param[in] scales Scales for nondimensionalizing values.
@@ -37,7 +31,8 @@ protected:
 
         }; // class KinSrcConstRate
 
-    } // faults
-} // pylith
+    } // namespace faults
+} // namespace pylith
+
 
 // End of file

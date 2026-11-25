@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 6: Error 8
 
 ## Error Message
@@ -152,3 +161,5 @@ num-locs = 4
 0.0  -25.0      0.0       0.0   0.0
 0.0  -99.0      0.0       0.0   0.0
 ```
+
+% End of file

@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 /* Mesh: meshTet4.txt
  *
@@ -30,32 +30,43 @@ const char* pylith::bc::PointForceDataTet4::_label = "bc3";
 
 const int pylith::bc::PointForceDataTet4::_numDOF = 3;
 const int pylith::bc::PointForceDataTet4::_numForceDOF = 2;
-const int pylith::bc::PointForceDataTet4::_forceDOF[] = { 1, 2 };
+const int pylith::bc::PointForceDataTet4::_forceDOF[] = {1, 2};
 
 const int pylith::bc::PointForceDataTet4::_numForcePts = 3;
-const int pylith::bc::PointForceDataTet4::_forcePoints[] = { 1, 2, 3 };
+const int pylith::bc::PointForceDataTet4::_forcePoints[] = {1, 2, 3};
 
 const PylithScalar pylith::bc::PointForceDataTet4::_tRef = 1.2;
 const PylithScalar pylith::bc::PointForceDataTet4::_forceRate = 4.0;
 const PylithScalar pylith::bc::PointForceDataTet4::_forceInitial[] = {
-    0.7, 0.2,
-    0.7, 0.2,
-    0.7, 0.2,
+    0.7,
+    0.2,
+    0.7,
+    0.2,
+    0.7,
+    0.2,
 };
 
 const PylithScalar pylith::bc::PointForceDataTet4::_tResidual = 1.3;
-const PylithScalar pylith::bc::PointForceDataTet4::_residual[] =
-{ 0.0, 0.0, 0.0,
-  0.0, 1.1, 0.6,
-  0.0, 1.1, 0.6,
-  0.0, 1.1, 0.6,
-  0.0, 0.0, 0.0,
+const PylithScalar pylith::bc::PointForceDataTet4::_residual[] = {
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.1,
+    0.6,
+    0.0,
+    1.1,
+    0.6,
+    0.0,
+    1.1,
+    0.6,
+    0.0,
+    0.0,
+    0.0,
 };
 
-const char* pylith::bc::PointForceDataTet4::_meshFilename =
-    "data/tet4.mesh";
-const char* pylith::bc::PointForceDataTet4::_dbFilename =
-    "data/tet4_force.spatialdb";
+const char* pylith::bc::PointForceDataTet4::_meshFilename = "data/tet4.mesh";
+const char* pylith::bc::PointForceDataTet4::_dbFilename = "data/tet4_force.spatialdb";
 
 pylith::bc::PointForceDataTet4::PointForceDataTet4(void) { // constructor
     id = _id;
@@ -80,7 +91,8 @@ pylith::bc::PointForceDataTet4::PointForceDataTet4(void) { // constructor
 } // constructor
 
 
-pylith::bc::PointForceDataTet4::~PointForceDataTet4(void) {}
+pylith::bc::PointForceDataTet4::~PointForceDataTet4(void) {
+}
 
 
 // End of file

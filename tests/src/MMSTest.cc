@@ -1,23 +1,23 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
-#include "tests/src/MMSTest.hh" // implementation of class methods
-#include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/feassemble/IntegrationData.hh" // USES IntegrationData
 #include "pylith/petsc/Options.hh" // USES PetscOptions
+#include "pylith/problems/TimeDependent.hh" // USES TimeDependent
+#include "tests/src/MMSTest.hh" // implementation of class methods
 
+#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
-#include "pylith/topology/Field.hh" // USES Field
 
 #include "petscts.h" // USES PetscTS
 
@@ -53,9 +53,12 @@ pylith::testing::MMSTest::~MMSTest(void) {
     VecDestroy(&_solutionExactVec);
     VecDestroy(&_solutionDotExactVec);
 
-    delete _problem;_problem = NULL;
-    delete _mesh;_mesh = NULL;
-    delete _solution;_solution = NULL;
+    delete _problem;
+    _problem = NULL;
+    delete _mesh;
+    _mesh = NULL;
+    delete _solution;
+    _solution = NULL;
 } // tearDown
 
 
@@ -72,7 +75,8 @@ pylith::testing::MMSTest::testDiscretization(void) {
     } // if
 
     _initialize();
-    const pylith::topology::Field* solution = _problem->getSolution();REQUIRE(solution);
+    const pylith::topology::Field* solution = _problem->getSolution();
+    REQUIRE(solution);
     if (debug.state()) {
         solution->view("Solution field layout", pylith::topology::Field::VIEW_LAYOUT);
     } // if
@@ -81,8 +85,12 @@ pylith::testing::MMSTest::testDiscretization(void) {
     const pylith::string_vector subfieldNames = solution->getSubfieldNames();
     const size_t numSubfields = subfieldNames.size();
     pylith::real_array error(numSubfields);
-    PylithCallPetsc(DMSNESCheckDiscretization(_problem->getPetscSNES(), _problem->getPetscDM(), _problem->getStartTime(),
-                                              _solutionExactVec, ignoreTolerance, &error[0]));
+    PylithCallPetsc(DMSNESCheckDiscretization(_problem->getPetscSNES(),
+                                              _problem->getPetscDM(),
+                                              _problem->getStartTime(),
+                                              _solutionExactVec,
+                                              ignoreTolerance,
+                                              &error[0]));
 
     if (debug.state()) {
         debug << "Solution vector" << pythia::journal::endl;
@@ -95,7 +103,8 @@ pylith::testing::MMSTest::testDiscretization(void) {
     for (size_t i_field = 0; i_field < numSubfields; ++i_field) {
         if (error[i_field] > _tolerance) {
             fail = true;
-            msg << "    " << subfieldNames[i_field] << " (error=" << error[i_field] << ", tolerance="<< _tolerance << ")\n";
+            msg << "    " << subfieldNames[i_field] << " (error=" << error[i_field] << ", tolerance=" << _tolerance
+                << ")\n";
         } // if
     } // for
     if (fail) {
@@ -129,11 +138,17 @@ pylith::testing::MMSTest::testResidual(void) {
     REQUIRE(_solutionDotExactVec);
     PylithReal ignoreTolerance = -1.0;
     PylithReal norm = 0.0;
-    PylithCallPetsc(DMTSCheckResidual(_problem->getPetscTS(), _problem->getPetscDM(), _problem->getStartTime(), _solutionExactVec,
-                                      _solutionDotExactVec, ignoreTolerance, &norm));
+    PylithCallPetsc(DMTSCheckResidual(_problem->getPetscTS(),
+                                      _problem->getPetscDM(),
+                                      _problem->getStartTime(),
+                                      _solutionExactVec,
+                                      _solutionDotExactVec,
+                                      ignoreTolerance,
+                                      &norm));
     if (!_allowZeroResidual && (0.0 == norm)) {
-        FAIL("L2 normal of residual is exactly zero, which suggests suspicious case with all residual "
-             "entries exactly zero.");
+        FAIL(
+            "L2 normal of residual is exactly zero, which suggests suspicious case with all residual "
+            "entries exactly zero.");
     } // if
 
     INFO("|G(s) - F(s)| == " << norm);
@@ -158,8 +173,14 @@ pylith::testing::MMSTest::testJacobianTaylorSeries(void) {
 
     PetscBool isLinear = PETSC_FALSE;
     PylithReal convergenceRate = 0.0;
-    PylithCallPetsc(DMTSCheckJacobian(_problem->getPetscTS(), _problem->getPetscDM(), _problem->getStartTime(), _solutionExactVec,
-                                      _solutionDotExactVec, _tolerance, &isLinear, &convergenceRate));
+    PylithCallPetsc(DMTSCheckJacobian(_problem->getPetscTS(),
+                                      _problem->getPetscDM(),
+                                      _problem->getStartTime(),
+                                      _solutionExactVec,
+                                      _solutionDotExactVec,
+                                      _tolerance,
+                                      &isLinear,
+                                      &convergenceRate));
 
     if (_isJacobianLinear) {
         REQUIRE(isLinear == PETSC_TRUE);
@@ -199,7 +220,7 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     PylithCallPetsc(SNESComputeJacobian(_problem->getPetscSNES(), _solutionExactVec, jacobian, jacobianPreconditioner));
     PylithCallPetsc(SNESTestJacobian(_problem->getPetscSNES(), &jacobianNorm, &diffNorm));
 
-    INFO("jacobianNorm=" << jacobianNorm << ", ||Code Jacobian - Finite Diff Jacobain||="<<diffNorm);
+    INFO("jacobianNorm=" << jacobianNorm << ", ||Code Jacobian - Finite Diff Jacobain||=" << diffNorm);
     const PetscReal jacobianTolerance = 20 * jacobianNorm * _tolerance;
     REQUIRE_THAT(jacobianNorm, !Catch::Matchers::WithinAbs(0.0, _tolerance));
     REQUIRE_THAT(diffNorm, Catch::Matchers::WithinAbs(0.0, jacobianTolerance));
@@ -227,12 +248,15 @@ pylith::testing::MMSTest::_initialize(void) {
     _setExactSolution();
 
     if (_problem->getFormulation() == pylith::problems::Physics::DYNAMIC) {
-        PylithCallPetsc(TSSetIFunction(_problem->getPetscTS(), NULL, pylith::problems::TimeDependent::computeLHSResidual,
+        PylithCallPetsc(TSSetIFunction(_problem->getPetscTS(),
+                                       NULL,
+                                       pylith::problems::TimeDependent::computeLHSResidual,
                                        (void*)_problem));
     } // if
 
     // Global vectors to use for analytical solution in MMS tests.
-    const pylith::topology::Field* solution = _problem->getSolution();REQUIRE(solution);
+    const pylith::topology::Field* solution = _problem->getSolution();
+    REQUIRE(solution);
     PylithCallPetsc(VecDuplicate(solution->getGlobalVector(), &_solutionExactVec));
     PylithCallPetsc(VecDuplicate(_solutionExactVec, &_solutionDotExactVec));
 
@@ -240,7 +264,8 @@ pylith::testing::MMSTest::_initialize(void) {
     if (debug.state()) {
         const pylith::topology::Mesh& mesh = solution->getMesh();
         mesh.view();
-        std::string options = std::string(":") + std::string(GenericComponent::getName()) + std::string("_mesh.tex:ascii_latex");
+        std::string options =
+            std::string(":") + std::string(GenericComponent::getName()) + std::string("_mesh.tex:ascii_latex");
         mesh.view(options.c_str());
     } // if
 

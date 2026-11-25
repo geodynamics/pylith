@@ -1,26 +1,26 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/faults/FaultCohesive.hh" // ISA FaultCohesive
 #include "pylith/materials/Material.hh" // USES Material
 
-#include <string> // HASA std::string
 #include <map> // HASA std::map
+#include <string> // HASA std::string
 
 class pylith::faults::FaultCohesiveKin : public pylith::faults::FaultCohesive {
     friend class TestFaultCohesiveKin; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     FaultCohesiveKin(void);
 
@@ -67,8 +67,7 @@ public:
                               const double t);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Update slip related subfields in auxiliary field at beginning of time step.
      *
      * @param[out] auxiliaryField Auxiliary field.
@@ -108,23 +107,21 @@ protected:
                                  const pylith::topology::Field& solution) const;
 
     // PROTECTED TYPEDEFS /////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     typedef std::map<std::string, KinSrc*> srcs_type;
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     srcs_type _ruptures; ///< Array of kinematic earthquake ruptures.
     PetscVec _slipVecRupture; ///< PETSc local Vec to hold slip for one kinematic rupture.
     PetscVec _slipVecTotal; ///< PETSc local Vec to hold slip for all kinematic ruptures.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     FaultCohesiveKin(const FaultCohesiveKin&); ///< Not implemented
     const FaultCohesiveKin& operator=(const FaultCohesiveKin&); ///< Not implemented.
 
 }; // class FaultCohesiveKin
+
 
 // End of file

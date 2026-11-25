@@ -1,13 +1,14 @@
 #!/usr/bin/env nemesis
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # @file grabpoints/grabpoints
 
 # @brief Python application to grab a set of points specified in a pset
@@ -26,8 +27,7 @@ class GrabPoints(Application):
     """
 
     class Inventory(Application.Inventory):
-        """Python object for managing GrabPoints facilities and properties.
-        """
+        """Python object for managing GrabPoints facilities and properties."""
 
         # @class Inventory
         # Python object for managing GrabPoints facilities and properties.
@@ -46,25 +46,22 @@ class GrabPoints(Application):
         import pythia.pyre.inventory
 
         psetFile = pythia.pyre.inventory.str("pset_file", default="test.pset")
-        psetFile.meta['tip'] = "Filename of pset file specifying vertex indices."
+        psetFile.meta["tip"] = "Filename of pset file specifying vertex indices."
 
         ucdFile = pythia.pyre.inventory.str("ucd_file", default="test.inp")
-        ucdFile.meta['tip'] = "Filename of ucd file containing mesh and attributes."
+        ucdFile.meta["tip"] = "Filename of ucd file containing mesh and attributes."
 
-        pointOutputFile = pythia.pyre.inventory.str("point_output_file",
-                                                    default="points.coordnorm")
-        pointOutputFile.meta['tip'] = "Filename of output coordinates and normals."
+        pointOutputFile = pythia.pyre.inventory.str("point_output_file", default="points.coordnorm")
+        pointOutputFile.meta["tip"] = "Filename of output coordinates and normals."
 
-        valuesList = pythia.pyre.inventory.list(
-            "values_list", default=[1, 2, 3])
-        valuesList.meta['tip'] = "Position of desired values in UCD attributes."
+        valuesList = pythia.pyre.inventory.list("values_list", default=[1, 2, 3])
+        valuesList.meta["tip"] = "Position of desired values in UCD attributes."
 
         outputIndex = pythia.pyre.inventory.bool("output_index", default=False)
-        outputIndex.meta['tip'] = "Whether to output vertex indices."
+        outputIndex.meta["tip"] = "Whether to output vertex indices."
 
-        excludeZeroNormals = pythia.pyre.inventory.bool("exclude_zero_normals",
-                                                        default=False)
-        excludeZeroNormals.meta['tip'] = "Whether to exclude points with zero normals."
+        excludeZeroNormals = pythia.pyre.inventory.bool("exclude_zero_normals", default=False)
+        excludeZeroNormals.meta["tip"] = "Whether to exclude points with zero normals."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -85,8 +82,7 @@ class GrabPoints(Application):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """Setup members using inventory.
-        """
+        """Setup members using inventory."""
         Application._configure(self)
         self.psetFile = self.inventory.psetFile
         self.ucdFile = self.inventory.ucdFile
@@ -97,8 +93,7 @@ class GrabPoints(Application):
         return
 
     def _readPset(self):
-        """Reads vertex indices from a pset file.
-        """
+        """Reads vertex indices from a pset file."""
         f = file(self.psetFile)
         lines = f.readlines()
         line2 = lines[1]
@@ -113,8 +108,7 @@ class GrabPoints(Application):
         return
 
     def _grabPoints(self):
-        """Reads vertex coordinates and vertex attributes from a UCD file.
-        """
+        """Reads vertex coordinates and vertex attributes from a UCD file."""
         f = file(self.ucdFile)
         lines = f.readlines()
         fileLen = len(lines)
@@ -125,7 +119,7 @@ class GrabPoints(Application):
         vertInd = 0
         ucdInd = 1
         # Get vertex coordinates
-        for lineCount in range(1, numVerts+1):
+        for lineCount in range(1, numVerts + 1):
             vertex = self.indices[vertInd]
             if vertex == ucdInd:
                 data = lines[lineCount].split()
@@ -137,7 +131,7 @@ class GrabPoints(Application):
 
         # Skip elements and then start reading normals/values and write out
         # the selected values.
-        o = open(self.pointOutputFile, 'w')
+        o = open(self.pointOutputFile, "w")
         lineBegin = 2 + numVerts + numCells + numVertAttrs
         lineEnd = lineBegin + numVerts
         vertInd = 0
@@ -154,23 +148,19 @@ class GrabPoints(Application):
                 data = lines[lineCount].split()
                 normals = [float(data[v0]), float(data[v1]), float(data[v2])]
                 outputPoint = not self.excludeZeroNormals
-                outputPoint = outputPoint or \
-                    normals[0] != 0.0 or \
-                    normals[1] != 0.0 or \
-                    normals[2] != 0.0
+                outputPoint = outputPoint or normals[0] != 0.0 or normals[1] != 0.0 or normals[2] != 0.0
 
                 if outputPoint:
                     if self.outputIndex:
-                        o.write(' %i' % vertex)
+                        o.write(" %i" % vertex)
 
                         for dim in range(3):
-                            o.write(' %.12e' %
-                                    self.pointCoords[coordCount + dim])
+                            o.write(" %.12e" % self.pointCoords[coordCount + dim])
 
                         for dim in range(3):
-                            o.write(' %.12e' % normals[dim])
+                            o.write(" %.12e" % normals[dim])
 
-                        o.write('\n')
+                        o.write("\n")
                 vertInd += 1
                 coordCount += 3
 
@@ -184,7 +174,7 @@ class GrabPoints(Application):
 
 
 # ----------------------------------------------------------------------
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = GrabPoints()
     app.run()
 

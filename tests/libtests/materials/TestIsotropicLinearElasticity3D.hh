@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "TestMaterial.hh" // ISA TestMaterial
@@ -17,13 +18,14 @@ namespace pylith {
         class TestIsotropicLinearElasticity3D;
 
         class TestIsotropicLinearElasticity3D_Data;
-    } // materials
-} // pylith
+    } // namespace materials
+} // namespace pylith
 
 /// C++ unit testing for IsotropicLinearElasticity3D
 class pylith::materials::TestIsotropicLinearElasticity3D : public TestMaterial {
     // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D, TestMaterial);
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D,
+                           TestMaterial);
 
     // Tests specific to this materials parameters.
     CPPUNIT_TEST(testAccessors);
@@ -35,8 +37,7 @@ class pylith::materials::TestIsotropicLinearElasticity3D : public TestMaterial {
     CPPUNIT_TEST_SUITE_END();
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Setup testing data.
     void setUp(void);
 
@@ -53,8 +54,7 @@ public:
     void testGetAuxField(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get material.
      *
      * @returns Pointer to material.
@@ -71,8 +71,7 @@ protected:
     void _setupSolutionFields(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected:
-
+  protected:
     IsotropicLinearElasticity3D* _mymaterial; ///< Object for testing.
     TestIsotropicLinearElasticity3D_Data* _mydata; ///< Data for testing.
 
@@ -81,8 +80,7 @@ protected:
 // =============================================================================
 class pylith::materials::TestIsotropicLinearElasticity3D_Data : public TestMaterial_Data {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestIsotropicLinearElasticity3D_Data(void);
 
@@ -90,11 +88,10 @@ public:
     ~TestIsotropicLinearElasticity3D_Data(void);
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     // SPECIFIC TO MATERIAL, VALUES DEPEND ON TEST CASE
     double gravityVector[3]; ///< Array for gravity vector.
-
 };
+
 
 // End of file

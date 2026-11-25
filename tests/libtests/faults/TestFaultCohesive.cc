@@ -1,20 +1,20 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
-#include "tests/src/FaultCohesiveStub.hh" // USES FaultCohesiveStub
-#include "pylith/topology/Mesh.hh" // USES Mesh::cells_label_name
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/topology/Mesh.hh" // USES Mesh::cells_label_name
+#include "tests/src/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
@@ -22,16 +22,14 @@
 namespace pylith {
     namespace faults {
         class TestFaultCohesive;
-    } // faults
-} // pylith
+    } // namespace faults
+} // namespace pylith
 
 class pylith::faults::TestFaultCohesive : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test set/getCohesiveLabelValue(), set/getSurfaceLabelName(), set/getBuriedEdgesLabelName(), setRefDir1/2().
-    static
-    void testAccessors(void);
+    static void testAccessors(void);
 
 }; // class TestFaultCohesive
 
@@ -74,27 +72,27 @@ pylith::faults::TestFaultCohesive::testAccessors(void) {
     CHECK(edgeValue == fault.getBuriedEdgesLabelValue());
 
     const int dim = 3;
-    const PylithReal default1[3] = { 0.0, 0.0, 1.0 };
+    const PylithReal default1[3] = {0.0, 0.0, 1.0};
     for (int i = 0; i < dim; ++i) {
         CHECK(default1[i] == fault._refDir1[i]);
     } // for
 
     const double tolerance = 1.0e-6;
 
-    const PylithReal dir1[3] = { 0.0, 2.0, -1.0 };
+    const PylithReal dir1[3] = {0.0, 2.0, -1.0};
     fault.setRefDir1(dir1);
     for (int i = 0; i < dim; ++i) {
-        CHECK_THAT(fault._refDir1[i], Catch::Matchers::WithinAbs(dir1[i]/sqrt(2*2+1*1), tolerance));
+        CHECK_THAT(fault._refDir1[i], Catch::Matchers::WithinAbs(dir1[i] / sqrt(2 * 2 + 1 * 1), tolerance));
     } // for
 
-    const PylithReal default2[3] = { 0.0, 1.0, 0.0 };
+    const PylithReal default2[3] = {0.0, 1.0, 0.0};
     for (int i = 0; i < dim; ++i) {
         CHECK_THAT(fault._refDir2[i], Catch::Matchers::WithinAbs(default2[i], tolerance));
     } // for
-    const PylithReal dir2[3] = { 2.0, 1.0, 2.0 };
+    const PylithReal dir2[3] = {2.0, 1.0, 2.0};
     fault.setRefDir2(dir2);
     for (int i = 0; i < dim; ++i) {
-        CHECK_THAT(fault._refDir2[i], Catch::Matchers::WithinAbs(dir2[i]/sqrt(2*2+1*1+2*2), tolerance));
+        CHECK_THAT(fault._refDir2[i], Catch::Matchers::WithinAbs(dir2[i] / sqrt(2 * 2 + 1 * 1 + 2 * 2), tolerance));
     } // for
 
     PYLITH_METHOD_END;
@@ -102,8 +100,10 @@ pylith::faults::TestFaultCohesive::testAccessors(void) {
 
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("FaultCohesive::testAccessors", "[FaultCohesive]") {
+TEST_CASE("FaultCohesive::testAccessors",
+          "[FaultCohesive]") {
     pylith::faults::TestFaultCohesive::testAccessors();
 }
+
 
 // End of file

@@ -1,24 +1,25 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "tests/src/MMSTest.hh" // ISA MMSTEST
 
-#include "pylith/materials/Poroelasticity.hh" // USES Poroelasticity
-#include "pylith/materials/IsotropicLinearPoroelasticity.hh" // USES IsotropicLinearPoroelasticity
 #include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
 #include "pylith/bc/NeumannUserFn.hh" // USES NeumannUserFn
+#include "pylith/materials/IsotropicLinearPoroelasticity.hh" // USES IsotropicLinearPoroelasticity
+#include "pylith/materials/Poroelasticity.hh" // USES Poroelasticity
 
-#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 
 #include "pylith/problems/Physics.hh" // USES FormulationEnum
 #include "pylith/topology/Field.hh" // HASA FieldBase::Discretization
@@ -26,13 +27,12 @@
 namespace pylith {
     class TestLinearPoroelasticity;
     class TestLinearPoroelasticity_Data;
-}
+} // namespace pylith
 
 /// C++ class for testing poroelasticity using a variety of MMS tests.
 class pylith::TestLinearPoroelasticity : public pylith::testing::MMSTest {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /** Constructor
      *
      * @param[in] data Data for MMS test.
@@ -43,8 +43,7 @@ public:
     ~TestLinearPoroelasticity(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Initialize objects for test.
     void _initialize(void);
 
@@ -52,8 +51,7 @@ protected:
     void _setExactSolution(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     TestLinearPoroelasticity_Data* _data; ///< Test parameters.
 
 }; // class TestLinearPoroelasticity
@@ -61,8 +59,7 @@ protected:
 // ================================================================================================
 class pylith::TestLinearPoroelasticity_Data {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestLinearPoroelasticity_Data(void);
 
@@ -70,8 +67,7 @@ public:
     ~TestLinearPoroelasticity_Data(void);
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     const char* journalName; ///< Name for MMSTest journals.
     int spaceDim; ///< Spatial dimension of domain.
     const char* meshFilename; ///< Name of file with ASCII mesh.
@@ -111,5 +107,6 @@ public:
     spatialdata::spatialdb::UserFunctionDB auxDB; ///< Spatial database for auxiliary field.
 
 }; // TestLinearPoroelasticity_Data
+
 
 // End of file

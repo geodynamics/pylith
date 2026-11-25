@@ -1,27 +1,27 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/feassemble/feassemblefwd.hh" // forward declarations
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
-#include "pylith/topology/topologyfwd.hh" // USES Field
 #include "pylith/petsc/petsc_types.h" // USES PetscMat
+#include "pylith/topology/topologyfwd.hh" // USES Field
 #include "pylith/utils/arrayfwd.hh" // HASA std::vector
 
 class pylith::feassemble::JacobianValues : public pylith::utils::GenericComponent {
     friend class TestJacobianValues; // unit testing
 
     // PUBLIC STRUCTS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     typedef void (*PointFn)(pylith::scalar_array*,
                             const PylithReal,
                             const PylithReal,
@@ -41,7 +41,8 @@ public:
         JacobianKernel(void) :
             subfieldTrial(""),
             subfieldBasis(""),
-            function(NULL) {}
+            function(NULL) {
+        }
 
 
         JacobianKernel(const char* subfieldTrialValue,
@@ -49,14 +50,14 @@ public:
                        const PointFn functionValue) :
             subfieldTrial(subfieldTrialValue),
             subfieldBasis(subfieldBasisValue),
-            function(functionValue) {}
+            function(functionValue) {
+        }
 
 
     }; // JacobianKernel
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     JacobianValues(void);
 
@@ -96,29 +97,27 @@ public:
      * @param[in] dt Current time step.
      * @param[in] s_tshift Scale for time derivative.
      */
-    static
-    void blockDiag_tshift(pylith::scalar_array* cellMat,
-                          const PylithReal t,
-                          const PylithReal dt,
-                          const PylithReal s_tshift,
-                          const PylithInt trialDof,
-                          const PylithInt trialOff,
-                          const PylithInt basisDof,
-                          const PylithInt basisOff,
-                          const PylithInt totalDim);
+    static void blockDiag_tshift(pylith::scalar_array* cellMat,
+                                 const PylithReal t,
+                                 const PylithReal dt,
+                                 const PylithReal s_tshift,
+                                 const PylithInt trialDof,
+                                 const PylithInt trialOff,
+                                 const PylithInt basisDof,
+                                 const PylithInt basisOff,
+                                 const PylithInt totalDim);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     std::vector<JacobianKernel> _kernelsJacobian; ///< Kernels for Jacobian.
     std::vector<JacobianKernel> _kernelsPrecond; ///< Kernels for preconditioner.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     JacobianValues(const JacobianValues&); ///< Not implemented.
     const JacobianValues& operator=(const JacobianValues&); ///< Not implemented.
 
 }; // JacobianValues
+
 
 // End of file

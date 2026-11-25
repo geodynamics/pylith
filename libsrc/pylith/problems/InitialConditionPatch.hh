@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/problems/InitialCondition.hh" // ISA InitialCondition
@@ -17,8 +18,7 @@ class pylith::problems::InitialConditionPatch : public pylith::problems::Initial
     friend class TestInitialConditionPatch; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     InitialConditionPatch(void);
 
@@ -74,18 +74,17 @@ public:
 
     // PRIVATE MEMBERS
     // //////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     std::string _labelName; ///< Name of label associated with patch.
     int _labelValue; ///< Value of label associated with patch.
     spatialdata::spatialdb::SpatialDB* _db; ///< Spatial database with values for initial condition.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     InitialConditionPatch(const InitialConditionPatch&); ///< Not implemented
     const InitialConditionPatch& operator=(const InitialConditionPatch&); ///< Not implemented
 
 }; // InitialConditionPatch
+
 
 // End of file

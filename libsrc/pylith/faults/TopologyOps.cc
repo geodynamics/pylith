@@ -1,25 +1,25 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/faults/TopologyOps.hh" // implementation of object methods
 
-#include "pylith/topology/Stratum.hh" // USES Stratum
-#include "pylith/topology/MeshOps.hh" // USES isCohesiveCell()
-#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
-#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
+#include "pylith/topology/MeshOps.hh" // USES isCohesiveCell()
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
-#include <iostream> // USES std::cout
 #include <cassert> // USES assert()
+#include <iostream> // USES std::cout
 
 // ------------------------------------------------------------------------------------------------
 void
@@ -47,7 +47,7 @@ pylith::faults::TopologyOps::updateCohesiveLabel(const pylith::topology::Mesh* m
         // Clear existing point in label (need label values to be depth).
         PylithCallPetsc(DMLabelClearValue(dmLabel, point, labelValue));
 
-        PylithInt *closure = nullptr;
+        PylithInt* closure = nullptr;
         PylithInt closureSize = 0, pointDepth = 0;
 
         PylithCallPetsc(DMPlexGetPointDepth(dmMesh, point, &pointDepth));
@@ -68,7 +68,7 @@ pylith::faults::TopologyOps::updateCohesiveLabel(const pylith::topology::Mesh* m
     PylithCallPetsc(DMPlexOrientLabel(dmMesh, dmLabel));
     {
         IS valueIS;
-        const PetscInt *values;
+        const PetscInt* values;
         PetscInt depth, Nv;
 
         PylithCallPetsc(DMPlexGetDepth(dmMesh, &depth));
@@ -106,7 +106,7 @@ pylith::faults::TopologyOps::setCohesiveCellLabel(PetscDM dmMeshNew,
     PylithCallPetsc(DMGetLabel(dmMeshNew, labelName, &dmLabel));
 
     PetscSF sf = NULL;
-    const PetscInt *leaves = NULL;
+    const PetscInt* leaves = NULL;
     PetscInt numLeaves = 0;
     PylithCallPetsc(DMGetPointSF(dmMeshNew, &sf));
     PylithCallPetsc(PetscSFGetGraph(sf, NULL, &numLeaves, &leaves, NULL));
@@ -144,9 +144,8 @@ pylith::faults::TopologyOps::labelsRemoveCohesivePoints(PetscDM dmMeshNew) {
         PylithCallPetsc(DMGetLabelName(dmMeshNew, iLabel, &labelStr));
         const std::string labelName = std::string(labelStr);
 
-        if ((labelName != std::string("depth"))
-            && (labelName != std::string("celltype"))
-            && (labelName != materialLabelName)) {
+        if ((labelName != std::string("depth")) && (labelName != std::string("celltype")) &&
+            (labelName != materialLabelName)) {
             PetscDMLabel dmLabel = PETSC_NULLPTR;
             PylithInt pStart = -1, pEnd = -1;
             PylithCallPetsc(DMGetLabel(dmMeshNew, labelStr, &dmLabel));
@@ -161,10 +160,8 @@ pylith::faults::TopologyOps::labelsRemoveCohesivePoints(PetscDM dmMeshNew) {
             for (PylithInt point = pStart; point < pEnd; ++point) {
                 DMPolytopeType ct;
                 PylithCallPetsc(DMPlexGetCellType(dmMeshNew, point, &ct));
-                if ((ct == DM_POLYTOPE_POINT_PRISM_TENSOR) ||
-                    (ct == DM_POLYTOPE_SEG_PRISM_TENSOR) ||
-                    (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) ||
-                    (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) {
+                if ((ct == DM_POLYTOPE_POINT_PRISM_TENSOR) || (ct == DM_POLYTOPE_SEG_PRISM_TENSOR) ||
+                    (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) {
                     for (PylithInt iValue = 0; iValue < numValues; ++iValue) {
                         PylithCallPetsc(DMLabelClearValue(dmLabel, point, valuesIndices[iValue]));
                     } // for
@@ -215,15 +212,28 @@ pylith::faults::TopologyOps::createBuriedEdgeLabel(PetscDM dmMeshNew,
 
             hasBuriedEdge = true;
             dim = DMPolytopeTypeGetDim(cellType);
-            PylithCallPetsc(DMPlexTransformCellTransform(transform, cellType, point, NULL, &numCellTypes, &newCellTypes, &newCellTypesSize, &newPointsCones, &coneOrientations));
+            PylithCallPetsc(DMPlexTransformCellTransform(transform,
+                                                         cellType,
+                                                         point,
+                                                         NULL,
+                                                         &numCellTypes,
+                                                         &newCellTypes,
+                                                         &newCellTypesSize,
+                                                         &newPointsCones,
+                                                         &coneOrientations));
             for (PylithInt iCellType = 0; iCellType < numCellTypes; ++iCellType) {
-                if ((DMPolytopeTypeGetDim(newCellTypes[iCellType]) != dim) || (dim != dimMesh-2)) {
+                if ((DMPolytopeTypeGetDim(newCellTypes[iCellType]) != dim) || (dim != dimMesh - 2)) {
                     continue;
                 } // if
                 const PetscInt cellTypeSize = newCellTypesSize[iCellType];
                 assert(1 == cellTypeSize);
                 const PetscInt iPoint = 0; // single point in cell type size
-                PylithCallPetsc(DMPlexTransformGetTargetPoint(transform, cellType, newCellTypes[iCellType], point, iPoint, &pointEdge));
+                PylithCallPetsc(DMPlexTransformGetTargetPoint(transform,
+                                                              cellType,
+                                                              newCellTypes[iCellType],
+                                                              point,
+                                                              iPoint,
+                                                              &pointEdge));
                 PylithCallPetsc(DMLabelSetValue(buriedEdgeLabel, pointEdge, 1));
             } // for
         } // if
@@ -231,7 +241,13 @@ pylith::faults::TopologyOps::createBuriedEdgeLabel(PetscDM dmMeshNew,
     } // for
     const int hasBuriedEdgeValueLocal = hasBuriedEdge ? 1 : 0;
     int hasBuriedEdgeValue = 0;
-    int mpierr = MPI_Allreduce(&hasBuriedEdgeValueLocal, &hasBuriedEdgeValue, 1, MPI_INT, MPI_MAX, PetscObjectComm((PetscObject) dmMeshNew));assert(MPI_SUCCESS == mpierr);
+    int mpierr = MPI_Allreduce(&hasBuriedEdgeValueLocal,
+                               &hasBuriedEdgeValue,
+                               1,
+                               MPI_INT,
+                               MPI_MAX,
+                               PetscObjectComm((PetscObject)dmMeshNew));
+    assert(MPI_SUCCESS == mpierr);
     if (!hasBuriedEdgeValue) {
         PylithCallPetsc(DMRemoveLabel(dmMeshNew, buriedEdgeLabelName, NULL));
     } // if
@@ -254,7 +270,8 @@ pylith::faults::TopologyOps::createFaultFromCohesiveCells(pylith::topology::Mesh
 
     faultMesh->setCoordSys(mesh.getCoordSys());
 
-    PetscDM dmDomain = mesh.getDM();assert(dmDomain);
+    PetscDM dmDomain = mesh.getDM();
+    assert(dmDomain);
     PetscDM dmFaultMesh = NULL;
 
     const char* negativeLabelName = "fault_cohesive_negative_sides";
@@ -276,14 +293,17 @@ pylith::faults::TopologyOps::createFaultFromCohesiveCells(pylith::topology::Mesh
         } // if
         for (PylithInt iPoint = 0; iPoint < numPoints; ++iPoint) {
             const PylithInt point = points[iPoint];
-            const PylithInt *cone = nullptr;
+            const PylithInt* cone = nullptr;
             PylithInt coneSize = 0;
-            PylithCallPetsc(DMPlexGetConeSize(dmDomain, point, &coneSize));assert(coneSize > 0);
+            PylithCallPetsc(DMPlexGetConeSize(dmDomain, point, &coneSize));
+            assert(coneSize > 0);
             PylithCallPetsc(DMPlexGetCone(dmDomain, point, &cone));
             const PylithInt negativeFace = cone[0];
             PylithCallPetsc(DMLabelSetValue(negativeLabel, negativeFace, negativeLabelValue));
         } // for
-        if (pointIS) {PylithCallPetsc(ISRestoreIndices(pointIS, &points));}
+        if (pointIS) {
+            PylithCallPetsc(ISRestoreIndices(pointIS, &points));
+        }
         PylithCallPetsc(ISDestroy(&pointIS));
         PylithCallPetsc(DMPlexLabelComplete(dmDomain, negativeLabel));
     } // Create label over negative sides of cohesive cells
@@ -366,21 +386,25 @@ pylith::faults::TopologyOps::getAdjacentCells(PylithInt* adjacentCellNegative,
         if (2 != supportSize) {
             PYLITH_ERROR(pylith::exceptions::TopologyError,
                          "Inconsistent topology. Expected support of size 2 for face "
-                         << cone[iCone] << " of cohesive cell " << cohesiveCell
-                         <<". Support has size "<<supportSize<<".");
+                             << cone[iCone] << " of cohesive cell " << cohesiveCell << ". Support has size "
+                             << supportSize << ".");
         } // if
         assert(2 == supportSize);
-        if ((cohesiveCell != support[0]) && (cohesiveCell != support[1]) ) {
+        if ((cohesiveCell != support[0]) && (cohesiveCell != support[1])) {
             PYLITH_ERROR(pylith::exceptions::TopologyError,
-                         "Inconsistent topology. Cohesive cell "
-                         <<cohesiveCell<<" not in support of its own cone. "
-                         <<"Support: "<<support[0]<< ", "<<support[1]<<".");
+                         "Inconsistent topology. Cohesive cell " << cohesiveCell << " not in support of its own cone. "
+                                                                 << "Support: " << support[0] << ", " << support[1]
+                                                                 << ".");
         } // if
         adjacentCells[iCone] = (support[0] == cohesiveCell) ? support[1] : support[0];
     } // for
 
-    if (adjacentCellNegative) { *adjacentCellNegative = adjacentCells[0]; }
-    if (adjacentCellPositive) { *adjacentCellPositive = adjacentCells[1]; }
+    if (adjacentCellNegative) {
+        *adjacentCellNegative = adjacentCells[0];
+    }
+    if (adjacentCellPositive) {
+        *adjacentCellPositive = adjacentCells[1];
+    }
     PYLITH_METHOD_END;
 } // getAdjacentCells
 

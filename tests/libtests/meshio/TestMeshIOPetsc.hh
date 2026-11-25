@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "TestMeshIO.hh"
@@ -14,13 +15,12 @@
 namespace pylith {
     namespace meshio {
         class TestMeshIOPetsc;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 class pylith::meshio::TestMeshIOPetsc : public TestMeshIO {
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestMeshIOPetsc(TestMeshIO_Data* data);
 
@@ -34,7 +34,7 @@ public:
      *
      * @param[in] gmshMarkVertices If true, mark Gmsh vertices.
      */
-    void testRead(const bool gmshMarkVertices=false);
+    void testRead(const bool gmshMarkVertices = false);
 
     /// Test read() with common user mesh generation errors.
     void testReadError(void);
@@ -43,10 +43,10 @@ public:
     void testWriteRead(void);
 
     // PROTECTED METHODS ////////////////////////////////////////////////
-protected:
-
+  protected:
     MeshIOPetsc* _io; ///< Test subject.
 
 }; // class TestMeshIOPetsc
+
 
 // End of file

@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Nondimensionalization
 
 Starting with the incompressible elasticity equation,
@@ -73,3 +82,5 @@ It also separates the stress scale used to nondimensionalize stress, tractions, 
 | $f_o = \frac{\sigma_o}{x_o}$    | Body force scale       |
 | $\rho_o = \mu_o \frac{t_o^2}{x_o^2}$    | Density scale       |
 ```
+
+% End of file

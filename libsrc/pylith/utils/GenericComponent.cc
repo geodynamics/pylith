@@ -1,27 +1,26 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/utils/GenericComponent.hh" // Implementation of class methods
 
-#include "pylith/utils/journals.hh"
 #include "pylith/exceptions/Exceptions.hh"
+#include "pylith/utils/journals.hh"
 
 #include <Python.h>
 
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::utils::GenericComponent::GenericComponent(void) :
-    _name("") {
+pylith::utils::GenericComponent::GenericComponent(void) : _name("") {
     if (!Py_IsInitialized()) {
         PYLITH_ERROR(pylith::exceptions::InternalLogicError,
                      "Python must be initialized to use GenericComponent in C++.");
@@ -31,7 +30,8 @@ pylith::utils::GenericComponent::GenericComponent(void) :
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::utils::GenericComponent::~GenericComponent(void) {}
+pylith::utils::GenericComponent::~GenericComponent(void) {
+}
 
 
 // ----------------------------------------------------------------------
@@ -39,8 +39,7 @@ pylith::utils::GenericComponent::~GenericComponent(void) {}
 void
 pylith::utils::GenericComponent::setName(const char* value) {
     if (!strlen(value)) {
-        PYLITH_ERROR(pylith::exceptions::EmptyStringError,
-                     "Cannot set name of Generic component to empty string.");
+        PYLITH_ERROR(pylith::exceptions::EmptyStringError, "Cannot set name of Generic component to empty string.");
     } // if
     _name = value;
 } // setName

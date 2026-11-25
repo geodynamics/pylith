@@ -1,13 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
-//
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -19,12 +18,11 @@ namespace pylith {
     namespace topology {
         class TestRefineUniform_Cases;
     }
-}
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::topology::TestRefineUniform_Cases {
-public:
-
+  public:
     // Data factory methods
     static TestRefineUniform_Data* Tri_2xNoFault(void);
 
@@ -41,42 +39,50 @@ public:
     static TestRefineUniform_Data* Hex_2xNoFault(void);
 
     static TestRefineUniform_Data* Hex_2xFault(void);
-
 };
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestRefineUniform::Tri_2xNoFault::testRefine", "[TestRefineUniform][Tri][NoFault]") {
+TEST_CASE("TestRefineUniform::Tri_2xNoFault::testRefine",
+          "[TestRefineUniform][Tri][NoFault]") {
     pylith::topology::TestRefineUniform(pylith::topology::TestRefineUniform_Cases::Tri_2xNoFault()).testRefine();
 }
-TEST_CASE("TestRefineUniform::Tri_2xFault::testRefine", "[TestRefineUniform][Tri][Fault]") {
+TEST_CASE("TestRefineUniform::Tri_2xFault::testRefine",
+          "[TestRefineUniform][Tri][Fault]") {
     pylith::topology::TestRefineUniform(pylith::topology::TestRefineUniform_Cases::Tri_2xFault()).testRefine();
 }
 
-TEST_CASE("TestRefineUniform::Quad_2xNoFault::testRefine", "[TestRefineUniform][Quad][NoFault]") {
+TEST_CASE("TestRefineUniform::Quad_2xNoFault::testRefine",
+          "[TestRefineUniform][Quad][NoFault]") {
     pylith::topology::TestRefineUniform(pylith::topology::TestRefineUniform_Cases::Quad_2xNoFault()).testRefine();
 }
-TEST_CASE("TestRefineUniform::Quad_2xFault::testRefine", "[TestRefineUniform][Quad][Fault]") {
+TEST_CASE("TestRefineUniform::Quad_2xFault::testRefine",
+          "[TestRefineUniform][Quad][Fault]") {
     pylith::topology::TestRefineUniform(pylith::topology::TestRefineUniform_Cases::Quad_2xFault()).testRefine();
 }
 
-TEST_CASE("TestRefineUniform::Tet_2xNoFault::testRefine", "[TestRefineUniform][Tet][NoFault]") {
+TEST_CASE("TestRefineUniform::Tet_2xNoFault::testRefine",
+          "[TestRefineUniform][Tet][NoFault]") {
     pylith::topology::TestRefineUniform(pylith::topology::TestRefineUniform_Cases::Tet_2xNoFault()).testRefine();
 }
-TEST_CASE("TestRefineUniform::Tet_2xFault::testRefine", "[TestRefineUniform][Tet][Fault]") {
+TEST_CASE("TestRefineUniform::Tet_2xFault::testRefine",
+          "[TestRefineUniform][Tet][Fault]") {
     pylith::topology::TestRefineUniform(pylith::topology::TestRefineUniform_Cases::Tet_2xFault()).testRefine();
 }
 
-TEST_CASE("TestRefineUniform::Hex_2xNoFault::testRefine", "[TestRefineUniform][Hex][NoFault]") {
+TEST_CASE("TestRefineUniform::Hex_2xNoFault::testRefine",
+          "[TestRefineUniform][Hex][NoFault]") {
     pylith::topology::TestRefineUniform(pylith::topology::TestRefineUniform_Cases::Hex_2xNoFault()).testRefine();
 }
-TEST_CASE("TestRefineUniform::Hex_2xFault::testRefine", "[TestRefineUniform][Hex][Fault]") {
+TEST_CASE("TestRefineUniform::Hex_2xFault::testRefine",
+          "[TestRefineUniform][Hex][Fault]") {
     pylith::topology::TestRefineUniform(pylith::topology::TestRefineUniform_Cases::Hex_2xFault()).testRefine();
 }
 
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestRefineUniform_Data*
 pylith::topology::TestRefineUniform_Cases::Tri_2xNoFault(void) {
-    TestRefineUniform_Data* data = new TestRefineUniform_Data();REQUIRE(data);
+    TestRefineUniform_Data* data = new TestRefineUniform_Data();
+    REQUIRE(data);
 
     data->filename = "data/fourtri3.mesh";
     data->refineLevel = 1;
@@ -92,11 +98,13 @@ pylith::topology::TestRefineUniform_Cases::Tri_2xNoFault(void) {
     data->numCorners = 3;
     data->numCornersCohesive = 4;
 
-    data->matIdSum = 8*1 + 8*2;
+    data->matIdSum = 8 * 1 + 8 * 2;
 
     data->numVertexGroups = 3;
     static const size_t _vertexGroupSizes[3] = {
-        5, 3, 5,
+        5,
+        3,
+        5,
     };
     data->vertexGroupSizes = const_cast<size_t*>(_vertexGroupSizes);
 
@@ -109,7 +117,9 @@ pylith::topology::TestRefineUniform_Cases::Tri_2xNoFault(void) {
 
     data->numFaceGroups = 3;
     static const size_t _faceGroupSizes[3] = {
-        4, 2, 4,
+        4,
+        2,
+        4,
     };
     data->faceGroupSizes = const_cast<size_t*>(_faceGroupSizes);
 
@@ -127,7 +137,8 @@ pylith::topology::TestRefineUniform_Cases::Tri_2xNoFault(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestRefineUniform_Data*
 pylith::topology::TestRefineUniform_Cases::Tri_2xFault(void) {
-    TestRefineUniform_Data* data = new TestRefineUniform_Data();REQUIRE(data);
+    TestRefineUniform_Data* data = new TestRefineUniform_Data();
+    REQUIRE(data);
 
     data->filename = "data/fourtri3.mesh";
     data->refineLevel = 1;
@@ -143,11 +154,13 @@ pylith::topology::TestRefineUniform_Cases::Tri_2xFault(void) {
     data->numCorners = 3;
     data->numCornersCohesive = 4;
 
-    data->matIdSum = 8*1 + 8*2 + 4*100;
+    data->matIdSum = 8 * 1 + 8 * 2 + 4 * 100;
 
     data->numVertexGroups = 3;
     static const size_t _vertexGroupSizes[3] = {
-        7, 4, 10,
+        7,
+        4,
+        10,
     };
     data->vertexGroupSizes = const_cast<size_t*>(_vertexGroupSizes);
 
@@ -160,7 +173,9 @@ pylith::topology::TestRefineUniform_Cases::Tri_2xFault(void) {
 
     data->numFaceGroups = 3;
     static const size_t _faceGroupSizes[3] = {
-        4, 2, 8,
+        4,
+        2,
+        8,
     };
     data->faceGroupSizes = const_cast<size_t*>(_faceGroupSizes);
 
@@ -178,7 +193,8 @@ pylith::topology::TestRefineUniform_Cases::Tri_2xFault(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestRefineUniform_Data*
 pylith::topology::TestRefineUniform_Cases::Quad_2xNoFault(void) {
-    TestRefineUniform_Data* data = new TestRefineUniform_Data();REQUIRE(data);
+    TestRefineUniform_Data* data = new TestRefineUniform_Data();
+    REQUIRE(data);
 
     data->filename = "data/fourquad4.mesh";
     data->refineLevel = 1;
@@ -194,11 +210,12 @@ pylith::topology::TestRefineUniform_Cases::Quad_2xNoFault(void) {
     data->numCorners = 4;
     data->numCornersCohesive = 4;
 
-    data->matIdSum = 8*1 + 8*2;
+    data->matIdSum = 8 * 1 + 8 * 2;
 
     data->numVertexGroups = 2;
     static const size_t _vertexGroupSizes[2] = {
-        5, 5,
+        5,
+        5,
     };
     data->vertexGroupSizes = const_cast<size_t*>(_vertexGroupSizes);
     static const char* _vertexGroupNames[2] = {
@@ -209,7 +226,8 @@ pylith::topology::TestRefineUniform_Cases::Quad_2xNoFault(void) {
 
     data->numFaceGroups = 2;
     static const size_t _faceGroupSizes[2] = {
-        4, 4,
+        4,
+        4,
     };
     data->faceGroupSizes = const_cast<size_t*>(_faceGroupSizes);
     static const char* _faceGroupNames[2] = {
@@ -225,7 +243,8 @@ pylith::topology::TestRefineUniform_Cases::Quad_2xNoFault(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestRefineUniform_Data*
 pylith::topology::TestRefineUniform_Cases::Quad_2xFault(void) {
-    TestRefineUniform_Data* data = new TestRefineUniform_Data();REQUIRE(data);
+    TestRefineUniform_Data* data = new TestRefineUniform_Data();
+    REQUIRE(data);
 
     data->filename = "data/fourquad4.mesh";
     data->refineLevel = 1;
@@ -241,11 +260,12 @@ pylith::topology::TestRefineUniform_Cases::Quad_2xFault(void) {
     data->numCorners = 4;
     data->numCornersCohesive = 4;
 
-    data->matIdSum = 8*1 + 8*2 + 4*100;
+    data->matIdSum = 8 * 1 + 8 * 2 + 4 * 100;
 
     data->numVertexGroups = 2;
     static const size_t _vertexGroupSizes[2] = {
-        10, 5+1,
+        10,
+        5 + 1,
     };
     data->vertexGroupSizes = const_cast<size_t*>(_vertexGroupSizes);
     static const char* _vertexGroupNames[2] = {
@@ -256,7 +276,8 @@ pylith::topology::TestRefineUniform_Cases::Quad_2xFault(void) {
 
     data->numFaceGroups = 2;
     static const size_t _faceGroupSizes[2] = {
-        8, 4,
+        8,
+        4,
     };
     data->faceGroupSizes = const_cast<size_t*>(_faceGroupSizes);
     static const char* _faceGroupNames[2] = {
@@ -272,7 +293,8 @@ pylith::topology::TestRefineUniform_Cases::Quad_2xFault(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestRefineUniform_Data*
 pylith::topology::TestRefineUniform_Cases::Tet_2xNoFault(void) {
-    TestRefineUniform_Data* data = new TestRefineUniform_Data();REQUIRE(data);
+    TestRefineUniform_Data* data = new TestRefineUniform_Data();
+    REQUIRE(data);
 
     data->filename = "data/twotet4.mesh";
     data->refineLevel = 1;
@@ -288,11 +310,13 @@ pylith::topology::TestRefineUniform_Cases::Tet_2xNoFault(void) {
     data->numCorners = 4;
     data->numCornersCohesive = 6;
 
-    data->matIdSum = 8*1 + 8*2;
+    data->matIdSum = 8 * 1 + 8 * 2;
 
     data->numVertexGroups = 3;
     static const size_t _vertexGroupSizes[3] = {
-        3, 3, 6,
+        3,
+        3,
+        6,
     };
     data->vertexGroupSizes = const_cast<size_t*>(_vertexGroupSizes);
 
@@ -305,7 +329,9 @@ pylith::topology::TestRefineUniform_Cases::Tet_2xNoFault(void) {
 
     data->numFaceGroups = 3;
     static const size_t _faceGroupSizes[3] = {
-        4, 4, 4,
+        4,
+        4,
+        4,
     };
     data->faceGroupSizes = const_cast<size_t*>(_faceGroupSizes);
     static const char* _faceGroupNames[3] = {
@@ -322,7 +348,8 @@ pylith::topology::TestRefineUniform_Cases::Tet_2xNoFault(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestRefineUniform_Data*
 pylith::topology::TestRefineUniform_Cases::Tet_2xFault(void) {
-    TestRefineUniform_Data* data = new TestRefineUniform_Data();REQUIRE(data);
+    TestRefineUniform_Data* data = new TestRefineUniform_Data();
+    REQUIRE(data);
 
     data->filename = "data/twotet4.mesh";
     data->refineLevel = 1;
@@ -338,13 +365,15 @@ pylith::topology::TestRefineUniform_Cases::Tet_2xFault(void) {
     data->numCorners = 4;
     data->numCornersCohesive = 6;
 
-    data->matIdSum = 8*1 + 8*2 + 4*100;
+    data->matIdSum = 8 * 1 + 8 * 2 + 4 * 100;
 
     data->numVertexGroups = 4;
 
     data->numVertexGroups = 3;
     static const size_t _vertexGroupSizes[3] = {
-        3+1, 3+1, 12,
+        3 + 1,
+        3 + 1,
+        12,
     };
     data->vertexGroupSizes = const_cast<size_t*>(_vertexGroupSizes);
 
@@ -357,7 +386,9 @@ pylith::topology::TestRefineUniform_Cases::Tet_2xFault(void) {
 
     data->numFaceGroups = 3;
     static const size_t _faceGroupSizes[3] = {
-        4, 4, 8,
+        4,
+        4,
+        8,
     };
     data->faceGroupSizes = const_cast<size_t*>(_faceGroupSizes);
     static const char* _faceGroupNames[3] = {
@@ -374,7 +405,8 @@ pylith::topology::TestRefineUniform_Cases::Tet_2xFault(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestRefineUniform_Data*
 pylith::topology::TestRefineUniform_Cases::Hex_2xNoFault(void) {
-    TestRefineUniform_Data* data = new TestRefineUniform_Data();REQUIRE(data);
+    TestRefineUniform_Data* data = new TestRefineUniform_Data();
+    REQUIRE(data);
 
     data->filename = "data/twohex8.mesh";
     data->refineLevel = 1;
@@ -390,11 +422,13 @@ pylith::topology::TestRefineUniform_Cases::Hex_2xNoFault(void) {
     data->numCorners = 8;
     data->numCornersCohesive = 8;
 
-    data->matIdSum = 8*1 + 8*2;
+    data->matIdSum = 8 * 1 + 8 * 2;
 
     data->numVertexGroups = 3;
     static const size_t _vertexGroupSizes[3] = {
-        9, 9, 9,
+        9,
+        9,
+        9,
     };
     data->vertexGroupSizes = const_cast<size_t*>(_vertexGroupSizes);
     static const char* _vertexGroupNames[3] = {
@@ -406,7 +440,9 @@ pylith::topology::TestRefineUniform_Cases::Hex_2xNoFault(void) {
 
     data->numFaceGroups = 3;
     static const size_t _faceGroupSizes[3] = {
-        4, 4, 4,
+        4,
+        4,
+        4,
     };
     data->faceGroupSizes = const_cast<size_t*>(_faceGroupSizes);
     static const char* _faceGroupNames[3] = {
@@ -423,7 +459,8 @@ pylith::topology::TestRefineUniform_Cases::Hex_2xNoFault(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestRefineUniform_Data*
 pylith::topology::TestRefineUniform_Cases::Hex_2xFault(void) {
-    TestRefineUniform_Data* data = new TestRefineUniform_Data();REQUIRE(data);
+    TestRefineUniform_Data* data = new TestRefineUniform_Data();
+    REQUIRE(data);
 
     data->filename = "data/twohex8.mesh";
     data->refineLevel = 1;
@@ -439,11 +476,13 @@ pylith::topology::TestRefineUniform_Cases::Hex_2xFault(void) {
     data->numCorners = 8;
     data->numCornersCohesive = 8;
 
-    data->matIdSum = 8*1 + 8*2 + 4*100;
+    data->matIdSum = 8 * 1 + 8 * 2 + 4 * 100;
 
     data->numVertexGroups = 3;
     static const size_t _vertexGroupSizes[3] = {
-        18, 9, 12,
+        18,
+        9,
+        12,
     };
     data->vertexGroupSizes = const_cast<size_t*>(_vertexGroupSizes);
     static const char* _vertexGroupNames[3] = {
@@ -455,7 +494,9 @@ pylith::topology::TestRefineUniform_Cases::Hex_2xFault(void) {
 
     data->numFaceGroups = 3;
     static const size_t _faceGroupSizes[3] = {
-        8, 4, 4,
+        8,
+        4,
+        4,
     };
     data->faceGroupSizes = const_cast<size_t*>(_faceGroupSizes);
     static const char* _faceGroupNames[3] = {

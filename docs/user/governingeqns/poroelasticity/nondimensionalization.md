@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Nondimensionalization
 
 Starting with the equations governing poroelasticity,
@@ -142,3 +151,5 @@ It also separates the stress scale used to nondimensionalize stress, tractions, 
 |              $\mu_f^* = \frac{\mu_f}{\mu_o t_o}$              | Viscosity scale    |
 |       $\boldsymbol{k}_o = \frac{\boldsymbol{k}}{x_o^2}$       | Permeability scale |
 ```
+
+% End of file

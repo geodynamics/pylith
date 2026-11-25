@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Horizontal Cross-Section of Strike-Slip Fault (2D)
 
 The files are in the directory `examples/strikeslip-2d`.
@@ -37,7 +46,7 @@ We refer to the domain boundaries using the names shown in the diagram.
 :::
 
 :::{important}
-We decribe how to generate the finite-element mesh using both Gmsh and Cubit.
+We describe how to generate the finite-element mesh using both Gmsh and Cubit.
 The files for both methods are included.
 For Step 1 we provide PyLith parameter files for both meshes; for Steps 2 and 3 we only provide the Parameter files that use the Gmsh file.
 :::
@@ -57,3 +66,5 @@ step06-inversion-leastsquares.md
 step07-inversion-catmip.md
 exercises.md
 :::
+
+% End of file

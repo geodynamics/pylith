@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/faults/faultsfwd.hh" // forward declarations
@@ -16,8 +17,7 @@ class pylith::faults::AuxiliaryFieldFactory : public pylith::feassemble::Auxilia
     friend class TestAuxiliaryFieldFactory; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     AuxiliaryFieldFactory(void);
 
@@ -34,11 +34,11 @@ public:
     void addSlipAcceleration(void);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
-    AuxiliaryFieldFactory(const AuxiliaryFieldFactory &); ///< Not implemented.
+  private:
+    AuxiliaryFieldFactory(const AuxiliaryFieldFactory&); ///< Not implemented.
     const AuxiliaryFieldFactory& operator=(const AuxiliaryFieldFactory&); ///< Not implemented
 
 }; // class AuxiliaryFieldFactory
+
 
 // End of file

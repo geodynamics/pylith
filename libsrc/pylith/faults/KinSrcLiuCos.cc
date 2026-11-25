@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -14,8 +14,8 @@
 
 #include "pylith/faults/KinSrcAuxiliaryFactory.hh" // USES KinSrcAuxiliaryFactory
 
-#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
@@ -33,13 +33,14 @@ namespace pylith {
                 tau(riseTime),
                 tau1(0.13 * tau),
                 tau2(tau - tau1),
-                Cn(M_PI /  (1.4 * M_PI * tau1 + 1.2 * tau1 + 0.3 * M_PI * tau2)) {}
+                Cn(M_PI / (1.4 * M_PI * tau1 + 1.2 * tau1 + 0.3 * M_PI * tau2)) {
+            }
 
 
         }; // LiuCosConstants
 
-    } // faults
-} // pylith
+    } // namespace faults
+} // namespace pylith
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -50,7 +51,8 @@ pylith::faults::KinSrcLiuCos::KinSrcLiuCos(void) {
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::faults::KinSrcLiuCos::~KinSrcLiuCos(void) {}
+pylith::faults::KinSrcLiuCos::~KinSrcLiuCos(void) {
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -102,14 +104,16 @@ pylith::faults::KinSrcLiuCos::slipFn(const PylithInt dim,
 
         PylithScalar slipAmplitude = 0.0;
         if (tR <= tau1) {
-            slipAmplitude = 0.7*tR - 0.7*tau1/M_PI*sin(M_PI*tR/tau1) - 0.6*tau1/(0.5*M_PI)*(cos(0.5*M_PI*tR/tau1) - 1.0);
+            slipAmplitude = 0.7 * tR - 0.7 * tau1 / M_PI * sin(M_PI * tR / tau1) -
+                            0.6 * tau1 / (0.5 * M_PI) * (cos(0.5 * M_PI * tR / tau1) - 1.0);
             slipAmplitude *= Cn;
-        } else if (tR <= 2.0*tau1) {
-            slipAmplitude = 1.0*tR - 0.7*tau1/M_PI*sin(M_PI*tR/tau1) + 0.3*tau2/M_PI*sin(M_PI*(tR-tau1)/tau2) + 1.2*tau1/M_PI
-                            - 0.3*tau1;
+        } else if (tR <= 2.0 * tau1) {
+            slipAmplitude = 1.0 * tR - 0.7 * tau1 / M_PI * sin(M_PI * tR / tau1) +
+                            0.3 * tau2 / M_PI * sin(M_PI * (tR - tau1) / tau2) + 1.2 * tau1 / M_PI - 0.3 * tau1;
             slipAmplitude *= Cn;
         } else if (tR <= tau) {
-            slipAmplitude = 0.3*tR + 0.3*tau2/M_PI*sin(M_PI*(tR-tau1)/tau2) + 1.1*tau1 + 1.2*tau1/M_PI;
+            slipAmplitude =
+                0.3 * tR + 0.3 * tau2 / M_PI * sin(M_PI * (tR - tau1) / tau2) + 1.1 * tau1 + 1.2 * tau1 / M_PI;
             slipAmplitude *= Cn;
         } else {
             slipAmplitude = 1.0;
@@ -174,13 +178,13 @@ pylith::faults::KinSrcLiuCos::slipRateFn(const PylithInt dim,
 
         PylithScalar slipRateAmplitude = 0.0;
         if (tR <= tau1) {
-            slipRateAmplitude = 0.7 - 0.7*cos(M_PI*tR/tau1) + 0.6*sin(0.5*M_PI*tR/tau1);
+            slipRateAmplitude = 0.7 - 0.7 * cos(M_PI * tR / tau1) + 0.6 * sin(0.5 * M_PI * tR / tau1);
             slipRateAmplitude *= Cn;
-        } else if (tR <= 2.0*tau1) {
-            slipRateAmplitude = 1.0 - 0.7*cos(M_PI*tR/tau1) + 0.3*cos(M_PI*(tR-tau1)/tau2);
+        } else if (tR <= 2.0 * tau1) {
+            slipRateAmplitude = 1.0 - 0.7 * cos(M_PI * tR / tau1) + 0.3 * cos(M_PI * (tR - tau1) / tau2);
             slipRateAmplitude *= Cn;
         } else if (tR <= tau) {
-            slipRateAmplitude = 0.3 + 0.3*cos(M_PI*(tR-tau1)/tau2);
+            slipRateAmplitude = 0.3 + 0.3 * cos(M_PI * (tR - tau1) / tau2);
             slipRateAmplitude *= Cn;
         } else {
             slipRateAmplitude = 0.0;
@@ -245,13 +249,14 @@ pylith::faults::KinSrcLiuCos::slipAccFn(const PylithInt dim,
 
         PylithScalar slipAccAmplitude = 0.0;
         if (tR <= tau1) {
-            slipAccAmplitude = M_PI/tau1 * (0.7*sin(M_PI*tR/tau1) + 0.3*cos(0.5*M_PI*tR/tau1));
+            slipAccAmplitude = M_PI / tau1 * (0.7 * sin(M_PI * tR / tau1) + 0.3 * cos(0.5 * M_PI * tR / tau1));
             slipAccAmplitude *= Cn;
-        } else if (tR <= 2.0*tau1) {
-            slipAccAmplitude = M_PI/tau1 * 0.7*sin(M_PI*tR/tau1) - M_PI/tau2*0.3*sin(M_PI*(tR-tau1)/tau2);
+        } else if (tR <= 2.0 * tau1) {
+            slipAccAmplitude =
+                M_PI / tau1 * 0.7 * sin(M_PI * tR / tau1) - M_PI / tau2 * 0.3 * sin(M_PI * (tR - tau1) / tau2);
             slipAccAmplitude *= Cn;
         } else if (tR <= tau) {
-            slipAccAmplitude = -M_PI/tau2 * 0.3*sin(M_PI*(tR-tau1)/tau2);
+            slipAccAmplitude = -M_PI / tau2 * 0.3 * sin(M_PI * (tR - tau1) / tau2);
             slipAccAmplitude *= Cn;
         } else {
             slipAccAmplitude = 0.0;

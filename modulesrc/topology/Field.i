@@ -1,35 +1,27 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
 
-/**
- * @file modulesrc/topology/Field.hh
- *
- * @brief Python interface to C++ Field object.
- */
 
 namespace pylith {
     namespace topology {
-        class Field:public FieldBase {
+        class Field : public FieldBase {
             // PUBLIC ENUMS ///////////////////////////////////////////////////////
-public:
-
+          public:
             enum ViewOptions {
-                VIEW_METADATA=0, ///< View metadata only.
-                VIEW_LAYOUT=1, ///< View metadata and section.
-                VIEW_VALUES=2, ///< View metadata and vector.
-                VIEW_ALL=3, ///< View metadata, section, and vector.
+                VIEW_METADATA = 0, ///< View metadata only.
+                VIEW_LAYOUT = 1, ///< View metadata and section.
+                VIEW_VALUES = 2, ///< View metadata and vector.
+                VIEW_ALL = 3, ///< View metadata, section, and vector.
             };
 
             // PUBLIC MEMBERS /////////////////////////////////////////////////
-public:
-
+          public:
             /** Default constructor.
              *
              * @param mesh Finite-element mesh.
@@ -140,7 +132,7 @@ public:
              *
              * Should be followed by calls to subfieldsSetup() and allocate().
              *
-             * @param[in] name Programatic name of subfield.
+             * @param[in] name Programmatic name of subfield.
              * @param[in] alias User-specified alias for subfield.
              * @param[in] fieldType Type of vector field.
              * @param[in] components Array of names of field components.
@@ -154,10 +146,10 @@ public:
              * @param[in] feSpace Finite-element space (POLYNOMIAL_SPACE or POINT_SPACE).
              * @param[in] isBasisContinuous True if basis is continuous.
              */
-            %apply(const char* const* string_list, const int list_len) {
-                (const char* components[], const int numComponents)
-            };
-            void subfieldAdd(const char *name,
+            %apply(const char* const* string_list,
+                    const int list_len){(const char* components[],
+                                         const int numComponents)};
+            void subfieldAdd(const char* name,
                              const char* alias,
                              const VectorFieldEnum fieldType,
                              const char* components[],
@@ -171,7 +163,8 @@ public:
                              const SpaceEnum feSpace,
                              const bool isBasisContinuous);
 
-            %clear(const char* components[], const int numComponents);
+            %clear(const char* components[],
+                    const int numComponents);
 
             /** Setup sections for subfields.
              *
@@ -191,7 +184,7 @@ public:
              * @param label Label for output.
              */
             void view(const char* label,
-                      const ViewOptions options=VIEW_ALL);
+                      const ViewOptions options = VIEW_ALL);
 
             /** Scatter section information across processors to update the
              * global view of the field.
@@ -200,7 +193,7 @@ public:
              * @param context Label for context associated with vector.
              */
             void scatterLocalToVector(const PetscVec vector,
-                                      InsertMode mode=INSERT_VALUES) const;
+                                      InsertMode mode = INSERT_VALUES) const;
 
             /** Scatter global information across processors to update the local
              * view of the field.
@@ -209,14 +202,14 @@ public:
              * @param context Label for context associated with vector.
              */
             void scatterVectorToLocal(const PetscVec vector,
-                                      InsertMode mode=INSERT_VALUES) const;
+                                      InsertMode mode = INSERT_VALUES) const;
 
             /** Scatter section information across processors to update the
              * output view of the field.
              *
              * @param[in] mode Mode for scatter (INSERT_VALUES, ADD_VALUES).
              */
-            void scatterLocalToOutput(InsertMode mode=INSERT_VALUES) const;
+            void scatterLocalToOutput(InsertMode mode = INSERT_VALUES) const;
 
             /// Create global vector.
             void createGlobalVector(void);
@@ -226,7 +219,8 @@ public:
 
         }; // Field
 
-    } // topology
-} // pylith
+    } // namespace topology
+} // namespace pylith
+
 
 // End of file

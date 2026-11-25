@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # 3-D Linear Elasticity with Prescribed Slip
 
 We evaluate solver performance for 3-D plane strain linear elasticity with prescribed slip using Step 2 (variable slip)  from `examples/crustal-strikeslip-3d`.
@@ -65,6 +74,8 @@ Using independent displacement amd length scales does not improve solver perform
 
 Solver performance for 3-D elasticity with prescribed slip.
 The left panel shows the number of iterations used by the linear solver as a function of the problem size (number of unknowns).
-The right panels shows the total (squares) and solve (triangles) runtime as a function of hte problem size (number of unknowns).
+The right panels shows the total (squares) and solve (triangles) runtime as a function of the problem size (number of unknowns).
 The dashed lines indicate the solves required more than 10,000 iterations at the next level of refinement.
 :::
+
+% End of file

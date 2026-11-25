@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 4: Earthquake Cycle with Prescribed Slip
 
 This example combines the interseismic deformation from Step 3 and expands on the earthquake ruptures from Step 2.
@@ -97,7 +106,7 @@ viewer_hdf5_collective = true
 The beginning of the output is near the same as in Steps 2 and 3.
 The simulation advances 31 time steps.
 As in Step 3 each linear solve requires about 20 iterations to converge.
-Some time steps require 2 SNES iterations (likley due to poor mesh quality along the trench) although the linear solve in the second SNES iteration requires no more than 1 iterations in most cases.
+Some time steps require 2 SNES iterations (likely due to poor mesh quality along the trench) although the linear solve in the second SNES iteration requires no more than 1 iterations in most cases.
 
 ```{code-block} pyrejournal
 ---
@@ -124,3 +133,5 @@ pylith_viz --filename=output/step04_eqcycle-domain.h5 warp_grid --component=x --
 Solution for Step 4 at t=100 yr.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 5000.
 :::
+
+% End of file

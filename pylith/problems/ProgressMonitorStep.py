@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from .ProgressMonitor import ProgressMonitor
 from .problems import ProgressMonitorStep as ModuleProgressMonitorStep
@@ -21,34 +21,30 @@ class ProgressMonitorStep(ProgressMonitor, ModuleProgressMonitorStep):
 
     Implements `ProgressMonitor`.
     """
-    DOC_CONFIG = {
-        "cfg": """
+
+    DOC_CONFIG = {"cfg": """
             [pylithapp.timedependent.progress_monitor]
             filename = output/greensfns01-progress.txt
-        """
-    }
+        """}
 
     def __init__(self, name="progressmonitorstep"):
-        """Constructor.
-        """
+        """Constructor."""
         ProgressMonitor.__init__(self, name)
 
     def preinitialize(self, defaults):
-        """Do minimal initialization.
-        """
+        """Do minimal initialization."""
         ProgressMonitor.preinitialize(self, defaults)
 
     def _createModuleObj(self):
-        """Create handle to corresponding C++ object.
-        """
+        """Create handle to corresponding C++ object."""
         ModuleProgressMonitorStep.__init__(self)
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
+
 def progress_monitor():
-    """Factory associated with ProgressMonitorStep.
-    """
+    """Factory associated with ProgressMonitorStep."""
     return ProgressMonitorStep()
 
 

@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/topology/topologyfwd.hh" // HOLDSA Mesh
@@ -18,14 +19,13 @@ namespace pylith {
     namespace faults {
         class TestTransformTopology;
         class TestTransformTopology_Data;
-    } // faults
-} // pylith
+    } // namespace faults
+} // namespace pylith
 
 /// C++ unit testing of FaultCohesive::transformTopology()
 class pylith::faults::TestTransformTopology : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestTransformTopology(TestTransformTopology_Data* data);
 
@@ -36,14 +36,12 @@ public:
     void run(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     TestTransformTopology_Data* _data; ///< Data for testing.
     pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
 
     // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     /// Setup mesh.
     void _initialize();
 
@@ -51,8 +49,7 @@ private:
 
 class pylith::faults::TestTransformTopology_Data {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestTransformTopology_Data(void);
 
@@ -60,17 +57,16 @@ public:
     ~TestTransformTopology_Data(void);
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     typedef int (*matid_fn)(const int, // cell
                             const int, // numNoncohesiveCells
                             const double* // centroid
-                            );
+    );
 
-    static
-    int getMatIdDefault(const int cell,
-                        const int numNoncohesiveCells,
-                        const double* xyz) {
+    static int
+    getMatIdDefault(const int cell,
+                    const int numNoncohesiveCells,
+                    const double* xyz) {
         return (cell < numNoncohesiveCells) ? 0 : 100;
     }
 
@@ -98,5 +94,6 @@ public:
     bool failureExpected; ///< Flag indicating adjust topology should fail.
 
 }; // TestTransformTopology_Data
+
 
 // End of file

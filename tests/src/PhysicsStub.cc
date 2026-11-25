@@ -1,25 +1,25 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "PhysicsStub.hh" // Implementation of class methods
 
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "tests/src/StubMethodTracker.hh" // USES StubMethodTracker
-#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
-pylith::problems::PhysicsStub::PhysicsStub(void) :
-    _auxiliaryFactory(new pylith::feassemble::AuxiliaryFactory) {}
+pylith::problems::PhysicsStub::PhysicsStub(void) : _auxiliaryFactory(new pylith::feassemble::AuxiliaryFactory) {
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -35,7 +35,8 @@ void
 pylith::problems::PhysicsStub::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _auxiliaryFactory;_auxiliaryFactory = NULL;
+    delete _auxiliaryFactory;
+    _auxiliaryFactory = NULL;
     Physics::deallocate();
 
     PYLITH_METHOD_END;

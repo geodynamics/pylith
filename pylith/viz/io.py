@@ -1,12 +1,13 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 """Module for reading PyLith output for PyVista."""
 
 import h5py
@@ -31,7 +32,7 @@ class PyLithReader:
     @staticmethod
     def read(filename, field_names=None):
         """Read data from PyLith HDF5 output files.
-        
+
         All time steps and fields are read by default.
         """
         h5 = h5py.File(filename)
@@ -52,8 +53,8 @@ class PyLithReader:
 
         vertices = h5["geometry"]["vertices"][:]
         if vertices.shape[1] == 2:
-            zeros = numpy.zeros_like(vertices[:,0])
-            vertices = numpy.stack((vertices[:,0], vertices[:,1], zeros)).T
+            zeros = numpy.zeros_like(vertices[:, 0])
+            vertices = numpy.stack((vertices[:, 0], vertices[:, 1], zeros)).T
 
         return pyvista.UnstructuredGrid({cell_type: cells[:].astype(int)}, vertices)
 
@@ -68,21 +69,26 @@ class PyLithReader:
             vector_field_type = h5[group][field_name].attrs["vector_field_type"].decode("utf-8")
             if vector_field_type == "vector" and h5[group][field_name].shape[-1] == 2:
                 values = h5[group][field_name][:]
-                zeros = numpy.zeros_like(values[:,:,0])
-                values = numpy.stack((values[:,:,0].T, values[:,:,1].T, zeros.T)).T
+                zeros = numpy.zeros_like(values[:, :, 0])
+                values = numpy.stack((values[:, :, 0].T, values[:, :, 1].T, zeros.T)).T
             elif vector_field_type == "tensor" and h5[group][field_name].shape[-1] == 4:
-                zeros = numpy.zeros_like(values[:,:,0])
-                values = numpy.stack((
-                    values[:,:,0].T,
-                    values[:,:,1].T,
-                    values[:,:,2].T,
-                    values[:,:,3].T,
-                    zeros.T,
-                    zeros.T,
-                    zeros.T,
-                    )).T
+                zeros = numpy.zeros_like(values[:, :, 0])
+                values = numpy.stack(
+                    (
+                        values[:, :, 0].T,
+                        values[:, :, 1].T,
+                        values[:, :, 2].T,
+                        values[:, :, 3].T,
+                        zeros.T,
+                        zeros.T,
+                        zeros.T,
+                    )
+                ).T
             else:
                 values = h5[group][field_name][:]
 
             data_fields[field_name] = core.Field(values=values, field_type=vector_field_type, basis_order=basis_order)
         return data_fields
+
+
+# End of file

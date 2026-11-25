@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/utils/types.hh" // HASA PylithScalar
@@ -14,13 +15,12 @@
 namespace pylith {
     namespace faults {
         class CohesiveData;
-    } // pylith
-} // faults
+    } // namespace faults
+} // namespace pylith
 
 class pylith::faults::CohesiveData {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     CohesiveData(void);
 
@@ -28,8 +28,7 @@ public:
     ~CohesiveData(void);
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     int numVertices; ///< Number of vertices
     int spaceDim; ///< Number of dimensions in vertex coordinates
     int numCells; ///< Number of cells
@@ -47,5 +46,6 @@ public:
     char* fault; ///< Label for fault.
     char* edge; ///< Label for fault edge.
 };
+
 
 // End of file

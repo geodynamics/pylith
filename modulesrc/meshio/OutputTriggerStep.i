@@ -1,25 +1,18 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
 
-/**
- * @file modulesrc/meshio/OutputTriggerStep.i
- *
- * @brief Python interface to C++ OutputTriggerStep object.
- */
 
 namespace pylith {
     namespace meshio {
-        class pylith::meshio::OutputTriggerStep: public pylith::meshio::OutputTrigger {
+        class pylith::meshio::OutputTriggerStep : public pylith::meshio::OutputTrigger {
             // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+          public:
             /// Constructor
             OutputTriggerStep(void);
 
@@ -49,7 +42,8 @@ public:
 
         }; // OutputTriggerStep
 
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
+
 
 // End of file

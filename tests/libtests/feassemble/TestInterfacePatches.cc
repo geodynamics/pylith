@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -15,16 +15,15 @@
 #include "pylith/feassemble/InterfacePatches.hh" // Test subject
 #include "tests/src/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 
+#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
-#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "catch2/catch_test_macros.hpp"
 
 // ------------------------------------------------------------------------------------------------
 // Constructor.
-pylith::feassemble::TestInterfacePatches::TestInterfacePatches(TestInterfacePatches_Data* data) :
-    _data(data) {
+pylith::feassemble::TestInterfacePatches::TestInterfacePatches(TestInterfacePatches_Data* data) : _data(data) {
     PYLITH_METHOD_BEGIN;
 
     REQUIRE(_data);
@@ -40,9 +39,12 @@ pylith::feassemble::TestInterfacePatches::TestInterfacePatches(TestInterfacePatc
 pylith::feassemble::TestInterfacePatches::~TestInterfacePatches(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _data;_data = NULL;
-    delete _mesh;_mesh = NULL;
-    delete _fault;_fault = NULL;
+    delete _data;
+    _data = NULL;
+    delete _mesh;
+    _mesh = NULL;
+    delete _fault;
+    _fault = NULL;
 
     PYLITH_METHOD_END;
 } // tearDown
@@ -99,7 +101,7 @@ pylith::feassemble::TestInterfacePatches::testCreateMaterialPairs(void) {
         bool found = false;
         for (size_t i = 0; i < _data->numPatches; ++i) {
             if ((matIdNegative == _data->patchKeys[i].negative_value) &&
-                (matIdPositive == _data->patchKeys[i].positive_value) ) {
+                (matIdPositive == _data->patchKeys[i].positive_value)) {
                 patchIndex = i;
                 found = true;
                 break;
@@ -123,7 +125,7 @@ pylith::feassemble::TestInterfacePatches::testCreateMaterialPairs(void) {
         PylithCallPetscRequire(DMGetLabel(_mesh->getDM(), labelName.c_str(), &label));
         PylithCallPetscRequire(DMLabelGetStratumIS(label, labelValue, &pointsIS));
         PylithCallPetscRequire(ISGetSize(pointsIS, &numPoints));
-        INFO("Checking integration patch for materials ("<<matIdNegative<<", "<<matIdPositive<<").");
+        INFO("Checking integration patch for materials (" << matIdNegative << ", " << matIdPositive << ").");
         REQUIRE(_data->patchNumCells[patchIndex] == numPoints);
 
         PylithCallPetscRequire(ISGetIndices(pointsIS, &points));
@@ -134,7 +136,8 @@ pylith::feassemble::TestInterfacePatches::testCreateMaterialPairs(void) {
         PylithCallPetsc(ISRestoreIndices(pointsIS, &points));
         PylithCallPetsc(ISDestroy(&pointsIS));
     } // for
-    delete patches;patches = NULL;
+    delete patches;
+    patches = NULL;
 
     PYLITH_METHOD_END;
 } // testCreateMaterialPairs
@@ -146,7 +149,9 @@ pylith::feassemble::TestInterfacePatches::_initialize() {
     PYLITH_METHOD_BEGIN;
     REQUIRE(_data);
 
-    delete _mesh;_mesh = new pylith::topology::Mesh;REQUIRE(_mesh);
+    delete _mesh;
+    _mesh = new pylith::topology::Mesh;
+    REQUIRE(_mesh);
 
     pylith::meshio::MeshIOAscii iohandler;
     iohandler.setFilename(_data->filename);
@@ -155,13 +160,15 @@ pylith::feassemble::TestInterfacePatches::_initialize() {
     REQUIRE(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
 
     REQUIRE(_data->faultLabel);
-    _fault = new pylith::faults::FaultCohesiveStub();REQUIRE(_fault);
+    _fault = new pylith::faults::FaultCohesiveStub();
+    REQUIRE(_fault);
     _fault->setCohesiveLabelName(pylith::topology::Mesh::cells_label_name);
     _fault->setCohesiveLabelValue(101);
     _fault->setSurfaceLabelName(_data->faultLabel);
     _fault->setSurfaceLabelValue(1);
     pylith::topology::Mesh* meshNew = _fault->transformTopology(_mesh);
-    delete _mesh;_mesh = meshNew;
+    delete _mesh;
+    _mesh = meshNew;
 
     PYLITH_METHOD_END;
 } // _initialize
@@ -175,12 +182,14 @@ pylith::feassemble::TestInterfacePatches_Data::TestInterfacePatches_Data(void) :
     numPatches(0),
     patchKeys(NULL),
     patchNumCells(NULL),
-    patchCells(NULL) {}
+    patchCells(NULL) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
 // Destructor
-pylith::feassemble::TestInterfacePatches_Data::~TestInterfacePatches_Data(void) {}
+pylith::feassemble::TestInterfacePatches_Data::~TestInterfacePatches_Data(void) {
+}
 
 
 // End of file

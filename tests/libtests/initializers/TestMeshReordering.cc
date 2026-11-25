@@ -1,23 +1,23 @@
-// =================================================================================================
-// This code is part of SpatialData, developed through the Computatreadernal Infrastructure
-// for Geodynamics (https://github.com/geodynamics/spatialdata).
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
 //
-// Copyright (c) 2010-2026, University of California, Davis and the SpatialData Development Team.
-// All rights reserved.
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// See https://mit-license.org/ and LICENSE.md and for license informatreadern.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/initializers/MeshReordering.hh" // USES MeshReordering
 
+#include "pylith/exceptions/error.hh" // USES PylithCallPetscRequire()
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/problems/Problem.hh" // USES Problem
+#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
-#include "pylith/topology/Field.hh" // USES Field
-#include "pylith/problems/Problem.hh" // USES Problem
-#include "pylith/exceptions/error.hh" // USES PylithCallPetscRequire()
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
@@ -29,28 +29,27 @@
 namespace pylith {
     namespace initializers {
         class TestMeshReordering;
-    } // initializers
-} // pylith
+    } // namespace initializers
+} // namespace pylith
 
 class pylith::initializers::TestMeshReordering {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test constructors.
-    static
-    void testConstructors(void);
+    static void testConstructors(void);
 
     /// Test run().
-    static
-    void testRun(void);
+    static void testRun(void);
 
 }; // class TestMeshReordering
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestMeshReordering::testConstructors", "[TestMeshReordering]") {
+TEST_CASE("TestMeshReordering::testConstructors",
+          "[TestMeshReordering]") {
     pylith::initializers::TestMeshReordering::testConstructors();
 }
-TEST_CASE("TestMeshReordering::testRun", "[TestMeshReordering]") {
+TEST_CASE("TestMeshReordering::testRun",
+          "[TestMeshReordering]") {
     pylith::initializers::TestMeshReordering::testRun();
 }
 
@@ -124,7 +123,8 @@ pylith::initializers::TestMeshReordering::testRun(void) {
     CHECK(bandwidth > 0);
     // CHECK(bandwidth <= bandwidthOrig);
 
-    delete meshNew;meshNew = nullptr;
+    delete meshNew;
+    meshNew = nullptr;
 } // testRun
 
 

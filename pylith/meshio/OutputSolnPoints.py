@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from .OutputSoln import OutputSoln
 from .meshio import OutputSolnPoints as ModuleOutputSolnPoints
@@ -23,8 +23,7 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
     Implements `OutputSoln`.
     """
 
-    DOC_CONFIG = {
-        "cfg": """
+    DOC_CONFIG = {"cfg": """
             [observer]
             label = stations
             data_fields = [displacement]
@@ -42,21 +41,16 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
             writer.filename = domain.h5
 
             output_basis_order = 1
-        """
-    }
+        """}
 
     import pythia.pyre.inventory
 
     label = pythia.pyre.inventory.str("label", default="points")
-    label.meta["tip"] = (
-        "Label identifier for points (used in constructing default filenames)."
-    )
+    label.meta["tip"] = "Label identifier for points (used in constructing default filenames)."
 
     from .PointsList import PointsList
 
-    reader = pythia.pyre.inventory.facility(
-        "reader", factory=PointsList, family="points_list"
-    )
+    reader = pythia.pyre.inventory.facility("reader", factory=PointsList, family="points_list")
     reader.meta["tip"] = "Reader for points list."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -83,9 +77,7 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
         ModuleOutputSolnPoints.setPoints(self, stationCoords, stationNames)
 
         identifier = self.aliases[-1]
-        self.writer.setFilename(
-            problem.defaults.outputDir, problem.defaults.simName, identifier
-        )
+        self.writer.setFilename(problem.defaults.outputDir, problem.defaults.simName, identifier)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

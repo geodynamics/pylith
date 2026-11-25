@@ -1,22 +1,22 @@
-// =================================================================================================
-// This code is part of SpatialData, developed through the Computatreadernal Infrastructure
-// for Geodynamics (https://github.com/geodynamics/spatialdata).
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
 //
-// Copyright (c) 2010-2026, University of California, Davis and the SpatialData Development Team.
-// All rights reserved.
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// See https://mit-license.org/ and LICENSE.md and for license informatreadern.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/initializers/MeshReader.hh" // USES MeshReader
 
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/problems/Problem.hh" // USES Problem
 #include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
@@ -28,35 +28,34 @@
 namespace pylith {
     namespace initializers {
         class TestMeshReader;
-    } // initializers
-} // pylith
+    } // namespace initializers
+} // namespace pylith
 
 class pylith::initializers::TestMeshReader {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test constructors.
-    static
-    void testConstructors(void);
+    static void testConstructors(void);
 
     /// Test accessors.
-    static
-    void testAccessors(void);
+    static void testAccessors(void);
 
     /// Test run().
-    static
-    void testRun(void);
+    static void testRun(void);
 
 }; // class TestMeshReader
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestMeshReader::testConstructors", "[TestMeshReader]") {
+TEST_CASE("TestMeshReader::testConstructors",
+          "[TestMeshReader]") {
     pylith::initializers::TestMeshReader::testConstructors();
 }
-TEST_CASE("TestMeshReader::testAccessors", "[TestMeshReader]") {
+TEST_CASE("TestMeshReader::testAccessors",
+          "[TestMeshReader]") {
     pylith::initializers::TestMeshReader::testAccessors();
 }
-TEST_CASE("TestMeshReader::testRun", "[TestMeshReader]") {
+TEST_CASE("TestMeshReader::testRun",
+          "[TestMeshReader]") {
     pylith::initializers::TestMeshReader::testRun();
 }
 
@@ -111,7 +110,8 @@ pylith::initializers::TestMeshReader::testRun(void) {
     CHECK(numCells == pylith::topology::MeshOps::getNumCells(*mesh));
     CHECK(numVertices == pylith::topology::MeshOps::getNumVertices(*mesh));
 
-    delete mesh;mesh = nullptr;
+    delete mesh;
+    mesh = nullptr;
 } // testRun
 
 

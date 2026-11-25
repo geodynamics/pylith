@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include <cppunit/extensions/HelperMacros.h>
@@ -19,13 +20,14 @@ namespace pylith {
         class TestOutputSolnPoints;
 
         class OutputSolnPointsData;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 /// C++ unit testing for OutputSolnPoints
-class pylith::meshio::TestOutputSolnPoints : public CppUnit::TestFixture { // class TestOutputSolnPoints
-                                                                           // CPPUNIT TEST SUITE
-                                                                           // /////////////////////////////////////////////////
+class pylith::meshio::TestOutputSolnPoints
+    : public CppUnit::TestFixture { // class TestOutputSolnPoints
+                                    // CPPUNIT TEST SUITE
+                                    // /////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestOutputSolnPoints);
 
     CPPUNIT_TEST(testConstructor);
@@ -45,8 +47,7 @@ class pylith::meshio::TestOutputSolnPoints : public CppUnit::TestFixture { // cl
     CPPUNIT_TEST_SUITE_END();
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test constructor
     void testConstructor(void);
 
@@ -75,8 +76,7 @@ public:
     void testInterpolateHex8(void);
 
     // PRIVATE METHODS ////////////////////////////////////////////////////
-private:
-
+  private:
     /** Test setupInterpolator.
      *
      * @param data Test data.
@@ -98,5 +98,6 @@ private:
                     const OutputSolnPointsData& data);
 
 }; // class TestOutputSolnPoints
+
 
 // End of file

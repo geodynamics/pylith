@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -17,8 +17,8 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
 
-#include "pylith/scales/Scales.hh" // USES Scales
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
@@ -34,7 +34,8 @@ pylith::materials::AuxiliaryFactoryPoroelastic::AuxiliaryFactoryPoroelastic(void
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::materials::AuxiliaryFactoryPoroelastic::~AuxiliaryFactoryPoroelastic(void) {}
+pylith::materials::AuxiliaryFactoryPoroelastic::~AuxiliaryFactoryPoroelastic(void) {
+}
 
 
 // ----------------------------------------------------------------------------
@@ -71,14 +72,12 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addTensorPermeability(void) {
     PYLITH_DEBUG(pylith::journal::application_flow, "addTensorPermeability(void)");
 
     const char* subfieldName = "tensor_permeability";
-    const char* componentNames[6] = {
-        "permeability_xx",
-        "permeability_yy",
-        "permeability_zz",
-        "permeability_xy",
-        "permeability_yz",
-        "permeability_xz"
-    };
+    const char* componentNames[6] = {"permeability_xx",
+                                     "permeability_yy",
+                                     "permeability_zz",
+                                     "permeability_xy",
+                                     "permeability_yz",
+                                     "permeability_xz"};
     const int tensorSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
     const PylithReal permeabilityScale = pylith::scales::ElasticityScales::getPermeabilityScale(*_scales);
 
@@ -189,14 +188,12 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addReferenceStress(void) {
     PYLITH_DEBUG(pylith::journal::application_flow, "addReferenceStress(void)");
 
     const char* subfieldName = "reference_stress";
-    const char* componentNames[6] = {
-        "reference_stress_xx",
-        "reference_stress_yy",
-        "reference_stress_zz",
-        "reference_stress_xy",
-        "reference_stress_yz",
-        "reference_stress_xz"
-    };
+    const char* componentNames[6] = {"reference_stress_xx",
+                                     "reference_stress_yy",
+                                     "reference_stress_zz",
+                                     "reference_stress_xy",
+                                     "reference_stress_yz",
+                                     "reference_stress_xz"};
     const int stressSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
     const PylithReal stressScale = pylith::scales::ElasticityScales::getStressScale(*_scales);
 
@@ -227,14 +224,12 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addReferenceStrain(void) {
     PYLITH_DEBUG(pylith::journal::application_flow, "addRefrenceStrain(void)");
 
     const char* subfieldName = "reference_strain";
-    const char* componentNames[6] = {
-        "reference_strain_xx",
-        "reference_strain_yy",
-        "reference_strain_zz",
-        "reference_strain_xy",
-        "reference_strain_yz",
-        "reference_strain_xz"
-    };
+    const char* componentNames[6] = {"reference_strain_xx",
+                                     "reference_strain_yy",
+                                     "reference_strain_zz",
+                                     "reference_strain_xy",
+                                     "reference_strain_yz",
+                                     "reference_strain_xz"};
     const int strainSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
     const PylithReal strainScale = pylith::scales::ElasticityScales::getStrainScale(*_scales);
 

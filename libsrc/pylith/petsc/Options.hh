@@ -1,19 +1,20 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "petscfwd.hh" // forward declarations
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
-#include "pylith/topology/topologyfwd.hh" // USES Field
 #include "pylith/materials/materialsfwd.hh" // USES Material
+#include "pylith/topology/topologyfwd.hh" // USES Field
 
 #include <map> // HASA std::map
 #include <string> // HASA std::string
@@ -23,8 +24,7 @@ class pylith::petsc::Defaults : public pylith::utils::GenericComponent {
     friend class TestDefaults; // unit testing
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     static const int NONE;
     static const int MONITORS;
     static const int SOLVER;
@@ -36,24 +36,21 @@ public:
     static const int TS_IMPULSE; // :KLUDGE: Flag indicating use of TSAdaptImpulse (full-scale testing)
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /** Set default PETSc solver options based on solution field and material.
      *
      * @param[in] material Material in problem.
      * @param[in] hasFault True if problem has at least one fault.
      * @param[in] flags Flags for turning on defaults for PETSc options.
      */
-    static
-    void set(const pylith::materials::Material* material,
-             const bool hasFault,
-             const int flags);
+    static void set(const pylith::materials::Material* material,
+                    const bool hasFault,
+                    const int flags);
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     Defaults(void) = delete;
-    Defaults(const Defaults &) = delete;
+    Defaults(const Defaults&) = delete;
     const Defaults& operator=(const Defaults&) = delete;
 
 }; // class Defaults
@@ -64,8 +61,7 @@ class pylith::petsc::Options : public pylith::utils::GenericComponent {
     friend class _Options; // Internal
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     Options(void);
 
@@ -78,7 +74,7 @@ public:
      * @param[in] value Option value.
      */
     void add(const char* name,
-             const char* value="");
+             const char* value = "");
 
     /** Remove PETSc option.
      *
@@ -99,14 +95,14 @@ public:
      *
      * Options are cleared after being set.
      */
-    void override (void);
+    void override(void);
 
     // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     typedef std::map<std::string, std::string> options_t; ///< Map of option name to value.
     options_t _options; ///< Map with PETSc options.
 
 }; // Options
+
 
 // End of file

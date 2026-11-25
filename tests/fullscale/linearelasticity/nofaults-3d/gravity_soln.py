@@ -1,12 +1,13 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # @file tests/fullscale/linearelasticity/nofaults-3d/gravity_soln.py
 #
 # @brief Analytical solution to gravitational body foces (no initial stress).
@@ -17,7 +18,6 @@
 # boundary -z: Uz(x,y,-9000) = 0
 
 import numpy
-
 
 # Physical properties
 p_density = 2500.0  # kg/m**3
@@ -34,8 +34,8 @@ zmin = -9000.0  # m
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
-    """Analytical solution to gravitational body forces (no initial stress).
-    """
+    """Analytical solution to gravitational body forces (no initial stress)."""
+
     SPACE_DIM = 3
     TENSOR_SIZE = 6
 
@@ -56,44 +56,40 @@ class AnalyticalSoln(object):
         return self.fields[name](pts)
 
     def displacement(self, locs):
-        """Compute displacement field at locations.
-        """
+        """Compute displacement field at locations."""
         strain = self.strain(locs)
 
-        (npts, dim) = locs.shape
+        npts, dim = locs.shape
         disp = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        disp[:,:, 2] = p_density * gacc / (p_lambda + 2 * p_mu) * \
-            (0.5 * (locs[:, 2]**2 - zmin**2) - zmax * (locs[:, 2] - zmin))
+        disp[:, :, 2] = (
+            p_density * gacc / (p_lambda + 2 * p_mu) * (0.5 * (locs[:, 2] ** 2 - zmin**2) - zmax * (locs[:, 2] - zmin))
+        )
         return disp
 
     def zero_vector(self, locs):
-        (npts, dim) = locs.shape
+        npts, dim = locs.shape
         return numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
 
     def density(self, locs):
-        """Compute density field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute density field at locations."""
+        npts, dim = locs.shape
         density = p_density * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return density
 
     def shear_modulus(self, locs):
-        """Compute shear modulus field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute shear modulus field at locations."""
+        npts, dim = locs.shape
         shear_modulus = p_mu * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return shear_modulus
 
     def bulk_modulus(self, locs):
-        """Compute bulk modulus field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute bulk modulus field at locations."""
+        npts, dim = locs.shape
         bulk_modulus = (p_lambda + 2.0 / 3.0 * p_mu) * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return bulk_modulus
 
     def strain(self, locs):
-        """Compute strain field at locations.
-        """
+        """Compute strain field at locations."""
         exx = 0.0
         eyy = 0.0
         ezz = p_density * gacc * (locs[:, 2] - zmax) / (p_lambda + 2 * p_mu)
@@ -101,19 +97,18 @@ class AnalyticalSoln(object):
         eyz = 0.0
         exz = 0.0
 
-        (npts, dim) = locs.shape
+        npts, dim = locs.shape
         strain = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        strain[:,:, 0] = exx
-        strain[:,:, 1] = eyy
-        strain[:,:, 2] = ezz
-        strain[:,:, 3] = exy
-        strain[:,:, 4] = eyz
-        strain[:,:, 5] = exz
+        strain[:, :, 0] = exx
+        strain[:, :, 1] = eyy
+        strain[:, :, 2] = ezz
+        strain[:, :, 3] = exy
+        strain[:, :, 4] = eyz
+        strain[:, :, 5] = exz
         return strain
 
     def stress(self, locs):
-        """Compute stress field at locations.
-        """
+        """Compute stress field at locations."""
         szz = p_density * gacc * (locs[:, 2] - zmax)
         sxx = p_lambda / (p_lambda + 2 * p_mu) * szz
         syy = p_lambda / (p_lambda + 2 * p_mu) * szz
@@ -121,22 +116,21 @@ class AnalyticalSoln(object):
         syz = 0.0
         sxz = 0.0
 
-        (npts, dim) = locs.shape
+        npts, dim = locs.shape
         stress = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        stress[0,:, 0] = sxx
-        stress[0,:, 1] = syy
-        stress[0,:, 2] = szz
-        stress[0,:, 3] = sxy
-        stress[0,:, 4] = syz
-        stress[0,:, 5] = sxz
+        stress[0, :, 0] = sxx
+        stress[0, :, 1] = syy
+        stress[0, :, 2] = szz
+        stress[0, :, 3] = sxy
+        stress[0, :, 4] = syz
+        stress[0, :, 5] = sxz
         return stress
 
     def gacc(self, locs):
-        """Compute gravitational acceleration at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute gravitational acceleration at locations."""
+        npts, dim = locs.shape
         gravacc = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        gravacc[0,:, 2] = -gacc
+        gravacc[0, :, 2] = -gacc
         return gravacc
 
 

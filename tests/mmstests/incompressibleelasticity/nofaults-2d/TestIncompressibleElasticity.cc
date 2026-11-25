@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -16,25 +16,25 @@
 
 #include "pylith/materials/Query.hh" // USES Query
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
-#include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
-#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
-#include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/meshio/MeshIOPetsc.hh" // USES MeshIOPetsc
-#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/utils/journals.hh" // pythia::journal
 
-#include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
+#include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
 #include "catch2/catch_test_macros.hpp"
 
 // ------------------------------------------------------------------------------------------------
-// Constuctor.
+// Constructor.
 pylith::TestIncompressibleElasticity::TestIncompressibleElasticity(TestIncompressibleElasticity_Data* data) :
     _data(data) {
     REQUIRE(_data);
@@ -50,7 +50,8 @@ pylith::TestIncompressibleElasticity::TestIncompressibleElasticity(TestIncompres
 // ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::TestIncompressibleElasticity::~TestIncompressibleElasticity(void) {
-    delete _data;_data = NULL;
+    delete _data;
+    _data = NULL;
 } // destructor
 
 
@@ -65,14 +66,16 @@ pylith::TestIncompressibleElasticity::_initialize(void) {
     if (_data->useAsciiMesh) {
         pylith::meshio::MeshIOAscii iohandler;
         iohandler.setFilename(_data->meshFilename);
-        iohandler.read(_mesh);REQUIRE(_mesh);
+        iohandler.read(_mesh);
+        REQUIRE(_mesh);
     } else {
         if (_data->meshOptions) {
             PylithCallPetsc(PetscOptionsInsertString(NULL, _data->meshOptions));
         } // if
         pylith::meshio::MeshIOPetsc iohandler;
         iohandler.setFilename(_data->meshFilename);
-        iohandler.read(_mesh);REQUIRE(_mesh);
+        iohandler.read(_mesh);
+        REQUIRE(_mesh);
     } // if/else
 
     REQUIRE(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
@@ -88,26 +91,31 @@ pylith::TestIncompressibleElasticity::_initialize(void) {
 
     for (size_t i = 0; i < _data->numAuxSubfields; ++i) {
         const pylith::topology::FieldBase::Discretization& info = _data->auxDiscretizations[i];
-        _data->material.setAuxiliarySubfieldDiscretization(_data->auxSubfields[i], info.basisOrder, info.quadOrder,
-                                                           _data->spaceDim, pylith::topology::FieldBase::DEFAULT_BASIS,
-                                                           info.feSpace, info.isBasisContinuous);
+        _data->material.setAuxiliarySubfieldDiscretization(_data->auxSubfields[i],
+                                                           info.basisOrder,
+                                                           info.quadOrder,
+                                                           _data->spaceDim,
+                                                           pylith::topology::FieldBase::DEFAULT_BASIS,
+                                                           info.feSpace,
+                                                           info.isBasisContinuous);
     } // for
 
     // Set up problem.
     REQUIRE(_problem);
     _problem->setScales(_data->scales);
     _problem->setGravityField(_data->gravityField);
-    pylith::materials::Material* materials[1] = { &_data->material };
+    pylith::materials::Material* materials[1] = {&_data->material};
     _problem->setMaterials(materials, 1);
     _problem->setBoundaryConditions(_data->bcs.data(), _data->bcs.size());
     _problem->setStartTime(_data->t);
-    _problem->setEndTime(_data->t+_data->dt);
+    _problem->setEndTime(_data->t + _data->dt);
     _problem->setInitialTimeStep(_data->dt);
     _problem->setFormulation(_data->formulation);
 
     // Set up solution field.
     REQUIRE(!_solution);
-    _solution = new pylith::topology::Field(*_mesh);REQUIRE(_solution);
+    _solution = new pylith::topology::Field(*_mesh);
+    REQUIRE(_solution);
     _solution->setLabel("solution");
     pylith::problems::SolutionFactory factory(*_solution, _data->scales);
     int iField = 0;
@@ -134,7 +142,8 @@ void
 pylith::TestIncompressibleElasticity::_setExactSolution(void) {
     REQUIRE(_data->exactSolnFns);
 
-    const pylith::topology::Field* solution = _problem->getSolution();REQUIRE(solution);
+    const pylith::topology::Field* solution = _problem->getSolution();
+    REQUIRE(solution);
 
     PetscDS ds = NULL;
     PylithCallPetsc(DMGetDS(solution->getDM(), &ds));
@@ -185,9 +194,11 @@ pylith::TestIncompressibleElasticity_Data::TestIncompressibleElasticity_Data(voi
 // Destructor
 pylith::TestIncompressibleElasticity_Data::~TestIncompressibleElasticity_Data(void) {
     for (size_t i = 0; i < bcs.size(); ++i) {
-        delete bcs[i];bcs[i] = NULL;
+        delete bcs[i];
+        bcs[i] = NULL;
     } // for
-    delete gravityField;gravityField = NULL;
+    delete gravityField;
+    gravityField = NULL;
 } // destructor
 
 

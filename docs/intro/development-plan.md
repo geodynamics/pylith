@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Development Plan
 
 Future implementation of features is guided by several target applications, including
@@ -79,3 +88,5 @@ They may be added to the planned releases based upon further discussion and cont
 * Adjoint for data assimilation ![difficult](images/difficult.png)
 * Fault with both prescribed slip and spontaneous rupture ![difficult](images/difficult.png)\
   Use fault constitutive model to control slip on fault except during episodes of prescribed slip. Need some way to describe when to turn on/off prescribed slip.
+
+% End of file

@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from pylith.petsc.Component import Component
 
@@ -19,12 +19,12 @@ class SolnDisp(Component):
     import pythia.pyre.inventory
 
     from .SubfieldDisplacement import SubfieldDisplacement
+
     displacement = pythia.pyre.inventory.facility("displacement", family="soln_subfield", factory=SubfieldDisplacement)
-    displacement.meta['tip'] = "Displacement subfield."
+    displacement.meta["tip"] = "Displacement subfield."
 
     def __init__(self, name="solndisp"):
-        """Constructor.
-        """
+        """Constructor."""
         Component.__init__(self, name, facility="soln_subfields")
 
     def _configure(self):

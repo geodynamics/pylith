@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -19,9 +19,9 @@
 
 #include "pylith/scales/Scales.hh" // USES Scales
 
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -60,9 +60,10 @@ pylith::bc::DirichletUserFn::deallocate(void) {
 void
 pylith::bc::DirichletUserFn::setConstrainedDOF(const int* flags,
                                                const int size) {
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setConstrainedDOF(flags="<<flags<<", size"<<size<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "setConstrainedDOF(flags=" << flags << ", size" << size << ")");
 
-    assert((flags && size > 0) || (!flags && 0 == size) );
+    assert((flags && size > 0) || (!flags && 0 == size));
     _constrainedDOF.resize(size);
     for (int i = 0; i < size; ++i) {
         _constrainedDOF[i] = flags[i];
@@ -82,7 +83,7 @@ pylith::bc::DirichletUserFn::getConstrainedDOF(void) const {
 // Set user function specifying field on boundary.
 void
 pylith::bc::DirichletUserFn::setUserFn(PetscUserFieldFunc fn) {
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setUserFn(fn="<<fn<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setUserFn(fn=" << fn << ")");
 
     _fn = fn;
 } // setUserFn
@@ -100,7 +101,7 @@ pylith::bc::DirichletUserFn::getUserFn(void) const {
 // Set user function specifying time derivative of field on boundary.
 void
 pylith::bc::DirichletUserFn::setUserFnDot(PetscUserFieldFunc fn) {
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setUserFnDot(fn="<<fn<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setUserFnDot(fn=" << fn << ")");
 
     _fnDot = fn;
 } // setUserFnDot
@@ -119,13 +120,14 @@ pylith::bc::DirichletUserFn::getUserFnDot(void) const {
 void
 pylith::bc::DirichletUserFn::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "verifyConfiguration(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "verifyConfiguration(solution=" << solution.getLabel() << ")");
 
     if (!solution.hasSubfield(_subfieldName.c_str())) {
         PYLITH_COMPONENT_ERROR(pylith::exceptions::SubfieldNotFoundError,
-                               "Cannot constrain field '"<< _subfieldName
-                                                         << "' in component '" << PyreComponent::getIdentifier() << "'"
-                                                         << "; field is not in solution.");
+                               "Cannot constrain field '" << _subfieldName << "' in component '"
+                                                          << PyreComponent::getIdentifier() << "'"
+                                                          << "; field is not in solution.");
     } // if
 
     const topology::Field::SubfieldInfo& info = solution.getSubfieldInfo(_subfieldName.c_str());
@@ -135,7 +137,9 @@ pylith::bc::DirichletUserFn::verifyConfiguration(const pylith::topology::Field& 
         if (_constrainedDOF[iConstrained] >= numComponents) {
             PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError,
                                    "Cannot constrain degree of freedom '" << _constrainedDOF[iConstrained] << "'"
-                                                                          << "; solution field '" << _subfieldName << "' contains only " << numComponents << " components.");
+                                                                          << "; solution field '" << _subfieldName
+                                                                          << "' contains only " << numComponents
+                                                                          << " components.");
         } // if
     } // for
 
@@ -147,7 +151,8 @@ pylith::bc::DirichletUserFn::verifyConfiguration(const pylith::topology::Field& 
 // Create integrator and set kernels.
 pylith::feassemble::Integrator*
 pylith::bc::DirichletUserFn::createIntegrator(const pylith::topology::Field& solution) {
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createIntegrator(solution="<<solution.getLabel()<<") empty method");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "createIntegrator(solution=" << solution.getLabel() << ") empty method");
 
     return NULL;
 } // createIntegrator
@@ -158,10 +163,13 @@ pylith::bc::DirichletUserFn::createIntegrator(const pylith::topology::Field& sol
 std::vector<pylith::feassemble::Constraint*>
 pylith::bc::DirichletUserFn::createConstraints(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow_detail3, "Creating " << _subfieldName << " constraint on " << getLabelName() << "("<<getLabelValue()<<").");
+    PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow_detail3,
+                               "Creating " << _subfieldName << " constraint on " << getLabelName() << "("
+                                           << getLabelValue() << ").");
 
     std::vector<pylith::feassemble::Constraint*> constraintArray;
-    pylith::feassemble::ConstraintUserFn* constraint = new pylith::feassemble::ConstraintUserFn(this);assert(constraint);
+    pylith::feassemble::ConstraintUserFn* constraint = new pylith::feassemble::ConstraintUserFn(this);
+    assert(constraint);
     constraint->setSubfieldName(_subfieldName.c_str());
     constraint->setLabelName(getLabelName());
     constraint->setLabelValue(getLabelValue());
@@ -181,7 +189,9 @@ pylith::topology::Field*
 pylith::bc::DirichletUserFn::createAuxiliaryField(const pylith::topology::Field& solution,
                                                   const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "createAuxiliaryField(solution=" << solution.getLabel() << ", domainMesh=)"
+                                                            << typeid(domainMesh).name() << ") empty method");
 
     PYLITH_METHOD_RETURN(NULL);
 } // createAuxiliaryField

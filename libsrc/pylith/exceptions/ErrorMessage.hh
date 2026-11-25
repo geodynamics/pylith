@@ -1,26 +1,26 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
-#include <string>
 #include <sstream>
+#include <string>
 
 namespace pylith {
     namespace exceptions {
         class ErrorMessage;
     }
-}
+} // namespace pylith
 
 class pylith::exceptions::ErrorMessage {
-public:
-
+  public:
     inline ErrorMessage(const char* text);
 
     inline ErrorMessage(const std::string& text);
@@ -28,9 +28,7 @@ public:
     ErrorMessage() = default;
 
     /// Append any streamable value.
-    template <typename T>
-    inline
-    ErrorMessage& operator<<(const T& value);
+    template <typename T> inline ErrorMessage& operator<<(const T& value);
 
     /// Extract the assembled string.
     inline std::string str() const;
@@ -39,10 +37,11 @@ public:
     /// is expected.
     inline operator std::string() const;
 
-private:
-
+  private:
     std::ostringstream _buffer;
-
 };
 
 #include "ErrorMessage.icc"
+
+
+// End of file

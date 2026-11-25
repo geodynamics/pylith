@@ -1,13 +1,14 @@
 #!/usr/bin/env nemesis
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # @file euler/grabfaces
 
 # @brief Python application to grab a set of points specified in a UCD
@@ -26,8 +27,7 @@ class GrabFaces(Application):
     """
 
     class Inventory(Application.Inventory):
-        """Python object for managing GrabFaces facilities and properties.
-        """
+        """Python object for managing GrabFaces facilities and properties."""
 
         # @class Inventory
         # Python object for managing GrabFaces facilities and properties.
@@ -44,24 +44,20 @@ class GrabFaces(Application):
 
         import pythia.pyre.inventory
 
-        ucdFaceFile = pythia.pyre.inventory.str(
-            "ucd_face_file", default="test_face.inp")
-        ucdFaceFile.meta['tip'] = "Filename of ucd file containing face descriptions."
+        ucdFaceFile = pythia.pyre.inventory.str("ucd_face_file", default="test_face.inp")
+        ucdFaceFile.meta["tip"] = "Filename of ucd file containing face descriptions."
 
         faultIDNum = pythia.pyre.inventory.int("fault_id_num", default=1)
-        faultIDNum.meta['tip'] = "ID number (material number) of fault to use."
+        faultIDNum.meta["tip"] = "ID number (material number) of fault to use."
 
-        pointOutputFile = pythia.pyre.inventory.str("point_output_file",
-                                                    default="points.coordnorm")
-        pointOutputFile.meta['tip'] = "Filename of output coordinates and normals."
+        pointOutputFile = pythia.pyre.inventory.str("point_output_file", default="points.coordnorm")
+        pointOutputFile.meta["tip"] = "Filename of output coordinates and normals."
 
-        nodeValuesList = pythia.pyre.inventory.list(
-            "node_values_list", default=[1, 2, 3])
-        nodeValuesList.meta['tip'] = "Position of desired values in UCD face nodal attributes."
+        nodeValuesList = pythia.pyre.inventory.list("node_values_list", default=[1, 2, 3])
+        nodeValuesList.meta["tip"] = "Position of desired values in UCD face nodal attributes."
 
-        excludeZeroNormals = pythia.pyre.inventory.bool("exclude_zero_normals",
-                                                        default=False)
-        excludeZeroNormals.meta['tip'] = "Whether to exclude points with zero normals."
+        excludeZeroNormals = pythia.pyre.inventory.bool("exclude_zero_normals", default=False)
+        excludeZeroNormals.meta["tip"] = "Whether to exclude points with zero normals."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -78,8 +74,7 @@ class GrabFaces(Application):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """Setup members using inventory.
-        """
+        """Setup members using inventory."""
         Application._configure(self)
         self.ucdFaceFile = self.inventory.ucdFaceFile
         self.faultIDNum = self.inventory.faultIDNum
@@ -101,7 +96,7 @@ class GrabFaces(Application):
         numVertAttrs = int(firstline[2])
         vertCoords = []
         # Get vertex coordinates
-        for lineCount in range(1, numVerts+1):
+        for lineCount in range(1, numVerts + 1):
             data = lines[lineCount].split()
             for dim in range(1, 4):
                 vertCoords.append(float(data[dim]))
@@ -128,7 +123,7 @@ class GrabFaces(Application):
         numFaultVerts = len(faultVerts)
 
         # read normals/values and write out the selected values.
-        o = open(self.pointOutputFile, 'w')
+        o = open(self.pointOutputFile, "w")
         lineBegin = 2 + numVerts + numCells + numVertAttrs
         lineEnd = lineBegin + numVerts
         vertInd = 0
@@ -145,19 +140,16 @@ class GrabFaces(Application):
                 data = lines[lineCount].split()
                 normals = [float(data[v0]), float(data[v1]), float(data[v2])]
                 outputPoint = not self.excludeZeroNormals
-                outputPoint = outputPoint or \
-                    normals[0] != 0.0 or \
-                    normals[1] != 0.0 or \
-                    normals[2] != 0.0
+                outputPoint = outputPoint or normals[0] != 0.0 or normals[1] != 0.0 or normals[2] != 0.0
                 if outputPoint:
 
                     for dim in range(3):
-                        o.write(' %.12e' % vertCoords[coordCount + dim])
+                        o.write(" %.12e" % vertCoords[coordCount + dim])
 
                     for dim in range(3):
-                        o.write(' %.12e' % normals[dim])
+                        o.write(" %.12e" % normals[dim])
 
-                    o.write('\n')
+                    o.write("\n")
                 vertInd += 1
             coordCount += 3
 
@@ -171,7 +163,7 @@ class GrabFaces(Application):
 
 
 # ----------------------------------------------------------------------
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = GrabFaces()
     app.run()
 

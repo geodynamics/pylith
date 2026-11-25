@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/materials/materialsfwd.hh" // forward declarations
@@ -17,8 +18,7 @@ class pylith::materials::Poroelasticity : public pylith::materials::Material {
     friend class TestPoroelasticity; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     Poroelasticity(void);
 
@@ -134,8 +134,7 @@ public:
                                               const bool hasFault) const;
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get auxiliary factory associated with physics.
      *
      * @return Auxiliary factory for physics object.
@@ -155,8 +154,7 @@ protected:
     pylith::topology::FieldFactory* _getDerivedFactory(void);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     /** Set kernels for residual.
      *
      * @param[out] integrator Integrator for material.
@@ -190,8 +188,7 @@ private:
                                  const pylith::topology::Field& solution) const;
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     bool _useBodyForce; ///< Flag to include body force term.
     bool _useReferenceState; ///< Flag to use reference stress and strain.
     bool _useSourceDensity; ///< Flag to use source density.
@@ -200,11 +197,11 @@ private:
     pylith::materials::DerivedFactoryPoroelasticity* _derivedFactory; ///< Factory for creating derived fields.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     Poroelasticity(const Poroelasticity&); ///< Not implemented.
     const Poroelasticity& operator=(const Poroelasticity&); /// Not implemented.
 
 }; // class Poroelasticity
+
 
 // End of file

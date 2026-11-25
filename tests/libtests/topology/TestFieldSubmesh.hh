@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 // Include directives ---------------------------------------------------
@@ -19,14 +20,15 @@
 namespace pylith {
     namespace topology {
         class TestFieldSubmesh;
-    } // topology
-} // pylith
+    } // namespace topology
+} // namespace pylith
 
 // TestFieldSubmesh -----------------------------------------------------
 /// C++ unit testing for Field.
-class pylith::topology::TestFieldSubmesh : public CppUnit::TestFixture { // class TestFieldSubmesh
-                                                                         // CPPUNIT TEST SUITE
-                                                                         // /////////////////////////////////////////////////
+class pylith::topology::TestFieldSubmesh
+    : public CppUnit::TestFixture { // class TestFieldSubmesh
+                                    // CPPUNIT TEST SUITE
+                                    // /////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestFieldSubmesh);
 
     CPPUNIT_TEST(testConstructor);
@@ -54,8 +56,7 @@ class pylith::topology::TestFieldSubmesh : public CppUnit::TestFixture { // clas
     CPPUNIT_TEST_SUITE_END();
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test constructor.
     void testConstructor(void);
 
@@ -120,15 +121,14 @@ public:
     void testScatterGlobalToLocal(void);
 
     // PRIVATE METHODS /////////////////////////////////////////////////////
-private:
-
+  private:
     /** Build mesh.
      *
      * @param mesh Finite-element mesh.
      */
-    static
-    void _buildMesh(Mesh* mesh);
+    static void _buildMesh(Mesh* mesh);
 
 }; // class TestFieldSubmesh
+
 
 // End of file

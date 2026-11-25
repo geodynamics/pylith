@@ -1,38 +1,37 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/petsc/KSPMonitor.hh" // implementation of class methods
 
-#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <iomanip> // USES setw()
 
 // ------------------------------------------------------------------------------------------------
 // Constructor
-pylith::petsc::KSPMonitor::KSPMonitor(void) {}
-
+pylith::petsc::KSPMonitor::KSPMonitor(void) {
+}
 
 // ------------------------------------------------------------------------------------------------
 // Destructor
-pylith::petsc::KSPMonitor::~KSPMonitor(void) {}
-
+pylith::petsc::KSPMonitor::~KSPMonitor(void) {
+}
 
 // ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::petsc::KSPMonitor::deallocate(void) {
 }
-
 
 // ------------------------------------------------------------------------------------------------
 // Register monitor with PETSc.
@@ -46,7 +45,6 @@ pylith::petsc::KSPMonitor::registerMonitor(PetscKSP KSP) {
     PYLITH_METHOD_END;
 }
 
-
 // ------------------------------------------------------------------------------------------------
 PetscErrorCode
 pylith::petsc::KSPMonitor::PylithKSPMonitor(PetscKSP KSP,
@@ -56,11 +54,13 @@ pylith::petsc::KSPMonitor::PylithKSPMonitor(PetscKSP KSP,
     PYLITH_METHOD_BEGIN;
     PetscErrorCode err = PETSC_SUCCESS;
 
-    PYLITH_INFO_ROOT(pylith::journal::solver_detail3, "PETSc KSP: Iteration "<< iteration << ", nondimensional preconditioned residual norm=" << std::scientific << std::setprecision(6) << std::setw(12) << residualNorm);
+    PYLITH_INFO_ROOT(pylith::journal::solver_detail3,
+                     "PETSc KSP: Iteration " << iteration
+                                             << ", nondimensional preconditioned residual norm=" << std::scientific
+                                             << std::setprecision(6) << std::setw(12) << residualNorm);
 
     PYLITH_METHOD_RETURN(err);
 }
-
 
 // ------------------------------------------------------------------------------------------------
 // PyLith KSP converged reason function.
@@ -75,7 +75,11 @@ pylith::petsc::KSPMonitor::PylithKSPConvergedReason(PetscKSP KSP,
 
     PetscInt numIterations = 0;
     PylithCallPetsc(KSPGetIterationNumber(KSP, &numIterations));
-    PYLITH_INFO_ROOT(pylith::journal::solver, "PETSc KSP linear solver converged in " << numIterations << " interation due to " << reason);
+    PYLITH_INFO_ROOT(pylith::journal::solver,
+                     "PETSc KSP linear solver converged in " << numIterations << " iteration(s) due to " << reason);
 
     PYLITH_METHOD_RETURN(err);
 }
+
+
+// End of file

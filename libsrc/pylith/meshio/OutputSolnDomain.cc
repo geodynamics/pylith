@@ -1,21 +1,21 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/meshio/OutputSolnDomain.hh" // implementation of class methods
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
-#include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
@@ -29,7 +29,8 @@ pylith::meshio::OutputSolnDomain::OutputSolnDomain(void) {
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor
-pylith::meshio::OutputSolnDomain::~OutputSolnDomain(void) {}
+pylith::meshio::OutputSolnDomain::~OutputSolnDomain(void) {
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -39,17 +40,21 @@ pylith::meshio::OutputSolnDomain::_writeSolnStep(const PylithReal t,
                                                  const PylithInt tindex,
                                                  const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "_writeSolnStep(t=" << t << ", tindex=" << tindex << ", solution=" << solution.getLabel()
+                                               << ")");
 
     const pylith::string_vector& subfieldNames = pylith::topology::FieldOps::getSubfieldNamesDomain(solution);
-    PetscVec solutionVector = solution.getOutputVector();assert(solutionVector);
+    PetscVec solutionVector = solution.getOutputVector();
+    assert(solutionVector);
 
     const size_t numSubfieldNames = subfieldNames.size();
     for (size_t iField = 0; iField < numSubfieldNames; iField++) {
         assert(solution.hasSubfield(subfieldNames[iField].c_str()));
 
         OutputSubfield* subfield = NULL;
-        subfield = OutputObserver::_getSubfield(solution, solution.getMesh(), subfieldNames[iField].c_str());assert(subfield);
+        subfield = OutputObserver::_getSubfield(solution, solution.getMesh(), subfieldNames[iField].c_str());
+        assert(subfield);
         subfield->project(solutionVector);
 
         if (0 == iField) {

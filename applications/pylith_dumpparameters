@@ -1,13 +1,14 @@
 #!/usr/bin/env nemesis
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 """
 This script dumps all PyLith parameters (defaults plus those
 specified by the user to a text file. The default name of the output
@@ -42,15 +43,18 @@ class ParametersApp(object):
         Main entry point for application.
         """
         from pylith.apps.PyLithApp import InfoApp
+
         targetapp = InfoApp(self.pylith_args)
         targetapp.run(*args, **kwds)
 
         dumper = None
         if self.format == "json":
             from pylith.utils.DumpParametersJson import DumpParametersJson
+
             dumper = DumpParametersJson()
         elif self.format == "ascii":
             from pylith.utils.DumpParametersAscii import DumpParametersAscii
+
             dumper = DumpParametersAscii()
             dumper.inventory.verbose = self.verbose
         dumper.inventory.filename = self.filename
@@ -59,6 +63,7 @@ class ParametersApp(object):
         dumper.write(targetapp, using_mpi=False)
         return
 
+
 # ----------------------------------------------------------------------
 if __name__ == "__main__":
 
@@ -66,10 +71,25 @@ if __name__ == "__main__":
     addInfo = "Also include any normal PyLith command line arguments, like .cfg files."
 
     import argparse
+
     parser = argparse.ArgumentParser(description=description, epilog=addInfo)
-    parser.add_argument("--quiet", action="store_false", dest="verbose", help="Don't include description, location, and aliases in output.")
-    parser.add_argument("--format", action="store", dest="format", default="json", help="Format of output file.", choices=("ascii", "json"))
-    parser.add_argument("--filename", action="store", dest="filename", default="pylith_parameters.json", help="Name of output file")
+    parser.add_argument(
+        "--quiet",
+        action="store_false",
+        dest="verbose",
+        help="Don't include description, location, and aliases in output.",
+    )
+    parser.add_argument(
+        "--format",
+        action="store",
+        dest="format",
+        default="json",
+        help="Format of output file.",
+        choices=("ascii", "json"),
+    )
+    parser.add_argument(
+        "--filename", action="store", dest="filename", default="pylith_parameters.json", help="Name of output file"
+    )
     args, extraArgs = parser.parse_known_args()
 
     app = ParametersApp()

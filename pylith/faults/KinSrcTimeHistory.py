@@ -1,12 +1,13 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # @file pylith/faults/KinSrcTimeHistory.py
 #
 # @brief Python object for time history data file slip time function.
@@ -25,8 +26,8 @@ class KinSrcTimeHistory(KinSrc, ModuleKinSrc):
 
     Implements `KinSrc`.
     """
-    DOC_CONFIG = {
-        "cfg": """
+
+    DOC_CONFIG = {"cfg": """
             [pylithapp.problem.interfaces.fault.eq_ruptures.rupture]
             origin_time = 10*year
 
@@ -37,27 +38,24 @@ class KinSrcTimeHistory(KinSrc, ModuleKinSrc):
 
             time_history.description = Slip time function time history
             time_history.filename = slipfn.timedb
-            """
-    }
-
+            """}
 
     import pythia.pyre.inventory
 
     from spatialdata.spatialdb.TimeHistory import TimeHistory
+
     dbTimeHistory = pythia.pyre.inventory.facility("time_history", factory=TimeHistory, family="temporal_database")
-    dbTimeHistory.meta['tip'] = "Time history with normalized amplitude as a function of time."
+    dbTimeHistory.meta["tip"] = "Time history with normalized amplitude as a function of time."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="kinsrctimehistory"):
-        """Constructor.
-        """
+        """Constructor."""
         KinSrc.__init__(self, name)
         return
 
     def preinitialize(self, problem):
-        """Do pre-initialization setup.
-        """
+        """Do pre-initialization setup."""
         KinSrc.preinitialize(self, problem)
 
         ModuleKinSrc.setTimeHistoryDB(self, self.dbTimeHistory)
@@ -66,16 +64,15 @@ class KinSrcTimeHistory(KinSrc, ModuleKinSrc):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
-        """Call constructor for module object for access to C++ object.
-        """
+        """Call constructor for module object for access to C++ object."""
         ModuleKinSrc.__init__(self)
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
+
 def eq_kinematic_src():
-    """Factory associated with KinSrcTimeHistory.
-    """
+    """Factory associated with KinSrcTimeHistory."""
     return KinSrcTimeHistory()
 
 

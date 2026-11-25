@@ -1,13 +1,13 @@
 #!/usr/bin/env nemesis
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from pylith.testing.FullTestApp import FullTestCase, TestDriver, Check
 
@@ -34,19 +34,19 @@ class TestCase(FullTestCase):
             Check(
                 mesh_entities=["mat_xneg", "mat_xmid", "mat_xposypos", "mat_xposyneg"],
                 filename="output/{name}-{mesh_entity}_info.h5",
-                cell_fields = ["density", "bulk_modulus", "shear_modulus"],
+                cell_fields=["density", "bulk_modulus", "shear_modulus"],
                 defaults=defaults,
             ),
             Check(
                 mesh_entities=["mat_xneg", "mat_xmid", "mat_xposypos", "mat_xposyneg"],
-                vertex_fields = ["displacement"],
-                cell_fields = ["cauchy_strain"],
+                vertex_fields=["displacement"],
+                cell_fields=["cauchy_strain"],
                 defaults=defaults,
             ),
             Check(
                 mesh_entities=["mat_xneg", "mat_xmid", "mat_xposypos", "mat_xposyneg"],
-                cell_fields = ["cauchy_stress"],
-                scale = 1.0e+6,
+                cell_fields=["cauchy_stress"],
+                scale=1.0e6,
                 defaults=defaults,
             ),
             Check(
@@ -63,7 +63,7 @@ class TestCase(FullTestCase):
             Check(
                 mesh_entities=["fault_xneg", "fault_xmid"],
                 filename="output/{name}-{mesh_entity}_info.h5",
-                vertex_fields = ["normal_dir", "strike_dir"],
+                vertex_fields=["normal_dir", "strike_dir"],
                 defaults=defaults,
             ),
             Check(
@@ -107,7 +107,12 @@ class TestQuadGmshRefineOutput(TestCase):
         self.mesh = meshes.QuadGmshRefineOutput()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["shearnoslip.cfg", "shearnoslip_refineoutput.cfg", "shearnoslip_refineoutput_quad.cfg"], nprocs=2)
+        TestCase.run_pylith(
+            self,
+            self.name,
+            ["shearnoslip.cfg", "shearnoslip_refineoutput.cfg", "shearnoslip_refineoutput_quad.cfg"],
+            nprocs=2,
+        )
 
 
 # -------------------------------------------------------------------------------------------------
@@ -118,7 +123,12 @@ class TestTriGmshRefineOutput(TestCase):
         self.mesh = meshes.TriGmshRefineOutput()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["shearnoslip.cfg", "shearnoslip_refineoutput.cfg", "shearnoslip_refineoutput_tri.cfg"], nprocs=1)
+        TestCase.run_pylith(
+            self,
+            self.name,
+            ["shearnoslip.cfg", "shearnoslip_refineoutput.cfg", "shearnoslip_refineoutput_tri.cfg"],
+            nprocs=1,
+        )
 
 
 # -------------------------------------------------------------------------------------------------

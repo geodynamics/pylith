@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-developer-design-code-layout)=
 # Code Layout
 
@@ -40,3 +49,5 @@ The C++ library, SWIG interface files, and Python modules are organized into sev
 * **testing** Common testing infrastructure.
 * **topology** Finite-element mesh topology.
 * **utils** General utilities.
+
+% End of file

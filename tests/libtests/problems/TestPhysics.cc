@@ -1,30 +1,30 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "TestPhysics.hh" // Implementation of class methods
 
-#include "tests/src/PhysicsStub.hh" // USES PhysicsStub
-#include "tests/src/ObserverPhysicsStub.hh" // USES ObserversPhysicsStub
-#include "tests/src/StubMethodTracker.hh" // USES StubMethodTracker
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/Field.hh" // USES Field
-#include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
-#include "pylith/utils/types.hh" // USES PylithReal
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/utils/types.hh" // USES PylithReal
+#include "tests/src/ObserverPhysicsStub.hh" // USES ObserversPhysicsStub
+#include "tests/src/PhysicsStub.hh" // USES PhysicsStub
+#include "tests/src/StubMethodTracker.hh" // USES StubMethodTracker
 
 #include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
 
-#include "spatialdata/spatialdb/UniformDB.hh" // USES UniformDB
 #include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/spatialdb/UniformDB.hh" // USES UniformDB
 
 // ---------------------------------------------------------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::problems::TestPhysics);
@@ -33,10 +33,13 @@ CPPUNIT_TEST_SUITE_REGISTRATION(pylith::problems::TestPhysics);
 // Setup testing data.
 void
 pylith::problems::TestPhysics::setUp(void) {
-    _physics = new PhysicsStub();CPPUNIT_ASSERT(_physics);
+    _physics = new PhysicsStub();
+    CPPUNIT_ASSERT(_physics);
 
-    _mesh = new pylith::topology::Mesh();CPPUNIT_ASSERT(_mesh);
-    _solution = new pylith::topology::Field(*_mesh);CPPUNIT_ASSERT(_solution);
+    _mesh = new pylith::topology::Mesh();
+    CPPUNIT_ASSERT(_mesh);
+    _solution = new pylith::topology::Field(*_mesh);
+    CPPUNIT_ASSERT(_solution);
 } // setUp
 
 
@@ -44,9 +47,12 @@ pylith::problems::TestPhysics::setUp(void) {
 // Tear down testing data.
 void
 pylith::problems::TestPhysics::tearDown(void) {
-    delete _physics;_physics = NULL;
-    delete _solution;_solution = NULL;
-    delete _mesh;_mesh = NULL;
+    delete _physics;
+    _physics = NULL;
+    delete _solution;
+    _solution = NULL;
+    delete _mesh;
+    _mesh = NULL;
 } // tearDown
 
 
@@ -81,9 +87,11 @@ pylith::problems::TestPhysics::testSetAuxiliaryFieldDB(void) {
     CPPUNIT_ASSERT(_physics);
     _physics->setAuxiliaryFieldDB(&db);
 
-    const pylith::feassemble::AuxiliaryFactory* factory = _physics->_getAuxiliaryFactory();CPPUNIT_ASSERT(factory);
-    const spatialdata::spatialdb::SpatialDB* queryDB = factory->getQueryDB();CPPUNIT_ASSERT(queryDB);
-    CPPUNIT_ASSERT_EQUAL(db.getLabel(),queryDB->getLabel());
+    const pylith::feassemble::AuxiliaryFactory* factory = _physics->_getAuxiliaryFactory();
+    CPPUNIT_ASSERT(factory);
+    const spatialdata::spatialdb::SpatialDB* queryDB = factory->getQueryDB();
+    CPPUNIT_ASSERT(queryDB);
+    CPPUNIT_ASSERT_EQUAL(db.getLabel(), queryDB->getLabel());
 
     PYLITH_METHOD_END;
 } // testSetAuxiliaryFieldDB
@@ -96,10 +104,23 @@ pylith::problems::TestPhysics::testSetAuxiliarySubfieldDiscretization(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_physics);
-    _physics->setAuxiliarySubfieldDiscretization("fieldA", 1, 2, 3, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, true);
-    _physics->setAuxiliarySubfieldDiscretization("fieldB", 2, 3, 4, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POINT_SPACE, true);
+    _physics->setAuxiliarySubfieldDiscretization("fieldA",
+                                                 1,
+                                                 2,
+                                                 3,
+                                                 pylith::topology::Field::DEFAULT_BASIS,
+                                                 pylith::topology::Field::POLYNOMIAL_SPACE,
+                                                 true);
+    _physics->setAuxiliarySubfieldDiscretization("fieldB",
+                                                 2,
+                                                 3,
+                                                 4,
+                                                 pylith::topology::Field::DEFAULT_BASIS,
+                                                 pylith::topology::Field::POINT_SPACE,
+                                                 true);
 
-    const pylith::feassemble::AuxiliaryFactory* factory = _physics->_getAuxiliaryFactory();CPPUNIT_ASSERT(factory);
+    const pylith::feassemble::AuxiliaryFactory* factory = _physics->_getAuxiliaryFactory();
+    CPPUNIT_ASSERT(factory);
 
     const pylith::topology::FieldBase::Discretization& feA = factory->getSubfieldDiscretization("fieldA");
     CPPUNIT_ASSERT_EQUAL(1, feA.basisOrder);
@@ -157,7 +178,7 @@ pylith::problems::TestPhysics::testGetKernelConstants(void) {
     PYLITH_METHOD_BEGIN;
 
     const size_t numConstants = 2;
-    const PylithReal constantsE[numConstants] = { -1.1, 4.4 };
+    const PylithReal constantsE[numConstants] = {-1.1, 4.4};
 
     CPPUNIT_ASSERT(_physics);
     _physics->_kernelConstants = pylith::real_array(constantsE, numConstants);

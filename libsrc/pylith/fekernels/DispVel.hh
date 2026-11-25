@@ -1,10 +1,19 @@
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
+//
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 /*
  * ================================================================================================
  * This code is part of PyLith, developed through the Computational Infrastructure
  * for Geodynamics (https://github.com/geodynamics/pylith).
  *
- * Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
- * All rights reserved.
+ * Copyright (c) 2010-2026 All rights reserved.
  *
  * See https://mit-license.org/ and LICENSE.md and for license information.
  * =================================================================================================
@@ -52,8 +61,7 @@
 
 class pylith::fekernels::DispVel {
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /** Kernel interface.
      *
      * @param[in] dim Spatial dimension.
@@ -80,25 +88,25 @@ public:
      *
      * Solution fields: [disp(dim), vel(dim)]
      */
-    static inline
-    void f0u(const PylithInt dim,
-             const PylithInt numS,
-             const PylithInt numA,
-             const PylithInt sOff[],
-             const PylithInt sOff_x[],
-             const PylithScalar s[],
-             const PylithScalar s_t[],
-             const PylithScalar s_x[],
-             const PylithInt aOff[],
-             const PylithInt aOff_x[],
-             const PylithScalar a[],
-             const PylithScalar a_t[],
-             const PylithScalar a_x[],
-             const PylithReal t,
-             const PylithScalar x[],
-             const PylithInt numConstants,
-             const PylithScalar constants[],
-             PylithScalar f0[]) {
+    static inline void
+    f0u(const PylithInt dim,
+        const PylithInt numS,
+        const PylithInt numA,
+        const PylithInt sOff[],
+        const PylithInt sOff_x[],
+        const PylithScalar s[],
+        const PylithScalar s_t[],
+        const PylithScalar s_x[],
+        const PylithInt aOff[],
+        const PylithInt aOff_x[],
+        const PylithScalar a[],
+        const PylithScalar a_t[],
+        const PylithScalar a_x[],
+        const PylithReal t,
+        const PylithScalar x[],
+        const PylithInt numConstants,
+        const PylithScalar constants[],
+        PylithScalar f0[]) {
         assert(sOff);
         assert(s);
         assert(s_t);
@@ -119,25 +127,25 @@ public:
      *
      * Solution fields: [disp(dim), vel(dim)]
      */
-    static inline
-    void f0v(const PylithInt dim,
-             const PylithInt numS,
-             const PylithInt numA,
-             const PylithInt sOff[],
-             const PylithInt sOff_x[],
-             const PylithScalar s[],
-             const PylithScalar s_t[],
-             const PylithScalar s_x[],
-             const PylithInt aOff[],
-             const PylithInt aOff_x[],
-             const PylithScalar a[],
-             const PylithScalar a_t[],
-             const PylithScalar a_x[],
-             const PylithReal t,
-             const PylithScalar x[],
-             const PylithInt numConstants,
-             const PylithScalar constants[],
-             PylithScalar f0[]) {
+    static inline void
+    f0v(const PylithInt dim,
+        const PylithInt numS,
+        const PylithInt numA,
+        const PylithInt sOff[],
+        const PylithInt sOff_x[],
+        const PylithScalar s[],
+        const PylithScalar s_t[],
+        const PylithScalar s_x[],
+        const PylithInt aOff[],
+        const PylithInt aOff_x[],
+        const PylithScalar a[],
+        const PylithScalar a_t[],
+        const PylithScalar a_x[],
+        const PylithReal t,
+        const PylithScalar x[],
+        const PylithInt numConstants,
+        const PylithScalar constants[],
+        PylithScalar f0[]) {
         assert(sOff);
         assert(s);
         assert(s_t);
@@ -158,25 +166,25 @@ public:
      *
      * Solution fields: [disp(dim), vel(dim)]
      */
-    static inline
-    void g0u(const PylithInt dim,
-             const PylithInt numS,
-             const PylithInt numA,
-             const PylithInt sOff[],
-             const PylithInt sOff_x[],
-             const PylithScalar s[],
-             const PylithScalar s_t[],
-             const PylithScalar s_x[],
-             const PylithInt aOff[],
-             const PylithInt aOff_x[],
-             const PylithScalar a[],
-             const PylithScalar a_t[],
-             const PylithScalar a_x[],
-             const PylithReal t,
-             const PylithScalar x[],
-             const PylithInt numConstants,
-             const PylithScalar constants[],
-             PylithScalar g0[]) {
+    static inline void
+    g0u(const PylithInt dim,
+        const PylithInt numS,
+        const PylithInt numA,
+        const PylithInt sOff[],
+        const PylithInt sOff_x[],
+        const PylithScalar s[],
+        const PylithScalar s_t[],
+        const PylithScalar s_x[],
+        const PylithInt aOff[],
+        const PylithInt aOff_x[],
+        const PylithScalar a[],
+        const PylithScalar a_t[],
+        const PylithScalar a_x[],
+        const PylithReal t,
+        const PylithScalar x[],
+        const PylithInt numConstants,
+        const PylithScalar constants[],
+        PylithScalar g0[]) {
         assert(sOff);
         assert(s);
         assert(g0);
@@ -198,68 +206,8 @@ public:
      *
      * Solution fields: [...]
      */
-    static inline
-    void Jf0uu_zero(const PylithInt dim,
-                    const PylithInt numS,
-                    const PylithInt numA,
-                    const PylithInt sOff[],
-                    const PylithInt sOff_x[],
-                    const PylithScalar s[],
-                    const PylithScalar s_t[],
-                    const PylithScalar s_x[],
-                    const PylithInt aOff[],
-                    const PylithInt aOff_x[],
-                    const PylithScalar a[],
-                    const PylithScalar a_t[],
-                    const PylithScalar a_x[],
-                    const PylithReal t,
-                    const PylithReal s_tshift,
-                    const PylithScalar x[],
-                    const PylithInt numConstants,
-                    const PylithScalar constants[],
-                    PylithScalar Jf0[]) {
-        // No work to do for zero values.
-    } // Jf0uu_zero
-
-    /** Jf0 function for displacement equation: Jf0uu = s_tshift.
-     *
-     * Solution fields: [disp(dim), vel(dim)]
-     */
-    static inline
-    void Jf0uu_stshift(const PylithInt dim,
-                       const PylithInt numS,
-                       const PylithInt numA,
-                       const PylithInt sOff[],
-                       const PylithInt sOff_x[],
-                       const PylithScalar s[],
-                       const PylithScalar s_t[],
-                       const PylithScalar s_x[],
-                       const PylithInt aOff[],
-                       const PylithInt aOff_x[],
-                       const PylithScalar a[],
-                       const PylithScalar a_t[],
-                       const PylithScalar a_x[],
-                       const PylithReal t,
-                       const PylithReal s_tshift,
-                       const PylithScalar x[],
-                       const PylithInt numConstants,
-                       const PylithScalar constants[],
-                       PylithScalar Jf0[]) {
-        const PylithInt _numS = 2;
-        assert(_numS == numS);
-        assert(s_tshift > 0);
-
-        for (PylithInt i = 0; i < dim; ++i) {
-            Jf0[i*dim+i] += s_tshift;
-        } // for
-    } // Jf0uu_stshift
-
-    /** Jg0 function for displacement equation: 1.0.
-     *
-     * Solution fields: [disp(dim), vel(dim)]
-     */
-    static inline
-    void Jg0uv(const PylithInt dim,
+    static inline void
+    Jf0uu_zero(const PylithInt dim,
                const PylithInt numS,
                const PylithInt numA,
                const PylithInt sOff[],
@@ -277,15 +225,78 @@ public:
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],
-               PylithScalar Jg0[]) {
+               PylithScalar Jf0[]) {
+        // No work to do for zero values.
+    } // Jf0uu_zero
+
+    /** Jf0 function for displacement equation: Jf0uu = s_tshift.
+     *
+     * Solution fields: [disp(dim), vel(dim)]
+     */
+    static inline void
+    Jf0uu_stshift(const PylithInt dim,
+                  const PylithInt numS,
+                  const PylithInt numA,
+                  const PylithInt sOff[],
+                  const PylithInt sOff_x[],
+                  const PylithScalar s[],
+                  const PylithScalar s_t[],
+                  const PylithScalar s_x[],
+                  const PylithInt aOff[],
+                  const PylithInt aOff_x[],
+                  const PylithScalar a[],
+                  const PylithScalar a_t[],
+                  const PylithScalar a_x[],
+                  const PylithReal t,
+                  const PylithReal s_tshift,
+                  const PylithScalar x[],
+                  const PylithInt numConstants,
+                  const PylithScalar constants[],
+                  PylithScalar Jf0[]) {
+        const PylithInt _numS = 2;
+        assert(_numS == numS);
+        assert(s_tshift > 0);
+
+        for (PylithInt i = 0; i < dim; ++i) {
+            Jf0[i * dim + i] += s_tshift;
+        } // for
+    } // Jf0uu_stshift
+
+    /** Jg0 function for displacement equation: 1.0.
+     *
+     * Solution fields: [disp(dim), vel(dim)]
+     */
+    static inline void
+    Jg0uv(const PylithInt dim,
+          const PylithInt numS,
+          const PylithInt numA,
+          const PylithInt sOff[],
+          const PylithInt sOff_x[],
+          const PylithScalar s[],
+          const PylithScalar s_t[],
+          const PylithScalar s_x[],
+          const PylithInt aOff[],
+          const PylithInt aOff_x[],
+          const PylithScalar a[],
+          const PylithScalar a_t[],
+          const PylithScalar a_x[],
+          const PylithReal t,
+          const PylithReal s_tshift,
+          const PylithScalar x[],
+          const PylithInt numConstants,
+          const PylithScalar constants[],
+          PylithScalar Jg0[]) {
         const PylithInt _numS = 2;
         assert(_numS == numS);
 
         for (PylithInt i = 0; i < dim; ++i) {
-            Jg0[i*dim+i] += 1.0;
+            Jg0[i * dim + i] += 1.0;
         } // for
     } // Jg0uv
 
 }; // DispVel
 
 /* End of file */
+
+
+// End of file

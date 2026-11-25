@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -14,59 +14,58 @@
 
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 
+#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
-#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
-#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
-#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
 
 #include "catch2/catch_test_macros.hpp"
-#include "catch2/matchers/catch_matchers_floating_point.hpp"
 #include "catch2/matchers/catch_matchers_exception.hpp"
+#include "catch2/matchers/catch_matchers_floating_point.hpp"
 
 // ------------------------------------------------------------------------------------------------
 namespace pylith {
     namespace topology {
         class TestMeshOps;
-    } // topology
-} // pylith
+    } // namespace topology
+} // namespace pylith
 
 class pylith::topology::TestMeshOps : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test nondimensionalize().
-    static
-    void testNondimensionalize(void);
+    static void testNondimensionalize(void);
 
     /// Test checkTopology().
-    static
-    void testCheckTopology(void);
+    static void testCheckTopology(void);
 
     /// Test isSimplexMesh().
-    static
-    void testIsSimplexMesh(void);
+    static void testIsSimplexMesh(void);
 
     /// Test checkMaterialIds().
-    static
-    void testCheckMaterialIds(void);
+    static void testCheckMaterialIds(void);
 
 }; // class TestMeshOps
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestMeshOps::testNondimensionalize", "[TestMeshOps]") {
+TEST_CASE("TestMeshOps::testNondimensionalize",
+          "[TestMeshOps]") {
     pylith::topology::TestMeshOps().testNondimensionalize();
 }
-TEST_CASE("TestMeshOps::testCheckTopology", "[TestMeshOps]") {
+TEST_CASE("TestMeshOps::testCheckTopology",
+          "[TestMeshOps]") {
     pylith::topology::TestMeshOps().testCheckTopology();
 }
-TEST_CASE("TestMeshOps::testIsSimplexMesh", "[TestMeshOps]") {
+TEST_CASE("TestMeshOps::testIsSimplexMesh",
+          "[TestMeshOps]") {
     pylith::topology::TestMeshOps().testIsSimplexMesh();
 }
-TEST_CASE("TestMeshOps::testCheckMaterialIds", "[TestMeshOps]") {
+TEST_CASE("TestMeshOps::testCheckMaterialIds",
+          "[TestMeshOps]") {
     pylith::topology::TestMeshOps().testCheckMaterialIds();
 }
 
@@ -79,11 +78,15 @@ pylith::topology::TestMeshOps::testNondimensionalize(void) {
     const PylithScalar lengthScale = 0.02;
     const int spaceDim = 2;
     const int numVertices = 4;
-    const PylithScalar coordinates[numVertices*spaceDim] = {
-        -1.0, 0.0,
-        0.0, -1.0,
-        0.0, 1.0,
-        1.0, 0.0,
+    const PylithScalar coordinates[numVertices * spaceDim] = {
+        -1.0,
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        1.0,
+        1.0,
+        0.0,
     };
 
     Mesh mesh;
@@ -99,14 +102,16 @@ pylith::topology::TestMeshOps::testNondimensionalize(void) {
     MeshOps::nondimensionalize(&mesh, scales);
 
     // Get vertices
-    PetscDM dmMesh = mesh.getDM();REQUIRE(dmMesh);
+    PetscDM dmMesh = mesh.getDM();
+    REQUIRE(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
     const PetscInt vStart = depthStratum.begin();
     const PetscInt vEnd = depthStratum.end();
 
     // Check nondimensional coordinates
     CoordsVisitor coordsVisitor(dmMesh);
-    const PetscScalar* coordsArray = coordsVisitor.localArray();REQUIRE(coordsArray);
+    const PetscScalar* coordsArray = coordsVisitor.localArray();
+    REQUIRE(coordsArray);
 
     const PylithScalar tolerance = 1.0e-06;
     for (PetscInt v = vStart, i = 0; v < vEnd; ++v) {
@@ -114,8 +119,8 @@ pylith::topology::TestMeshOps::testNondimensionalize(void) {
         const PetscInt off = coordsVisitor.sectionOffset(v);
         for (int iDim = 0; iDim < spaceDim; ++iDim, ++i) {
             const PylithScalar coordE = coordinates[i] / lengthScale;
-            const double toleranceV = std::max(tolerance, tolerance*coordE);
-            CHECK_THAT(coordsArray[off+iDim], Catch::Matchers::WithinAbs(coordE, toleranceV));
+            const double toleranceV = std::max(tolerance, tolerance * coordE);
+            CHECK_THAT(coordsArray[off + iDim], Catch::Matchers::WithinAbs(coordE, toleranceV));
         } // for
     } // for
 

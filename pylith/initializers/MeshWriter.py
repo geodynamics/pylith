@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from .InitializePhase import InitializePhase
 from .initializers import MeshWriter as ModuleMeshWriter
@@ -19,38 +19,31 @@ class MeshWriter(InitializePhase):
     Implements `InitializePhase`.
     """
 
-    DOC_CONFIG = {
-        "cfg": """
+    DOC_CONFIG = {"cfg": """
             [pylithapp.problem.mesh_initializer.phases.write_mesh]
             writer = pylith.meshio.MeshIOPetsc
-        """
-    }
+        """}
 
     import pythia.pyre.inventory
     from pylith.meshio.MeshIOPetsc import MeshIOPetsc
 
-    writer = pythia.pyre.inventory.facility(
-        "writer", family="mesh_output", factory=MeshIOPetsc)
+    writer = pythia.pyre.inventory.facility("writer", family="mesh_output", factory=MeshIOPetsc)
     writer.meta["tip"] = "Mesh writer."
-
 
     # PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////
 
     def __init__(self, name="mesh_writer"):
-        """Constructor.
-        """
+        """Constructor."""
         InitializePhase.__init__(self, name)
 
     def preinitialize(self):
-        """Preinitialize.
-        """
+        """Preinitialize."""
         InitializePhase.preinitialize(self)
         self.writer.preinitialize()
         ModuleMeshWriter.setWriter(self, self.writer)
 
     def _configure(self):
-        """Set members using inventory.
-        """
+        """Set members using inventory."""
         InitializePhase._configure(self)
 
     def _createModuleObj(self):

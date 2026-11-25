@@ -1,13 +1,14 @@
 #!/usr/bin/env nemesis
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # @file tests/pytests/apps/TestPyLithApp.py
 #
 # @brief Unit testing of Python PyLithApp object.
@@ -19,8 +20,7 @@ from pylith.testing.TestCases import make_suite
 
 
 class TestPyLithApp(unittest.TestCase):
-    """Unit testing of PyLithApp object.
-    """
+    """Unit testing of PyLithApp object."""
 
     def test_constructor(self):
         app = PyLithApp()

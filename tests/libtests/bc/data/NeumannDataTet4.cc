@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 /* Mesh: tet4.mesh
  *
@@ -28,14 +28,11 @@
 
 #include "NeumannDataTet4.hh"
 
-const char* pylith::bc::NeumannDataTet4::_meshFilename =
-    "data/tet4.mesh";
+const char* pylith::bc::NeumannDataTet4::_meshFilename = "data/tet4.mesh";
 
 const int pylith::bc::NeumannDataTet4::_numBasis = 3;
 const int pylith::bc::NeumannDataTet4::_numQuadPts = 1;
-const PylithScalar pylith::bc::NeumannDataTet4::_quadPts[] = {
-    -0.3333333333333333, -0.3333333333333333
-};
+const PylithScalar pylith::bc::NeumannDataTet4::_quadPts[] = {-0.3333333333333333, -0.3333333333333333};
 const PylithScalar pylith::bc::NeumannDataTet4::_quadWts[] = {
     2.0,
 };
@@ -45,13 +42,15 @@ const PylithScalar pylith::bc::NeumannDataTet4::_basis[] = {
     0.3333333333333333,
 };
 const PylithScalar pylith::bc::NeumannDataTet4::_basisDerivRef[] = {
-    -0.5, -0.5,
-    0.5,  0.0,
-    0.0,  0.5,
+    -0.5,
+    -0.5,
+    0.5,
+    0.0,
+    0.0,
+    0.5,
 };
 
-const char* pylith::bc::NeumannDataTet4::_spatialDBFilename =
-    "data/tet4_tractions.spatialdb";
+const char* pylith::bc::NeumannDataTet4::_spatialDBFilename = "data/tet4_tractions.spatialdb";
 const int pylith::bc::NeumannDataTet4::_id = 0;
 const char* pylith::bc::NeumannDataTet4::_label = "bc3";
 
@@ -62,18 +61,28 @@ const int pylith::bc::NeumannDataTet4::_numCells = 1;
 const int pylith::bc::NeumannDataTet4::_numCorners = 3;
 /* Now vertices are renumbered in the submesh */
 const int pylith::bc::NeumannDataTet4::_cells[] = {
-    1 /*3*/, 2 /*4*/, 3 /*5*/,
+    1 /*3*/,
+    2 /*4*/,
+    3 /*5*/,
 };
 
-const PylithScalar pylith::bc::NeumannDataTet4::_tractionsCell[] = {
-    -0.5380048025,  0.87620875991,  1.3938468501
-};
+const PylithScalar pylith::bc::NeumannDataTet4::_tractionsCell[] = {-0.5380048025, 0.87620875991, 1.3938468501};
 const PylithScalar pylith::bc::NeumannDataTet4::_valsResidual[] = {
-    0.0,               0.0,               0.0,
-    -1.5530860877e-01,  2.529396817e-01,  4.0236892706e-01,
-    -1.5530860877e-01,  2.529396817e-01,  4.0236892706e-01,
-    -1.5530860877e-01,  2.529396817e-01,  4.0236892706e-01,
-    0.0,               0.0,               0.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.5530860877e-01,
+    2.529396817e-01,
+    4.0236892706e-01,
+    -1.5530860877e-01,
+    2.529396817e-01,
+    4.0236892706e-01,
+    -1.5530860877e-01,
+    2.529396817e-01,
+    4.0236892706e-01,
+    0.0,
+    0.0,
+    0.0,
 };
 
 pylith::bc::NeumannDataTet4::NeumannDataTet4(void) { // constructor
@@ -103,7 +112,8 @@ pylith::bc::NeumannDataTet4::NeumannDataTet4(void) { // constructor
 } // constructor
 
 
-pylith::bc::NeumannDataTet4::~NeumannDataTet4(void) {}
+pylith::bc::NeumannDataTet4::~NeumannDataTet4(void) {
+}
 
 
 // End of file

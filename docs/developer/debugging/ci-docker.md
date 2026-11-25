@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Running tests in CI Docker containers
 
 If one or more of the CI test runners report an error or someone reports an error using a specific Linux distribution, it is often convenient to run a CI test runner interactively on your local machine using Docker. Currently, we maintain Docker images containing all of the PyLith dependencies for the following Linux distributions:
@@ -36,3 +45,5 @@ $ docker build \
 # Run the Docker image interactively. This allows you to run "make check" or
 # run tests manually, potentially making use of the gdb debugger and valgrind.
 $ docker run -ti --rm pylith-debug /bin/bash
+
+% End of file

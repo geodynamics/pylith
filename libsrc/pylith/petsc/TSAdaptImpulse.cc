@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -14,8 +14,8 @@
 
 #include "pylith/exceptions/error.hh"
 
-#include "petscts.h"
 #include "petsc/private/tsimpl.h"
+#include "petscts.h"
 
 // ------------------------------------------------------------------------------------------------
 double pylith::petsc::TSAdaptImpulse::_impulseStep = 1.0e-6;
@@ -53,12 +53,12 @@ PetscErrorCode
 pylith::petsc::TSAdaptImpulse::TSAdaptChoose(TSAdapt adapt,
                                              TS ts,
                                              PetscReal h,
-                                             PetscInt *next_sc,
-                                             PetscReal *next_h,
-                                             PetscBool *accept,
-                                             PetscReal *wlte,
-                                             PetscReal *wltea,
-                                             PetscReal *wlter) {
+                                             PetscInt* next_sc,
+                                             PetscReal* next_h,
+                                             PetscBool* accept,
+                                             PetscReal* wlte,
+                                             PetscReal* wltea,
+                                             PetscReal* wlter) {
     static PetscReal dtTarget = -1.0;
     PetscReal dtInitial = TSAdaptImpulse::getImpulseTimeStep();
     PetscInt step;
@@ -85,3 +85,6 @@ pylith::petsc::TSAdaptImpulse::TSAdaptChoose(TSAdapt adapt,
     *wlter = -1; /* Weighted relative local truncation error was not evaluated */
     PetscFunctionReturn(PETSC_SUCCESS);
 }
+
+
+// End of file

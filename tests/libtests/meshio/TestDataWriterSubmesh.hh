@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "TestDataWriter.hh" // USES TestDataWriter_Data
@@ -18,14 +19,13 @@ namespace pylith {
     namespace meshio {
         class TestDataWriterSubmesh;
         class TestDataWriterSubmesh_Data;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterSubmesh {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestDataWriterSubmesh(void);
 
@@ -33,24 +33,19 @@ public:
     ~TestDataWriterSubmesh(void);
 
     /// Set data for tri test case.
-    static
-    void setDataTri(TestDataWriterSubmesh_Data* data);
+    static void setDataTri(TestDataWriterSubmesh_Data* data);
 
     /// Set data for quad test case.
-    static
-    void setDataQuad(TestDataWriterSubmesh_Data* data);
+    static void setDataQuad(TestDataWriterSubmesh_Data* data);
 
     /// Set data for tet test case.
-    static
-    void setDataTet(TestDataWriterSubmesh_Data* data);
+    static void setDataTet(TestDataWriterSubmesh_Data* data);
 
     /// Set data for hex test case.
-    static
-    void setDataHex(TestDataWriterSubmesh_Data* data);
+    static void setDataHex(TestDataWriterSubmesh_Data* data);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Initialize mesh.
     void _initialize(void);
 
@@ -70,12 +65,10 @@ protected:
      *
      * @returns Test data.
      */
-    virtual
-    TestDataWriterSubmesh_Data* _getData(void) = 0;
+    virtual TestDataWriterSubmesh_Data* _getData(void) = 0;
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     pylith::topology::Mesh* _mesh; ///< Mesh for domain
     pylith::topology::Mesh* _submesh; ///< Mesh for subdomain.
 
@@ -84,8 +77,7 @@ protected:
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterSubmesh_Data : public TestDataWriter_Data {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestDataWriterSubmesh_Data(void);
 
@@ -93,10 +85,10 @@ public:
     ~TestDataWriterSubmesh_Data(void);
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     const char* bcLabel; ///< Label marking submesh.
 
 }; // class TestDataWriterSubmesh_Data
+
 
 // End of file

@@ -1,62 +1,70 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "TestDirichletTimeDependent.hh" // Implementation of cases
 
-#include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
-#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 
 // ----------------------------------------------------------------------
 namespace pylith {
     namespace bc {
         // --------------------------------------------------------------
         class TestDirichletTimeDependent_InitialDisp2D : public TestDirichletTimeDependent {
-protected:
-
-            static const char* disp_units(void) {
+          protected:
+            static const char*
+            disp_units(void) {
                 return "m";
             }
 
-            static const char* vel_units(void) {
+            static const char*
+            vel_units(void) {
                 return "m/s";
             }
 
-            static const char* pressure_units(void) {
+            static const char*
+            pressure_units(void) {
                 return "Pa";
             }
 
             // Velocity and fluid pressure solution fields at time t.
 
-            static double vel_x(const double x,
-                                const double y) {
+            static double
+            vel_x(const double x,
+                  const double y) {
                 return FILL_VALUE;
             } // vel_x
 
-            static double vel_y(const double x,
-                                const double y) {
+            static double
+            vel_y(const double x,
+                  const double y) {
                 return FILL_VALUE;
             } // vel_y
 
-            static double fluid_press(const double x,
-                                      const double y) {
+            static double
+            fluid_press(const double x,
+                        const double y) {
                 return FILL_VALUE;
             } // fluid_press
 
-            void setUp(void) {
+            void
+            setUp(void) {
                 TestDirichletTimeDependent::setUp();
-                _data = new TestDirichletTimeDependent_Data();CPPUNIT_ASSERT(_data);
-                _data->cs = new spatialdata::geocoords::CSCart();CPPUNIT_ASSERT(_data->cs);
+                _data = new TestDirichletTimeDependent_Data();
+                CPPUNIT_ASSERT(_data);
+                _data->cs = new spatialdata::geocoords::CSCart();
+                CPPUNIT_ASSERT(_data->cs);
                 _data->cs->setSpaceDim(2);
 
                 CPPUNIT_ASSERT(_data->scales);
@@ -68,7 +76,7 @@ protected:
                 _data->vectorFieldType = pylith::topology::Field::VECTOR;
                 _data->scale = _data->scales->getDisplacementScale();
                 _data->numConstrainedDOF = 1;
-                static const int constrainedDOF[1] = { 1 };
+                static const int constrainedDOF[1] = {1};
                 _data->constrainedDOF = const_cast<int*>(constrainedDOF);
 
                 _data->useInitial = true;
@@ -76,7 +84,7 @@ protected:
                 _data->useTimeHistory = false;
 
                 _data->numAuxSubfields = 1;
-                static const char* auxSubfields[1] = { "initial_amplitude" };
+                static const char* auxSubfields[1] = {"initial_amplitude"};
                 _data->auxSubfields = const_cast<const char**>(auxSubfields);
                 static const pylith::topology::Field::Discretization auxDiscretizations[1] = {
                     pylith::topology::Field::Discretization(1, 1), // initial_amplitude
@@ -91,33 +99,38 @@ protected:
             // Spatial database user functions for auxiliary subfields.
 
             // Initial amplitude
-            static double initial_disp_x(const double x,
-                                         const double y) {
+            static double
+            initial_disp_x(const double x,
+                           const double y) {
                 return FILL_VALUE;
             } // initial_disp_x
 
-            static double initial_disp_y(const double x,
-                                         const double y) {
-                return 2.4*x + 1.8*y;
+            static double
+            initial_disp_y(const double x,
+                           const double y) {
+                return 2.4 * x + 1.8 * y;
             } // initial_disp_y
 
             // Displacement solution field at time t.
 
-            static double disp_x(const double x,
-                                 const double y) {
+            static double
+            disp_x(const double x,
+                   const double y) {
                 return FILL_VALUE;
             } // disp_x
 
-            static double disp_y(const double x,
-                                 const double y) {
+            static double
+            disp_y(const double x,
+                   const double y) {
                 return initial_disp_y(x, y);
             } // disp_y
 
-protected:
-
-            CPPUNIT_TEST_SUB_SUITE(TestDirichletTimeDependent_TriP1, TestDirichletTimeDependent_InitialDisp2D);
+          protected:
+            CPPUNIT_TEST_SUB_SUITE(TestDirichletTimeDependent_TriP1,
+                                   TestDirichletTimeDependent_InitialDisp2D);
             CPPUNIT_TEST_SUITE_END();
-            void setUp(void) {
+            void
+            setUp(void) {
                 TestDirichletTimeDependent_InitialDisp2D::setUp();
                 _data->meshFilename = "data/tri_small.mesh";
                 _data->bcLabel = "boundary_bottom";
@@ -155,33 +168,38 @@ protected:
             // Spatial database user functions for auxiliary subfields.
 
             // Initial amplitude
-            static double initial_disp_x(const double x,
-                                         const double y) {
+            static double
+            initial_disp_x(const double x,
+                           const double y) {
                 return FILL_VALUE;
             } // initial_disp_x
 
-            static double initial_disp_y(const double x,
-                                         const double y) {
-                return 2.4*x + 1.8*y + 1.8*x*y;
+            static double
+            initial_disp_y(const double x,
+                           const double y) {
+                return 2.4 * x + 1.8 * y + 1.8 * x * y;
             } // initial_disp_y
 
             // Displacement solution field at time t.
 
-            static double disp_x(const double x,
-                                 const double y) {
+            static double
+            disp_x(const double x,
+                   const double y) {
                 return FILL_VALUE;
             } // disp_x
 
-            static double disp_y(const double x,
-                                 const double y) {
+            static double
+            disp_y(const double x,
+                   const double y) {
                 return initial_disp_y(x, y);
             } // disp_y
 
-protected:
-
-            CPPUNIT_TEST_SUB_SUITE(TestDirichletTimeDependent_TriP2, TestDirichletTimeDependent_InitialDisp2D);
+          protected:
+            CPPUNIT_TEST_SUB_SUITE(TestDirichletTimeDependent_TriP2,
+                                   TestDirichletTimeDependent_InitialDisp2D);
             CPPUNIT_TEST_SUITE_END();
-            void setUp(void) {
+            void
+            setUp(void) {
                 TestDirichletTimeDependent_InitialDisp2D::setUp();
                 _data->meshFilename = "data/tri_small.mesh";
                 _data->bcLabel = "boundary_bottom";
@@ -264,5 +282,6 @@ protected:
 
     } // namespace bc
 } // namespace pylith
+
 
 // End of file

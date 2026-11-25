@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # PyLith v5.0.0 now available
 
 I am pleased to announce the release of PyLith 5.0.0, a finite-element code designed to solve dynamic elastic problems and quasi-static viscoelastic problems in tectonic deformation.
@@ -133,3 +142,5 @@ reader.filename = mesh_hex.msh
 * Matthew Knepley [ORCID iD 0000-0002-2292-0735](https://orcid.org/0000-0002-2292-0735)
 * Charles Williams [ORCID iD 0000-0001-7435-9196](https://orcid.org/0000-0001-7435-9196)
 * Ritwik Patil [ORCID iD 0009-0008-3305-6728](https://orcid.org/0009-0008-3305-6728)
+
+% End of file

@@ -1,3 +1,13 @@
+# -*- toml -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT 
+
+
 [build-system]
 requires = ["setuptools>=45", "wheel"]
 build-backend = "setuptools.build_meta"
@@ -16,3 +26,6 @@ pyre_journal = "pyrejournal_lexer:PyreJournalLexer"
 
 [project.entry-points."pygments.styles"]
 pyre_journal_style = "pyrejournal_style:PyreJournalStyle"
+
+
+# End of file

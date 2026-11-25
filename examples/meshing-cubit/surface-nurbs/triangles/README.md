@@ -1,0 +1,21 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
+This is a simple example showing how to create a NURBS surface from a
+triangulated surface using Cubit. We use the same original data as we did
+for the dem example (coarsely-sampled DEM of Mt Ruapehu volcano, New
+Zealand). There are only two files in this directory in addition to this
+README. The first (mkfacets.py) is a Python script to create a Facets file
+(readable by Cubit) from the DEM. We use the GMT 'triangulate' utility to
+perform this task. Once the Facets file has been created, we can then use
+the 'mksurface.jou' file within Cubit to create the NURBS surface. Note
+that it is first necessary to create a mapped mesh on the original surface,
+which means that the original triangulation is not really used.
+
+% End of file

@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-governingeqns-elasticity-genmaxwell)=
 # Generalized Maxwell Viscoelastic Models
 
@@ -186,3 +195,5 @@ We use this formulation for both our Maxwell and generalized Maxwell viscoelasti
 For the Maxwell model, $\mu_{0} = 0$ and $N = 1$.
 For the generalized Maxwell model, $N = 3$.
 The stable time step is equal to 1/5 of the minimum relaxation time for all of the Maxwell models {math:numref}`eqn:genmax:relaxtime`.
+
+% End of file

@@ -1,12 +1,13 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # @file tests/fullscale/linearelasticity/nofaults-2d/gravity_refstate)soln.py
 #
 # @brief Analytical solution to gravitational body foces with initial stress.
@@ -39,8 +40,8 @@ ymax = +4000.0  # m
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
-    """Analytical solution to gravitational body forces with initial stress and no displacement.
-    """
+    """Analytical solution to gravitational body forces with initial stress and no displacement."""
+
     SPACE_DIM = 2
     TENSOR_SIZE = 4
 
@@ -63,59 +64,53 @@ class AnalyticalSoln(object):
         return self.fields[name](pts)
 
     def zero_vector(self, locs):
-        (npts, dim) = locs.shape
+        npts, dim = locs.shape
         return numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
 
     def density(self, locs):
-        """Compute density field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute density field at locations."""
+        npts, dim = locs.shape
         density = p_density * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return density
 
     def shear_modulus(self, locs):
-        """Compute shear modulus field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute shear modulus field at locations."""
+        npts, dim = locs.shape
         shear_modulus = p_mu * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return shear_modulus
 
     def bulk_modulus(self, locs):
-        """Compute bulk modulus field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute bulk modulus field at locations."""
+        npts, dim = locs.shape
         bulk_modulus = (p_lambda + 2.0 / 3.0 * p_mu) * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return bulk_modulus
 
     def strain(self, locs):
-        """Compute strain field at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute strain field at locations."""
+        npts, dim = locs.shape
         strain = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
         return strain
 
     def stress(self, locs):
-        """Compute stress field at locations.
-        """
+        """Compute stress field at locations."""
         syy = p_density * gacc * (locs[:, 1] - ymax)
         sxx = syy
         szz = syy
         sxy = 0
 
-        (npts, dim) = locs.shape
+        npts, dim = locs.shape
         stress = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        stress[0,:, 0] = sxx
-        stress[0,:, 1] = syy
-        stress[0,:, 2] = szz
-        stress[0,:, 3] = sxy
+        stress[0, :, 0] = sxx
+        stress[0, :, 1] = syy
+        stress[0, :, 2] = szz
+        stress[0, :, 3] = sxy
         return stress
 
     def gacc(self, locs):
-        """Compute gravitational acceleration at locations.
-        """
-        (npts, dim) = locs.shape
+        """Compute gravitational acceleration at locations."""
+        npts, dim = locs.shape
         gravacc = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        gravacc[0,:, 1] = -gacc
+        gravacc[0, :, 1] = -gacc
         return gravacc
 
 

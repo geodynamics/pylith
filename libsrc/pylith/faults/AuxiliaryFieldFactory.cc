@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -15,14 +15,14 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
 
-#include "pylith/scales/Scales.hh" // USES Scales
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
 
-#include <cmath> // USES pow()
 #include <cassert>
+#include <cmath> // USES pow()
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -33,7 +33,8 @@ pylith::faults::AuxiliaryFieldFactory::AuxiliaryFieldFactory(void) {
 
 // ------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::faults::AuxiliaryFieldFactory::~AuxiliaryFieldFactory(void) {}
+pylith::faults::AuxiliaryFieldFactory::~AuxiliaryFieldFactory(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -44,7 +45,7 @@ pylith::faults::AuxiliaryFieldFactory::addSlip(void) {
     PYLITH_DEBUG(pylith::journal::application_flow, "addSlip(void)");
 
     const char* fieldName = "slip";
-    const char* componentNames[3] = { "slip_opening", "slip_left_lateral", "slip_reverse" };
+    const char* componentNames[3] = {"slip_opening", "slip_left_lateral", "slip_reverse"};
 
     const PylithReal displacementScale = _scales->getDisplacementScale();
 
@@ -75,7 +76,7 @@ pylith::faults::AuxiliaryFieldFactory::addSlipRate(void) {
     PYLITH_DEBUG(pylith::journal::application_flow, "addSlipRate(void)");
 
     const char* fieldName = "slip_rate";
-    const char* componentNames[3] = { "slip_rate_opening", "slip_rate_left_lateral", "slip_rate_reverse" };
+    const char* componentNames[3] = {"slip_rate_opening", "slip_rate_left_lateral", "slip_rate_reverse"};
 
     const PylithReal velocityScale = pylith::scales::ElasticityScales::getVelocityScale(*_scales);
 

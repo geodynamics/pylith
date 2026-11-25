@@ -1,23 +1,22 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
-//
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
+#include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "tests/src/ObserverSolnStub.hh" // USES ObserverSolnStub
 #include "tests/src/StubMethodTracker.hh" // USES StubMethodTracker
-#include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/Field.hh" // USES Field
 
 #include "pylith/problems/problemsfwd.hh" // HOLDSA ObserversSoln
 
@@ -26,14 +25,13 @@
 namespace pylith {
     namespace problems {
         class TestObserversSoln;
-    } // problems
-} // pylith
+    } // namespace problems
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::problems::TestObserversSoln : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestObserversSoln(void);
 
@@ -56,8 +54,7 @@ public:
     void testNotifyObservers(void);
 
     // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::problems::ObserversSoln* _observers; ///< Test subject.
 
     static ObserverSolnStub observerA;
@@ -68,26 +65,30 @@ pylith::problems::ObserverSolnStub pylith::problems::TestObserversSoln::observer
 pylith::problems::ObserverSolnStub pylith::problems::TestObserversSoln::observerB;
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestObservesSoln::testRegisterObserver", "[TestObserversSoln]") {
+TEST_CASE("TestObservesSoln::testRegisterObserver",
+          "[TestObserversSoln]") {
     pylith::problems::TestObserversSoln().testRegisterObserver();
 }
-TEST_CASE("TestObservesSoln::testRemoveObserver", "[TestObserversSoln]") {
+TEST_CASE("TestObservesSoln::testRemoveObserver",
+          "[TestObserversSoln]") {
     pylith::problems::TestObserversSoln().testRemoveObserver();
 }
-TEST_CASE("TestObservesSoln::testTimeScale", "[TestObserversSoln]") {
+TEST_CASE("TestObservesSoln::testTimeScale",
+          "[TestObserversSoln]") {
     pylith::problems::TestObserversSoln().testTimeScale();
 }
-TEST_CASE("TestObservesSoln::testVerifyObservers", "[TestObserversSoln]") {
+TEST_CASE("TestObservesSoln::testVerifyObservers",
+          "[TestObserversSoln]") {
     pylith::problems::TestObserversSoln().testVerifyObservers();
 }
-TEST_CASE("TestObservesSoln::testNotifyObservers", "[TestObserversSoln]") {
+TEST_CASE("TestObservesSoln::testNotifyObservers",
+          "[TestObserversSoln]") {
     pylith::problems::TestObserversSoln().testNotifyObservers();
 }
 
 // ------------------------------------------------------------------------------------------------
 // Constructor.
-pylith::problems::TestObserversSoln::TestObserversSoln(void) :
-    _observers(new ObserversSoln()) {
+pylith::problems::TestObserversSoln::TestObserversSoln(void) : _observers(new ObserversSoln()) {
     REQUIRE(_observers);
     _observers->registerObserver(&observerA);
     _observers->registerObserver(&observerB);
@@ -97,7 +98,8 @@ pylith::problems::TestObserversSoln::TestObserversSoln(void) :
 // ------------------------------------------------------------------------------------------------
 // Destructor
 pylith::problems::TestObserversSoln::~TestObserversSoln(void) {
-    delete _observers;_observers = NULL;
+    delete _observers;
+    _observers = NULL;
 } // tearDown
 
 

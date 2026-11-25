@@ -1,25 +1,25 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/testing/testingfwd.hh" // forward declarations
 
-#include <string> // USES std::string
 #include <map> // USES std::map
+#include <string> // USES std::string
 
 class pylith::testing::StubMethodTracker {
     friend class TestStubMethodTracker; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     StubMethodTracker(void);
 
@@ -49,8 +49,7 @@ public:
     size_t getMethodCount(const char* methodName);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     StubMethodTracker(const StubMethodTracker&); ///< Not implemented.
     const StubMethodTracker& operator=(const StubMethodTracker&); ///< Not implemented
 
@@ -58,5 +57,6 @@ private:
     static map_type _methodCount; ///< Number of times method was called.
 
 }; // StubMethodTracker
+
 
 // End of file

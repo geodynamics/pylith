@@ -1,21 +1,22 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/materials/materialsfwd.hh" // HOLDSA AuxiliaryFactoryElastic
-#include "pylith/topology/Field.hh" // HOLDSA Field::SubfieldInfo
-#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
-#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA Coordsys
 #include "pylith/scales/scalesfwd.hh" // HOLDSA Scales
+#include "pylith/topology/Field.hh" // HOLDSA Field::SubfieldInfo
+#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA Coordsys
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
 
 #include <map> // USES std::map
 
@@ -23,14 +24,13 @@ namespace pylith {
     namespace materials {
         class TestAuxiliaryFactoryLinearElastic;
         class TestAuxiliaryFactoryLinearElastic_Data;
-    } // materials
-} // pylith
+    } // namespace materials
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::materials::TestAuxiliaryFactoryLinearElastic : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestAuxiliaryFactoryLinearElastic(TestAuxiliaryFactoryLinearElastic_Data* data);
 
@@ -44,14 +44,12 @@ public:
     void testSetValuesFromDB(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
-    /// Initialze mesh, coordinate system, auxiliary field, and factory.
+  protected:
+    /// Initialize mesh, coordinate system, auxiliary field, and factory.
     void _initialize(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     AuxiliaryFactoryElastic* _factory; ///< Test subject.
     TestAuxiliaryFactoryLinearElastic_Data* _data; ///< Test data.
 
@@ -63,8 +61,7 @@ protected:
 // ------------------------------------------------------------------------------------------------
 class pylith::materials::TestAuxiliaryFactoryLinearElastic_Data {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestAuxiliaryFactoryLinearElastic_Data(void);
 
@@ -72,8 +69,7 @@ public:
     ~TestAuxiliaryFactoryLinearElastic_Data(void);
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     size_t auxDim; ///< Topological dimension of auxiliary field.
 
     size_t dimension; ///< Spatial dimension.
@@ -85,5 +81,6 @@ public:
     spatialdata::spatialdb::UserFunctionDB* auxiliaryDB; ///< Spatial database with values for solution.
 
 }; // class TestAuxiliaryFactoryLinearElastic_Data
+
 
 // End of file

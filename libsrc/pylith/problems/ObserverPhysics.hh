@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/problems/problemsfwd.hh" // forward declarations
@@ -21,8 +22,7 @@ class pylith::problems::ObserverPhysics : public pylith::problems::Observer {
     friend class TestObserverPhysics; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     ObserverPhysics(void);
 
@@ -30,8 +30,7 @@ public:
     virtual ~ObserverPhysics(void);
 
     /// Deallocate PETSc and local data structures.
-    virtual
-    void deallocate(void);
+    virtual void deallocate(void);
 
     /** Set physics implementation to observe.
      *
@@ -43,15 +42,13 @@ public:
      *
      * @param[in] value Time scale for dimensionalizing time.
      */
-    virtual
-    void setTimeScale(const PylithReal value) = 0;
+    virtual void setTimeScale(const PylithReal value) = 0;
 
     /** Verify observer is compatible with solution.
      *
      * @param[in] solution Solution field.
      */
-    virtual
-    void verifyConfiguration(const pylith::topology::Field& solution) const = 0;
+    virtual void verifyConfiguration(const pylith::topology::Field& solution) const = 0;
 
     /** Receive update (subject of observer).
      *
@@ -60,23 +57,21 @@ public:
      * @param[in] solution Solution at time t.
      * @param[in] notification Type of notification.
      */
-    virtual
-    void update(const PylithReal t,
-                const PylithInt tindex,
-                const pylith::topology::Field& solution,
-                const pylith::problems::Observer::NotificationType notification) = 0;
+    virtual void update(const PylithReal t,
+                        const PylithInt tindex,
+                        const pylith::topology::Field& solution,
+                        const pylith::problems::Observer::NotificationType notification) = 0;
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     const pylith::feassemble::PhysicsImplementation* _physics; ///< Physics implementation to observe.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     ObserverPhysics(const ObserverPhysics&); ///< Not implemented.
     const ObserverPhysics& operator=(const ObserverPhysics&); ///< Not implemented
 
 }; // ObserverPhysics
+
 
 // End of file

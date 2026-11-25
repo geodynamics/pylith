@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/materials/materialsfwd.hh" // forward declarations
@@ -17,8 +18,7 @@ class pylith::materials::IncompressibleElasticity : public pylith::materials::Ma
     friend class TestIncompressibleElasticity; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     IncompressibleElasticity(void);
 
@@ -96,8 +96,7 @@ public:
                                               const bool hasFault) const;
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get auxiliary factory associated with physics.
      *
      * @return Auxiliary factory for physics object.
@@ -117,8 +116,7 @@ protected:
     pylith::topology::FieldFactory* _getDerivedFactory(void);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     /** Set kernels for residual.
      *
      * @param[out] integrator Integrator for material.
@@ -152,20 +150,18 @@ private:
                                  const pylith::topology::Field& solution) const;
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     bool _useBodyForce; ///< Flag to include body force term.
     pylith::materials::RheologyIncompressibleElasticity* _rheology; ///< Bulk rheology for incompressible elasticity.
     pylith::materials::DerivedFactoryElasticity* _derivedFactory; ///< Factory for creating derived fields.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     IncompressibleElasticity(const IncompressibleElasticity&); ///< Not implemented.
     const IncompressibleElasticity& operator=(const IncompressibleElasticity&); /// Not implemented.
-
 };
 
 // class Elasticity
+
 
 // End of file

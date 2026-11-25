@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 6: Slip on Two Faults and Elastic Materials
 
 % Metadata extracted from parameter files.
@@ -143,3 +152,5 @@ Solution for Step 6 at t=40 yr.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 1000.
 The undeformed configuration is shown by the gray wireframe.
 :::
+
+% End of file

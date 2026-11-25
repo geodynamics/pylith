@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from .DataWriter import DataWriter
 from .meshio import DataWriterHDF5 as ModuleDataWriterHDF5
@@ -18,28 +18,24 @@ class DataWriterHDF5(DataWriter, ModuleDataWriterHDF5):
 
     Implements `DataWriter`.
     """
-    DOC_CONFIG = {
-        "cfg": """
+
+    DOC_CONFIG = {"cfg": """
             [data_writer]
             filename = domain_solution.h5
-        """
-    }
-    
+        """}
 
     import pythia.pyre.inventory
 
     filename = pythia.pyre.inventory.str("filename", default="")
-    filename.meta['tip'] = "Name of HDF5 file."
+    filename.meta["tip"] = "Name of HDF5 file."
 
     def __init__(self, name="datawriterhdf5"):
-        """Constructor.
-        """
+        """Constructor."""
         DataWriter.__init__(self, name)
         ModuleDataWriterHDF5.__init__(self)
 
     def preinitialize(self):
-        """Initialize writer.
-        """
+        """Initialize writer."""
         DataWriter.preinitialize(self)
 
     def setFilename(self, outputDir, simName, label):
@@ -59,8 +55,7 @@ class DataWriterHDF5(DataWriter, ModuleDataWriterHDF5):
 
 
 def data_writer():
-    """Factory associated with DataWriter.
-    """
+    """Factory associated with DataWriter."""
     return DataWriterHDF5()
 
 

@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -15,16 +15,17 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES isCohesiveCell()
 
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES journals
-#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 // Constructor
 pylith::meshio::DataWriter::DataWriter(void) :
     _timeScale(1.0),
     _context(""),
     _isInfo(false),
-    _isOpen(false) {}
+    _isOpen(false) {
+}
 
 
 // ----------------------------------------------------------------------
@@ -76,13 +77,13 @@ pylith::meshio::DataWriter::open(const pylith::topology::Mesh& mesh,
     _isInfo = isInfo;
     _isOpen = true;
 
-    PetscDM dmMesh = mesh.getDM();assert(dmMesh);
+    PetscDM dmMesh = mesh.getDM();
+    assert(dmMesh);
     const char* meshName = NULL;
-    PetscObjectGetName((PetscObject) dmMesh, &meshName);
+    PetscObjectGetName((PetscObject)dmMesh, &meshName);
 
     std::ostringstream s;
-    s << "output_"
-      << meshName;
+    s << "output_" << meshName;
     _context = s.str();
 
     PYLITH_METHOD_END;
@@ -121,7 +122,8 @@ pylith::meshio::DataWriter::DataWriter(const DataWriter& w) :
     PyreComponent(),
     _context(w._context),
     _isInfo(w._isInfo),
-    _isOpen(w._isOpen) {}
+    _isOpen(w._isOpen) {
+}
 
 
 // ----------------------------------------------------------------------
@@ -143,7 +145,8 @@ pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
 
     assert(coordsGlobalVec);
 
-    PetscDM dmMesh = mesh.getDM();assert(dmMesh);
+    PetscDM dmMesh = mesh.getDM();
+    assert(dmMesh);
     PetscDM dmCoord = NULL;
 
     PetscSection section = NULL;
@@ -156,25 +159,28 @@ pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
 
     PylithInt dim, dimF, pStart, pEnd, qStart, qEnd, cStart, cEnd, cMax, vEnd, vMax = -1;
 
-    PylithCallPetsc(DMGetCoordinateDM(dmMesh, &dmCoord));assert(dmCoord);
+    PylithCallPetsc(DMGetCoordinateDM(dmMesh, &dmCoord));
+    assert(dmCoord);
     PylithCallPetsc(DMPlexGetHeightStratum(dmCoord, 0, &cStart, &cEnd));
     PylithCallPetsc(DMPlexGetDepthStratum(dmCoord, 0, NULL, &vEnd));
     cMax = cStart;
     for (PetscInt cell = cStart; cell < cEnd; ++cell, ++cMax) {
-        if (pylith::topology::MeshOps::isCohesiveCell(dmMesh, cell)) { break; }
+        if (pylith::topology::MeshOps::isCohesiveCell(dmMesh, cell)) {
+            break;
+        }
     }
     PylithInt excludeRanges[4] = {cMax, cEnd, vMax, vEnd};
     PylithInt numExcludes = (cMax < cEnd ? 1 : 0) + (vMax >= 0 ? 1 : 0);
 
     PylithCallPetsc(DMGetLocalSection(dmCoord, &section));
-    PylithCallPetsc(DMGetDimension(dmMesh,  &dim));
+    PylithCallPetsc(DMGetDimension(dmMesh, &dim));
     PylithCallPetsc(DMGetDimension(dmCoord, &dimF));
-    PylithCallPetsc(DMPlexGetChart(dmMesh,  &pStart, &pEnd));
+    PylithCallPetsc(DMPlexGetChart(dmMesh, &pStart, &pEnd));
     PylithCallPetsc(DMPlexGetChart(dmCoord, &qStart, &qEnd));
-    PylithCallPetsc(DMPlexGetSubpointMap(dmMesh,  &subpointMap));
+    PylithCallPetsc(DMPlexGetSubpointMap(dmMesh, &subpointMap));
     PylithCallPetsc(DMPlexGetSubpointMap(dmCoord, &subpointMapF));
-    if (((dim != dimF) || ((pEnd-pStart) < (qEnd-qStart))) && subpointMap && !subpointMapF) {
-        const PylithInt *indices = NULL;
+    if (((dim != dimF) || ((pEnd - pStart) < (qEnd - qStart))) && subpointMap && !subpointMapF) {
+        const PylithInt* indices = NULL;
         PetscIS subpointIS = NULL;
         PylithInt n = 0;
 
@@ -202,7 +208,7 @@ pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
         if (subpointIS) {
             PylithCallPetsc(ISRestoreIndices(subpointIS, &indices));
         } // if
-          /* No need to setup section */
+        /* No need to setup section */
         section = subSection;
         /* There are no excludes for surface meshes */
         numExcludes = 0;
@@ -216,13 +222,14 @@ pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
     PylithCallPetsc(DMSetLocalSection(dmCoordGlobal, newSection));
     PylithCallPetsc(PetscSectionDestroy(&newSection));
     PylithCallPetsc(DMGetPointSF(dmCoordGlobal, &sf));
-    PylithCallPetsc(PetscSectionCreateGlobalSectionCensored(section, sf, PETSC_TRUE, numExcludes, excludeRanges, &gsection));
+    PylithCallPetsc(
+        PetscSectionCreateGlobalSectionCensored(section, sf, PETSC_TRUE, numExcludes, excludeRanges, &gsection));
     PylithCallPetsc(DMSetGlobalSection(dmCoordGlobal, gsection));
     PylithCallPetsc(PetscSectionDestroy(&gsection));
 
     PylithCallPetsc(VecDestroy(coordsGlobalVec));
     PylithCallPetsc(DMCreateGlobalVector(dmCoordGlobal, coordsGlobalVec));
-    PylithCallPetsc(PetscObjectSetName((PetscObject) *coordsGlobalVec, "vertices"));
+    PylithCallPetsc(PetscObjectSetName((PetscObject)*coordsGlobalVec, "vertices"));
 
     PylithCallPetsc(PetscSectionDestroy(&subSection));
 
@@ -250,7 +257,7 @@ pylith::meshio::DataWriter::_writeVec(PetscVec vector,
     /* To save vec where we want, we create a new Vec (temp) with           */
     /* VecCreate(), wrap the vec data in temp, and call VecView(temp, viewer). */
     PetscVec temp;
-    const PetscScalar *array;
+    const PetscScalar* array;
     const char* vecName;
     PetscLayout map;
 

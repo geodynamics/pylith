@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-governingeqns-elasticity-linear-maxwell)=
 # Linear Viscoelastic Models
 
@@ -32,3 +41,5 @@ Another simple model is the Kelvin-Voigt model, which consists of a spring in pa
 
 As opposed to the Maxwell model, which represents a fluid, the Kelvin-Voigt model represents a solid undergoing reversible, viscoelastic strain.
 If the material is subjected to a constant stress, it deforms at a decreasing rate, gradually approaching the strain that would occur for a purely elastic material. When the stress is released, the material gradually relaxes back to its undeformed state.
+
+% End of file

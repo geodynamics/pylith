@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Method of Manufactured Solutions
 
 We use the Method of Manufactured Solutions (MMS) to verify the order of accuracy of our solution to the governing equations.
@@ -22,7 +31,7 @@ In the Taylor series Jacobian test, we verify that
 \begin{equation}
   || F(\vec{s} + \epsilon \vec{\delta s}) - F(\vec{s}) - \epsilon J \vec{v} || < \epsilon^2,
 \end{equation}
-where $\vec{\delta s}$ is a perturbation in the soluton and $J$ is the Jacobian matrix.
+where $\vec{\delta s}$ is a perturbation in the solution and $J$ is the Jacobian matrix.
 
 The C++ class `pylith::testing::MMSTest` implements these four tests.
 In implementing an MMS test case, we need to provide:
@@ -73,3 +82,5 @@ The quadrature order must be the same across all solution subfields and auxiliar
 
 Add a simple test case that introduces known errors into the discretization, residual, and Jacobian to illustrate these steps.
 :::
+
+% End of file

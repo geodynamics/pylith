@@ -1,28 +1,25 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from pylith.testing.FullTestApp import MeshEntity
 
 
 class TetGmsh(object):
-    """Mesh information for tet mesh using Gmsh.
-    """
+    """Mesh information for tet mesh using Gmsh."""
+
     ENTITIES = {
-        "domain": MeshEntity(ncells=1397, ncorners=4, nvertices=422+9),
-
+        "domain": MeshEntity(ncells=1397, ncorners=4, nvertices=422 + 9),
         # Materials
-        "mat_elastic": MeshEntity(ncells=1397, ncorners=4, nvertices=422+9),
-
+        "mat_elastic": MeshEntity(ncells=1397, ncorners=4, nvertices=422 + 9),
         # Faults
         "fault": MeshEntity(ncells=22, ncorners=3, nvertices=18),
-
         # Boundaries
         "bc_xneg": MeshEntity(ncells=84, ncorners=3, nvertices=55),
         "bc_xpos": MeshEntity(ncells=84, ncorners=3, nvertices=55),

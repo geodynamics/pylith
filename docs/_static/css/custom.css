@@ -1,3 +1,15 @@
+/*  -*- css -*-  */
+/*
+ * -*- coding: utf-8 -*-
+ *
+ * This code is part of PyLith, developed through the Computational Infrastructure
+ * for Geodynamics (https://github.com/geodynamics/pylith).
+ *
+ * Copyright (c) 2010-2026 The PyLith authors and contributors
+ * SPDX-License-Identifier: MIT
+ */
+
+
 html {
 /* Heading font sizes */
   --pst-font-size-h1: 28px; /* 36 */
@@ -26,3 +38,6 @@ html {
   flex: 10;
   max-width: 100%;
 }
+
+
+/* End of file */

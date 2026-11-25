@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Common Information
 
 In addition to the finite-element mesh, PyLith requires files to specify the simulation parameters.
@@ -149,3 +158,5 @@ caption: Generate the spatial database files.
 # Generate spatial databases for the material properties.
 ./generate_spatialdb_matprops.py
 ```
+
+% End of file

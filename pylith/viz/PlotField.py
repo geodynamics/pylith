@@ -1,15 +1,17 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 """Module for plotting solution and derived fields from PyLith output."""
 
 from pylith.viz import core
+
 
 class PlotField:
     TIME_DEPENDENT = True
@@ -19,7 +21,7 @@ class PlotField:
         self.data = data
         self.interactive = interactive
 
-    def plot(self, field_name: str, component_name: str, show_edges: bool=True):
+    def plot(self, field_name: str, component_name: str, show_edges: bool = True):
         self.field_name = field_name
         self.component_name = component_name
 
@@ -34,7 +36,14 @@ class PlotField:
 
     def _plot_data(self, domain, show_edges):
         self._set_scalar(domain=domain, t_index=0)
-        self.plotter.add_mesh(domain.grid, name=domain.name, show_edges=show_edges, show_scalar_bar=False, cmap=self.lut, scalars=self.field_name)
+        self.plotter.add_mesh(
+            domain.grid,
+            name=domain.name,
+            show_edges=show_edges,
+            show_scalar_bar=False,
+            cmap=self.lut,
+            scalars=self.field_name,
+        )
 
     def _update_data(self, domain, t_index: int):
         self._set_scalar(domain=domain, t_index=t_index)
@@ -56,7 +65,25 @@ def cli(plotter, data, args):
 
 
 def add_args(parser):
-    parser.add_argument("--field", action="store", help="Field for shading. Currently, must be a vertex field.", dest="field_name", default="displacement")
-    parser.add_argument("--component", action="store", help="Component of field for shading.", dest="component", default="magnitude", choices=core.Field.COMPONENT.keys())
-    parser.add_argument("--hide-edges", action="store_false", help="Hide cell edges of deformed domain.", dest="show_edges")
+    parser.add_argument(
+        "--field",
+        action="store",
+        help="Field for shading. Currently, must be a vertex field.",
+        dest="field_name",
+        default="displacement",
+    )
+    parser.add_argument(
+        "--component",
+        action="store",
+        help="Component of field for shading.",
+        dest="component",
+        default="magnitude",
+        choices=core.Field.COMPONENT.keys(),
+    )
+    parser.add_argument(
+        "--hide-edges", action="store_false", help="Hide cell edges of deformed domain.", dest="show_edges"
+    )
     parser.set_defaults(func=cli)
+
+
+# End of file

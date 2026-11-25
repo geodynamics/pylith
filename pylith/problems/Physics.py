@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from pylith.petsc.Component import Component
 from .problems import Physics as ModulePhysics
@@ -36,9 +36,7 @@ class Physics(Component, ModulePhysics):
     auxiliarySubfields = pythia.pyre.inventory.facilityArray(
         "auxiliary_subfields", itemFactory=subfieldFactory, factory=EmptyBin
     )
-    auxiliarySubfields.meta["tip"] = (
-        "Discretization information for auxiliary subfields."
-    )
+    auxiliarySubfields.meta["tip"] = "Discretization information for auxiliary subfields."
 
     derivedSubfields = pythia.pyre.inventory.facilityArray(
         "derived_subfields", itemFactory=subfieldFactory, factory=EmptyBin
@@ -47,9 +45,7 @@ class Physics(Component, ModulePhysics):
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
 
-    auxiliaryFieldDB = pythia.pyre.inventory.facility(
-        "db_auxiliary_field", family="spatial_database", factory=SimpleDB
-    )
+    auxiliaryFieldDB = pythia.pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=SimpleDB)
     auxiliaryFieldDB.meta["tip"] = "Database for physical property parameters."
 
     from pylith.problems.SingleObserver import SinglePhysicsObserver
@@ -76,10 +72,7 @@ class Physics(Component, ModulePhysics):
         for subfield in self.auxiliarySubfields.components():
             fieldName = subfield.aliases[-1]
             descriptor = subfield.getTraitDescriptor("quadrature_order")
-            if (
-                hasattr(descriptor.locator, "source")
-                and descriptor.locator.source == "default"
-            ):
+            if hasattr(descriptor.locator, "source") and descriptor.locator.source == "default":
                 quadOrder = problem.defaults.quadOrder
             else:
                 quadOrder = subfield.quadOrder
@@ -97,10 +90,7 @@ class Physics(Component, ModulePhysics):
         for subfield in self.derivedSubfields.components():
             fieldName = subfield.aliases[-1]
             descriptor = subfield.getTraitDescriptor("quadrature_order")
-            if (
-                hasattr(descriptor.locator, "source")
-                and descriptor.locator.source == "default"
-            ):
+            if hasattr(descriptor.locator, "source") and descriptor.locator.source == "default":
                 quadOrder = problem.defaults.quadOrder
             else:
                 quadOrder = subfield.quadOrder
@@ -121,9 +111,7 @@ class Physics(Component, ModulePhysics):
 
     def _createModuleObj(self):
         """Call constructor for module object for access to C++ object."""
-        raise NotImplementedError(
-            "Please implement _createModuleObj() in derived class."
-        )
+        raise NotImplementedError("Please implement _createModuleObj() in derived class.")
 
 
 # End of file

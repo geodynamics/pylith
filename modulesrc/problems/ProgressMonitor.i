@@ -1,24 +1,18 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
 
-/** @file modulesrc/problems/ProgressMonitor.i
- *
- * Python interface to C++ abstract base class ProgressMonitor.
- */
 
 namespace pylith {
     namespace problems {
-        class ProgressMonitor: public pylith::utils::PyreComponent {
+        class ProgressMonitor : public pylith::utils::PyreComponent {
             // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             /// Constructor
             ProgressMonitor(void);
 
@@ -26,8 +20,7 @@ public:
             virtual ~ProgressMonitor(void);
 
             /// Deallocate PETSc and local data structures.
-            virtual
-            void deallocate(void);
+            virtual void deallocate(void);
 
             /** Set how often to report status.
              *
@@ -60,19 +53,17 @@ public:
             void close(void);
 
             // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////
-protected:
-
+          protected:
             /// Open progress monitor.
-            virtual
-            void _open(void) = 0;
+            virtual void _open(void) = 0;
 
             /// Close progress monitor.
-            virtual
-            void _close(void) = 0;
+            virtual void _close(void) = 0;
 
         }; // class ProgressMonitor
 
-    } // problems
-} // pylith
+    } // namespace problems
+} // namespace pylith
+
 
 // End of file

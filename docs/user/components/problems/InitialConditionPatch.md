@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # InitialConditionPatch
 
 % WARNING: Do not edit; this is a generated file!
@@ -56,3 +65,4 @@ db.description = Initial conditions over material 2
 db.filename = shearmat2_ic.spatialdb
 :::
 
+% End of file

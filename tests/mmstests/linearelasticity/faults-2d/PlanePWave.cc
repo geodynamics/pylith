@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 /** @file tests/mmstests/linearelasticity/faults-2d/PlanePWave.cc
  *
@@ -18,29 +18,29 @@
 
 #include "PlanePWave.hh" // ISA PlanePWave
 
+#include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 #include "pylith/faults/KinSrcStep.hh" // USES KinSrcStep
-#include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/materials/Elasticity.hh" // USES Elasticity
 #include "pylith/materials/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity
-#include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
+#include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 
-#include "pylith/topology/Mesh.hh" // USES pylith::topology::Mesh::cells_label_name
-#include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
-#include "pylith/utils/journals.hh" // USES PYLITH_DEBUG
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
+#include "pylith/topology/Mesh.hh" // USES pylith::topology::Mesh::cells_label_name
+#include "pylith/utils/journals.hh" // USES PYLITH_DEBUG
 
-#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "pylith/scales/Scales.hh" // USES Scales
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 
 #include "catch2/catch_test_macros.hpp"
 
 // ------------------------------------------------------------------------------------------------
 namespace pylith {
     class _PlanePWave;
-} // pylith
+} // namespace pylith
 
 class pylith::_PlanePWave {
     static pylith::scales::Scales scales;
@@ -49,131 +49,153 @@ class pylith::_PlanePWave {
     static const double TIME_SNAPSHOT; // nondimensional
 
     // Density
-    static double density(const double x,
-                          const double y) {
+    static double
+    density(const double x,
+            const double y) {
         return 2500.0;
     } // density
 
-    static const char* density_units(void) {
+    static const char*
+    density_units(void) {
         return "kg/m**3";
     } // density_units
 
     // Vs
-    static double vs(const double x,
-                     const double y) {
+    static double
+    vs(const double x,
+       const double y) {
         return 3000.0;
     } // vs
 
-    static const char* vs_units(void) {
+    static const char*
+    vs_units(void) {
         return "m/s";
     } // vs_units
 
     // Vp
-    static double vp(const double x,
-                     const double y) {
-        return sqrt(3.0)*vs(x,y);
+    static double
+    vp(const double x,
+       const double y) {
+        return sqrt(3.0) * vs(x, y);
     } // vp
 
-    static const char* vp_units(void) {
+    static const char*
+    vp_units(void) {
         return "m/s";
     } // vp_units
 
     // Kinematic rupture auxiliary components.
 
     // Initiation time
-    static double initiation_time(const double x,
-                                  const double y) {
+    static double
+    initiation_time(const double x,
+                    const double y) {
         return 0.0 * TIME_SCALE;
     } // initiation_time
 
-    static const char* time_units(void) {
+    static const char*
+    time_units(void) {
         return "s";
     } // time_units
 
     // Slip rate
-    static double finalslip_opening(const double x,
-                                    const double y) {
+    static double
+    finalslip_opening(const double x,
+                      const double y) {
         return 0.0;
     } // finalslip_opening
 
-    static double finalslip_leftlateral(const double x,
-                                        const double y) {
+    static double
+    finalslip_leftlateral(const double x,
+                          const double y) {
         const double displacementScale = scales.getDisplacementScale();
         return SLIP_RATE * TIME_SNAPSHOT * displacementScale;
     } // finalslip_leftlateral
 
-    static const char* slip_units(void) {
+    static const char*
+    slip_units(void) {
         return "m";
     } // slip_units
 
     // Solution subfields (nondimensional).
 
     // Acceleration
-    static double acc_x(const double x,
-                        const double y) {
+    static double
+    acc_x(const double x,
+          const double y) {
         return 0.0;
     } // acc_x
 
-    static double acc_y(const double x,
-                        const double y) {
+    static double
+    acc_y(const double x,
+          const double y) {
         return 0.0;
     } // acc_y
 
-    static const char* acc_units(void) {
+    static const char*
+    acc_units(void) {
         return "m/s*2";
     } // vel_units
 
     // Velocity
-    static double vel_x(const double x,
-                        const double y) {
+    static double
+    vel_x(const double x,
+          const double y) {
         return 0.0;
     } // vel_x
 
-    static double vel_y(const double x,
-                        const double y,
-                        PetscInt flag) {
+    static double
+    vel_y(const double x,
+          const double y,
+          PetscInt flag) {
         double amplitude = 0.0;
         if (!flag) {
-            amplitude = x < +2.0 ? -0.5*SLIP_RATE : +0.5*SLIP_RATE;
+            amplitude = x < +2.0 ? -0.5 * SLIP_RATE : +0.5 * SLIP_RATE;
         } else {
-            amplitude = flag < 0 ? -0.5*SLIP_RATE : +0.5*SLIP_RATE;
+            amplitude = flag < 0 ? -0.5 * SLIP_RATE : +0.5 * SLIP_RATE;
         } // if/else
         return amplitude;
     } // vel_y
 
-    static const char* vel_units(void) {
+    static const char*
+    vel_units(void) {
         return "m/s";
     } // vel_units
 
     // Displacement
-    static double disp_x(const double x,
-                         const double y) {
+    static double
+    disp_x(const double x,
+           const double y) {
         return 0.0;
     } // disp_x
 
-    static double disp_y(const double x,
-                         const double y,
-                         PetscInt flag) {
+    static double
+    disp_y(const double x,
+           const double y,
+           PetscInt flag) {
         const double disp = vel_y(x, y, flag) * TIME_SNAPSHOT;
         return disp;
     } // disp_y
 
-    static double faulttraction_x(const double x,
-                                  const double y) {
+    static double
+    faulttraction_x(const double x,
+                    const double y) {
         return 0.0;
     } // faulttraction_x
 
-    static double faulttraction_y(const double x,
-                                  const double y) {
+    static double
+    faulttraction_y(const double x,
+                    const double y) {
         return 0.0;
     } // faulttraction_y
 
-    static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
-                                          PetscReal t,
-                                          const PetscReal x[],
-                                          PetscInt numComponents,
-                                          PetscScalar* s,
-                                          void* context) {
+    static PetscErrorCode
+    solnkernel_disp(PetscInt spaceDim,
+                    PetscReal t,
+                    const PetscReal x[],
+                    PetscInt numComponents,
+                    PetscScalar* s,
+                    void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(x);
         REQUIRE(2 == numComponents);
@@ -184,8 +206,8 @@ class pylith::_PlanePWave {
         if (context) {
             PetscInt cell = 0;
             DMPolytopeType cellType = DM_POLYTOPE_UNKNOWN;
-            DMPlexGetActivePoint((PetscDM) context, &cell);
-            DMPlexGetCellType((PetscDM) context, cell, &cellType);
+            DMPlexGetActivePoint((PetscDM)context, &cell);
+            DMPlexGetCellType((PetscDM)context, cell, &cellType);
             PetscInt numCellsLeftFault = 0;
             switch (cellType) {
             case DM_POLYTOPE_TRIANGLE:
@@ -195,7 +217,8 @@ class pylith::_PlanePWave {
                 numCellsLeftFault = 6;
                 break;
             default:
-                PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unknown cell type in solution displacement kernel.");
+                PYLITH_ERROR(pylith::exceptions::SwitchLogicError,
+                             "Unknown cell type in solution displacement kernel.");
             }
             flag = cell < numCellsLeftFault ? -1 : +1;
         } // if
@@ -204,12 +227,13 @@ class pylith::_PlanePWave {
         return PETSC_SUCCESS;
     } // solnkernel_disp
 
-    static PetscErrorCode solnkernel_vel(PetscInt spaceDim,
-                                         PetscReal t,
-                                         const PetscReal x[],
-                                         PetscInt numComponents,
-                                         PetscScalar* s,
-                                         void* context) {
+    static PetscErrorCode
+    solnkernel_vel(PetscInt spaceDim,
+                   PetscReal t,
+                   const PetscReal x[],
+                   PetscInt numComponents,
+                   PetscScalar* s,
+                   void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(x);
         REQUIRE(2 == numComponents);
@@ -220,8 +244,8 @@ class pylith::_PlanePWave {
         if (context) {
             PetscInt cell = 0;
             DMPolytopeType cellType = DM_POLYTOPE_UNKNOWN;
-            DMPlexGetActivePoint((PetscDM) context, &cell);
-            DMPlexGetCellType((PetscDM) context, cell, &cellType);
+            DMPlexGetActivePoint((PetscDM)context, &cell);
+            DMPlexGetCellType((PetscDM)context, cell, &cellType);
             PetscInt numCellsLeftFault = 0;
             switch (cellType) {
             case DM_POLYTOPE_TRIANGLE:
@@ -231,7 +255,8 @@ class pylith::_PlanePWave {
                 numCellsLeftFault = 6;
                 break;
             default:
-                PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unknown cell type in solution displacement kernel.");
+                PYLITH_ERROR(pylith::exceptions::SwitchLogicError,
+                             "Unknown cell type in solution displacement kernel.");
             }
             flag = cell < numCellsLeftFault ? -1 : +1;
         } // if
@@ -240,12 +265,13 @@ class pylith::_PlanePWave {
         return PETSC_SUCCESS;
     } // solnkernel_disp
 
-    static PetscErrorCode solnkernel_acc(PetscInt spaceDim,
-                                         PetscReal t,
-                                         const PetscReal x[],
-                                         PetscInt numComponents,
-                                         PetscScalar* s,
-                                         void* context) {
+    static PetscErrorCode
+    solnkernel_acc(PetscInt spaceDim,
+                   PetscReal t,
+                   const PetscReal x[],
+                   PetscInt numComponents,
+                   PetscScalar* s,
+                   void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(x);
         REQUIRE(2 == numComponents);
@@ -257,12 +283,13 @@ class pylith::_PlanePWave {
         return PETSC_SUCCESS;
     } // solnkernel_disp
 
-    static PetscErrorCode solnkernel_lagrangemultiplier(PetscInt spaceDim,
-                                                        PetscReal t,
-                                                        const PetscReal x[],
-                                                        PetscInt numComponents,
-                                                        PetscScalar* s,
-                                                        void* context) {
+    static PetscErrorCode
+    solnkernel_lagrangemultiplier(PetscInt spaceDim,
+                                  PetscReal t,
+                                  const PetscReal x[],
+                                  PetscInt numComponents,
+                                  PetscScalar* s,
+                                  void* context) {
         REQUIRE(2 == spaceDim);
         REQUIRE(x);
         REQUIRE(2 == numComponents);
@@ -274,11 +301,11 @@ class pylith::_PlanePWave {
         return PETSC_SUCCESS;
     } // solnkernel_lagrangemultiplier
 
-public:
-
-    static
-    TestFault_Data* createData(void) {
-        TestFault_Data* data = new TestFault_Data();REQUIRE(data);
+  public:
+    static TestFault_Data*
+    createData(void) {
+        TestFault_Data* data = new TestFault_Data();
+        REQUIRE(data);
 
         data->journalName = "PlanePWave";
         data->allowZeroResidual = true;
@@ -310,7 +337,8 @@ public:
         data->matAuxDB.setCoordSys(data->cs);
 
         REQUIRE(!data->kinSrc);
-        data->kinSrc = new pylith::faults::KinSrcStep();REQUIRE(data->kinSrc);
+        data->kinSrc = new pylith::faults::KinSrcStep();
+        REQUIRE(data->kinSrc);
         data->kinSrc->setOriginTime(0.0);
         data->faultAuxDB.addValue("initiation_time", initiation_time, time_units());
         data->faultAuxDB.addValue("final_slip_opening", finalslip_opening, slip_units());
@@ -318,7 +346,7 @@ public:
         data->faultAuxDB.setCoordSys(data->cs);
 
         data->faultNumAuxSubfields = 1;
-        static const char* _faultAuxSubfields[1] = { "slip" };
+        static const char* _faultAuxSubfields[1] = {"slip"};
         data->faultAuxSubfields = _faultAuxSubfields;
         static const pylith::topology::Field::Discretization _faultAuxDiscretizations[1] = {
             pylith::topology::Field::Discretization(0, 1), // slip
@@ -328,7 +356,8 @@ public:
         // Materials
         data->materials.resize(3);
         { // xneg
-            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();REQUIRE(material);
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();
+            REQUIRE(material);
             material->setFormulation(data->formulation);
             material->useBodyForce(false);
             material->setIdentifier("elasticity");
@@ -338,7 +367,8 @@ public:
             data->materials[0] = material;
         } // xneg
         { // mid
-            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();REQUIRE(material);
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();
+            REQUIRE(material);
             material->setFormulation(data->formulation);
             material->useBodyForce(false);
             material->setIdentifier("elasticity");
@@ -348,7 +378,8 @@ public:
             data->materials[1] = material;
         } // mid
         { // xpos
-            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();REQUIRE(material);
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();
+            REQUIRE(material);
             material->setFormulation(data->formulation);
             material->useBodyForce(false);
             material->setIdentifier("elasticity");
@@ -411,15 +442,15 @@ public:
             fault->setSurfaceLabelName("fault_xpos");
 
             const int numRuptures = 1;
-            const char* ruptureNames[1] = { "rupture" };
-            pylith::faults::KinSrc* ruptures[1] = { data->kinSrc };
+            const char* ruptureNames[1] = {"rupture"};
+            pylith::faults::KinSrc* ruptures[1] = {data->kinSrc};
             fault->setEqRuptures(ruptureNames, numRuptures, ruptures, numRuptures);
             data->faults[0] = fault;
         } // xpos
 
         pylith::petsc::Options options;
         options.add("-fieldsplit_displacement_pc_type", "lu");
-        options.override ();
+        options.override();
 
         data->numSolnSubfieldsDomain = 2;
         data->numSolnSubfieldsFault = 1;
@@ -447,7 +478,8 @@ const double pylith::_PlanePWave::TIME_SNAPSHOT = 5.0;
 // ------------------------------------------------------------------------------------------------
 pylith::TestFault_Data*
 pylith::PlanePWave::TriP1(void) {
-    TestFault_Data* data = pylith::_PlanePWave::createData();REQUIRE(data);
+    TestFault_Data* data = pylith::_PlanePWave::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -467,7 +499,8 @@ pylith::PlanePWave::TriP1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFault_Data*
 pylith::PlanePWave::TriP2(void) {
-    TestFault_Data* data = pylith::_PlanePWave::createData();REQUIRE(data);
+    TestFault_Data* data = pylith::_PlanePWave::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -499,7 +532,8 @@ pylith::PlanePWave::TriP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFault_Data*
 pylith::PlanePWave::TriP3(void) {
-    TestFault_Data* data = pylith::_PlanePWave::createData();REQUIRE(data);
+    TestFault_Data* data = pylith::_PlanePWave::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -531,7 +565,8 @@ pylith::PlanePWave::TriP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFault_Data*
 pylith::PlanePWave::TriP4(void) {
-    TestFault_Data* data = pylith::_PlanePWave::createData();REQUIRE(data);
+    TestFault_Data* data = pylith::_PlanePWave::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -563,7 +598,8 @@ pylith::PlanePWave::TriP4(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFault_Data*
 pylith::PlanePWave::QuadQ1(void) {
-    TestFault_Data* data = pylith::_PlanePWave::createData();REQUIRE(data);
+    TestFault_Data* data = pylith::_PlanePWave::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -583,7 +619,8 @@ pylith::PlanePWave::QuadQ1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFault_Data*
 pylith::PlanePWave::QuadQ2(void) {
-    TestFault_Data* data = pylith::_PlanePWave::createData();REQUIRE(data);
+    TestFault_Data* data = pylith::_PlanePWave::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -615,7 +652,8 @@ pylith::PlanePWave::QuadQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFault_Data*
 pylith::PlanePWave::QuadQ3(void) {
-    TestFault_Data* data = pylith::_PlanePWave::createData();REQUIRE(data);
+    TestFault_Data* data = pylith::_PlanePWave::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -647,7 +685,8 @@ pylith::PlanePWave::QuadQ3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFault_Data*
 pylith::PlanePWave::QuadQ4(void) {
-    TestFault_Data* data = pylith::_PlanePWave::createData();REQUIRE(data);
+    TestFault_Data* data = pylith::_PlanePWave::createData();
+    REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 

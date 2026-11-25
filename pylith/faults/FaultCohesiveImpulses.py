@@ -1,25 +1,26 @@
 #!/usr/bin/env nemesis
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 import numpy
 
 from .FaultCohesive import FaultCohesive
 from .faults import FaultCohesiveImpulses as ModuleFaultCohesiveImpulses
 
+
 def validateDOF(value):
-    """Validate list of fixed degrees of freedom.
-    """
+    """Validate list of fixed degrees of freedom."""
+
     def error():
-        raise ValueError("'impulse_dof' must be a zero based list of indices of degrees of "
-          "freedom at a vertex.")
+        raise ValueError("'impulse_dof' must be a zero based list of indices of degrees of " "freedom at a vertex.")
+
     try:
         size = len(value)
         if 0 == size:
@@ -32,6 +33,7 @@ def validateDOF(value):
         error()
     return num
 
+
 class FaultCohesiveImpulses(FaultCohesive, ModuleFaultCohesiveImpulses):
     """
     Fault surface with slip impulses for Green's functions implemented with cohesive cells.
@@ -40,8 +42,8 @@ class FaultCohesiveImpulses(FaultCohesive, ModuleFaultCohesiveImpulses):
 
     Implements `FaultCohesiveKin`.
     """
-    DOC_CONFIG = {
-        "cfg": """
+
+    DOC_CONFIG = {"cfg": """
             [pylithapp.greensfns]
             interfaces = [fault]
             interfaces.fault = pylith.faults.FaultCohesiveImpulses
@@ -63,20 +65,24 @@ class FaultCohesiveImpulses(FaultCohesive, ModuleFaultCohesiveImpulses):
 
             # Represent the impulse as a linear variation in slip centered on each point.
             auxiliary_subfields.slip.basis_order = 1
-            """
-    }
+            """}
 
     import pythia.pyre.inventory
     from pythia.pyre.units.length import m
 
     from pylith.utils.NullComponent import NullComponent
-    auxiliaryFieldDB = pythia.pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=NullComponent)
 
-    threshold = pythia.pyre.inventory.dimensional("threshold", default=1.0e-6*m, validator=pythia.pyre.inventory.greaterEqual(0.0*m))
-    threshold.meta['tip'] = "Threshold for non-zero amplitude."
+    auxiliaryFieldDB = pythia.pyre.inventory.facility(
+        "db_auxiliary_field", family="spatial_database", factory=NullComponent
+    )
+
+    threshold = pythia.pyre.inventory.dimensional(
+        "threshold", default=1.0e-6 * m, validator=pythia.pyre.inventory.greaterEqual(0.0 * m)
+    )
+    threshold.meta["tip"] = "Threshold for non-zero amplitude."
 
     impulseDOF = pythia.pyre.inventory.list("impulse_dof", default=[], validator=validateDOF)
-    impulseDOF.meta['tip'] = "Indices of impulse components; 0=fault opening, 1=left lateral, 2=reverse (3D only)."
+    impulseDOF.meta["tip"] = "Indices of impulse components; 0=fault opening, 1=left lateral, 2=reverse (3D only)."
 
     def __init__(self, name="faultcohesiveimpulses"):
         """
@@ -86,36 +92,34 @@ class FaultCohesiveImpulses(FaultCohesive, ModuleFaultCohesiveImpulses):
 
     def _defaults(self):
         from .AuxSubfieldsFault import AuxSubfieldsFault
+
         self.auxiliarySubfields = AuxSubfieldsFault("auxiliary_subfields")
 
     def preinitialize(self, problem):
-        """Do pre-initialization setup.
-        """
+        """Do pre-initialization setup."""
         FaultCohesive.preinitialize(self, problem)
         ModuleFaultCohesiveImpulses.setThreshold(self, self.threshold.value)
         impulseDOF = numpy.array(self.impulseDOF, dtype=numpy.intc)
         ModuleFaultCohesiveImpulses.setImpulseDOF(self, impulseDOF)
-  
 
     def verifyConfiguration(self):
-        """Verify compatibility of configuration.
-        """
+        """Verify compatibility of configuration."""
         FaultCohesive.verifyConfiguration(self)
         ModuleFaultCohesiveImpulses.verifyConfiguration(self, self.mesh)
 
     def _createModuleObj(self):
-        """Create handle to C++ FaultCohesiveImpulses.
-        """
+        """Create handle to C++ FaultCohesiveImpulses."""
         ModuleFaultCohesiveImpulses.__init__(self)
-  
+
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
+
 def fault():
-  """
-  Factory associated with FaultCohesiveImpulses.
-  """
-  return FaultCohesiveImpulses()
+    """
+    Factory associated with FaultCohesiveImpulses.
+    """
+    return FaultCohesiveImpulses()
 
 
-# End of file 
+# End of file

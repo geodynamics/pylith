@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/meshio/MeshIO.hh" // ISA MeshIO
@@ -17,8 +18,7 @@ class pylith::meshio::MeshIOCubit : public MeshIO {
     friend class TestMeshIOCubit; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     MeshIOCubit(void);
 
@@ -41,8 +41,7 @@ public:
     const char* getFilename(void) const;
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Write mesh
     void _write(void) const;
 
@@ -50,8 +49,7 @@ protected:
     void _read(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Read groups of vertices.
      *
      * @param[inout] fileIn Input file.
@@ -65,10 +63,10 @@ protected:
     void _readSideSets(pylith::meshio::ExodusII& fileIn);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     std::string _filename; ///< Name of file
 
 }; // MeshIOCubit
+
 
 // End of file

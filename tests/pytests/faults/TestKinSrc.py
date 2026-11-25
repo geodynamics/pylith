@@ -1,16 +1,16 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 import unittest
 
-from pylith.testing.TestCases import (TestAbstractComponent, TestComponent, make_suite)
+from pylith.testing.TestCases import TestAbstractComponent, TestComponent, make_suite
 import pylith.faults.KinSrc
 import pylith.faults.KinSrcConstRate
 import pylith.faults.KinSrcStep
@@ -21,49 +21,49 @@ import pylith.faults.KinSrcTimeHistory
 
 
 class TestKinSrc(TestAbstractComponent):
-    """Unit testing of KinSrc object.
-    """
+    """Unit testing of KinSrc object."""
+
     _class = pylith.faults.KinSrc.KinSrc
 
 
 class TestKinSrcConstRate(TestComponent):
-    """Unit testing of KinSrcConstRate object.
-    """
+    """Unit testing of KinSrcConstRate object."""
+
     _class = pylith.faults.KinSrcConstRate.KinSrcConstRate
     _factory = pylith.faults.KinSrcConstRate.eq_kinematic_src
 
 
 class TestKinSrcStep(TestComponent):
-    """Unit testing of KinSrcStep object.
-    """
+    """Unit testing of KinSrcStep object."""
+
     _class = pylith.faults.KinSrcStep.KinSrcStep
     _factory = pylith.faults.KinSrcStep.eq_kinematic_src
 
 
 class TestKinSrcRamp(TestComponent):
-    """Unit testing of KinSrcRamp object.
-    """
+    """Unit testing of KinSrcRamp object."""
+
     _class = pylith.faults.KinSrcRamp.KinSrcRamp
     _factory = pylith.faults.KinSrcRamp.eq_kinematic_src
 
 
 class TestKinSrcBrune(TestComponent):
-    """Unit testing of KinSrcBrune object.
-    """
+    """Unit testing of KinSrcBrune object."""
+
     _class = pylith.faults.KinSrcBrune.KinSrcBrune
     _factory = pylith.faults.KinSrcBrune.eq_kinematic_src
 
 
 class TestKinSrcLiuCos(TestComponent):
-    """Unit testing of KinSrcLiuCos object.
-    """
+    """Unit testing of KinSrcLiuCos object."""
+
     _class = pylith.faults.KinSrcLiuCos.KinSrcLiuCos
     _factory = pylith.faults.KinSrcLiuCos.eq_kinematic_src
 
 
 class TestKinSrcTimeHistory(TestComponent):
-    """Unit testing of KinSrcTimeHistory object.
-    """
+    """Unit testing of KinSrcTimeHistory object."""
+
     _class = pylith.faults.KinSrcTimeHistory.KinSrcTimeHistory
     _factory = pylith.faults.KinSrcTimeHistory.eq_kinematic_src
 

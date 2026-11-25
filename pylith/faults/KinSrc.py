@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from pylith.petsc.Component import Component
 from .faults import KinSrc as ModuleKinSrc
@@ -21,9 +21,7 @@ class KinSrc(Component, ModuleKinSrc):
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
 
-    auxFieldDB = pythia.pyre.inventory.facility(
-        "db_auxiliary_field", family="spatial_database", factory=SimpleDB
-    )
+    auxFieldDB = pythia.pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=SimpleDB)
     auxFieldDB.meta["tip"] = "Database for slip time function parameters."
 
     from pythia.pyre.units.time import second
@@ -60,9 +58,7 @@ class KinSrc(Component, ModuleKinSrc):
 
     def _createModuleObj(self):
         """Call constructor for module object for access to C++ object."""
-        raise NotImplementedError(
-            "Please implement _createModuleObj() in derived class."
-        )
+        raise NotImplementedError("Please implement _createModuleObj() in derived class.")
         return
 
 

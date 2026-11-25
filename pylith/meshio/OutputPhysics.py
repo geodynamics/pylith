@@ -1,12 +1,13 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 # @file pythia.pyre/meshio/OutputPhysics.py
 #
 # @brief Python object for managing output over points with constrained degrees of freedom.
@@ -27,8 +28,8 @@ class OutputPhysics(OutputObserver, ModuleOutputPhysics):
 
     Implements `OutputObserver`.
     """
-    DOC_CONFIG = {
-        "cfg": """
+
+    DOC_CONFIG = {"cfg": """
             [observer]
             # Skip two time steps between output.
             trigger = pylith.meshio.OutputTriggerStep
@@ -39,25 +40,22 @@ class OutputPhysics(OutputObserver, ModuleOutputPhysics):
             writer.filename = boundary_xpos.h5
 
             output_basis_order = 1
-        """
-    }
+        """}
 
     import pythia.pyre.inventory
 
     infoFields = pythia.pyre.inventory.list("info_fields", default=["all"])
-    infoFields.meta['tip'] = "Names of auxiliary subfields to include in info output."
+    infoFields.meta["tip"] = "Names of auxiliary subfields to include in info output."
 
     dataFields = pythia.pyre.inventory.list("data_fields", default=["all"])
-    dataFields.meta['tip'] = "Names of solution, auxiliary, and derived subfields to include in data output."
+    dataFields.meta["tip"] = "Names of solution, auxiliary, and derived subfields to include in data output."
 
     def __init__(self, name="outputphysics"):
-        """Constructor.
-        """
+        """Constructor."""
         OutputObserver.__init__(self, name)
 
     def preinitialize(self, problem, identifier):
-        """Do minimal initialization.
-        """
+        """Do minimal initialization."""
         OutputObserver.preinitialize(self, problem)
         ModuleOutputPhysics.setInfoFields(self, self.infoFields)
         ModuleOutputPhysics.setDataFields(self, self.dataFields)
@@ -65,16 +63,15 @@ class OutputPhysics(OutputObserver, ModuleOutputPhysics):
         self.writer.setFilename(problem.defaults.outputDir, problem.defaults.simName, identifier)
 
     def _createModuleObj(self):
-        """Create handle to C++ object.
-        """
+        """Create handle to C++ object."""
         ModuleOutputPhysics.__init__(self)
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
+
 def observer():
-    """Factory associated with OutputObserver.
-    """
+    """Factory associated with OutputObserver."""
     return OutputPhysics()
 
 

@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 /**
@@ -36,8 +37,7 @@ class pylith::topology::VecVisitorSubmesh { // VecVisitorSubmesh
     friend class TestVecVisitorSubmesh; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /** Default constructor.
      *
      * @param[in] field Field associated with visitor.
@@ -143,8 +143,7 @@ public:
                     const InsertMode mode) const;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     const Field& _field;
 
     PetscDM _dm; ///< Cached PETSc dm for submesh.
@@ -152,8 +151,7 @@ private:
     PetscVec _localVec; ///< Cached local PETSc Vec.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
-private:
-
+  private:
     VecVisitorSubmesh(const VecVisitorSubmesh&); ///< Not implemented
     const VecVisitorSubmesh& operator=(const VecVisitorSubmesh&); ///< Not implemented
 
@@ -167,8 +165,7 @@ class pylith::topology::MatVisitorSubmesh { // MatVisitorSubmesh
     friend class TestMatVisitorSubmesh; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /** Default constructor.
      *
      * @param[in] mat PETSc matrix.
@@ -221,8 +218,7 @@ public:
                     const InsertMode mode) const;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     const PetscMat _mat; ///< Cached PETSc matrix.
     PetscDM _dm; ///< Cached PETSc dm for mesh.
     PetscSection _subsection; ///< Cached PETSc section for submesh.
@@ -230,8 +226,7 @@ private:
     PetscSection _globalSubsection; ///< Cached PETSc subsection.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
-private:
-
+  private:
     MatVisitorSubmesh(const MatVisitorSubmesh&); ///< Not implemented
     const MatVisitorSubmesh& operator=(const MatVisitorSubmesh&); ///< Not implemented
 
@@ -243,8 +238,7 @@ class pylith::topology::SubmeshIS { // SubmeshIS
     friend class TestSubmeshIS; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /** Default constructor.
      *
      * @param[in] submesh Submesh associated with index set.
@@ -282,8 +276,7 @@ public:
     PetscInt size(void) const;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     const Mesh& _submesh;
     PetscIS _indexSet; ///< PETSc index set.
     PetscInt _size; ///< Size of index set.
@@ -292,5 +285,6 @@ private:
 }; // SubmeshIS
 
 #include "VisitorSubmesh.icc"
+
 
 // End of file

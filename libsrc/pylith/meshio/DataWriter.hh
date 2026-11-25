@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/meshio/meshiofwd.hh" // forward declarations
@@ -25,8 +26,7 @@
 /// Abstract base class for writing finite-element data to file.
 class pylith::meshio::DataWriter : public pylith::utils::PyreComponent { // DataWriter
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     DataWriter(void);
 
@@ -37,12 +37,10 @@ public:
      *
      * @returns Copy of this.
      */
-    virtual
-    DataWriter* clone(void) const = 0;
+    virtual DataWriter* clone(void) const = 0;
 
     /// Deallocate PETSc and local data structures.
-    virtual
-    void deallocate(void);
+    virtual void deallocate(void);
 
     /** Set time scale for simulation time.
      *
@@ -61,44 +59,38 @@ public:
      * @param[in] mesh Finite-element mesh.
      * @param[in] isInfo True if only writing info values.
      */
-    virtual
-    void open(const pylith::topology::Mesh& mesh,
-              const bool isInfo);
+    virtual void open(const pylith::topology::Mesh& mesh,
+                      const bool isInfo);
 
     /// Close output files.
-    virtual
-    void close(void);
+    virtual void close(void);
 
     /** Prepare file for data at a new time step.
      *
      * @param[in] t Time stamp for new data
      * @param[in] mesh PETSc mesh object
      */
-    virtual
-    void openTimeStep(const PylithScalar t,
-                      const topology::Mesh& mesh);
+    virtual void openTimeStep(const PylithScalar t,
+                              const topology::Mesh& mesh);
 
     /// Cleanup after writing data for a time step.
-    virtual
-    void closeTimeStep(void);
+    virtual void closeTimeStep(void);
 
     /** Write field over vertices to file.
      *
      * @param[in] t Time associated with field.
      * @param[in] subfield Subfield with basis order 1.
      */
-    virtual
-    void writeVertexField(const PylithScalar t,
-                          const pylith::meshio::OutputSubfield& field) = 0;
+    virtual void writeVertexField(const PylithScalar t,
+                                  const pylith::meshio::OutputSubfield& field) = 0;
 
     /** Write field over cells to file.
      *
      * @param[in] t Time associated with field.
      * @param[in] subfield Subfield with basis order 0.
      */
-    virtual
-    void writeCellField(const PylithScalar t,
-                        const pylith::meshio::OutputSubfield& subfield) = 0;
+    virtual void writeCellField(const PylithScalar t,
+                                const pylith::meshio::OutputSubfield& subfield) = 0;
 
     /** Write dataset with names of points to file.
      *
@@ -107,13 +99,11 @@ public:
      *
      * Primarily used with OutputSolnPoints.
      */
-    virtual
-    void writePointNames(const pylith::string_vector& names,
-                         const pylith::topology::Mesh& mesh);
+    virtual void writePointNames(const pylith::string_vector& names,
+                                 const pylith::topology::Mesh& mesh);
 
     // PROTECTED METHODS ////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Copy constructor.
      *
      * @param[in] w Object to copy.
@@ -125,9 +115,8 @@ protected:
      * @param[out] coordsGlobalVec PETSc global vector for coordinates of vertices.
      * @param[in] mesh Finite-element mesh.
      */
-    static
-    void getCoordsGlobalVec(PetscVec* coordinatesVec,
-                            const pylith::topology::Mesh& mesh);
+    static void getCoordsGlobalVec(PetscVec* coordinatesVec,
+                                   const pylith::topology::Mesh& mesh);
 
     /** Write PETSc Vec using viewer.
      *
@@ -137,23 +126,21 @@ protected:
      * @param[in] vector PETSc Vec to write.
      * @param[inout] viewer PETSc viewer to use to write vector.
      */
-    static
-    void _writeVec(PetscVec vector,
-                   PetscViewer viewer);
+    static void _writeVec(PetscVec vector,
+                          PetscViewer viewer);
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
-private:
-
+  private:
     const DataWriter& operator=(const DataWriter&); ///< Not implemented
 
     // PROTECTED MEMBERS ////////////////////////////////////////////////////
-protected:
-
+  protected:
     PylithScalar _timeScale; ///< Time scale for dimensioning time in output.
     std::string _context; ///< Context of scatters for DataWriter.
     bool _isInfo; ///< True if only writing info values.
     bool _isOpen; ///< True if writer is ready for openTimeStep()/closeTimeStep().
 
 }; // DataWriter
+
 
 // End of file

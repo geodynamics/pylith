@@ -1,12 +1,12 @@
-# =================================================================================================
-# This code is part of SpatialData, developed through the Computational Infrastructure
-# for Geodynamics (https://github.com/geodynamics/spatialdata).
+# -*- python -*-
+# -*- coding: utf-8 -*-
 #
-# Copyright (c) 2010-2026, University of California, Davis and the SpatialData Development Team.
-# All rights reserved.
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from .General import General
 
@@ -41,25 +41,17 @@ class QuasistaticElasticity(General):
         "discretization size on fault for simulations with a fault)."
     )
 
-    displacementScale = pythia.pyre.inventory.dimensional(
-        "displacement_scale", default=1.0 * meter
-    )
+    displacementScale = pythia.pyre.inventory.dimensional("displacement_scale", default=1.0 * meter)
     displacementScale.validator = pythia.pyre.inventory.greater(0.0 * meter)
-    displacementScale.meta["tip"] = (
-        "Nominal displacement scale in boundary value problem."
-    )
+    displacementScale.meta["tip"] = "Nominal displacement scale in boundary value problem."
 
-    shearModulus = pythia.pyre.inventory.dimensional(
-        "shear_modulus", default=10.0 * GPa
-    )
+    shearModulus = pythia.pyre.inventory.dimensional("shear_modulus", default=10.0 * GPa)
     shearModulus.validator = pythia.pyre.inventory.greater(0.0 * pascal)
     shearModulus.meta["tip"] = "Nominal shear modulus in boundary value problem."
 
     timeScale = pythia.pyre.inventory.dimensional("time_scale", default=100.0 * year)
     timeScale.validator = pythia.pyre.inventory.greater(0.0 * year)
-    timeScale.meta["tip"] = (
-        "Time scale of boundary value problem (for example, viscoelastic relaxation time)."
-    )
+    timeScale.meta["tip"] = "Time scale of boundary value problem (for example, viscoelastic relaxation time)."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

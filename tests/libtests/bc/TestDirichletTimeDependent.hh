@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 /**
  * @file tests/libtests/bc/TestDirichletTimeDependent.hh
@@ -17,25 +17,25 @@
  */
 #pragma once
 
-#include <cppunit/extensions/HelperMacros.h>
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
+#include <cppunit/extensions/HelperMacros.h>
 
 #include "pylith/bc/bcfwd.hh" // forward declarations
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
 #include "pylith/topology/Field.hh" // HOLDSA Field
 
-#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA UserFunctionDB
-#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
 #include "pylith/scales/scalesfwd.hh" // HOLDSA Scales
+#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA UserFunctionDB
 
 /// Namespace for pylith package
 namespace pylith {
     namespace bc {
         class TestDirichletTimeDependent;
         class TestDirichletTimeDependent_Data;
-    } // bc
-} // pylith
+    } // namespace bc
+} // namespace pylith
 
 /// C++ unit testing for DirichletBC.
 class pylith::bc::TestDirichletTimeDependent : public CppUnit::TestFixture, public pylith::utils::GenericComponent {
@@ -56,8 +56,7 @@ class pylith::bc::TestDirichletTimeDependent : public CppUnit::TestFixture, publ
     CPPUNIT_TEST_SUITE_END_ABSTRACT();
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Setup testing data.
     void setUp(void);
 
@@ -95,8 +94,7 @@ public:
     void testAuxFieldSetup(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected:
-
+  protected:
     TestDirichletTimeDependent_Data* _data; ///< Data for testing
 
     pylith::bc::DirichletTimeDependent* _bc; /// Test subject.
@@ -106,8 +104,7 @@ protected:
     static const double FILL_VALUE; ///< Fill value for unconstrained values.
 
     // PRIVATE METHODS ////////////////////////////////////////////////////
-private:
-
+  private:
     /// Initializer boundary condition for testing.
     void _initialize(void);
 
@@ -119,8 +116,7 @@ private:
 // ======================================================================
 class pylith::bc::TestDirichletTimeDependent_Data {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestDirichletTimeDependent_Data(void);
 
@@ -128,8 +124,7 @@ public:
     ~TestDirichletTimeDependent_Data(void);
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
-
+  public:
     const char* meshFilename; ///< Name of file with ASCII mesh.
     const char* bcLabel; ///< Label defining cells associated with material.
 
@@ -159,5 +154,6 @@ public:
     spatialdata::spatialdb::UserFunctionDB* solnDB; ///< Spatial database with solution.
 
 }; // class TestDirichletTimeDependent_Data
+
 
 // End of file

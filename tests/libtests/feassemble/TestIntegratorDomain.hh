@@ -1,24 +1,25 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
-#include <cppunit/extensions/HelperMacros.h>
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
+#include <cppunit/extensions/HelperMacros.h>
 
 #include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain::ResidualKernels
-#include "pylith/topology/topologyfwd.hh" // forward declarations
 #include "pylith/topology/Field.hh" // HASA FieldBase::Discretization
+#include "pylith/topology/topologyfwd.hh" // forward declarations
 
-#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA UserFunctionDB
-#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
 #include "pylith/scales/scalesfwd.hh" // HOLDSA Scales
+#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA UserFunctionDB
 
 /// Namespace for pylith package
 namespace pylith {
@@ -26,8 +27,8 @@ namespace pylith {
         class TestIntegratorDomain;
 
         class TestIntegratorDomain_Data; // test data
-    } // feassemble
-} // pylith
+    } // namespace feassemble
+} // namespace pylith
 
 class pylith::feassemble::TestIntegratorDomain : public CppUnit::TestFixture, public pylith::utils::GenericComponent {
     // CPPUNIT TEST SUITE //////////////////////////////////////////////////////////////////////////////////////////////
@@ -45,11 +46,9 @@ class pylith::feassemble::TestIntegratorDomain : public CppUnit::TestFixture, pu
     CPPUNIT_TEST_SUITE_END_ABSTRACT();
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Setup testing data.
-    virtual
-    void setUp(void);
+    virtual void setUp(void);
 
     /// Deallocate testing data.
     void tearDown(void);
@@ -76,8 +75,7 @@ public:
     void testComputeJacobian(void);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /// Do minimal initilaization of test data.
     void _initializeMin(void);
 
@@ -85,8 +83,7 @@ protected:
     void _initializeFull(void);
 
     /// Setup and populate solution fields.
-    virtual
-    void _setupSolutionFields(void) = 0;
+    virtual void _setupSolutionFields(void) = 0;
 
     /** Set field to zero on the boundary.
      *
@@ -95,8 +92,7 @@ protected:
     void _zeroBoundary(pylith::topology::Field* field);
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     pylith::feassemble::IntegratorDomain* _integrator; ///< Test subject.
     TestIntegratorDomain_Data* _data; ///< Test data.
 
@@ -108,8 +104,7 @@ protected:
 // =====================================================================================================================
 class pylith::feassemble::TestIntegratorDomain_Data {
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     TestIntegratorDomain_Data(void);
 
@@ -117,8 +112,7 @@ public:
     ~TestIntegratorDomain_Data(void);
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     int dimension; ///< Dimension of domain integrator.
     const char* meshFilename; ///< Name of file with ASCII mesh.
     const char* boundaryLabel; ///< Label for group defining domain boundary.
@@ -150,5 +144,6 @@ public:
     std::vector<IntegratorDomain::ProjectKernels> kernelsDerivedField;
     bool hasLHSJacobianLumpedInv;
 };
+
 
 // End of file

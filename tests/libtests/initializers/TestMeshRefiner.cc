@@ -1,22 +1,22 @@
-// =================================================================================================
-// This code is part of SpatialData, developed through the Computatreadernal Infrastructure
-// for Geodynamics (https://github.com/geodynamics/spatialdata).
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
 //
-// Copyright (c) 2010-2026, University of California, Davis and the SpatialData Development Team.
-// All rights reserved.
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// See https://mit-license.org/ and LICENSE.md and for license informatreadern.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/initializers/MeshRefiner.hh" // USES MeshRefiner
 
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/problems/Problem.hh" // USES Problem
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/RefineUniform.hh" // USES RefineUniform
-#include "pylith/problems/Problem.hh" // USES Problem
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
@@ -28,35 +28,34 @@
 namespace pylith {
     namespace initializers {
         class TestMeshRefiner;
-    } // initializers
-} // pylith
+    } // namespace initializers
+} // namespace pylith
 
 class pylith::initializers::TestMeshRefiner {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test constructors.
-    static
-    void testConstructors(void);
+    static void testConstructors(void);
 
     /// Test accessors.
-    static
-    void testAccessors(void);
+    static void testAccessors(void);
 
     /// Test run().
-    static
-    void testRun(void);
+    static void testRun(void);
 
 }; // class TestMeshRefiner
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestMeshRefiner::testConstructors", "[TestMeshRefiner]") {
+TEST_CASE("TestMeshRefiner::testConstructors",
+          "[TestMeshRefiner]") {
     pylith::initializers::TestMeshRefiner::testConstructors();
 }
-TEST_CASE("TestMeshRefiner::testAccessors", "[TestMeshRefiner]") {
+TEST_CASE("TestMeshRefiner::testAccessors",
+          "[TestMeshRefiner]") {
     pylith::initializers::TestMeshRefiner::testAccessors();
 }
-TEST_CASE("TestMeshRefiner::testRun", "[TestMeshRefiner]") {
+TEST_CASE("TestMeshRefiner::testRun",
+          "[TestMeshRefiner]") {
     pylith::initializers::TestMeshRefiner::testRun();
 }
 
@@ -114,7 +113,8 @@ pylith::initializers::TestMeshRefiner::testRun(void) {
     CHECK(numCells == pylith::topology::MeshOps::getNumCells(*meshNew));
     CHECK(numVertices == pylith::topology::MeshOps::getNumVertices(*meshNew));
 
-    delete meshNew;meshNew = nullptr;
+    delete meshNew;
+    meshNew = nullptr;
 } // testRun
 
 

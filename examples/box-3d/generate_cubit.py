@@ -1,4 +1,14 @@
 #!python3
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 """WARNING: This script only works with Python supplied with Cubit.
 
 To run this script outside the Cubit GUI, you will need to run it like:
@@ -7,6 +17,8 @@ PATH_TO_CUBIT/Cubit.app/Contents/Frameworks/Python.framework/Versions/Current/bi
 
 where you replace 'PATH_TO_CUBIT' with the absolute path.
 """
+
+
 # -------------------------------------------------------------------------------------------------
 # Utility functions. No edits should be needed.
 # -------------------------------------------------------------------------------------------------
@@ -14,30 +26,39 @@ def setup_cubit():
     """Detect if we are running outside Cubit. If so, then we parse command line arguments and setup
     Cubit."""
     import sys
+
     if not "cubit" in sys.modules:
         import argparse
         import pathlib
 
         parser = argparse.ArgumentParser()
-        parser.add_argument("--cell", action="store", dest="cell", choices=("hex","tet"), default="hex")
+        parser.add_argument("--cell", action="store", dest="cell", choices=("hex", "tet"), default="hex")
 
         parser = argparse.ArgumentParser()
-        parser.add_argument("--cubit-directory", action="store", dest="cubit_dir", required=True, help="Directory containing cubit executable.")
+        parser.add_argument(
+            "--cubit-directory",
+            action="store",
+            dest="cubit_dir",
+            required=True,
+            help="Directory containing cubit executable.",
+        )
         args = parser.parse_args()
 
         # Initialize cubit
         cubit_absdir = pathlib.Path(args.cubit_dir).expanduser().resolve()
         sys.path.append(str(cubit_absdir))
         import cubit
-        cubit.init(['cubit','-nojournal'])
+
+        cubit.init(["cubit", "-nojournal"])
+
 
 # -------------------------------------------------------------------------------------------------
 # Mesh definition
 # -------------------------------------------------------------------------------------------------
 km = 1000.0
-DOMAIN_X = DOMAIN_Y = 12.0*km
-DOMAIN_Z = 9.0*km
-DX = 3.0*km
+DOMAIN_X = DOMAIN_Y = 12.0 * km
+DOMAIN_Z = 9.0 * km
+DX = 3.0 * km
 cell = "hex"
 
 # -------------------------------------------------------------------------------------------------
@@ -55,18 +76,18 @@ cubit.reset()
 # -6 km <= y <= 6 km
 # -9 km <= z <= 0 km
 brick = cubit.brick(DOMAIN_X, DOMAIN_Y, DOMAIN_Z)
-cubit.move(brick, (0, 0, -0.5*DOMAIN_Z))
+cubit.move(brick, (0, 0, -0.5 * DOMAIN_Z))
 
 # Create a mapping of surface 'id' to name, so we can give the surfaces meaningful names.
 # The surface 'id' is determined by Cubit, so we examined the 'id' of each surface to determine
 # which 'id' corresponds to each name.
-surfaces = { \
-    1: "surface_zpos", \
-    2: "surface_zneg", \
-    3: "surface_yneg", \
-    4: "surface_xneg", \
-    5: "surface_ypos", \
-    6: "surface_xpos", \
+surfaces = {
+    1: "surface_zpos",
+    2: "surface_zneg",
+    3: "surface_yneg",
+    4: "surface_xneg",
+    5: "surface_ypos",
+    6: "surface_xpos",
 }
 for s_id, surface_name in surfaces.items():
     cubit.cmd(f"surface {s_id} name '{surface_name}'")
@@ -90,8 +111,8 @@ cubit.cmd(f"block 1 volume {brick.id()}")
 cubit.cmd("block 1 name 'elastic'")
 
 # Nodesets
-#nodeset_id = 20
-#for surface_name in surfaces.values():
+# nodeset_id = 20
+# for surface_name in surfaces.values():
 #    group_name = surface_name.replace("surface", "boundary")
 #    nodeset_name = group_name
 #    cubit.cmd(f"group '{group_name}' add node in surface {surface_name}")
@@ -113,3 +134,6 @@ for surface_name in surfaces.values():
 
 # Write mesh as ExodusII file
 cubit.cmd(f"export mesh 'mesh_{cell}.exo' dimension 3 overwrite")
+
+
+# End of file

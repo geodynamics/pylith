@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 7: Bayesian Fault Slip Inversion
 
 :::{danger}
@@ -164,3 +173,5 @@ The thick black line shows the prescribed slip in Step 4, and the thick gray lin
 The solid orange line shows the median slip, the shaded orange regions shows the median plus and minus one standard deviation, and the dashed lines show the minimum and maximum values.
 The results are almost identical to those in Step 7a.
 :::
+
+% End of file

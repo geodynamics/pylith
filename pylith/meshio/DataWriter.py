@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 import pathlib
 
@@ -19,25 +19,22 @@ class DataWriter(Component):
     """
 
     def __init__(self, name="datawriter"):
-        """Constructor.
-        """
+        """Constructor."""
         Component.__init__(self, name, facility="datawriter")
 
     def preinitialize(self):
-        """Setup data writer.
-        """
+        """Setup data writer."""
         self._createModuleObj()
 
     @staticmethod
     def makeFilename(outputDir, simName, label, suffix):
-        """Create filename from output directory, simulation name, label, and filename suffix.
-        """
+        """Create filename from output directory, simulation name, label, and filename suffix."""
         return pathlib.Path(outputDir) / f"{simName}-{label}.{suffix}"
 
     def makePath(self, filename):
-        """Create path for output file.
-        """
+        """Create path for output file."""
         from pylith.mpi.Communicator import mpi_is_root
+
         isRoot = mpi_is_root()
         if isRoot:
             relpath = pathlib.Path(filename).parent.resolve()
@@ -46,8 +43,7 @@ class DataWriter(Component):
                 relpath.mkdir(exist_ok=True, parents=True)
 
     def verifyConfiguration(self):
-        """Verify compatibility of configuration.
-        """
+        """Verify compatibility of configuration."""
 
     def _createModuleObj(self):
         """Create handle to C++ object."""

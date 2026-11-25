@@ -1,35 +1,35 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "TestDataWriterHDF5.hh" // Implementation of class methods
 
-#include "pylith/meshio/HDF5.hh" // USES HDF5
-#include "pylith/utils/types.hh" // HASA PylithScalar
-#include "pylith/exceptions/error.hh" // HASA PYLITH_METHOD_BEGIN/END
-#include "pylith/utils/journals.hh" // USES journal macros
 #include "pylith/exceptions/Exceptions.hh" // USES Exceptio
+#include "pylith/exceptions/error.hh" // HASA PYLITH_METHOD_BEGIN/END
+#include "pylith/meshio/HDF5.hh" // USES HDF5
+#include "pylith/utils/journals.hh" // USES journal macros
+#include "pylith/utils/types.hh" // HASA PylithScalar
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
 
 #include <hdf5.h> // USES HDF5 API
 
-#include <memory> // USES std::unique_ptr
+#include <algorithm>
 #include <cstdint>
 #include <map>
+#include <memory> // USES std::unique_ptr
 #include <numeric>
-#include <algorithm>
 
-#if H5_VERSION_GE(1,12,0)
+#if H5_VERSION_GE(1, 12, 0)
 #define PYLITH_HDF5_USE_API_112
 #endif
 
@@ -37,8 +37,7 @@ namespace pylith {
     namespace meshio {
         namespace _TestDataWriterHDF5 {
             class MeshData {
-public:
-
+              public:
                 std::string name;
                 size_t cellDim;
                 std::vector<PylithReal> vertices;
@@ -60,31 +59,28 @@ public:
                 size_t numCells;
                 size_t numCorners;
 
-public:
-
+              public:
                 MeshData(void);
 
                 /** Load data from HDF5 file. */
-                static
-                MeshData* load(const char* filename);
+                static MeshData* load(const char* filename);
 
                 /** Verify that candidate data matches reference data. */
-                static
-                void verify(const MeshData& reference,
-                            const MeshData& candidate);
+                static void verify(const MeshData& reference,
+                                   const MeshData& candidate);
 
 
-private:
-
+              private:
                 void _loadGeometry(pylith::meshio::HDF5& h5);
 
                 void _loadTopology(pylith::meshio::HDF5& h5);
 
                 void _loadTime(pylith::meshio::HDF5& h5);
 
-                static
-                std::map<std::string, Field> _loadFields(pylith::meshio::HDF5& h5,
-                                                         const char* group);
+                static std::map<std::string,
+                                Field>
+                _loadFields(pylith::meshio::HDF5& h5,
+                            const char* group);
 
                 std::vector<size_t> _getVerticesOrder(void) const;
 
@@ -109,14 +105,15 @@ private:
 
 
             }; // MeshData
-        } // _TestDataWriterHDF5
+        } // namespace _TestDataWriterHDF5
 
-    }
-}
+    } // namespace meshio
+} // namespace pylith
 
 
 // ------------------------------------------------------------------------------------------------
-pylith::meshio::_TestDataWriterHDF5::MeshData::MeshData(void) {}
+pylith::meshio::_TestDataWriterHDF5::MeshData::MeshData(void) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -180,7 +177,8 @@ pylith::meshio::_TestDataWriterHDF5::MeshData::_loadTime(pylith::meshio::HDF5& h
 
 
 // ------------------------------------------------------------------------------------------------
-std::map<std::string, pylith::meshio::_TestDataWriterHDF5::MeshData::Field>
+std::map<std::string,
+         pylith::meshio::_TestDataWriterHDF5::MeshData::Field>
 pylith::meshio::_TestDataWriterHDF5::MeshData::_loadFields(pylith::meshio::HDF5& h5,
                                                            const char* group) {
     PYLITH_METHOD_BEGIN;
@@ -228,7 +226,9 @@ pylith::meshio::_TestDataWriterHDF5::MeshData::_getVerticesOrder(void) const {
         for (size_t iDim = 0; iDim < spaceDim; ++iDim) {
             double iCoord = vertices[iVertex * spaceDim + iDim];
             double jCoord = vertices[jVertex * spaceDim + iDim];
-            if (iCoord != jCoord) {return iCoord < jCoord;}
+            if (iCoord != jCoord) {
+                return iCoord < jCoord;
+            }
         }
         return false;
     }); // sort
@@ -240,12 +240,12 @@ pylith::meshio::_TestDataWriterHDF5::MeshData::_getVerticesOrder(void) const {
 std::vector<size_t>
 pylith::meshio::_TestDataWriterHDF5::MeshData::_getCellsOrder(void) const {
     // Compute cell centroids
-    std::vector<PylithReal> centroids(numCells*spaceDim, 0.0);
+    std::vector<PylithReal> centroids(numCells * spaceDim, 0.0);
     for (size_t iCell = 0; iCell < numCells; ++iCell) {
         for (size_t iCorner = 0; iCorner < numCorners; ++iCorner) {
             size_t indexVertex = cells[iCell * numCorners + iCorner];
             for (size_t iDim = 0; iDim < spaceDim; ++iDim) {
-                centroids[iCell*spaceDim+iDim] += vertices[indexVertex * spaceDim + iDim];
+                centroids[iCell * spaceDim + iDim] += vertices[indexVertex * spaceDim + iDim];
             } // for
         } // for
     } // for
@@ -259,7 +259,9 @@ pylith::meshio::_TestDataWriterHDF5::MeshData::_getCellsOrder(void) const {
         for (hsize_t iDim = 0; iDim < spaceDim; ++iDim) {
             double iCoord = centroids[iCell * spaceDim + iDim];
             double jCoord = centroids[jCell * spaceDim + iDim];
-            if (iCoord != jCoord) {return iCoord < jCoord;}
+            if (iCoord != jCoord) {
+                return iCoord < jCoord;
+            }
         }
         return false;
     }); // sort
@@ -272,11 +274,11 @@ std::vector<size_t>
 pylith::meshio::_TestDataWriterHDF5::MeshData::_getCellCornersOrder(const size_t cellIndex) const {
     REQUIRE(cellIndex < numCells);
 
-    std::vector<PylithReal> cellVertices(numCorners*spaceDim);
+    std::vector<PylithReal> cellVertices(numCorners * spaceDim);
     for (size_t iCorner = 0; iCorner < numCorners; ++iCorner) {
-        const size_t vertexIndex = cells[cellIndex*numCorners+iCorner];
+        const size_t vertexIndex = cells[cellIndex * numCorners + iCorner];
         for (size_t iDim = 0; iDim < spaceDim; ++iDim) {
-            cellVertices[iCorner*spaceDim+iDim] = vertices[vertexIndex*spaceDim+iDim];
+            cellVertices[iCorner * spaceDim + iDim] = vertices[vertexIndex * spaceDim + iDim];
         } // for
     } // for
 
@@ -286,7 +288,9 @@ pylith::meshio::_TestDataWriterHDF5::MeshData::_getCellCornersOrder(const size_t
         for (size_t iDim = 0; iDim < spaceDim; ++iDim) {
             double iCoord = cellVertices[iVertex * spaceDim + iDim];
             double jCoord = cellVertices[jVertex * spaceDim + iDim];
-            if (iCoord != jCoord) {return iCoord < jCoord;}
+            if (iCoord != jCoord) {
+                return iCoord < jCoord;
+            }
         }
         return false;
     }); // sort
@@ -357,10 +361,11 @@ pylith::meshio::_TestDataWriterHDF5::MeshData::_checkGeometry(const MeshData& re
         const size_t vertexReference = referenceOrder[iVertex];
         const size_t vertexCandidate = candidateOrder[iVertex];
         for (size_t iDim = 0; iDim < spaceDim; ++iDim) {
-            const size_t indexC = vertexCandidate*spaceDim+iDim;
-            const size_t indexR = vertexReference*spaceDim+iDim;
-            const PylithScalar toleranceV = std::max(tolerance, tolerance*reference.vertices[indexR]);
-            INFO("Checking coordinates of candidate vertex " << vertexCandidate << " against reference vertex " << vertexReference << " for dim " << iDim << ".");
+            const size_t indexC = vertexCandidate * spaceDim + iDim;
+            const size_t indexR = vertexReference * spaceDim + iDim;
+            const PylithScalar toleranceV = std::max(tolerance, tolerance * reference.vertices[indexR]);
+            INFO("Checking coordinates of candidate vertex " << vertexCandidate << " against reference vertex "
+                                                             << vertexReference << " for dim " << iDim << ".");
             CHECK_THAT(candidate.vertices[indexC], Catch::Matchers::WithinAbs(reference.vertices[indexR], toleranceV));
         } // for
     } // for
@@ -398,12 +403,13 @@ pylith::meshio::_TestDataWriterHDF5::MeshData::_checkTopology(const MeshData& re
         const std::vector<size_t>& cellVerticesOrderC = candidate._getCellCornersOrder(candidateOrder[iCell]);
 
         for (size_t iCorner = 0; iCorner < numCorners; ++iCorner) {
-            const size_t iVertexC = candidate.cells[cellCandidate*numCorners+cellVerticesOrderC[iCorner]];
-            const size_t iVertexR = reference.cells[cellReference*numCorners+cellVerticesOrderR[iCorner]];
+            const size_t iVertexC = candidate.cells[cellCandidate * numCorners + cellVerticesOrderC[iCorner]];
+            const size_t iVertexR = reference.cells[cellReference * numCorners + cellVerticesOrderR[iCorner]];
             INFO("Checking candidate vertex " << iVertexC << " against reference vertex " << iVertexR << ".");
             for (size_t iDim = 0; iDim < spaceDim; ++iDim) {
-                const PylithScalar toleranceV = std::max(tolerance, tolerance*reference.vertices[iVertexR]);
-                CHECK_THAT(candidate.vertices[iVertexC*spaceDim+iDim], Catch::Matchers::WithinAbs(reference.vertices[iVertexR*spaceDim+iDim], toleranceV));
+                const PylithScalar toleranceV = std::max(tolerance, tolerance * reference.vertices[iVertexR]);
+                CHECK_THAT(candidate.vertices[iVertexC * spaceDim + iDim],
+                           Catch::Matchers::WithinAbs(reference.vertices[iVertexR * spaceDim + iDim], toleranceV));
             } // for
         } // for
     } // for
@@ -426,7 +432,7 @@ pylith::meshio::_TestDataWriterHDF5::MeshData::_checkTime(const MeshData& refere
     const PylithScalar tolerance = 1.0e-6;
     for (size_t iTime = 0; iTime < numTimes; ++iTime) {
         INFO("Checking time " << iTime << ".");
-        const PylithScalar toleranceV = std::max(tolerance, tolerance*reference.time[iTime]);
+        const PylithScalar toleranceV = std::max(tolerance, tolerance * reference.time[iTime]);
         CHECK_THAT(candidate.time[iTime], Catch::Matchers::WithinAbs(reference.time[iTime], toleranceV));
     } // for
 
@@ -474,14 +480,16 @@ pylith::meshio::_TestDataWriterHDF5::MeshData::_checkVertexFields(const MeshData
             const std::vector<size_t>& cellVerticesOrderC = candidate._getCellCornersOrder(candidateOrder[iCell]);
 
             for (size_t iCorner = 0; iCorner < numCorners; ++iCorner) {
-                const size_t iVertexC = candidate.cells[cellCandidate*numCorners+cellVerticesOrderC[iCorner]];
-                const size_t iVertexR = reference.cells[cellReference*numCorners+cellVerticesOrderR[iCorner]];
+                const size_t iVertexC = candidate.cells[cellCandidate * numCorners + cellVerticesOrderC[iCorner]];
+                const size_t iVertexR = reference.cells[cellReference * numCorners + cellVerticesOrderR[iCorner]];
                 INFO("Checking candidate vertex " << iVertexC << " against reference vertex " << iVertexR << ".");
                 for (size_t iComponent = 0; iComponent < numComponents; ++iComponent) {
-                    const PylithScalar toleranceV = std::max(tolerance, tolerance*referenceField.data[iVertexR*numComponents+iComponent]);
+                    const PylithScalar toleranceV =
+                        std::max(tolerance, tolerance * referenceField.data[iVertexR * numComponents + iComponent]);
 #if 1
-                    CHECK_THAT(candidateField.data[iVertexC*numComponents+iComponent],
-                               Catch::Matchers::WithinAbs(referenceField.data[iVertexR*numComponents+iComponent], toleranceV));
+                    CHECK_THAT(candidateField.data[iVertexC * numComponents + iComponent],
+                               Catch::Matchers::WithinAbs(referenceField.data[iVertexR * numComponents + iComponent],
+                                                          toleranceV));
 #endif
                 } // for
             } // for
@@ -531,10 +539,12 @@ pylith::meshio::_TestDataWriterHDF5::MeshData::_checkCellFields(const MeshData& 
             INFO("Checking candidate cell " << cellCandidate << " against reference cell " << cellReference << ".");
 
             for (size_t iComponent = 0; iComponent < numComponents; ++iComponent) {
-                const PylithScalar toleranceV = std::max(tolerance, tolerance*referenceField.data[cellReference*numComponents+iComponent]);
+                const PylithScalar toleranceV =
+                    std::max(tolerance, tolerance * referenceField.data[cellReference * numComponents + iComponent]);
 #if 1
-                CHECK_THAT(candidateField.data[cellCandidate*numComponents+iComponent],
-                           Catch::Matchers::WithinAbs(referenceField.data[cellReference*numComponents+iComponent], toleranceV));
+                CHECK_THAT(candidateField.data[cellCandidate * numComponents + iComponent],
+                           Catch::Matchers::WithinAbs(referenceField.data[cellReference * numComponents + iComponent],
+                                                      toleranceV));
 #endif
             } // for
         } // for
@@ -551,7 +561,7 @@ pylith::meshio::TestDataWriterHDF5::checkFile(const char* filename) {
     PYLITH_METHOD_BEGIN;
 
     const std::string filenameE = "data/" + std::string(filename);
-    INFO("Checking file '" << filename << "' againts '" << filenameE << "'.");
+    INFO("Checking file '" << filename << "' against '" << filenameE << "'.");
 
     std::unique_ptr<_TestDataWriterHDF5::MeshData> reference(_TestDataWriterHDF5::MeshData::load(filenameE.c_str()));
     std::unique_ptr<_TestDataWriterHDF5::MeshData> candidate(_TestDataWriterHDF5::MeshData::load(filename));
@@ -566,12 +576,14 @@ pylith::meshio::TestDataWriterHDF5::checkFile(const char* filename) {
 pylith::meshio::TestDataWriterHDF5_Data::TestDataWriterHDF5_Data(void) :
     opencloseFilename(NULL),
     vertexFilename(NULL),
-    cellFilename(NULL) {}
+    cellFilename(NULL) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
 // Destructor
-pylith::meshio::TestDataWriterHDF5_Data::~TestDataWriterHDF5_Data(void) {}
+pylith::meshio::TestDataWriterHDF5_Data::~TestDataWriterHDF5_Data(void) {
+}
 
 
 // End of file

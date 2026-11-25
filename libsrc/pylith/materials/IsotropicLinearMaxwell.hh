@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/materials/materialsfwd.hh" // forward declarations
@@ -17,8 +18,7 @@ class pylith::materials::IsotropicLinearMaxwell : public pylith::materials::Rheo
     friend class TestIsotropicLinearMaxwell; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     IsotropicLinearMaxwell(void);
 
@@ -111,17 +111,16 @@ public:
                                const PylithReal dt) const;
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::materials::AuxiliaryFactoryViscoelastic* _auxiliaryFactory; ///< Factory for creating auxiliary subfields.
     bool _useReferenceState; ///< Flag to use reference stress and strain.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     IsotropicLinearMaxwell(const IsotropicLinearMaxwell&); ///< Not implemented.
     const IsotropicLinearMaxwell& operator=(const IsotropicLinearMaxwell&); ///< Not implemented
 
 }; // class IsotropicLinearMaxwell
+
 
 // End of file

@@ -1,19 +1,19 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/utils/PyreComponent.hh" // Implementation of class methods
 
-#include "pylith/utils/journals.hh"
 #include "pylith/exceptions/Exceptions.hh"
+#include "pylith/utils/journals.hh"
 
 #include <Python.h>
 
@@ -23,15 +23,15 @@ pylith::utils::PyreComponent::PyreComponent(void) :
     _name(""),
     _identifier("unknown") { // constructor
     if (!Py_IsInitialized()) {
-        PYLITH_ERROR(pylith::exceptions::InternalLogicError,
-                     "Python must be initialized to use PyreComponent in C++.");
+        PYLITH_ERROR(pylith::exceptions::InternalLogicError, "Python must be initialized to use PyreComponent in C++.");
     } // if
 } // constructor
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::utils::PyreComponent::~PyreComponent(void) {}
+pylith::utils::PyreComponent::~PyreComponent(void) {
+}
 
 
 // ----------------------------------------------------------------------
@@ -39,8 +39,7 @@ pylith::utils::PyreComponent::~PyreComponent(void) {}
 void
 pylith::utils::PyreComponent::setName(const char* value) {
     if (!strlen(value)) {
-        PYLITH_ERROR(pylith::exceptions::EmptyStringError,
-                     "Cannot set name of Pyre component to empty string.");
+        PYLITH_ERROR(pylith::exceptions::EmptyStringError, "Cannot set name of Pyre component to empty string.");
     } // if
     _name = value;
     _fullIdentifier = _name + std::string(".") + _identifier;
@@ -60,8 +59,7 @@ pylith::utils::PyreComponent::getName(void) const {
 void
 pylith::utils::PyreComponent::setIdentifier(const char* value) {
     if (!strlen(value)) {
-        PYLITH_ERROR(pylith::exceptions::EmptyStringError,
-                     "Cannot set name of Pyre identifier to empty string.");
+        PYLITH_ERROR(pylith::exceptions::EmptyStringError, "Cannot set name of Pyre identifier to empty string.");
     } // if
     _identifier = value;
     _fullIdentifier = _name + std::string(".") + _identifier;

@@ -1,26 +1,19 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
 
-/**
- * @file libsrc/problems/GreensFns.hh
- *
- * @brief Object for Green's functions problem.
- */
 
 namespace pylith {
     namespace problems {
-        class pylith::problems::GreensFns: public pylith::problems::Problem {
+        class pylith::problems::GreensFns : public pylith::problems::Problem {
             // PUBLIC MEMBERS
             // //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             /// Constructor
             GreensFns(void);
 
@@ -115,11 +108,10 @@ public:
              * @param[out] residualvec PetscVec for residual.
              * @param[in] context User context (GreensFns).
              */
-            static
-            PetscErrorCode computeResidual(PetscSNES snes,
-                                           PetscVec solutionVec,
-                                           PetscVec residualVec,
-                                           void* context);
+            static PetscErrorCode computeResidual(PetscSNES snes,
+                                                  PetscVec solutionVec,
+                                                  PetscVec residualVec,
+                                                  void* context);
 
             /* Callback static method for computing Jacobian.
              *
@@ -129,15 +121,15 @@ public:
              * @param[in] solutionVec PETSc Vec with current trial solution.
              * @param[in] context User context (GreensFns).
              */
-            static
-            PetscErrorCode computeJacobian(PetscSNES snes,
-                                           PetscVec solutionVec,
-                                           PetscMat jacobianMat,
-                                           PetscMat precondMat,
-                                           void* context);
+            static PetscErrorCode computeJacobian(PetscSNES snes,
+                                                  PetscVec solutionVec,
+                                                  PetscMat jacobianMat,
+                                                  PetscMat precondMat,
+                                                  void* context);
 
         }; // GreensFns
-    }
-}
+    } // namespace problems
+} // namespace pylith
+
 
 // End of file

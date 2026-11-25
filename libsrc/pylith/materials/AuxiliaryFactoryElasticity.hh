@@ -1,16 +1,17 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
-#include "pylith/materials/materialsfwd.hh" // forward declarations
 #include "pylith/feassemble/AuxiliaryFactory.hh" // ISA AuxiliaryFactory
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES GravityField
 
@@ -18,8 +19,7 @@ class pylith::materials::AuxiliaryFactoryElasticity : public pylith::feassemble:
     friend class TestAuxiliaryFactoryElasticity; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     AuxiliaryFactoryElasticity(void);
 
@@ -39,11 +39,11 @@ public:
     void addGravityField(spatialdata::spatialdb::GravityField* gf);
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
-    AuxiliaryFactoryElasticity(const AuxiliaryFactoryElasticity &); ///< Not implemented.
+  private:
+    AuxiliaryFactoryElasticity(const AuxiliaryFactoryElasticity&); ///< Not implemented.
     const AuxiliaryFactoryElasticity& operator=(const AuxiliaryFactoryElasticity&); ///< Not implemented
 
 }; // class AuxiliaryFactoryElasticity
+
 
 // End of file

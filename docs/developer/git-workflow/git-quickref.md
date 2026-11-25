@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Git Quick Reference
 
 ## Break commit into multiple commits
@@ -51,7 +60,7 @@ git rebase -i main
 * **Compare with respect to common ancestor**: `git diff main...feature`
 * **Compare commits**: `git log branch1..branch2`
 * **Compare specific file**: `git diff main..feature -- FILE`
-* **Compare specific file wih working tree**: `git diff main-- FILE`
+* **Compare specific file with working tree**: `git diff main-- FILE`
 
 ### Delete branches
 
@@ -68,3 +77,5 @@ git rebase -i main
 git branch --merged $BRANCH
 git branch --no-merged $BRANCH
 ```
+
+% End of file

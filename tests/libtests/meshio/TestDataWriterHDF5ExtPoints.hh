@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "TestDataWriterHDF5.hh" // ISA TestDataWriterHDF5
@@ -18,14 +19,13 @@ namespace pylith {
     namespace meshio {
         class TestDataWriterHDF5ExtPoints;
         class TestDataWriterHDF5ExtPoints_Data;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterHDF5ExtPoints : public TestDataWriterHDF5, public TestDataWriterPoints {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor.
     TestDataWriterHDF5ExtPoints(TestDataWriterHDF5ExtPoints_Data* data);
 
@@ -39,8 +39,7 @@ public:
     void testWriteVertexField(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get test data.
      *
      * @returns Test data.
@@ -48,15 +47,14 @@ protected:
     TestDataWriterPoints_Data* _getData(void);
 
     // PROTECTED MEMBDERS /////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     TestDataWriterHDF5ExtPoints_Data* _data; ///< Data for testing.
 
 }; // class TestDataWriterHDF5ExtPoints
 
 // ======================================================================
-class pylith::meshio::TestDataWriterHDF5ExtPoints_Data :
-    public TestDataWriterHDF5_Data,
-    public TestDataWriterPoints_Data {};
+class pylith::meshio::TestDataWriterHDF5ExtPoints_Data : public TestDataWriterHDF5_Data,
+                                                         public TestDataWriterPoints_Data {};
+
 
 // End of file

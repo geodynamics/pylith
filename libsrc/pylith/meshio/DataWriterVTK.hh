@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 /*
@@ -19,8 +20,8 @@
 
 #include "pylith/meshio/DataWriter.hh" // ISA DataWriter
 
-#include "pylith/topology/topologyfwd.hh" // HOLDSA Field
 #include "pylith/petsc/petsc_types.h" // HASA PetscDM
+#include "pylith/topology/topologyfwd.hh" // HOLDSA Field
 
 // DataWriterVTK --------------------------------------------------------
 /// Object for writing finite-element data to VTK file.
@@ -33,8 +34,7 @@ class pylith::meshio::DataWriterVTK : public DataWriter {
     friend class TestDataWriterVTKPoints; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     DataWriterVTK(void);
 
@@ -116,8 +116,7 @@ public:
                         const pylith::meshio::OutputSubfield& subfield);
 
     // PRIVATE METHODS //////////////////////////////////////////////////////
-private:
-
+  private:
     /** Copy constructor.
      *
      * @param[in] w Object to copy.
@@ -131,13 +130,11 @@ private:
     std::string _vtkFilename(const PylithScalar t) const;
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
-private:
-
+  private:
     const DataWriterVTK& operator=(const DataWriterVTK&); ///< Not implemented
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     /// Time value (in seconds) used to normalize time stamp.
     PylithScalar _timeConstant;
     int _precision; ///< Precision of floating point values in output.
@@ -155,5 +152,6 @@ private:
 }; // DataWriterVTK
 
 #include "DataWriterVTK.icc" // inline methods
+
 
 // End of file

@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -14,8 +14,8 @@
 
 #include "pylith/meshio/ExodusII.hh"
 
-#include "pylith/utils/array.hh" // USES int_array, scalar_array, string_vector
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/array.hh" // USES int_array, scalar_array, string_vector
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
@@ -23,85 +23,84 @@
 namespace pylith {
     namespace meshio {
         class TestExodusII;
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestExodusII : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
+  public:
     /// Test constructor
-    static
-    void testConstructor(void);
+    static void testConstructor(void);
 
     /// Test filename()
-    static
-    void testFilename(void);
+    static void testFilename(void);
 
     /// Test open() and close().
-    static
-    void testOpenClose(void);
+    static void testOpenClose(void);
 
     /// Test hasDim()
-    static
-    void testHasDim(void);
+    static void testHasDim(void);
 
     /// Test hasAttr()
-    static
-    void testHasAttr(void);
+    static void testHasAttr(void);
 
     /// Test hasVar()
-    static
-    void testHasVar(void);
+    static void testHasVar(void);
 
     /// Test getAttr(string)
-    static
-    void testGetAttr(void);
+    static void testGetAttr(void);
 
     /// Test getVar(PylithScalar*)
-    static
-    void testGetVarDouble(void);
+    static void testGetVarDouble(void);
 
     /// Test getVar(int*)
-    static
-    void testGetVarInt(void);
+    static void testGetVarInt(void);
 
     /// Test getVar(string_vector)
-    static
-    void testGetVarString(void);
+    static void testGetVarString(void);
 
 }; // class TestExodusII
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestExodusII::testConstructor", "[TestExodusII]") {
+TEST_CASE("TestExodusII::testConstructor",
+          "[TestExodusII]") {
     pylith::meshio::TestExodusII::testConstructor();
 }
-TEST_CASE("TestExodusII::testFilename", "[TestExodusII]") {
+TEST_CASE("TestExodusII::testFilename",
+          "[TestExodusII]") {
     pylith::meshio::TestExodusII::testFilename();
 }
-TEST_CASE("TestExodusII::testOpenClose", "[TestExodusII]") {
+TEST_CASE("TestExodusII::testOpenClose",
+          "[TestExodusII]") {
     pylith::meshio::TestExodusII::testOpenClose();
 }
-TEST_CASE("TestExodusII::testHasDim", "[TestExodusII]") {
+TEST_CASE("TestExodusII::testHasDim",
+          "[TestExodusII]") {
     pylith::meshio::TestExodusII::testHasDim();
 }
-TEST_CASE("TestExodusII::testHasAttr", "[TestExodusII]") {
+TEST_CASE("TestExodusII::testHasAttr",
+          "[TestExodusII]") {
     pylith::meshio::TestExodusII::testHasAttr();
 }
-TEST_CASE("TestExodusII::testHasVar", "[TestExodusII]") {
+TEST_CASE("TestExodusII::testHasVar",
+          "[TestExodusII]") {
     pylith::meshio::TestExodusII::testHasVar();
 }
-TEST_CASE("TestExodusII::testGetAttr", "[TestExodusII]") {
+TEST_CASE("TestExodusII::testGetAttr",
+          "[TestExodusII]") {
     pylith::meshio::TestExodusII::testGetAttr();
 }
-TEST_CASE("TestExodusII::testGetVarDouble", "[TestExodusII]") {
+TEST_CASE("TestExodusII::testGetVarDouble",
+          "[TestExodusII]") {
     pylith::meshio::TestExodusII::testGetVarDouble();
 }
-TEST_CASE("TestExodusII::testGetVarInt", "[TestExodusII]") {
+TEST_CASE("TestExodusII::testGetVarInt",
+          "[TestExodusII]") {
     pylith::meshio::TestExodusII::testGetVarInt();
 }
-TEST_CASE("TestExodusII::testGetVarString", "[TestExodusII]") {
+TEST_CASE("TestExodusII::testGetVarString",
+          "[TestExodusII]") {
     pylith::meshio::TestExodusII::testGetVarString();
 }
 
@@ -230,14 +229,13 @@ pylith::meshio::TestExodusII::testHasVar(void) {
 // Test getVar(PylithScalar*).
 void
 pylith::meshio::TestExodusII::testGetVarDouble(void) {
-    const PylithScalar coordsE[8] = { -1.0, 0.0, 0.0, 1.0,
-                                      0.0, -1.0, 1.0, 0.0 };
+    const PylithScalar coordsE[8] = {-1.0, 0.0, 0.0, 1.0, 0.0, -1.0, 1.0, 0.0};
 
     const int ndims = 2;
     int dims[2];
     dims[0] = 2;
     dims[1] = 4;
-    const int size = dims[0]*dims[1];
+    const int size = dims[0] * dims[1];
     scalar_array coords(size);
 
     ExodusII exofile("data/twotri3_12.2.exo");
@@ -252,7 +250,7 @@ pylith::meshio::TestExodusII::testGetVarDouble(void) {
     CHECK_THROWS_AS(exofile.getVar(&coords[0], dims, ndims, "aabbcc"), pylith::exceptions::IOError);
 
     // Attempt to get variable with wrong number of dimensions.
-    CHECK_THROWS_AS(exofile.getVar(&coords[0], dims, ndims+1, "coord"), pylith::exceptions::IOError);
+    CHECK_THROWS_AS(exofile.getVar(&coords[0], dims, ndims + 1, "coord"), pylith::exceptions::IOError);
 
     // Attempt to get variable with wrong dimension.
     dims[0] = 99;
@@ -264,27 +262,27 @@ pylith::meshio::TestExodusII::testGetVarDouble(void) {
 // Test getVar(int*).
 void
 pylith::meshio::TestExodusII::testGetVarInt(void) {
-    const int connectE[3] = { 3, 2, 4 };
+    const int connectExpected[3] = {3, 2, 4};
 
     const int ndims = 2;
     int dims[2];
     dims[0] = 1;
     dims[1] = 3;
-    const int size = dims[0]*dims[1];
+    const int size = dims[0] * dims[1];
     int_array connect(size);
 
     ExodusII exofile("data/twotri3_13.0.exo");
     exofile.getVar(&connect[0], dims, ndims, "connect2");
 
     for (int i = 0; i < size; ++i) {
-        CHECK(connectE[i] == connect[i]);
+        CHECK(connectExpected[i] == connect[i]);
     }
 
     // Attempt to get variable that doesn't exist.
     CHECK_THROWS_AS(exofile.getVar(&connect[0], dims, ndims, "aabbcc"), pylith::exceptions::IOError);
 
     // Attempt to get variable with wrong number of dimensions.
-    CHECK_THROWS_AS(exofile.getVar(&connect[0], dims, ndims+1, "connect2"), pylith::exceptions::IOError);
+    CHECK_THROWS_AS(exofile.getVar(&connect[0], dims, ndims + 1, "connect2"), pylith::exceptions::IOError);
 
     // Attempt to get variable with wrong dimension.
     dims[0] = 99;
@@ -296,7 +294,7 @@ pylith::meshio::TestExodusII::testGetVarInt(void) {
 // Test getVar(string_vector).
 void
 pylith::meshio::TestExodusII::testGetVarString(void) {
-    const char* namesE[2] = { "x", "y" };
+    const char* namesE[2] = {"x", "y"};
 
     const int dim = 2;
     string_vector names(2);
@@ -312,7 +310,7 @@ pylith::meshio::TestExodusII::testGetVarString(void) {
     CHECK_THROWS_AS(exofile.getVar(&names, dim, "aabbcc"), pylith::exceptions::IOError);
 
     // Attempt to get variable with wrong number of dimensions.
-    CHECK_THROWS_AS(exofile.getVar(&names, dim+1, "coord_names"), pylith::exceptions::IOError);
+    CHECK_THROWS_AS(exofile.getVar(&names, dim + 1, "coord_names"), pylith::exceptions::IOError);
 } // testGetVarString
 
 

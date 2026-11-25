@@ -1,26 +1,27 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/initializers/MeshReader.hh" // implementation of class methods
 
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/meshio/MeshIO.hh" // HOLDSA MeshIO
 #include "pylith/problems/Problem.hh" // USES Problem
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
-#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor
-pylith::initializers::MeshReader::MeshReader(void) : _reader(nullptr) {}
+pylith::initializers::MeshReader::MeshReader(void) : _reader(nullptr) {
+}
 
 
 // ------------------------------------------------------------------------------------------------

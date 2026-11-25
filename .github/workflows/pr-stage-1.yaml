@@ -1,3 +1,12 @@
+# -*- yaml -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 name: stage-1
 
 on:
@@ -32,9 +41,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
+          fetch-depth: 1
           submodules: recursive
 
       - name: Build Docker image
         run: docker build -t pylith-docenv --build-arg BASE_IMAGE=$IMAGE_REGISTRY/testenv-ubuntu-22.04 -f docker/pylith-docenv .
+
+# End of file

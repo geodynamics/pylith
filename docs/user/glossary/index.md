@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (cha:glossary)=
 # Glossary
 
@@ -93,9 +102,11 @@ The integrals in the weak form are integrated using numerical quadrature.
 The location of the quadrature points are usually found to achieve a desired order of accuracy in integrated fields.
 
 solution field
-: A field with subfields for the unkown values that will be determined by solving a system of equations.
+: A field with subfields for the unknown values that will be determined by solving a system of equations.
 
 spatial database
 : Data specifying values of one or more fields as a function of space.
 The topology and resolution of the spatial database is set to match the data and is independent of the finite-element mesh.
 The `spatialdata` library contains a few different implementations of spatial databases.
+
+% End of file

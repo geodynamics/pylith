@@ -1,20 +1,21 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 #include <petscsystypes.h>
 
 /// forward declaration for PETSc PetscErrorCode
 typedef int PetscErrorCode;
 
-/// forward delcaration of PETSc context.
-typedef void *PetscCtx;
+/// forward declaration of PETSc context.
+typedef void* PetscCtx;
 
 /// forward declaration for PETSc Mat
 typedef struct _p_Mat* PetscMat;
@@ -31,7 +32,7 @@ typedef struct _p_KSP* PetscKSP;
 /// forward declaration for PETSc SNES
 typedef struct _p_SNES* PetscSNES;
 
-/// forward declatation for PETSc line search
+/// forward declaration for PETSc line search
 typedef struct _p_LineSearch* PetscSNESLineSearch;
 
 /// forward declaration for PETSc TS

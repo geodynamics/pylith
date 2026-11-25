@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/materials/materialsfwd.hh" // forward declarations
@@ -17,8 +18,7 @@ class pylith::materials::IsotropicLinearIncompElasticity : public pylith::materi
     friend class TestIsotropicLinearIncompElasticity; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     IsotropicLinearIncompElasticity(void);
 
@@ -94,25 +94,23 @@ public:
     PetscPointFn* getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const;
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
-protected:
-
+  protected:
     /** Get auxiliary factory associated with physics.
      * @return Auxiliary factory for physics object.
      */
     pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::materials::AuxiliaryFactoryElastic* _auxiliaryFactory; ///< Factory for auxiliary subfields.
     bool _useReferenceState; ///< Flag to use reference stress and strain.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     IsotropicLinearIncompElasticity(const IsotropicLinearIncompElasticity&); ///< Not implemented.
     const IsotropicLinearIncompElasticity& operator=(const IsotropicLinearIncompElasticity&); ///< Not implemented
 
 }; // class IsotropicLinearIncompElasticity
+
 
 // End of file

@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Strike-Slip Benchmark
 
 This benchmark problem computes the viscoelastic (Maxwell) relaxation of stresses from a single, finite, strike-slip earthquake in 3D without gravity.
@@ -196,3 +205,5 @@ A linear decrease with a slope of 1 would indicate strong scaling, which is rare
 
 Parallel performance of PyLith for the strike-slip benchmark problem with tetrahedral cells and linear basis functions with a uniform discretization size of 500 m. The total runtime (total) and the runtime to compute the Jacobian and residual and solve the system (compute) are shown. The compute runtime decreases with a slope of about 0.7; a linear decrease with a slope of 1 would indicate strong scaling, which is rarely achieved in any real application.
 :::
+
+% End of file

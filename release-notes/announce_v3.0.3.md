@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # PyLith v3.0.3 now available
 
 I am pleased to announce the release of PyLith 3.0.3, a finite-element code designed to solve dynamic elastic problems and quasi-static viscoelastic problems in tectonic deformation.
@@ -38,3 +47,5 @@ The corresponding Xdmf files reflect this change.
 * Brad Aagaard
 * Matthew Knepley
 * Charles Williams
+
+% End of file

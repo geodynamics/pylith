@@ -1,22 +1,22 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
 #include "pylith/problems/InitialConditionDomain.hh" // implementation of class methods
 
-#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 
-#include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "pylith/scales/Scales.hh" // USES Scales
+#include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
 #include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
@@ -24,8 +24,7 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::problems::InitialConditionDomain::InitialConditionDomain(void) :
-    _db(NULL) {
+pylith::problems::InitialConditionDomain::InitialConditionDomain(void) : _db(NULL) {
     PyreComponent::setName("initialconditiondomain");
 } // constructor
 
@@ -54,7 +53,7 @@ pylith::problems::InitialConditionDomain::deallocate(void) {
 void
 pylith::problems::InitialConditionDomain::setDB(spatialdata::spatialdb::SpatialDB* db) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setDB(db="<<db<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setDB(db=" << db << ")");
 
     _db = db;
 
@@ -68,7 +67,7 @@ void
 pylith::problems::InitialConditionDomain::setValues(pylith::topology::Field* solution,
                                                     const pylith::scales::Scales& scales) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setValues(solution="<<solution<<", scales)");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setValues(solution=" << solution << ", scales)");
 
     assert(solution);
 

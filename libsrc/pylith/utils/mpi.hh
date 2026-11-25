@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include <mpi.h>
@@ -14,22 +15,20 @@
 namespace pylith {
     namespace utils {
         class MPI {
-public:
-
+          public:
             /** Is process root (0) process?
              *
              * @returns True on process 0, otherwise false.
              */
-            static
-            inline
-            bool isRoot(void) {
+            static inline bool
+            isRoot(void) {
                 int rank = 0;
                 MPI_Comm_rank(MPI_COMM_WORLD, &rank);
                 return rank == 0;
             } // isRoot
-
         };
-    } // utils
-} // pylith
+    } // namespace utils
+} // namespace pylith
+
 
 // End of file

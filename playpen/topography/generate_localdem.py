@@ -1,4 +1,14 @@
 #!/usr/bin/env nemesis
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 """Python script to extract elevation data in region around the Cascadia subduction zone
 using the GDAL Python API.
 
@@ -10,6 +20,7 @@ Notes:
 2. This Python script requires the GDAL (https://gdal.org) Python package and
    its underlying C++ library.
 """
+
 import pathlib
 
 from osgeo import gdal
@@ -40,3 +51,6 @@ options = gdal.TranslateOptions(
 )
 gdal.Translate(FILENAME_OUT, VRT_PATH, options=options)
 gdal.Unlink(VRT_PATH)
+
+
+# End of file

@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "CohesiveKinData.hh"
@@ -14,13 +15,12 @@
 namespace pylith {
     namespace faults {
         class CohesiveKinSrcsDataHex8;
-    } // pylith
-} // faults
+    } // namespace faults
+} // namespace pylith
 
 class pylith::faults::CohesiveKinSrcsDataHex8 : public CohesiveKinData {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+  public:
     /// Constructor
     CohesiveKinSrcsDataHex8(void);
 
@@ -28,8 +28,7 @@ public:
     ~CohesiveKinSrcsDataHex8(void);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
+  private:
     static const char* _meshFilename; ///< Filename of input mesh
 
     static const int _spaceDim; ///< Number of dimensions in vertex coordinates
@@ -69,7 +68,7 @@ private:
     static const int _numCohesiveCells; ///< Number of cohesive cells
     static const int _cellMappingFault[]; ///< Fault cell
     static const int _cellMappingCohesive[]; ///< Cohesive cell
-
 };
+
 
 // End of file

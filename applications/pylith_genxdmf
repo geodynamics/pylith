@@ -1,13 +1,14 @@
 #!/usr/bin/env nemesis
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 """
 This script creates a metadata file (.xmf) from an HDF5 file written by
 PyLith permitting the data to be viewed in VTK visualization software,
@@ -15,6 +16,7 @@ such as ParaView and Visit.
 
 Usage: pylith_genxdmf --files=FILE_OR_FILE_PATTERN
 """
+
 
 # ======================================================================
 class GenXdmfApp(object):
@@ -29,7 +31,6 @@ class GenXdmfApp(object):
         self.filepattern = "*.h5"
         return
 
-
     def main(self):
         """
         Main entry point for application.
@@ -39,7 +40,7 @@ class GenXdmfApp(object):
 
         xdmf = Xdmf()
         for filenameHDF5 in glob.iglob(self.filepattern):
-              xdmf.write(filenameHDF5, verbose=True)
+            xdmf.write(filenameHDF5, verbose=True)
         return
 
 
@@ -48,13 +49,18 @@ if __name__ == "__main__":
 
     usage = "%prog --files=FILE_OR_FILE_PATTERN"
     from optparse import OptionParser
+
     parser = OptionParser(usage=usage)
-    parser.add_option("-f", "--files",
-                      dest="filepattern",
-                      type="string", metavar="FILE",
-                      help="Create Xdmf file for HDF5 file FILE. [*.h5]",
-                      default="*.h5")
-    (options, args) = parser.parse_args()
+    parser.add_option(
+        "-f",
+        "--files",
+        dest="filepattern",
+        type="string",
+        metavar="FILE",
+        help="Create Xdmf file for HDF5 file FILE. [*.h5]",
+        default="*.h5",
+    )
+    options, args = parser.parse_args()
 
     app = GenXdmfApp()
     app.filepattern = options.filepattern

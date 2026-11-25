@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from pythia.pyre.components.Component import Component as PyreComponent
 
@@ -17,13 +17,11 @@ class Component(PyreComponent):
     """
 
     def __init__(self, name, facility):
-        """Constructor.
-        """
+        """Constructor."""
         PyreComponent.__init__(self, name, facility)
 
     def cleanup(self):
-        """Deallocate data structures.
-        """
+        """Deallocate data structures."""
         for component in self.components():
             if isinstance(component, Component):
                 component.cleanup()
@@ -37,8 +35,7 @@ class Component(PyreComponent):
         self._cleanup()
 
     def _cleanup(self):
-        """Deallocate locally managed data structures.
-        """
+        """Deallocate locally managed data structures."""
         # If module object not yet created, return
         if getattr(self, "this", None) is None:
             return

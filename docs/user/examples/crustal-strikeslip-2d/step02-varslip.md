@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 2: Static Spatially Variable Coseismic Slip
 
 % Metadata extracted from parameter files.
@@ -97,3 +106,5 @@ The colors of the shaded surface indicate the y displacement, and the deformatio
 The undeformed configuration is shown by the gray wireframe.
 The contrast in material properties across the faults causes the asymmetry in the y displacement field.
 :::
+
+% End of file

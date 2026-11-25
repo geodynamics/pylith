@@ -1,55 +1,49 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 // Set name of logging class.
-inline
-void
+inline void
 pylith::petsc::EventLogger::setClassName(const char* name) {
     _className = name;
 }
 
 
 // Get name of logging class.
-inline
-const char*
+inline const char*
 pylith::petsc::EventLogger::getClassName(void) const {
     return _className.c_str();
 }
 
 
 // Scope constructor logs event begin.
-inline
-pylith::petsc::EventLogger::Scope::Scope(const PetscLogEvent event) :
-    _event(event) {
+inline pylith::petsc::EventLogger::Scope::Scope(const PetscLogEvent event) : _event(event) {
     PetscLogEventBegin(_event, 0, 0, 0, 0);
 }
 
 // Scope destructor logs event end.
-inline
-pylith::petsc::EventLogger::Scope::~Scope(void) {
+inline pylith::petsc::EventLogger::Scope::~Scope(void) {
     PetscLogEventEnd(_event, 0, 0, 0, 0);
 }
 
 
 // Log stage begin.
-inline
-void
+inline void
 pylith::petsc::EventLogger::stagePush(const PetscLogStage id) {
     PetscLogStagePush(id);
 } // stagePush
 
 
 // Log stage end.
-inline
-void
+inline void
 pylith::petsc::EventLogger::stagePop(void) {
     PetscLogStagePop();
 } // stagePop

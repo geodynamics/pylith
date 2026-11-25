@@ -1,12 +1,12 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
 
 #include <portinfo>
 
@@ -24,7 +24,8 @@
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::materials::RheologyElasticity::RheologyElasticity(void) :
-    _lhsJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_NEVER) {}
+    _lhsJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_NEVER) {
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -55,7 +56,9 @@ void
 pylith::materials::RheologyElasticity::updateKernelConstants(pylith::real_array* kernelConstants,
                                                              const PylithReal dt) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "updateKernelConstants(kernelConstants"<<kernelConstants<<", dt="<<dt<<") empty method");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "updateKernelConstants(kernelConstants" << kernelConstants << ", dt=" << dt
+                                                                   << ") empty method");
 
     // Default is to do nothing.
 
@@ -66,10 +69,13 @@ pylith::materials::RheologyElasticity::updateKernelConstants(pylith::real_array*
 // ------------------------------------------------------------------------------------------------
 // Add kernels for updating state variables.
 void
-pylith::materials::RheologyElasticity::addKernelsUpdateStateVars(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
-                                                                 const spatialdata::geocoords::CoordSys* coordsys) const {
+pylith::materials::RheologyElasticity::addKernelsUpdateStateVars(
+    std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
+    const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "addKernelsUpdateStateVars(kernels="<<kernels<<", coordsys="<<typeid(coordsys).name()<<") empty method");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
+                           "addKernelsUpdateStateVars(kernels=" << kernels << ", coordsys=" << typeid(coordsys).name()
+                                                                << ") empty method");
 
     // Default is to do nothing.
 

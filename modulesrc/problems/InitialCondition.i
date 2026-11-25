@@ -1,25 +1,18 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
 
-/**
- * @file modulesrc/problems/Problem.hh
- *
- * @brief Python interface to C++ Problem.
- */
 
 namespace pylith {
     namespace problems {
-        class InitialCondition: public pylith::utils::PyreComponent {
+        class InitialCondition : public pylith::utils::PyreComponent {
             // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             /// Constructor
             InitialCondition(void);
 
@@ -34,26 +27,27 @@ public:
              * @param[in] subfields Array of names of solution subfields.
              * @param[in] numSubfields Number of subfields.
              */
-            %apply(const char* const* string_list, const int list_len) {
-                (const char* subfields[], const int numSubfields)
-            };
+            %apply(const char* const* string_list,
+                    const int list_len){(const char* subfields[],
+                                         const int numSubfields)};
             void setSubfields(const char* subfields[],
                               const int numSubfields);
 
-            %clear(const char* subfields[], const int numSubfields);
+            %clear(const char* subfields[],
+                    const int numSubfields);
 
             /** Set solver type.
              *
              * @param[out] solution Solution field.
              * @param[in] scales Nondimensionalization.
              */
-            virtual
-            void setValues(pylith::topology::Field* solution,
-                           const pylith::scales::Scales& scales) = 0;
+            virtual void setValues(pylith::topology::Field* solution,
+                                   const pylith::scales::Scales& scales) = 0;
 
         }; // InitialCondition
 
-    } // problems
-} // pylith
+    } // namespace problems
+} // namespace pylith
+
 
 // End of file

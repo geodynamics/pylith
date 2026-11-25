@@ -1,12 +1,15 @@
-# =================================================================================================
+# -*- makefile -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
+dist_noinst_PYTHON = \
+	user/examples/box-2d/figs/generate_diagrams.py
 
 dist_noinst_DATA = \
 	conf.py \
@@ -796,6 +799,7 @@ dist_noinst_DATA = \
 	developer/debugging/fields.md \
 	developer/debugging/index.md \
 	developer/debugging/tools.md \
+	developer/design-specifications/mms-redesign-v2.md \
 	developer/testing/libtests.md \
 	developer/testing/run-cxxtests.md \
 	developer/testing/fullscale.md \
@@ -848,4 +852,4 @@ dist_noinst_DATA = \
 	developer/building/index.md
 
 
-# End of file 
+# End of file

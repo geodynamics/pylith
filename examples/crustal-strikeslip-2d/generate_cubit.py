@@ -1,4 +1,14 @@
 #!python3
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 """WARNING: This script only works with Python supplied with Cubit.
 
 To run this script outside the Cubit GUI, you will need to run it like:
@@ -7,6 +17,8 @@ PATH_TO_CUBIT/Cubit.app/Contents/Frameworks/Python.framework/Versions/Current/bi
 
 where you replace 'PATH_TO_CUBIT' with the absolute path.
 """
+
+
 # -------------------------------------------------------------------------------------------------
 # Utility functions. No edits should be needed.
 # -------------------------------------------------------------------------------------------------
@@ -14,24 +26,32 @@ def setup_cubit():
     """Detect if we are running outside Cubit. If so, then we parse command line arguments and setup
     Cubit."""
     import sys
+
     if not "cubit" in sys.modules:
         import argparse
         import pathlib
 
         parser = argparse.ArgumentParser()
-        parser.add_argument("--cubit-directory", action="store", dest="cubit_dir", required=True, help="Directory containing cubit executable.")
+        parser.add_argument(
+            "--cubit-directory",
+            action="store",
+            dest="cubit_dir",
+            required=True,
+            help="Directory containing cubit executable.",
+        )
         args = parser.parse_args()
 
         # Initialize cubit
         cubit_absdir = pathlib.Path(args.cubit_dir).expanduser().resolve()
         sys.path.append(str(cubit_absdir))
         import cubit
-        cubit.init(['cubit','-nojournal'])
+
+        cubit.init(["cubit", "-nojournal"])
 
 
 def get_last_entity(entity_type: str):
     """Get last entry of type 'entity_type'.
-    
+
     Example:
         domain = get_last_entity("volume")
     """
@@ -113,7 +133,7 @@ FILENAME_WESTTRACE = "faulttrace_west_utm.txt"
 FILENAME_STRANDETRACE = "faulttrace_east_utm.txt"
 
 # Discretization size on faults and bias (rate of cell size increase away from fault)
-DX_FAULT = 1.0e+3
+DX_FAULT = 1.0e3
 DX_BIAS = 1.07
 
 CELL = "tri"
@@ -135,13 +155,18 @@ pNE = cubit.create_vertex(DOMAIN_E, DOMAIN_N, 0)
 pNW = cubit.create_vertex(DOMAIN_W, DOMAIN_N, 0)
 
 # Create curves for domain
-c_south = cubit.create_curve(pSW, pSE); c_south.set_entity_name("c_south")
-c_east = cubit.create_curve(pSE, pNE); c_east.set_entity_name("c_east")
-c_north = cubit.create_curve(pNE, pNW); c_north.set_entity_name("c_north")
-c_west = cubit.create_curve(pNW, pSW); c_west.set_entity_name("c_west")
+c_south = cubit.create_curve(pSW, pSE)
+c_south.set_entity_name("c_south")
+c_east = cubit.create_curve(pSE, pNE)
+c_east.set_entity_name("c_east")
+c_north = cubit.create_curve(pNE, pNW)
+c_north.set_entity_name("c_north")
+c_west = cubit.create_curve(pNW, pSW)
+c_west.set_entity_name("c_west")
 
 # Create surface for domain
-s_domain = cubit.create_surface([c_south, c_east, c_north, c_west]); s_domain.set_entity_name("s_domain")
+s_domain = cubit.create_surface([c_south, c_east, c_north, c_west])
+s_domain.set_entity_name("s_domain")
 
 
 # Create points for main fault
@@ -174,10 +199,10 @@ fault_west_ends = entity_from_name("c_fault_west", "curve").vertices()
 fault_east_ends = entity_from_name("c_fault_east", "curve").vertices()
 
 # Manually find ids using GUI for main fault split by imprint, then replace id with idless signature
-#idless = cubit.get_idless_signature("curve", 9)
+# idless = cubit.get_idless_signature("curve", 9)
 idless = "Curve ( at 447417 3.95436e+06 0 ordinal 1 )"
 cubit.cmd(f"curve {idless} name 'c_fault_main_north'")
-#idless = cubit.get_idless_signature("curve", 10)
+# idless = cubit.get_idless_signature("curve", 10)
 idless = "Curve ( at 460642 3.94255e+06 0 ordinal 1 )"
 cubit.cmd(f"curve {idless} name 'c_fault_main_south'")
 fault_main_ends = [cubit.vertex(9), cubit.vertex(15)]
@@ -243,7 +268,6 @@ if False:
     cubit.cmd("nodeset 13 group boundary_west")
     cubit.cmd("nodeset 13 name 'boundary_west'")
 
-
     # Create nodeset for fault 'main'
     cubit.cmd("group 'fault_main' add node in curve c_fault_main_north c_fault_main_south")
     cubit.cmd("nodeset 20 group fault_main")
@@ -299,7 +323,6 @@ if True:
     cubit.cmd("sideset 13 group boundary_west")
     cubit.cmd("sideset 13 name 'boundary_west'")
 
-
     # Create sideset for fault 'main'
     cubit.cmd("group 'fault_main' add curve c_fault_main_north c_fault_main_south")
     cubit.cmd("sideset 20 group fault_main")
@@ -333,3 +356,6 @@ if True:
 
 # Write mesh as ExodusII file
 cubit.cmd(f"export mesh 'mesh_{CELL}.exo' dimension 2 overwrite")
+
+
+# End of file

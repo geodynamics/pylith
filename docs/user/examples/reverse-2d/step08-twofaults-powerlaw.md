@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-examples-reverse-2d-step08)=
 # Step 8: Slip on Two Faults and Power-law Viscoelastic Materials
 
@@ -203,3 +212,5 @@ caption: Compare the results from Step 8 ad 8b using the `plot_compare.py` Pytho
 Displacement and shear stress time histories for Step 8 and 8b at a location in the viscoelastic slab below the bottom ends of the main fault and splay fault.
 The adaptive time stepping does a better job of capturing the variable rate of deformation associated with the power-law viscoelastic rheology; however, the simulation steps over the time of the earthquake on the splay fault before reducing the time step.
 :::
+
+% End of file

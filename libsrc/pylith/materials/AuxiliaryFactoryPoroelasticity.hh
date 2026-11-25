@@ -1,16 +1,17 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
-#include "pylith/materials/materialsfwd.hh" // forward declarations
 #include "pylith/materials/AuxiliaryFactoryElasticity.hh" // ISA AuxiliaryFactory
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES GravityField
 
@@ -18,8 +19,7 @@ class pylith::materials::AuxiliaryFactoryPoroelasticity : public pylith::materia
     friend class TestAuxiliaryFactoryPoroelasticity; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     AuxiliaryFactoryPoroelasticity(void);
 
@@ -51,11 +51,11 @@ public:
     void addSourceDensity(void);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
-    AuxiliaryFactoryPoroelasticity(const AuxiliaryFactoryPoroelasticity &); ///< Not implemented.
+  private:
+    AuxiliaryFactoryPoroelasticity(const AuxiliaryFactoryPoroelasticity&); ///< Not implemented.
     const AuxiliaryFactoryPoroelasticity& operator=(const AuxiliaryFactoryPoroelasticity&); ///< Not implemented
 
 }; // class AuxiliaryFactoryPoroelasticity
+
 
 // End of file

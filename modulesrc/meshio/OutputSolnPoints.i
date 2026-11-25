@@ -1,25 +1,18 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
 
-/**
- * @file modulesrc/meshio/OutputSolnPoints.i
- *
- * @brief Python interface to C++ OutputSolnPoints object.
- */
 
 namespace pylith {
     namespace meshio {
         class OutputSolnPoints : public pylith::meshio::OutputSoln {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+          public:
             /// Constructor.
             OutputSolnPoints(void);
 
@@ -34,25 +27,27 @@ public:
              * @param[in] pointNames Array with point names.
              * @param[in] numPointNames Number of point banes.
              */
-            %apply(double* IN_ARRAY2, int DIM1, int DIM2) {
-	            (const PylithReal* pointCoords,
-	            const int numPoints,
-	            const int spaceDim)
-	        };
-            %apply(const char* const* string_list, const int list_len){
-	            (const char* const* pointNames, const int numPointNames)
-	        };
+            %apply(double* IN_ARRAY2,
+                    int DIM1,
+                    int DIM2){(const PylithReal* pointCoords,
+                               const int numPoints,
+                               const int spaceDim)};
+            %apply(const char* const* string_list,
+                    const int list_len){(const char* const* pointNames,
+                                         const int numPointNames)};
             void setPoints(const PylithReal* pointCoords,
                            const int numPoints,
                            const int spaceDim,
                            const char* const* pointNames,
                            const int numPointNames);
-            %clear(const PylithReal* pointCoords, const int numPoints, const int spaceDim);
-            %clear(const char* const* pointNames, const int numPointNames);
+            %clear(const PylithReal* pointCoords,
+                    const int numPoints,
+                    const int spaceDim);
+            %clear(const char* const* pointNames,
+                    const int numPointNames);
 
             // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+          protected:
             /** Write solution at time step.
              *
              * @param[in] t Current time.
@@ -65,7 +60,8 @@ protected:
 
         }; // OutputSolnPoints
 
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
+
 
 // End of file

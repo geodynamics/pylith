@@ -1,4 +1,14 @@
 #!/usr/bin/env nemesis
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
+
 """
 We use the `gmsh_utils` module provided with PyLith. This module has helper functions
 and classes for marking materials and boundaries compatible with PyLith. We also use the
@@ -11,12 +21,12 @@ Run `generate_gmsh.py --help` to see the command line options.
 Run `generate_gmsh.py --write` to generate the mesh.
 """
 
-
 # Import Gmsh Python interface
 import gmsh
 
 # Import the gmsh_utils Python module supplied with PyLith.
-from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup, GenerateMesh)
+from pylith.meshio.gmsh_utils import BoundaryGroup, MaterialGroup, GenerateMesh
+
 
 class App(GenerateMesh):
     """
@@ -25,26 +35,26 @@ class App(GenerateMesh):
     App uses `GenerateMesh` from `gmsh_utils` for common functionality that we avoid
     duplicating in each of our examples.
     """
+
     # Domain constants
     km = 1000.0
-    LENGTH = 20*km
-    DEPTH = 20*km
+    LENGTH = 20 * km
+    DEPTH = 20 * km
 
     # Magma conduit
-    CONDUIT_LENGTH = 1*km
-    CONDUIT_DEPTH = 6*km
+    CONDUIT_LENGTH = 1 * km
+    CONDUIT_DEPTH = 6 * km
 
     # Magma reservoir
-    RES_CENTER = (LENGTH/2, -DEPTH+CONDUIT_DEPTH, 0)
-    MAJOR_AXIS = 5*km
-    MINOR_AXIS = 1*km
+    RES_CENTER = (LENGTH / 2, -DEPTH + CONDUIT_DEPTH, 0)
+    MAJOR_AXIS = 5 * km
+    MINOR_AXIS = 1 * km
 
     DX_RES = 250
     DX_BIAS = 1.1
 
     def __init__(self):
-        """Constructor.
-        """
+        """Constructor."""
         super().__init__()
 
         # Set the cell choices available through command line options.
@@ -53,24 +63,25 @@ class App(GenerateMesh):
         self.cell_choices = {
             "default": "tri",
             "choices": ["tri"],
-            }
+        }
         self.filename = "mesh_tri.msh"
 
     def create_geometry(self):
-        """Create geometry.
-        """
+        """Create geometry."""
         gmsh.option.setNumber("Geometry.OCCBooleanPreserveNumbering", 0)
 
         # Create domain surface
         s_domain_box = gmsh.model.occ.add_rectangle(0, -self.DEPTH, 0, self.LENGTH, self.DEPTH)
 
         # Create chamber surface
-        chamber = gmsh.model.occ.add_ellipse(self.RES_CENTER[0], self.RES_CENTER[1], self.RES_CENTER[2], self.MAJOR_AXIS, self.MINOR_AXIS)
+        chamber = gmsh.model.occ.add_ellipse(
+            self.RES_CENTER[0], self.RES_CENTER[1], self.RES_CENTER[2], self.MAJOR_AXIS, self.MINOR_AXIS
+        )
         chamber_loop = gmsh.model.occ.add_curve_loop([chamber])
         s_chamber = gmsh.model.occ.add_plane_surface([chamber_loop])
 
         # Create conduit surface
-        x0 = self.LENGTH/2 - self.CONDUIT_LENGTH/2
+        x0 = self.LENGTH / 2 - self.CONDUIT_LENGTH / 2
         y0 = -self.DEPTH
         s_conduit = gmsh.model.occ.add_rectangle(x0, y0, 0, self.CONDUIT_LENGTH, self.CONDUIT_DEPTH)
 
@@ -82,7 +93,7 @@ class App(GenerateMesh):
         self.s_domain = fragments[0][1]
         self.s_reservoir = fragments[1][1]
 
-        gmsh.model.occ.remove_all_duplicates() # Duplicate points at intersection
+        gmsh.model.occ.remove_all_duplicates()  # Duplicate points at intersection
 
         # Get boundaries
         _, domain_curves = gmsh.model.occ.get_curve_loops(self.s_domain)
@@ -110,10 +121,7 @@ class App(GenerateMesh):
         # Create a material for the domain.
         # The tag argument specifies the integer tag for the physical group.
         # The entities argument specifies the array of surfaces for the material.
-        materials = (
-            MaterialGroup(tag=1, entities=[self.s_domain]),
-            MaterialGroup(tag=2, entities=[self.s_reservoir])
-        )
+        materials = (MaterialGroup(tag=1, entities=[self.s_domain]), MaterialGroup(tag=2, entities=[self.s_reservoir]))
         for material in materials:
             material.create_physical_group()
 
@@ -125,9 +133,11 @@ class App(GenerateMesh):
         face_groups = (
             BoundaryGroup(name="boundary_xneg", tag=20, dim=1, entities=[self.c_xneg]),
             BoundaryGroup(name="boundary_xpos", tag=21, dim=1, entities=[self.c_xpos]),
-            BoundaryGroup(name="boundary_yneg", tag=22, dim=1, entities=[self.c_yneg_left, self.c_flow, self.c_yneg_right]),
+            BoundaryGroup(
+                name="boundary_yneg", tag=22, dim=1, entities=[self.c_yneg_left, self.c_flow, self.c_yneg_right]
+            ),
             BoundaryGroup(name="boundary_ypos", tag=23, dim=1, entities=[self.c_ypos]),
-            BoundaryGroup(name="boundary_flow", tag=24, dim=1, entities=[self.c_flow])
+            BoundaryGroup(name="boundary_flow", tag=24, dim=1, entities=[self.c_flow]),
         )
         for group in face_groups:
             group.create_physical_group()
@@ -147,7 +157,11 @@ class App(GenerateMesh):
 
         # First, we setup a field `field_distance` with the distance from the reservoir boundary.
         distance = gmsh.model.mesh.field.add("Distance")
-        gmsh.model.mesh.field.setNumbers(distance, "CurvesList", [self.c_chamber_right, self.c_chamber_left, self.c_conduit_left, self.c_flow, self.c_conduit_right])
+        gmsh.model.mesh.field.setNumbers(
+            distance,
+            "CurvesList",
+            [self.c_chamber_right, self.c_chamber_left, self.c_conduit_left, self.c_flow, self.c_conduit_right],
+        )
 
         # Second, we setup a field `field_size`, which is the mathematical expression
         # for the cell size as a function of the cell size on the boundary, the distance from
@@ -178,4 +192,3 @@ if __name__ == "__main__":
 
 
 # End of file
-

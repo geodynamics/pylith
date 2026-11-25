@@ -1,12 +1,12 @@
-# =================================================================================================
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-# All rights reserved.
-#
-# See https://mit-license.org/ and LICENSE.md and for license information.
-# =================================================================================================
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT
+
 
 from pylith.problems.Physics import Physics
 from .faults import FaultCohesive as ModuleFaultCohesive
@@ -52,16 +52,12 @@ class FaultCohesive(Physics, ModuleFaultCohesive):
     edgeValue = pythia.pyre.inventory.int("edge_value", default=1)
     edgeValue.meta["tip"] = "Value of label identifier for buried fault edges."
 
-    refDir1 = pythia.pyre.inventory.list(
-        "ref_dir_1", default=[0.0, 0.0, 1.0], validator=validateDir
-    )
+    refDir1 = pythia.pyre.inventory.list("ref_dir_1", default=[0.0, 0.0, 1.0], validator=validateDir)
     refDir1.meta["tip"] = (
         "First choice for reference direction to discriminate among tangential directions in 3D; should roughly match the up-dir direction."
     )
 
-    refDir2 = pythia.pyre.inventory.list(
-        "ref_dir_2", default=[0.0, 1.0, 0.0], validator=validateDir
-    )
+    refDir2 = pythia.pyre.inventory.list("ref_dir_2", default=[0.0, 1.0, 0.0], validator=validateDir)
     refDir2.meta["tip"] = (
         "Second choice for reference direction to discriminate among tangential directions in 3D; should roughly match the fault normal direction."
     )
@@ -94,9 +90,7 @@ class FaultCohesive(Physics, ModuleFaultCohesive):
 
     def _createModuleObj(self):
         """Create handle to corresponding C++ object."""
-        raise NotImplementedError(
-            "Please implement _createModuleObj() in derived class."
-        )
+        raise NotImplementedError("Please implement _createModuleObj() in derived class.")
 
 
 # End of file

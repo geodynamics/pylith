@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-run-pylith-pylithapp)=
 # PyLith Application
 
@@ -24,9 +33,11 @@ The metadata gives structure to information previously placed in comments within
 The metadata makes it possible for a Python script to launch an entire suite of simulations and search for simulation parameter files based on the metadata content (see {ref}`sec-user-run-pylith-utilities` for more information).
 For example, users can search examples that use a given feature.
 
-At a minumum the metadata must include: (1) a description, (2) the command line arguments necessary to run the simulation, and (3) the PyLith version(s) that are compatible with the input files.
+At a minimum the metadata must include: (1) a description, (2) the command line arguments necessary to run the simulation, and (3) the PyLith version(s) that are compatible with the input files.
 We strongly encourage users to include all of the metadata in their own PyLith parameter files.
 
 :::{seealso}
 [`SimulationMetadata` Component](../components/utils/SimulationMetadata.md)
 :::
+
+% End of file

@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 7: Generation of Green's Functions and Slow Slip Inversion
 
 In this example we compute the static Green's function for prescribed slip impulses on the central portion of the subduction interface.
@@ -165,3 +174,5 @@ $ viz/plot_inversion_misfit.py
 
 Data residual versus penalty residual for inversion from Step 7.
 :::
+
+% End of file

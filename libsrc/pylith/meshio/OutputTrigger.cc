@@ -1,29 +1,31 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #include <portinfo>
 
 #include "pylith/meshio/OutputTrigger.hh" // Implementation of class methods
 
-#include "pylith/utils/journals.hh" // USES journal macros
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/utils/journals.hh" // USES journal macros
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor
-pylith::meshio::OutputTrigger::OutputTrigger(void) :
-    _timeScale(1.0) {}
+pylith::meshio::OutputTrigger::OutputTrigger(void) : _timeScale(1.0) {
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor
-pylith::meshio::OutputTrigger::~OutputTrigger(void) {}
+pylith::meshio::OutputTrigger::~OutputTrigger(void) {
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -32,7 +34,7 @@ void
 pylith::meshio::OutputTrigger::setTimeScale(const PylithReal value) {
     if (value <= 0.0) {
         PYLITH_COMPONENT_ERROR(pylith::exceptions::OutOfRangeError,
-                               "Time scale ("<<value<<") for solution observer is nonpositive.");
+                               "Time scale (" << value << ") for solution observer is nonpositive.");
     } // if
     _timeScale = value;
 } // setTimeScale

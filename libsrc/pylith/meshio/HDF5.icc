@@ -1,26 +1,28 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
-//
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 // Included directly by HDF5.hh — not compiled independently.
 // =================================================================================================
+
+
 #pragma once
 
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 #include "HDF5.hh"
 
-#if H5_VERSION_GE(1,12,0)
+#if H5_VERSION_GE(1, 12, 0)
 #define PYLITH_HDF5_USE_API_112
 #endif
 
-#if H5_VERSION_GE(1,8,0)
+#if H5_VERSION_GE(1, 8, 0)
 #define PYLITH_HDF5_USE_API_18
 #endif
 
@@ -39,82 +41,98 @@ namespace pylith {
             /// RAII wrapper for HDF5 object handles.
             class H5Handle {
                 using closer_t = herr_t (*)(hid_t);
-public:
 
+              public:
                 hid_t id{-1};
                 closer_t closer{nullptr};
 
                 H5Handle() = default;
                 H5Handle(hid_t h,
-                         closer_t c) : id(h), closer(c) {}
+                         closer_t c) :
+                    id(h),
+                    closer(c) {
+                }
 
 
                 ~H5Handle() {
-                    if ((id >= 0) && closer) { closer(id); }
+                    if ((id >= 0) && closer) {
+                        closer(id);
+                    }
                 }
 
                 H5Handle(const H5Handle&) = delete;
                 H5Handle& operator=(const H5Handle&) = delete;
 
-                H5Handle(H5Handle&& o) noexcept : id(o.id), closer(o.closer) {
+                H5Handle(H5Handle&& o) noexcept :
+                    id(o.id),
+                    closer(o.closer) {
                     o.id = -1;
                 }
 
-                H5Handle& operator=(H5Handle&& o) noexcept {
+                H5Handle&
+                operator=(H5Handle&& o) noexcept {
                     if (this != &o) {
-                        if ((id >= 0) && closer) { closer(id); }
+                        if ((id >= 0) && closer) {
+                            closer(id);
+                        }
                         id = o.id;
                         closer = o.closer;
                         o.id = -1;
                     }
                     return *this;
                 }
-
             };
 
-        } // _HDF5
-    } // meshio
-} // pylith
+        } // namespace _HDF5
+    } // namespace meshio
+} // namespace pylith
 
 
 // ------------------------------------------------------------------------------------------------
-template <> inline hid_t
+template <>
+inline hid_t
 pylith::meshio::HDF5::_h5NativeType<float>() {
     return H5T_NATIVE_FLOAT;
 }
 
 
-template <> inline hid_t
+template <>
+inline hid_t
 pylith::meshio::HDF5::_h5NativeType<double>() {
     return H5T_NATIVE_DOUBLE;
 }
 
 
-template <> inline hid_t
+template <>
+inline hid_t
 pylith::meshio::HDF5::_h5NativeType<int>() {
     return H5T_NATIVE_INT;
 }
 
 
-template <> inline hid_t
+template <>
+inline hid_t
 pylith::meshio::HDF5::_h5NativeType<long>() {
     return H5T_NATIVE_LONG;
 }
 
 
-template <> inline hid_t
+template <>
+inline hid_t
 pylith::meshio::HDF5::_h5NativeType<unsigned int>() {
     return H5T_NATIVE_UINT;
 }
 
 
-template <> inline hid_t
+template <>
+inline hid_t
 pylith::meshio::HDF5::_h5NativeType<unsigned long>() {
     return H5T_NATIVE_ULONG;
 }
 
 
-template <> inline hid_t
+template <>
+inline hid_t
 pylith::meshio::HDF5::_h5NativeType<char>() {
     return H5T_NATIVE_CHAR;
 }
@@ -274,7 +292,9 @@ pylith::meshio::HDF5::createDataset(const char* parent,
 
         // Initial extent: 1 along the unlimited axis, full size elsewhere.
         std::vector<hsize_t> curDims(shape.maxDims);
-        if (curDims[0] == H5S_UNLIMITED) { curDims[0] = 1; }
+        if (curDims[0] == H5S_UNLIMITED) {
+            curDims[0] = 1;
+        }
 
         dataspace.id = H5Screate_simple(ndims, curDims.data(), shape.maxDims.data());
         if (dataspace.id < 0) {
@@ -293,8 +313,7 @@ pylith::meshio::HDF5::createDataset(const char* parent,
         H5Pset_deflate(property.id, 6);
 
 #if defined(PYLITH_HDF5_USE_API_18)
-        dataset.id = H5Dcreate2(group.id, name, datatype, dataspace.id,
-                                H5P_DEFAULT, property.id, H5P_DEFAULT);
+        dataset.id = H5Dcreate2(group.id, name, datatype, dataspace.id, H5P_DEFAULT, property.id, H5P_DEFAULT);
 #else
         dataset.id = H5Dcreate(group.id, name, datatype, dataspace.id, property.id);
 #endif
@@ -303,13 +322,12 @@ pylith::meshio::HDF5::createDataset(const char* parent,
         }
 
     } catch (pylith::exceptions::Error& err) {
-        err.addContext(pylith::exceptions::ErrorMessage() << "Error occurred while creating dataset '"
-                                                          << parent << "/" << name << "'.\n");
+        err.addContext(pylith::exceptions::ErrorMessage()
+                       << "Error occurred while creating dataset '" << parent << "/" << name << "'.\n");
         throw;
     } catch (const std::exception& err) {
         std::ostringstream msg;
-        msg << "Error occurred while creating dataset '"
-            << parent << "/" << name << "':\n" << err.what();
+        msg << "Error occurred while creating dataset '" << parent << "/" << name << "':\n" << err.what();
         throw std::runtime_error(msg.str());
     } catch (...) {
         std::ostringstream msg;
@@ -387,25 +405,22 @@ pylith::meshio::HDF5::readDataset(const char* parent,
 
         result.data.resize(total);
         if (total > 0) {
-            if (H5Dread(dataset.id, datatype, H5S_ALL, H5S_ALL,
-                        H5P_DEFAULT, result.data.data()) < 0) {
+            if (H5Dread(dataset.id, datatype, H5S_ALL, H5S_ALL, H5P_DEFAULT, result.data.data()) < 0) {
                 throw std::runtime_error("Could not read data.");
             }
         }
 
     } catch (pylith::exceptions::Error& err) {
-        err.addContext(pylith::exceptions::ErrorMessage() << "Error occurred while reading dataset '"
-                                                          << parent << "/" << name << "'.\n");
+        err.addContext(pylith::exceptions::ErrorMessage()
+                       << "Error occurred while reading dataset '" << parent << "/" << name << "'.\n");
         throw;
     } catch (const std::exception& err) {
         std::ostringstream msg;
-        msg << "Error occurred while reading dataset '"
-            << parent << "/" << name << "':\n" << err.what();
+        msg << "Error occurred while reading dataset '" << parent << "/" << name << "':\n" << err.what();
         throw std::runtime_error(msg.str());
     } catch (...) {
         std::ostringstream msg;
-        msg << "Unknown error occurred while reading dataset '"
-            << parent << "/" << name << "'.";
+        msg << "Unknown error occurred while reading dataset '" << parent << "/" << name << "'.";
         throw std::runtime_error(msg.str());
     }
 
@@ -480,29 +495,30 @@ pylith::meshio::HDF5::writeDatasetChunk(const char* parent,
             throw std::runtime_error("Could not create chunk dataspace.");
         }
 
-        if (H5Sselect_hyperslab(dataspace.id, H5S_SELECT_SET, offset.data(),
-                                stride.data(), count.data(), chunk.chunkDims.data()) < 0) {
+        if (H5Sselect_hyperslab(dataspace.id,
+                                H5S_SELECT_SET,
+                                offset.data(),
+                                stride.data(),
+                                count.data(),
+                                chunk.chunkDims.data()) < 0) {
             throw std::runtime_error("Could not select hyperslab.");
         }
 
-        if (H5Dwrite(dataset.id, datatype, chunkspace.id, dataspace.id,
-                     H5P_DEFAULT, data.data()) < 0) {
+        if (H5Dwrite(dataset.id, datatype, chunkspace.id, dataspace.id, H5P_DEFAULT, data.data()) < 0) {
             throw std::runtime_error("Could not write data.");
         }
 
     } catch (pylith::exceptions::Error& err) {
-        err.addContext(pylith::exceptions::ErrorMessage() << "Error occurred while writing dataset '"
-                                                          << parent << "/" << name << "'.\n");
+        err.addContext(pylith::exceptions::ErrorMessage()
+                       << "Error occurred while writing dataset '" << parent << "/" << name << "'.\n");
         throw;
     } catch (const std::exception& err) {
         std::ostringstream msg;
-        msg << "Error occurred while writing dataset '"
-            << parent << "/" << name << "':\n" << err.what();
+        msg << "Error occurred while writing dataset '" << parent << "/" << name << "':\n" << err.what();
         throw std::runtime_error(msg.str());
     } catch (...) {
         std::ostringstream msg;
-        msg << "Unknown error occurred while writing dataset '"
-            << parent << "/" << name << "'.";
+        msg << "Unknown error occurred while writing dataset '" << parent << "/" << name << "'.";
         throw std::runtime_error(msg.str());
     }
 
@@ -581,8 +597,12 @@ pylith::meshio::HDF5::readDatasetChunk(const char* parent,
             throw std::runtime_error("Could not create chunk dataspace.");
         }
 
-        if (H5Sselect_hyperslab(dataspace.id, H5S_SELECT_SET, offset.data(),
-                                stride.data(), count.data(), result.dims.data()) < 0) {
+        if (H5Sselect_hyperslab(dataspace.id,
+                                H5S_SELECT_SET,
+                                offset.data(),
+                                stride.data(),
+                                count.data(),
+                                result.dims.data()) < 0) {
             throw std::runtime_error("Could not select hyperslab.");
         }
 
@@ -598,25 +618,22 @@ pylith::meshio::HDF5::readDatasetChunk(const char* parent,
 
         result.data.resize(total);
         if (total > 0) {
-            if (H5Dread(dataset.id, datatype, chunkspace.id, dataspace.id,
-                        H5P_DEFAULT, result.data.data()) < 0) {
+            if (H5Dread(dataset.id, datatype, chunkspace.id, dataspace.id, H5P_DEFAULT, result.data.data()) < 0) {
                 throw std::runtime_error("Could not read data.");
             }
         }
 
     } catch (pylith::exceptions::Error& err) {
-        err.addContext(pylith::exceptions::ErrorMessage() << "Error occurred while reading dataset '"
-                                                          << parent << "/" << name << "'.\n");
+        err.addContext(pylith::exceptions::ErrorMessage()
+                       << "Error occurred while reading dataset '" << parent << "/" << name << "'.\n");
         throw;
     } catch (const std::exception& err) {
         std::ostringstream msg;
-        msg << "Error occurred while reading dataset '"
-            << parent << "/" << name << "':\n" << err.what();
+        msg << "Error occurred while reading dataset '" << parent << "/" << name << "':\n" << err.what();
         throw std::runtime_error(msg.str());
     } catch (...) {
         std::ostringstream msg;
-        msg << "Unknown error occurred while reading dataset '"
-            << parent << "/" << name << "'.";
+        msg << "Unknown error occurred while reading dataset '" << parent << "/" << name << "'.";
         throw std::runtime_error(msg.str());
     }
 

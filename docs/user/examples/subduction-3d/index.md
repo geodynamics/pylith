@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-examples-subduction-3d)=
 # Subduction Zone (3D)
 
@@ -102,3 +111,5 @@ step07-greensfns.md
 step08-gravity.md
 exercises.md
 :::
+
+% End of file

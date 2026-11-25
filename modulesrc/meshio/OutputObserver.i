@@ -1,25 +1,18 @@
-// =================================================================================================
+// -*- swig -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
 
-/**
- * @file modulesrc/meshio/OutputObserver.i
- *
- * @brief Python interface to C++ OutputObserver object.
- */
 
 namespace pylith {
     namespace meshio {
-        class OutputObserver: public pylith::utils::PyreComponent {
+        class OutputObserver : public pylith::utils::PyreComponent {
             // PUBLIC METHODS ///////////////////////////////////////////////////////
-public:
-
+          public:
             /// Constructor
             OutputObserver(void);
 
@@ -27,8 +20,7 @@ public:
             virtual ~OutputObserver(void);
 
             /// Deallocate PETSc and local data structures.
-            virtual
-            void deallocate(void);
+            virtual void deallocate(void);
 
             /** Set output trigger for how often to write output.
              *
@@ -68,7 +60,8 @@ public:
 
         }; // Observer
 
-    } // meshio
-} // pylith
+    } // namespace meshio
+} // namespace pylith
+
 
 // End of file

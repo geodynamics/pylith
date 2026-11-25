@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 (sec-user-physics-fault-cohesive-impulses)=
 # Fault Slip Impulses (`FaultCohesiveImpulses`)
 
@@ -36,3 +45,5 @@ The derived subfield available for Green's functions is the change in tractions 
 | :---------------- | :--------------------------- |
 | `traction_change` | normal, along strike, up dip |
 ```
+
+% End of file

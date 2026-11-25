@@ -1,3 +1,12 @@
+% -*- markdown -*-
+% -*- coding: utf-8 -*-
+%
+% This code is part of PyLith, developed through the Computational Infrastructure
+% for Geodynamics (https://github.com/geodynamics/pylith).
+%
+% Copyright (c) 2010-2026 The PyLith authors and contributors
+% SPDX-License-Identifier: MIT
+
 # Step 1: Error 1
 
 ## Error Message
@@ -97,3 +106,5 @@ caption: Correct error in `step01a_gravity.cfg`.
 # output filenames. The default directory for output is 'output'.
 problem.defaults.name = step01a_gravity
 ```
+
+% End of file

@@ -1,12 +1,13 @@
-// =================================================================================================
+// -*- c++ -*-
+// -*- coding: utf-8 -*-
+//
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
-// All rights reserved.
-//
-// See https://mit-license.org/ and LICENSE.md and for license information.
-// =================================================================================================
+// Copyright (c) 2010-2026 The PyLith authors and contributors
+// SPDX-License-Identifier: MIT
+
+
 #pragma once
 
 #include "pylith/materials/materialsfwd.hh" // forward declarations
@@ -17,8 +18,7 @@ class pylith::materials::IsotropicLinearElasticity : public pylith::materials::R
     friend class TestIsotropicLinearElasticity; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
-public:
-
+  public:
     /// Default constructor.
     IsotropicLinearElasticity(void);
 
@@ -95,17 +95,16 @@ public:
     PetscPointFn* getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const;
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     pylith::materials::AuxiliaryFactoryElastic* _auxiliaryFactory; ///< Factory for creating auxiliary subfields.
     bool _useReferenceState; ///< Flag to use reference stress and strain.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
-private:
-
+  private:
     IsotropicLinearElasticity(const IsotropicLinearElasticity&); ///< Not implemented.
     const IsotropicLinearElasticity& operator=(const IsotropicLinearElasticity&); /// Not implemented.
 
 }; // class IsotropicLinearElasticity
+
 
 // End of file
