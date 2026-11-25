@@ -1,0 +1,78 @@
+# -*- toml -*-
+# -*- coding: utf-8 -*-
+#
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 The PyLith authors and contributors
+# SPDX-License-Identifier: MIT 
+
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pylith"
+version = "5.0.2"
+description = "Finite-element software for modeling crustal deformation with an emphasis on earthquake faulting."
+authors = [{ name = "Brad Aagaard", email = "baagaard@usgs.gov" }, {name = "Matthew Knepley", email = "knepley@buffalo.edu"}, {name = "Charles Williams", email = "charles.williams@earthsciences.nz"}]
+license = { text = "MIT" }
+requires-python = ">=3.10"
+
+[project.urls]
+Homepage = "https://geodynamics.org/resources/pylith"
+
+[tool.setuptools]
+zip-safe = false
+script-files = [
+    "applications/pylith",
+	"applications/pylith_dumpparameters",
+	"applications/pylith_eqinfo",
+	"applications/pylith_genxdmf",
+	"applications/pylith_cfgsearch",
+	"applications/pylith_runner",
+	"applications/pylith_viz",
+	"applications/pylith_powerlaw_gendb",
+	"applications/pylith_convertmesh",
+]
+
+[tool.setuptools.packages.find]
+exclude = [
+    "developer",
+    "docs",
+    "docker",
+    "examples",
+    "libsrc",
+    "m4",
+    "modulesrc",
+    "playpen",
+    "share",
+    "templates",
+    "tests",
+]
+
+[tool.conventions]
+exempt = [
+    "*.spatialdb",
+    "*.timedb",
+    "*.h5",
+    "*.xmf",
+    "*.exo",
+    "*.msh",
+    "*.vtu",
+    "*.vtk",
+    "*catmip.in",
+    "*.wxm",
+    "playpen/euler/euler-poles.cart",
+    "playpen/euler/euler-poles.geog",
+    ]
+
+
+[tool.codespell]
+exclude-file = "etc/ci/conventions/codespell-lines.txt"
+ignore-words = "etc/ci/conventions/codespell-words.txt"
+skip = "numpy.i,*.pdf,*.xmf,*.h5,*.svg"
+
+
+# End of file
