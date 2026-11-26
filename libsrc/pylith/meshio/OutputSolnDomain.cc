@@ -18,7 +18,39 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+
+namespace pylith {
+    namespace meshio {
+        class _OutputSolnDomain {
+          public:
+            // Logging events
+            class Events {
+              public:
+                static void init(void);
+
+                static pylith::petsc::EventLogger logger;
+                static PetscLogEvent writeSolnStep;
+            }; // class Events
+        }; // class _OutputSolnDomain
+    } // namespace meshio
+} // namespace pylith
+
+
+// ------------------------------------------------------------------------------------------------
+pylith::petsc::EventLogger pylith::meshio::_OutputSolnDomain::Events::logger;
+PetscLogEvent pylith::meshio::_OutputSolnDomain::Events::writeSolnStep;
+
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::meshio::_OutputSolnDomain::Events::init(void) {
+    logger.setClassName("OutputSolnDomain");
+    logger.initialize();
+    writeSolnStep = logger.registerEvent("PL:OutputSolnDomain:writeSolnStep");
+} // init
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor
@@ -43,6 +75,7 @@ pylith::meshio::OutputSolnDomain::_writeSolnStep(const PylithReal t,
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
                            "_writeSolnStep(t=" << t << ", tindex=" << tindex << ", solution=" << solution.getLabel()
                                                << ")");
+    pylith::petsc::EventLogger::Scope logScope(_OutputSolnDomain::Events::writeSolnStep);
 
     const pylith::string_vector& subfieldNames = pylith::topology::FieldOps::getSubfieldNamesDomain(solution);
     PetscVec solutionVector = solution.getOutputVector();

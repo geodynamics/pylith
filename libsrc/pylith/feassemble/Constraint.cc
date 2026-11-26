@@ -12,6 +12,7 @@
 
 #include "pylith/feassemble/Constraint.hh" // implementation of object methods
 
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 #include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
 #include "pylith/problems/Physics.hh" // USES Physics
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
@@ -26,6 +27,43 @@
 #include "pylith/scales/Scales.hh" // USES Scales
 
 #include <cassert> // USES assert()
+
+namespace pylith {
+    namespace feassemble {
+        class _Constraint {
+          public:
+            // Logging events
+            class Events {
+              public:
+                static void init(void);
+
+                static pylith::petsc::EventLogger logger;
+                static PetscLogEvent initialize;
+                static PetscLogEvent poststep;
+                static PetscLogEvent computeDiagnosticField;
+            }; // class Events
+        }; // class _Constraint
+    } // namespace feassemble
+} // namespace pylith
+
+
+// ------------------------------------------------------------------------------------------------
+pylith::petsc::EventLogger pylith::feassemble::_Constraint::Events::logger;
+PetscLogEvent pylith::feassemble::_Constraint::Events::initialize;
+PetscLogEvent pylith::feassemble::_Constraint::Events::poststep;
+PetscLogEvent pylith::feassemble::_Constraint::Events::computeDiagnosticField;
+
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::feassemble::_Constraint::Events::init(void) {
+    logger.setClassName("Constraint");
+    logger.initialize();
+    initialize = logger.registerEvent("PL:Constraint:initialize");
+    poststep = logger.registerEvent("PL:Constraint:poststep");
+    computeDiagnosticField = logger.registerEvent("PL:Constraint:computeDiagnosticField");
+} // init
+
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -178,6 +216,7 @@ void
 pylith::feassemble::Constraint::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow, "initialize(solution=" << solution.getLabel() << ")");
+    pylith::petsc::EventLogger::Scope logScope(_Constraint::Events::initialize);
 
     const char* componentName = _physics->getFullIdentifier();
     delete _boundaryMesh;
@@ -211,6 +250,7 @@ pylith::feassemble::Constraint::poststep(const PylithReal t,
                                          const pylith::problems::Observer::NotificationType notification) {
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow, "poststep(t=" << t << ", dt=" << dt << ")");
+    pylith::petsc::EventLogger::Scope logScope(_Constraint::Events::poststep);
 
     notifyObservers(t, tindex, solution, notification);
 
@@ -237,6 +277,7 @@ void
 pylith::feassemble::Constraint::_computeDiagnosticField(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow, "_computeDiagnosticField()");
+    pylith::petsc::EventLogger::Scope logScope(_Constraint::Events::computeDiagnosticField);
 
     if (!_diagnosticField || !_auxiliaryField) {
         PYLITH_METHOD_END;

@@ -19,7 +19,39 @@
 #include "pylith/topology/MeshOps.hh" // USES createLowerDimMesh()
 
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+
+namespace pylith {
+    namespace meshio {
+        class _OutputSolnBoundary {
+          public:
+            // Logging events
+            class Events {
+              public:
+                static void init(void);
+
+                static pylith::petsc::EventLogger logger;
+                static PetscLogEvent writeSolnStep;
+            }; // class Events
+        }; // class _OutputSolnBoundary
+    } // namespace meshio
+} // namespace pylith
+
+
+// ------------------------------------------------------------------------------------------------
+pylith::petsc::EventLogger pylith::meshio::_OutputSolnBoundary::Events::logger;
+PetscLogEvent pylith::meshio::_OutputSolnBoundary::Events::writeSolnStep;
+
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::meshio::_OutputSolnBoundary::Events::init(void) {
+    logger.setClassName("OutputSolnBoundary");
+    logger.initialize();
+    writeSolnStep = logger.registerEvent("PL:OutputSolnBoundary:writeSolnStep");
+} // init
+
 
 // ------------------------------------------------------------------------------------------------
 // Constructor
@@ -111,6 +143,7 @@ pylith::meshio::OutputSolnBoundary::_writeSolnStep(const PylithReal t,
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
                            "_writeSolnStep(t=" << t << ", tindex=" << tindex << ", solution=" << solution.getLabel()
                                                << ")");
+    pylith::petsc::EventLogger::Scope logScope(_OutputSolnBoundary::Events::writeSolnStep);
 
     if (!_boundaryMesh) {
         const char* componentName = this->getFullIdentifier();

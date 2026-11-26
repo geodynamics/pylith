@@ -25,6 +25,7 @@
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include "pylith/scales/Scales.hh" // USES Scales
@@ -32,6 +33,46 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
 #include <cassert> // USES assert()
+
+namespace pylith {
+    namespace meshio {
+        class _OutputSolnPoints {
+          public:
+            // Logging events
+            class Events {
+              public:
+                static void init(void);
+
+                static pylith::petsc::EventLogger logger;
+                static PetscLogEvent writeSolnStep;
+                static PetscLogEvent setupInterpolator;
+                static PetscLogEvent interpolateField;
+                static PetscLogEvent writePointNames;
+            }; // class Events
+        }; // class _OutputSolnPoints
+    } // namespace meshio
+} // namespace pylith
+
+
+// ------------------------------------------------------------------------------------------------
+pylith::petsc::EventLogger pylith::meshio::_OutputSolnPoints::Events::logger;
+PetscLogEvent pylith::meshio::_OutputSolnPoints::Events::writeSolnStep;
+PetscLogEvent pylith::meshio::_OutputSolnPoints::Events::setupInterpolator;
+PetscLogEvent pylith::meshio::_OutputSolnPoints::Events::interpolateField;
+PetscLogEvent pylith::meshio::_OutputSolnPoints::Events::writePointNames;
+
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::meshio::_OutputSolnPoints::Events::init(void) {
+    logger.setClassName("OutputSolnPoints");
+    logger.initialize();
+    writeSolnStep = logger.registerEvent("PL:OutputSolnPoints:writeSolnStep");
+    setupInterpolator = logger.registerEvent("PL:OutputSolnPoints:setupInterpolator");
+    interpolateField = logger.registerEvent("PL:OutputSolnPoints:interpolateField");
+    writePointNames = logger.registerEvent("PL:OutputSolnPoints:writePointNames");
+} // init
+
 
 // ------------------------------------------------------------------------------------------------
 // Constructor
@@ -111,6 +152,7 @@ pylith::meshio::OutputSolnPoints::_writeSolnStep(const PylithReal t,
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
                            "_writeSolnStep(t=" << t << ", tindex=" << tindex << ", solution=" << solution.getLabel()
                                                << ")");
+    pylith::petsc::EventLogger::Scope logScope(_OutputSolnPoints::Events::writeSolnStep);
 
     if (dynamic_cast<pylith::meshio::DataWriterVTK*>(_writer)) {
         PYLITH_ERROR(pylith::exceptions::InternalLogicError,
@@ -174,6 +216,7 @@ pylith::meshio::OutputSolnPoints::_getSubfield(const pylith::topology::Field& fi
 void
 pylith::meshio::OutputSolnPoints::_setupInterpolator(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
+    pylith::petsc::EventLogger::Scope logScope(_OutputSolnPoints::Events::setupInterpolator);
 
     if (_interpolator) {
         PylithCallPetsc(DMInterpolationDestroy(&_interpolator));
@@ -268,6 +311,8 @@ pylith::meshio::OutputSolnPoints::_setupInterpolator(const pylith::topology::Fie
 void
 pylith::meshio::OutputSolnPoints::_interpolateField(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
+    pylith::petsc::EventLogger::Scope logScope(_OutputSolnPoints::Events::interpolateField);
+
     assert(_pointSoln);
 
     PylithCallPetsc(DMInterpolationEvaluate(_interpolator,
@@ -284,6 +329,7 @@ pylith::meshio::OutputSolnPoints::_interpolateField(const pylith::topology::Fiel
 void
 pylith::meshio::OutputSolnPoints::_writePointNames(void) {
     PYLITH_METHOD_BEGIN;
+    pylith::petsc::EventLogger::Scope logScope(_OutputSolnPoints::Events::writePointNames);
 
     assert(_writer);
     _writer->writePointNames(_pointNames, *_pointMesh);

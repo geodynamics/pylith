@@ -25,6 +25,7 @@
 
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
+#include "pylith/petsc/EventLogger.hh" // HASA EventLogger
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 #include <cassert> // USES assert()
@@ -47,9 +48,35 @@ namespace pylith {
             /// View global section.
             static void viewGlobalSection(const Field& field);
 
+            // Logging events
+            class Events {
+              public:
+                static void init(void);
+
+                static pylith::petsc::EventLogger logger;
+                static PetscLogEvent subfieldsSetup;
+                static PetscLogEvent createOutputVector;
+            }; // class Events
         }; // _Field
     } // namespace topology
 } // namespace pylith
+
+
+// ------------------------------------------------------------------------------------------------
+pylith::petsc::EventLogger pylith::topology::_Field::Events::logger;
+PetscLogEvent pylith::topology::_Field::Events::subfieldsSetup;
+PetscLogEvent pylith::topology::_Field::Events::createOutputVector;
+
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::topology::_Field::Events::init(void) {
+    logger.setClassName("Field");
+    logger.initialize();
+    subfieldsSetup = logger.registerEvent("PL:Field:subfieldsSetup");
+    createOutputVector = logger.registerEvent("PL:Field:createOutputVector");
+} // init
+
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -509,6 +536,7 @@ pylith::topology::Field::subfieldAdd(const Description& description,
 void
 pylith::topology::Field::subfieldsSetup(void) {
     PYLITH_METHOD_BEGIN;
+    pylith::petsc::EventLogger::Scope logScope(_Field::Events::subfieldsSetup);
     assert(_mesh);
 
     // Setup section now that we know the total number of sub-fields and components.
@@ -634,6 +662,7 @@ pylith::topology::Field::createGlobalVector(void) {
 void
 pylith::topology::Field::createOutputVector(void) {
     PYLITH_METHOD_BEGIN;
+    pylith::petsc::EventLogger::Scope logScope(_Field::Events::createOutputVector);
     assert(_mesh);
 
     PylithCallPetsc(VecDestroy(&_outputVec));

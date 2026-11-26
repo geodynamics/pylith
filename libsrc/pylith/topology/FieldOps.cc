@@ -22,12 +22,60 @@
 
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
+#include "pylith/petsc/EventLogger.hh" // HASA EventLogger
 #include "pylith/utils/journals.hh" // USES journal macros
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
 #include "petscdm.h" // USES PetscDM
 
+namespace pylith {
+    namespace topology {
+        class _FieldOps {
+          public:
+            // Logging events
+            class Events {
+              public:
+                static void init(void);
+
+                static pylith::petsc::EventLogger logger;
+                static PetscLogEvent createFE;
+                static PetscLogEvent checkDiscretization;
+                static PetscLogEvent checkSubfieldsExist;
+                static PetscLogEvent layoutsMatch;
+                static PetscLogEvent createOutputLabel;
+                static PetscLogEvent transformVector;
+            }; // class Events
+        }; // _Field
+    } // namespace topology
+} // namespace pylith
+
+
+// ------------------------------------------------------------------------------------------------
+pylith::petsc::EventLogger pylith::topology::_FieldOps::Events::logger;
+PetscLogEvent pylith::topology::_FieldOps::Events::createFE;
+PetscLogEvent pylith::topology::_FieldOps::Events::checkDiscretization;
+PetscLogEvent pylith::topology::_FieldOps::Events::checkSubfieldsExist;
+PetscLogEvent pylith::topology::_FieldOps::Events::layoutsMatch;
+PetscLogEvent pylith::topology::_FieldOps::Events::createOutputLabel;
+PetscLogEvent pylith::topology::_FieldOps::Events::transformVector;
+
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::topology::_FieldOps::Events::init(void) {
+    logger.setClassName("FieldOps");
+    logger.initialize();
+    createFE = logger.registerEvent("PL:FieldOps:createFE");
+    checkDiscretization = logger.registerEvent("PL:FieldOps:checkDiscretization");
+    checkSubfieldsExist = logger.registerEvent("PL:FieldOps:checkSubfieldsExist");
+    layoutsMatch = logger.registerEvent("PL:FieldOps:layoutsMatch");
+    createOutputLabel = logger.registerEvent("PL:FieldOps:createOutputLabel");
+    transformVector = logger.registerEvent("PL:FieldOps:transformVector");
+} // init
+
+
+// ------------------------------------------------------------------------------------------------
 std::map<pylith::topology::FieldBase::Discretization, pylith::topology::FE> pylith::topology::FieldOps::feStore =
     std::map<pylith::topology::FieldBase::Discretization, pylith::topology::FE>();
 
@@ -44,6 +92,8 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
                                      const PetscDM dm,
                                      const int numComponents) {
     PYLITH_METHOD_BEGIN;
+    pylith::petsc::EventLogger::Scope logScope(_FieldOps::Events::createFE);
+
     // Get spatial dimension of mesh.
     PetscFE fe;
     PetscInt dim;
@@ -157,6 +207,8 @@ void
 pylith::topology::FieldOps::checkDiscretization(const pylith::topology::Field& target,
                                                 const pylith::topology::Field& auxiliary) {
     PYLITH_METHOD_BEGIN;
+    pylith::petsc::EventLogger::Scope logScope(_FieldOps::Events::checkDiscretization);
+
     // PYLITH_DEBUG(pylith::journal::application_flow, "checkDiscretization(target="<<target.getLabel()<<",
     // auxiliary="<<auxiliary.getLabel()<<")");
 
@@ -218,6 +270,9 @@ void
 pylith::topology::FieldOps::checkSubfieldsExist(const pylith::string_vector& requiredFields,
                                                 const std::string& reason,
                                                 const pylith::topology::Field& field) {
+    PYLITH_METHOD_BEGIN;
+    pylith::petsc::EventLogger::Scope logScope(_FieldOps::Events::checkSubfieldsExist);
+
     pylith::string_vector missingFields;
     size_t numMissing = 0;
     const size_t numRequired = requiredFields.size();
@@ -249,6 +304,7 @@ pylith::topology::FieldOps::checkSubfieldsExist(const pylith::string_vector& req
         PYLITH_ERROR(pylith::exceptions::SubfieldNotFoundError, msg.str());
     } // if
 
+    PYLITH_METHOD_END;
 } // checkSubfieldsExist
 
 
@@ -286,6 +342,7 @@ bool
 pylith::topology::FieldOps::layoutsMatch(const pylith::topology::Field& fieldA,
                                          const pylith::topology::Field& fieldB) {
     PYLITH_METHOD_BEGIN;
+    pylith::petsc::EventLogger::Scope logScope(_FieldOps::Events::layoutsMatch);
     // PYLITH_DEBUG(pylith::journal::application_flow, "layoutsMatch(fieldA="<<fieldA.getLabel()<<",
     // fieldB="<<fieldB.getLabel()<<")");
 
@@ -341,6 +398,7 @@ pylith::topology::FieldOps::layoutsMatch(const pylith::topology::Field& fieldA,
 void
 pylith::topology::FieldOps::createOutputLabel(const pylith::topology::Field* field) {
     PYLITH_METHOD_BEGIN;
+    pylith::petsc::EventLogger::Scope logScope(_FieldOps::Events::createOutputLabel);
 
     const char* outputLabelName = "output";
     PetscDM fieldDM = field->getDM();
@@ -364,6 +422,7 @@ pylith::topology::FieldOps::transformVector(PetscVec* outputVector,
                                             const PetscVec& inputVector,
                                             const PetscDM& inputDM) {
     PYLITH_METHOD_BEGIN;
+    pylith::petsc::EventLogger::Scope logScope(_FieldOps::Events::transformVector);
 
     assert(outputVector);
     assert(outputDM);
