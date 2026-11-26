@@ -14,6 +14,7 @@
 
 #include "pylith/feassemble/DSLabelAccess.hh" // USES DSLabelAccess
 #include "pylith/feassemble/IntegrationData.hh" // USES IntegrationData
+#include "pylith/petsc/EventLogger.hh" // HASA EventLogger
 #include "pylith/problems/Physics.hh" // USES Physics
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor::optimizeClosure()
 #include "pylith/topology/Field.hh" // USES Field
@@ -36,11 +37,44 @@ namespace pylith {
         class _IntegratorBoundary {
           public:
             static const char* genericComponent;
+
+            // Logging events
+            class Events {
+              public:
+                static void init(void);
+
+                static pylith::petsc::EventLogger logger;
+                static PetscLogEvent initialize;
+                static PetscLogEvent computeRHSResidual;
+                static PetscLogEvent computeLHSResidual;
+                static PetscLogEvent computeDiagnosticField;
+            };
+
         }; // _IntegratorBoundary
         const char* _IntegratorBoundary::genericComponent = "integratorboundary";
 
     } // namespace feassemble
 } // namespace pylith
+
+// ------------------------------------------------------------------------------------------------
+pylith::petsc::EventLogger pylith::feassemble::_IntegratorBoundary::Events::logger;
+PetscLogEvent pylith::feassemble::_IntegratorBoundary::Events::initialize;
+PetscLogEvent pylith::feassemble::_IntegratorBoundary::Events::computeRHSResidual;
+PetscLogEvent pylith::feassemble::_IntegratorBoundary::Events::computeLHSResidual;
+PetscLogEvent pylith::feassemble::_IntegratorBoundary::Events::computeDiagnosticField;
+
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::feassemble::_IntegratorBoundary::Events::init(void) {
+    logger.setClassName("IntegratorBoundary");
+    logger.initialize();
+    initialize = logger.registerEvent("PL:IntegratorBoundary:initialize");
+    computeRHSResidual = logger.registerEvent("PL:IntegratorBoundary:computeRHSResidual");
+    computeLHSResidual = logger.registerEvent("PL:IntegratorBoundary:computeLHSResidual");
+    computeDiagnosticField = logger.registerEvent("PL:IntegratorBoundary:computeDiagnosticField");
+} // init
+
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -170,6 +204,7 @@ pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow,
                  _labelName << "=" << _labelValue << " initialize(solution=" << solution.getLabel() << ")");
+    pylith::petsc::EventLogger::Scope logScope(_IntegratorBoundary::Events::initialize);
 
     const char* componentName = _physics->getFullIdentifier();
     delete _boundaryMesh;
@@ -227,6 +262,7 @@ pylith::feassemble::IntegratorBoundary::computeRHSResidual(pylith::topology::Fie
     PYLITH_DEBUG(pylith::journal::application_flow,
                  _labelName << "=" << _labelValue << " computeRHSResidual(residual=" << residual
                             << ", integrationData=" << integrationData.str() << ")");
+    pylith::petsc::EventLogger::Scope logScope(_IntegratorBoundary::Events::computeRHSResidual);
     if (!_hasRHSResidual) {
         PYLITH_METHOD_END;
     }
@@ -276,6 +312,7 @@ pylith::feassemble::IntegratorBoundary::computeLHSResidual(pylith::topology::Fie
     PYLITH_DEBUG(pylith::journal::application_flow,
                  _labelName << "=" << _labelValue << " computeLHSResidual(residual=" << residual
                             << ", integrationData=" << integrationData.str() << ")");
+    pylith::petsc::EventLogger::Scope logScope(_IntegratorBoundary::Events::computeLHSResidual);
     if (!_hasLHSResidual) {
         PYLITH_METHOD_END;
     }
@@ -361,6 +398,7 @@ void
 pylith::feassemble::IntegratorBoundary::_computeDiagnosticField(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow, "_computeDiagnosticField()");
+    pylith::petsc::EventLogger::Scope logScope(_IntegratorBoundary::Events::computeDiagnosticField);
 
     // We create the diagnostic field for all BCs, but we don't set the kernel for
     // BCs associated with analytical user functions.

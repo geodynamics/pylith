@@ -33,9 +33,34 @@ namespace pylith {
                                     const PylithReal t,
                                     PetscUserFieldFunc fn,
                                     const pylith::feassemble::ConstraintUserFn& constraint);
+            // Logging events
+            class Events {
+              public:
+                static void init(void);
+
+                static pylith::petsc::EventLogger logger;
+                static PetscLogEvent initialize;
+                static PetscLogEvent setSolution;
+            }; // class Events
         };
     } // namespace feassemble
 } // namespace pylith
+
+// ------------------------------------------------------------------------------------------------
+pylith::petsc::EventLogger pylith::feassemble::_ConstraintUserFn::Events::logger;
+PetscLogEvent pylith::feassemble::_ConstraintUserFn::Events::initialize;
+PetscLogEvent pylith::feassemble::_ConstraintUserFn::Events::setSolution;
+
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::feassemble::_ConstraintUserFn::Events::init(void) {
+    logger.setClassName("ConstraintUserFn");
+    logger.initialize();
+    initialize = logger.registerEvent("PL:ConstraintUserFn:initialize");
+    setSolution = logger.registerEvent("PL:ConstraintUserFn:setSolution");
+} // init
+
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -77,6 +102,7 @@ pylith::feassemble::ConstraintUserFn::initialize(const pylith::topology::Field& 
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow,
                  _labelName << "=" << _labelValue << " initialize(solution=" << solution.getLabel() << ")");
+    pylith::petsc::EventLogger::Scope logScope(_ConstraintUserFn::Events::initialize);
 
     Constraint::initialize(solution);
 
@@ -117,6 +143,7 @@ pylith::feassemble::ConstraintUserFn::setSolution(pylith::feassemble::Integratio
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow,
                  _labelName << "=" << _labelValue << " setSolution(integrationData=" << integrationData->str() << ")");
+    pylith::petsc::EventLogger::Scope logScope(_ConstraintUserFn::Events::setSolution);
 
     const pylith::topology::Field* solution = integrationData->getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);

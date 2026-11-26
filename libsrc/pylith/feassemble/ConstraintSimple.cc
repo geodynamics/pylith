@@ -26,6 +26,40 @@
 
 #include <cassert> // USES assert()
 
+namespace pylith {
+    namespace feassemble {
+        class _ConstraintSimple {
+          public:
+            // Logging events
+            class Events {
+              public:
+                static void init(void);
+
+                static pylith::petsc::EventLogger logger;
+                static PetscLogEvent initialize;
+                static PetscLogEvent setSolution;
+            }; // class Events
+        }; // class _ConstraintSimple
+    } // namespace feassemble
+} // namespace pylith
+
+
+// ------------------------------------------------------------------------------------------------
+pylith::petsc::EventLogger pylith::feassemble::_ConstraintSimple::Events::logger;
+PetscLogEvent pylith::feassemble::_ConstraintSimple::Events::initialize;
+PetscLogEvent pylith::feassemble::_ConstraintSimple::Events::setSolution;
+
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::feassemble::_ConstraintSimple::Events::init(void) {
+    logger.setClassName("Constraint");
+    logger.initialize();
+    initialize = logger.registerEvent("PL:ConstraintSimple:initialize");
+    setSolution = logger.registerEvent("PL:ConstraintSimple:setSolution");
+} // init
+
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::feassemble::ConstraintSimple::ConstraintSimple(pylith::problems::Physics* const physics) :
@@ -56,6 +90,7 @@ void
 pylith::feassemble::ConstraintSimple::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow, "initialize (solution = " << solution.getLabel() << ") ");
+    pylith::petsc::EventLogger::Scope logScope(_ConstraintSimple::Events::initialize);
 
     assert(_physics);
     _observers = NULL;
@@ -163,6 +198,7 @@ pylith::feassemble::ConstraintSimple::setSolution(pylith::feassemble::Integratio
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow,
                  "setSolution (integrationData = " << integrationData->str() << ") ");
+    pylith::petsc::EventLogger::Scope logScope(_ConstraintSimple::Events::setSolution);
 
     const pylith::topology::Field* solution = integrationData->getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);

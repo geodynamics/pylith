@@ -20,10 +20,54 @@
 
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <iostream> // USES std::cout
 #include <typeinfo> // USES typeid()
+
+namespace pylith {
+    namespace meshio {
+        class _OutputSoln {
+          public:
+            // Logging events
+            class Events {
+              public:
+                static void init(void);
+
+                static pylith::petsc::EventLogger logger;
+                static PetscLogEvent update;
+                static PetscLogEvent open;
+                static PetscLogEvent close;
+                static PetscLogEvent openSolnStep;
+                static PetscLogEvent closeSolnStep;
+            }; // class Events
+        }; // class _OutputSoln
+    } // namespace meshio
+} // namespace pylith
+
+
+// ------------------------------------------------------------------------------------------------
+pylith::petsc::EventLogger pylith::meshio::_OutputSoln::Events::logger;
+PetscLogEvent pylith::meshio::_OutputSoln::Events::update;
+PetscLogEvent pylith::meshio::_OutputSoln::Events::open;
+PetscLogEvent pylith::meshio::_OutputSoln::Events::close;
+PetscLogEvent pylith::meshio::_OutputSoln::Events::openSolnStep;
+PetscLogEvent pylith::meshio::_OutputSoln::Events::closeSolnStep;
+
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::meshio::_OutputSoln::Events::init(void) {
+    logger.setClassName("OutputSoln");
+    logger.initialize();
+    update = logger.registerEvent("PL:OutputSoln:update");
+    open = logger.registerEvent("PL:OutputSoln:open");
+    close = logger.registerEvent("PL:OutputSoln:close");
+    openSolnStep = logger.registerEvent("PL:OutputSoln:openSolnStep");
+    closeSolnStep = logger.registerEvent("PL:OutputSoln:closeSolnStep");
+} // init
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor
@@ -121,6 +165,8 @@ pylith::meshio::OutputSoln::update(const PylithReal t,
                                    const PylithInt tindex,
                                    const pylith::topology::Field& solution,
                                    const pylith::problems::Observer::NotificationType notification) {
+    pylith::petsc::EventLogger::Scope logScope(_OutputSoln::Events::update);
+
     assert(_trigger);
     if (_trigger->shouldWrite(t, tindex)) {
         _writeSolnStep(t, tindex, solution);
@@ -134,6 +180,7 @@ void
 pylith::meshio::OutputSoln::_open(const pylith::topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputSoln::open(mesh=" << typeid(mesh).name() << ")");
+    pylith::petsc::EventLogger::Scope logScope(_OutputSoln::Events::open);
 
     if (!_writer) {
         PYLITH_COMPONENT_ERROR(pylith::exceptions::InternalLogicError,
@@ -158,6 +205,7 @@ void
 pylith::meshio::OutputSoln::_close(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputSoln::_close()");
+    pylith::petsc::EventLogger::Scope logScope(_OutputSoln::Events::close);
 
     assert(_writer);
     _writer->close();
@@ -174,6 +222,7 @@ pylith::meshio::OutputSoln::_openSolnStep(const PylithReal t,
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
                            "OutputSoln::_openSolnStep(t=" << t << ", mesh=" << typeid(mesh).name() << ")");
+    pylith::petsc::EventLogger::Scope logScope(_OutputSoln::Events::openSolnStep);
 
     assert(_writer);
     if (!_writer->isOpen()) {
@@ -189,6 +238,8 @@ pylith::meshio::OutputSoln::_openSolnStep(const PylithReal t,
 // Finalize output at this solution step.
 void
 pylith::meshio::OutputSoln::_closeSolnStep(void) {
+    pylith::petsc::EventLogger::Scope logScope(_OutputSoln::Events::closeSolnStep);
+
     assert(_writer);
     _writer->closeTimeStep();
 

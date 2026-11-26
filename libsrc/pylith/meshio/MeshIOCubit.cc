@@ -17,6 +17,7 @@
 
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/array.hh" // USES scalar_array, int_array, string_vector
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
@@ -30,22 +31,23 @@
 // ------------------------------------------------------------------------------------------------
 namespace pylith {
     namespace meshio {
-        namespace _MeshIOCubit {
+        class _MeshIOCubit {
+          public:
             /** Read mesh vertices.
              *
              * @param[out] geometry Mesh geometry.
              * @param[inout] fileIn Cubit Exodus file.
              */
-            void readVertices(pylith::meshio::MeshBuilder::Geometry* geometry,
-                              pylith::meshio::ExodusII& fileIn);
+            static void readVertices(pylith::meshio::MeshBuilder::Geometry* geometry,
+                                     pylith::meshio::ExodusII& fileIn);
 
             /** Write mesh vertices.
              *
              * @param[inout] fileOut Cubit Exodus file.
              * @param[in] geometry Mesh geometry.
              */
-            void writeVertices(pylith::meshio::ExodusII& fileOut,
-                               const pylith::meshio::MeshBuilder::Geometry& geometry);
+            static void writeVertices(pylith::meshio::ExodusII& fileOut,
+                                      const pylith::meshio::MeshBuilder::Geometry& geometry);
 
             /** Read mesh cells.
              *
@@ -53,18 +55,18 @@ namespace pylith {
              * @param[out] materialIds Material id for each cell.
              * @param[inout] fileIn Cubit Exodus file.
              */
-            void readCells(pylith::meshio::MeshBuilder::Topology* topology,
-                           int_array* materialIds,
-                           pylith::meshio::ExodusII& fileIn);
+            static void readCells(pylith::meshio::MeshBuilder::Topology* topology,
+                                  int_array* materialIds,
+                                  pylith::meshio::ExodusII& fileIn);
 
             /** Write mesh cells.
              *
              * @param[inout] fileOut Cubit Exodus file.
              * @param[in] topology Mesh topology.
              */
-            void writeCells(pylith::meshio::ExodusII& fileOut,
-                            const pylith::meshio::MeshBuilder::Topology& topology,
-                            const int_array& materialIds);
+            static void writeCells(pylith::meshio::ExodusII& fileOut,
+                                   const pylith::meshio::MeshBuilder::Topology& topology,
+                                   const int_array& materialIds);
 
             /** Read a point group with vertices.
              *
@@ -72,9 +74,9 @@ namespace pylith {
              * @param[out] name Name of group.
              * @param[inout] fileIn Cubit Exodus file.
              */
-            void readNodeSet(int_array* points,
-                             std::string* name,
-                             pylith::meshio::ExodusII& fileIn);
+            static void readNodeSet(int_array* points,
+                                    std::string* name,
+                                    pylith::meshio::ExodusII& fileIn);
 
             /** Write a point group with vertices.
              *
@@ -82,9 +84,9 @@ namespace pylith {
              * @param[in] points Vertices in group.
              * @param[in] name Name of group.
              */
-            void writeNodeSet(std::ostream& fileOut,
-                              const int_array& points,
-                              const char* name);
+            static void writeNodeSet(std::ostream& fileOut,
+                                     const int_array& points,
+                                     const char* name);
 
             /** Read a point group with faces.
              *
@@ -94,9 +96,9 @@ namespace pylith {
              * @param[in] faceShape Shape of face.
              * @param[in] useIndexZero True if using zero-based indexing.
              */
-            void readSideSet(int_array* faceValues,
-                             std::string* name,
-                             pylith::meshio::ExodusII& fileIn);
+            static void readSideSet(int_array* faceValues,
+                                    std::string* name,
+                                    pylith::meshio::ExodusII& fileIn);
 
             /** Write a point group with faces
              *
@@ -105,19 +107,57 @@ namespace pylith {
              * @param[in] faceShape Shape of face.
              * @param[in] name Name of group.
              */
-            void writeSideSet(std::ostream& fileOut,
-                              const int_array& faceValues,
-                              const char* name);
+            static void writeSideSet(std::ostream& fileOut,
+                                     const int_array& faceValues,
+                                     const char* name);
 
             /** Reorder vertices in cells to match PyLith/PETSc conventions.
              *
              * @param[inout] topology Mesh topology.
              */
-            void orientCells(pylith::meshio::MeshBuilder::Topology* topology);
+            static void orientCells(pylith::meshio::MeshBuilder::Topology* topology);
 
-        } // namespace _MeshIOCubit
+            // Logging events
+            class Events {
+              public:
+                static void init(void);
+
+                static pylith::petsc::EventLogger logger;
+                static PetscLogEvent read;
+                static PetscLogEvent readVertices;
+                static PetscLogEvent readCells;
+                static PetscLogEvent readNodeSets;
+                static PetscLogEvent readSideSets;
+                static PetscLogEvent orientCells;
+            }; // class Events
+
+        }; // class _MeshIOCubit
     } // namespace meshio
 } // namespace pylith
+
+// ------------------------------------------------------------------------------------------------
+pylith::petsc::EventLogger pylith::meshio::_MeshIOCubit::Events::logger;
+PetscLogEvent pylith::meshio::_MeshIOCubit::Events::read;
+PetscLogEvent pylith::meshio::_MeshIOCubit::Events::readVertices;
+PetscLogEvent pylith::meshio::_MeshIOCubit::Events::readCells;
+PetscLogEvent pylith::meshio::_MeshIOCubit::Events::readNodeSets;
+PetscLogEvent pylith::meshio::_MeshIOCubit::Events::readSideSets;
+PetscLogEvent pylith::meshio::_MeshIOCubit::Events::orientCells;
+
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::meshio::_MeshIOCubit::Events::init(void) {
+    logger.setClassName("MeshIOCubit");
+    logger.initialize();
+    read = logger.registerEvent("PL:MeshIOCubit:read");
+    readVertices = logger.registerEvent("PL:MeshIOCubit:readVertices");
+    readCells = logger.registerEvent("PL:MeshIOCubit:readCells");
+    readNodeSets = logger.registerEvent("PL:MeshIOCubit:readNodeSets");
+    readSideSets = logger.registerEvent("PL:MeshIOCubit:readSideSets");
+    orientCells = logger.registerEvent("PL:MeshIOCubit:orientCells");
+} // init
+
 
 // ------------------------------------------------------------------------------------------------
 // Constructor
@@ -168,6 +208,8 @@ pylith::meshio::MeshIOCubit::_read(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow,
                                "Reading finite-element mesh from '" << _filename << "'.");
+    pylith::petsc::EventLogger::Scope logScope(_MeshIOCubit::Events::read);
+
     assert(_mesh);
 
     const int commRank = _mesh->getCommRank();
@@ -234,6 +276,7 @@ void
 pylith::meshio::_MeshIOCubit::readVertices(pylith::meshio::MeshBuilder::Geometry* geometry,
                                            pylith::meshio::ExodusII& exoFile) {
     PYLITH_METHOD_BEGIN;
+    pylith::petsc::EventLogger::Scope logScope(_MeshIOCubit::Events::readVertices);
 
     assert(geometry);
 
@@ -286,6 +329,7 @@ pylith::meshio::_MeshIOCubit::readCells(pylith::meshio::MeshBuilder::Topology* t
                                         int_array* materialIds,
                                         pylith::meshio::ExodusII& exoFile) {
     PYLITH_METHOD_BEGIN;
+    pylith::petsc::EventLogger::Scope logScope(_MeshIOCubit::Events::readCells);
 
     assert(topology);
     assert(materialIds);
@@ -348,6 +392,7 @@ pylith::meshio::MeshIOCubit::_readNodeSets(ExodusII& exoFile) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
                            "_readNodeSets (exoFile = " << typeid(exoFile).name() << ") ");
+    pylith::petsc::EventLogger::Scope logScope(_MeshIOCubit::Events::readNodeSets);
 
     if (!exoFile.hasDim("num_node_sets", NULL)) {
         PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow_detail3, "No nodesets found.");
@@ -402,6 +447,7 @@ pylith::meshio::MeshIOCubit::_readSideSets(ExodusII& exoFile) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow,
                            "_readSideSets (exoFile = " << typeid(exoFile).name() << ") ");
+    pylith::petsc::EventLogger::Scope logScope(_MeshIOCubit::Events::readSideSets);
 
     if (!exoFile.hasDim("num_side_sets", NULL)) {
         PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow_detail3, "No sidesets found.");
@@ -478,6 +524,7 @@ pylith::meshio::MeshIOCubit::_readSideSets(ExodusII& exoFile) {
 void
 pylith::meshio::_MeshIOCubit::orientCells(pylith::meshio::MeshBuilder::Topology* topology) {
     PYLITH_METHOD_BEGIN;
+    pylith::petsc::EventLogger::Scope logScope(_MeshIOCubit::Events::orientCells);
 
     assert(topology);
     const size_t numCorners = topology->numCorners;

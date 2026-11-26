@@ -24,6 +24,43 @@
 
 #include <cassert> // USES assert()
 
+namespace pylith {
+    namespace feassemble {
+        class _ConstraintSpatialDB {
+          public:
+            // Logging events
+            class Events {
+              public:
+                static void init(void);
+
+                static pylith::petsc::EventLogger logger;
+                static PetscLogEvent initialize;
+                static PetscLogEvent setState;
+                static PetscLogEvent setSolution;
+            }; // class Events
+        }; // class _ConstraintSpatialDB
+    } // namespace feassemble
+} // namespace pylith
+
+
+// ------------------------------------------------------------------------------------------------
+pylith::petsc::EventLogger pylith::feassemble::_ConstraintSpatialDB::Events::logger;
+PetscLogEvent pylith::feassemble::_ConstraintSpatialDB::Events::initialize;
+PetscLogEvent pylith::feassemble::_ConstraintSpatialDB::Events::setState;
+PetscLogEvent pylith::feassemble::_ConstraintSpatialDB::Events::setSolution;
+
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::feassemble::_ConstraintSpatialDB::Events::init(void) {
+    logger.setClassName("ConstraintSpatialDB");
+    logger.initialize();
+    initialize = logger.registerEvent("PL:ConstraintSpatialDB:initialize");
+    setState = logger.registerEvent("PL:ConstraintSpatialDB:setState");
+    setSolution = logger.registerEvent("PL:ConstraintSpatialDB:setSolution");
+} // init
+
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::feassemble::ConstraintSpatialDB::ConstraintSpatialDB(pylith::problems::Physics* const physics) :
@@ -55,6 +92,7 @@ pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Fiel
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow,
                  _labelName << "=" << _labelValue << " initialize(solution=" << solution.getLabel() << ")");
+    pylith::petsc::EventLogger::Scope logScope(_ConstraintSpatialDB::Events::initialize);
 
     Constraint::initialize(solution);
 
@@ -113,6 +151,7 @@ void
 pylith::feassemble::ConstraintSpatialDB::setState(const double t) {
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow, _labelName << "=" << _labelValue << " setState(t=" << t << ")");
+    pylith::petsc::EventLogger::Scope logScope(_ConstraintSpatialDB::Events::setState);
 
     assert(_physics);
     _physics->updateAuxiliaryField(_auxiliaryField, t);
@@ -136,6 +175,7 @@ pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::feassemble::Integra
     PYLITH_METHOD_BEGIN;
     PYLITH_DEBUG(pylith::journal::application_flow,
                  _labelName << "=" << _labelValue << " setSolution(integrationData=" << integrationData->str() << ")");
+    pylith::petsc::EventLogger::Scope logScope(_ConstraintSpatialDB::Events::setSolution);
 
     assert(_auxiliaryField);
     assert(_physics);
